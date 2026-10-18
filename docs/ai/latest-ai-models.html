@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。">
+<title>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash</h1><p class="summary">Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年9月10日から10月17日にかけて、Google、Meta、DeepSeek がそれぞれ新しいAIモデルを出しました。<strong>Gemini 4 Argon は API で使うモデル、Muse Spark Open と DeepSeek V4.1-Flash は重みが公開されたモデル</strong>で、提供形態が違います。</p>
+<p>性能の数字（ベンチマーク）は、各社が自社で公表したもので、条件も指標も違うため、<strong>横に並べて順位をつけることはできません</strong>。選ぶときは、提供形態、価格、動かすのに必要なもの、ライセンスを見ます。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>つ</small></p><p class="stat-label">9/10〜10/17 に出たモデル</p></div>
+<div class="stat"><p class="stat-value">816B</p><p class="stat-label">Muse Spark Open の総パラメーター数（有効は 42B）</p></div>
+<div class="stat"><p class="stat-value">2<small>倍</small></p><p class="stat-label">Gemini 4 Argon の価格が、11/30 の導入期間後に上がる倍率</p></div>
+<div class="stat"><p class="stat-value">700<small>GB</small></p><p class="stat-label">Muse Spark Open の NVFP4 版を動かすのに必要な VRAM の最小値</p></div>
+</div>
+
+<h2>3つのモデルの比較</h2>
+<p>次の表は、各社の公式ページ（Google のブログと API ドキュメント、Meta のモデルカード、DeepSeek のドキュメント）から、確認できた項目を並べたものです。「記載なし」は、確認できなかった項目です。</p>
+
+<div class="table-wrap">
+<table>
+<caption>各社の公式ページより（9月10日〜10月17日付）。ベンチマークの数字は各社の自己申告で、ここでは扱っていません</caption>
+<thead><tr><th>項目</th><th>Gemini 4 Argon</th><th>Muse Spark Open</th><th>DeepSeek V4.1-Flash</th></tr></thead>
+<tbody>
+<tr><td>提供元</td><td>Google</td><td>Meta（Meta Superintelligence Labs）</td><td>DeepSeek</td></tr>
+<tr><td>公開日</td><td>10/13（一般提供）</td><td>10/15</td><td>9/10（10/17 に Flash-1017）</td></tr>
+<tr><td>提供形態</td><td>API（有料ティア）、Gemini アプリなど。重みは公開されていない</td><td>重みを公開（Hugging Face）</td><td>API、ウェブ、アプリ。重みも公開（Hugging Face、ModelScope）</td></tr>
+<tr><td>構造</td><td>記載なし</td><td>MoE（総 816B、有効 42B）</td><td>MoE（総 552B）</td></tr>
+<tr><td>入力</td><td>テキスト、画像、動画、音声、PDF</td><td>テキスト、画像、動画、音声</td><td>視覚理解に対応</td></tr>
+<tr><td>出力</td><td>テキスト</td><td>テキスト</td><td>記載なし</td></tr>
+<tr><td>コンテキスト</td><td>1,048,576 トークン（入力と出力の合計）</td><td>1M トークン</td><td>記載なし</td></tr>
+<tr><td>価格</td><td>入力 $2、出力 $10（100万トークンあたり、11/30 まで）。12/1 以降は $4、$20</td><td>重みは無償（ライセンスの条件あり）</td><td>ピーク／オフピーク制。オフピークはピークの50%。具体的な単価は画像で、確認できず</td></tr>
+<tr><td>ライセンス</td><td>—</td><td>Muse Model License</td><td>確認していない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>価格と日程</h2>
+
+<figure class="viz">
+<p class="viz-title">Gemini 4 Argon の価格の改定</p>
+<p class="viz-sub">100万トークンあたりの米ドル。導入価格は2026年11月30日まで</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 250" role="img" aria-label="Gemini 4 Argonの価格。入力は導入価格2ドルから12月1日以降4ドル、出力は導入価格10ドルから12月1日以降20ドルと、いずれも2倍になる。">
+<rect class="bar" x="150" y="6" width="14" height="14" rx="2"/><text x="170" y="18">導入価格（〜11/30）</text>
+<rect class="bar-2" x="350" y="6" width="14" height="14" rx="2"/><text x="370" y="18">12/1 以降</text>
+<g class="grid">
+<line x1="150" y1="36" x2="150" y2="210"/><line x1="270" y1="36" x2="270" y2="210"/>
+<line x1="390" y1="36" x2="390" y2="210"/><line x1="510" y1="36" x2="510" y2="210"/>
+<line x1="630" y1="36" x2="630" y2="210"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="150" y="230">$0</text><text class="t-muted" x="270" y="230">$5</text>
+<text class="t-muted" x="390" y="230">$10</text><text class="t-muted" x="510" y="230">$15</text>
+<text class="t-muted" x="630" y="230">$20</text>
+</g>
+
+<text class="t-strong" x="8" y="78">入力</text>
+<path class="bar" d="M150,52 h44 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-44 z"><title>入力 導入価格 $2</title></path>
+<text class="t-ink" x="206" y="69">$2</text>
+<path class="bar-2" d="M150,80 h92 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-92 z"><title>入力 12/1 以降 $4</title></path>
+<text class="t-ink" x="254" y="97">$4</text>
+
+<text class="t-strong" x="8" y="174">出力</text>
+<path class="bar" d="M150,148 h236 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-236 z"><title>出力 導入価格 $10</title></path>
+<text class="t-ink" x="402" y="165">$10</text>
+<path class="bar-2" d="M150,176 h476 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-476 z"><title>出力 12/1 以降 $20</title></path>
+<text class="t-ink" x="646" y="193">$20</text>
+</svg>
+</div>
+<figcaption>導入期間が終わると、入力も出力も2倍になります。キャッシュされた入力は、導入価格では95%割引です。導入価格は、一般公開向けの Argon モデルにのみ適用されます。</figcaption>
+</figure>
+
+<figure class="viz">
+<p class="viz-title">3つのモデルの関連する日程</p>
+<p class="viz-sub">2026年9月10日〜12月1日。目盛りは月初</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 340" role="img" aria-label="関連する日程。DeepSeekは9月10日にV4.1-Flashを発表、9月14日にV4-Proのリクエストを転送、10月17日にFlash-1017とSearch and Fetch APIを公開、10月31日にSearch and Fetchの課金開始。Googleは10月13日にGemini 4 Argonを一般提供、11月30日に導入価格が終了。Metaは10月15日にMuse Spark Openを公開。">
+<g class="grid">
+<line x1="160" y1="48" x2="160" y2="290"/><line x1="326" y1="48" x2="326" y2="290"/>
+<line x1="571" y1="48" x2="571" y2="290"/><line x1="808" y1="48" x2="808" y2="290"/>
+<line x1="8" y1="130" x2="872" y2="130"/><line x1="8" y1="210" x2="872" y2="210"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="160" y="36">9/10</text><text class="t-muted" x="326" y="36">10/1</text>
+<text class="t-muted" x="571" y="36">11/1</text><text class="t-muted" x="808" y="36">12/1</text>
+</g>
+<text class="t-strong" x="8" y="94">DeepSeek</text>
+<text class="t-strong" x="8" y="174">Google</text>
+<text class="t-strong" x="8" y="254">Meta</text>
+
+<circle class="mk-announce" cx="160" cy="90" r="7"><title>9月10日 V4.1-Flash を発表。新価格を適用</title></circle>
+<text x="150" y="70">9/10 V4.1-Flash を発表</text>
+<polygon class="mk-found" points="192,82 200,90 192,98 184,90"><title>9月14日（04:00 UTC 以降） deepseek-v4-pro へのリクエストが V4.1-Flash に転送される</title></polygon>
+<text x="170" y="116">9/14 V4-Pro のリクエストを転送</text>
+<circle class="mk-announce" cx="452" cy="90" r="7"><title>10月17日 V4.1-Flash-1017 と Search &amp; Fetch API を公開</title></circle>
+<text x="452" y="70" text-anchor="middle">10/17 Flash-1017・Search &amp; Fetch</text>
+<polygon class="mk-found" points="563,82 571,90 563,98 555,90"><title>10月31日 16:00 UTC Search &amp; Fetch の課金が始まる</title></polygon>
+<text x="563" y="116" text-anchor="middle">10/31 課金の開始</text>
+
+<circle class="mk-announce" cx="421" cy="170" r="7"><title>10月13日 Gemini 4 Argon が一般提供</title></circle>
+<text x="421" y="150" text-anchor="middle">10/13 Gemini 4 Argon 一般提供</text>
+<polygon class="mk-found" points="800,162 808,170 800,178 792,170"><title>11月30日 導入価格が終了。12月1日から入力 $4、出力 $20</title></polygon>
+<text x="840" y="150" text-anchor="end">11/30 導入価格が終了</text>
+
+<circle class="mk-announce" cx="437" cy="250" r="7"><title>10月15日 Muse Spark Open を公開</title></circle>
+<text x="437" y="230" text-anchor="middle">10/15 Muse Spark Open 公開</text>
+
+<g transform="translate(8 320)">
+<circle class="mk-announce" cx="6" cy="-4" r="6"/><text x="18" y="0">公開・発表</text>
+<polygon class="mk-found" points="150,-12 158,-4 150,4 142,-4"/><text x="164" y="0">価格や取り扱いが変わる日</text>
+</g>
+</svg>
+</div>
+<figcaption>10月13日から17日の5日間に、3社の動きが重なっています。続いて、DeepSeek の Search &amp; Fetch の課金（10月31日）と、Gemini 4 Argon の導入価格の終了（11月30日）が来ます。</figcaption>
+</figure>
+
+<h2>各モデルの要点</h2>
+<div class="cards">
+<div class="card"><h3>Gemini 4 Argon（Google）</h3>
+<ul><li>10月13日に、API 経由で全世界に提供。Gemini API の有料ティア、Gemini for business、Google Antigravity で利用可能。無料ティアでは使えない</li><li>モデル ID は gemini-4-argon。入力は、テキスト、画像、動画、音声、PDF。出力はテキスト。最大出力は 65,536 トークン（long decode で 1,048,576）</li><li>思考の設定は low、medium、high。Batch API、Flex、Priority に対応</li><li>サイバーセキュリティの防御者は、Fairwind Program に参加すると、サイバー関連のガードレールなしの版を使える</li><li>ベンチマークは、第三者の評価とされるものと、Google・パートナーの自己報告が混在している</li></ul></div>
+<div class="card"><h3>Muse Spark Open（Meta）</h3>
+<ul><li>10月15日公開。重みは Meta の Hugging Face リポジトリにある</li><li>総 816B、有効 42B の MoE。コンテキストは 1M トークン。入力はテキスト、画像、動画、音声。出力はテキストのみ</li><li>推論強度は low、medium、high、xhigh から選べる。既定は xhigh</li><li>推論エンジンは、SGLang、vLLM、Hugging Face Transformers、TensorRT-LLM、Unsloth、llama.cpp に対応</li><li>モデルカードの制限：不正確な回答の可能性、一部の言語では性能低下、量子化版での品質差、18歳未満は想定外</li></ul></div>
+<div class="card"><h3>DeepSeek V4.1-Flash</h3>
+<ul><li>9月10日に発表。API では deepseek-flash を指定。552B の MoE で、入力に 8B、出力に 16B のアクティブパラメーターを使う構造</li><li>前の世代と比べて、KV キャッシュは HBM が 1/4、SSD ストレージが 1/8 で済む</li><li>10月17日に V4.1-Flash-1017 を公開。ベンチマーク性能の向上、タスク完了の高速化、出力の短縮を挙げる。API の呼び出し方法に変更はない</li><li>旧モデル名（deepseek-v4-flash など）は V4.1-Flash に転送される。V4-Pro は段階的に廃止</li><li>Search &amp; Fetch API：各 1,000 件の成功リクエストあたり $0.75。失敗や空の結果は課金されない</li></ul></div>
+</div>
+
+<h2>自分で動かす場合</h2>
+<p>重みが公開されたモデルでも、動かすには大きなメモリが要ります。Muse Spark Open のモデルカードには、必要な VRAM が書かれています。</p>
+
+<figure class="viz">
+<p class="viz-title">Muse Spark Open を動かすのに必要な VRAM</p>
+<p class="viz-sub">モデルカードに記載の最小値。単位は GB</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 190" role="img" aria-label="Muse Spark Openを動かすのに必要なVRAM。NVFP4版は700GB以上、BF16版は2TB。">
+<g class="grid">
+<line x1="190" y1="20" x2="190" y2="140"/><line x1="310" y1="20" x2="310" y2="140"/>
+<line x1="430" y1="20" x2="430" y2="140"/><line x1="550" y1="20" x2="550" y2="140"/>
+<line x1="670" y1="20" x2="670" y2="140"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="190" y="162">0</text><text class="t-muted" x="310" y="162">500GB</text>
+<text class="t-muted" x="430" y="162">1,000GB</text><text class="t-muted" x="550" y="162">1,500GB</text>
+<text class="t-muted" x="670" y="162">2,000GB</text>
+</g>
+<text class="t-strong" x="8" y="56">NVFP4 版</text><text class="t-small" x="8" y="74">量子化した小さい版</text>
+<path class="bar" d="M190,42 h164 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-164 z"><title>NVFP4 版は少なくとも 700GB の VRAM</title></path>
+<text class="t-ink" x="370" y="59">700GB 以上</text>
+<text class="t-strong" x="8" y="116">BF16 版</text><text class="t-small" x="8" y="134">量子化しない大きい版</text>
+<path class="bar" d="M190,102 h476 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-476 z"><title>BF16 版は 2TB の VRAM</title></path>
+<text class="t-ink" x="684" y="119">2TB</text>
+</svg>
+</div>
+<figcaption>モデルカードは、2台の Mac Studio（M5 Ultra）で MLX を使って動くよう最適化されているとも記載しています。個人のパソコンで動かせる量ではなく、API や、クラウドの GPU を使う前提のモデルです。</figcaption>
+</figure>
+
+<h2>ライセンスの確認</h2>
+<p>Muse Spark Open の重みは無償ですが、独自の「Muse Model License」の条件があります。製品やサービスで使うときに、確認する流れを整理しました。</p>
+
+<figure class="viz">
+<p class="viz-title">Muse Spark Open を使うときのライセンスの確認</p>
+<p class="viz-sub">モデルカードの記載に基づく流れ（図は筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 330" role="img" aria-label="Muse Spark Openのライセンスの確認。製品やサービスで使う場合は、Built with Muse Spark Openの表示と、ライセンス文とUsage Policyの同梱が必要。第三者にAPIなどで出力を提供し、関連会社を含む年間総売上高が2000万米ドルを超える場合は、Metaへの通知と別途の書面契約が必要。そうでなければ追加の契約は不要。18歳未満が使いうるシステムでは導入者が対応する。">
+<defs>
+<marker id="arrow-license" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="50" width="170" height="100" rx="8"/>
+<text class="t-strong" x="22" y="76">使いたい</text>
+<text class="t-small" x="22" y="98">Muse Spark Open を</text>
+<text class="t-small" x="22" y="114">製品やサービスに使う</text>
+
+<line class="arrow" x1="178" y1="100" x2="210" y2="100" marker-end="url(#arrow-license)"/>
+<rect class="box" x="212" y="50" width="230" height="100" rx="8"/>
+<text class="t-strong" x="226" y="76">1　必ず行うこと</text>
+<text class="t-small" x="226" y="98">「Built with Muse Spark Open」</text>
+<text class="t-small" x="226" y="114">を画面や文書に表示し、</text>
+<text class="t-small" x="226" y="130">ライセンス文と Usage Policy を含める</text>
+
+<line class="arrow" x1="442" y1="100" x2="470" y2="100" marker-end="url(#arrow-license)"/>
+<polygon class="box-key" points="550,36 628,100 550,164 472,100"/>
+<text class="t-strong" x="550" y="96" text-anchor="middle">MaaS の条件に</text>
+<text class="t-strong" x="550" y="114" text-anchor="middle">当たるか</text>
+
+<line class="arrow" x1="628" y1="100" x2="680" y2="100" marker-end="url(#arrow-license)"/>
+<text class="t-strong" x="640" y="92">はい</text>
+<rect class="box-key" x="682" y="40" width="190" height="120" rx="8"/>
+<text class="t-strong" x="696" y="66">2　別途の契約</text>
+<text class="t-small" x="696" y="88">Meta に通知し、別途の</text>
+<text class="t-small" x="696" y="104">書面契約を結ぶ</text>
+
+<path class="arrow" d="M550,164 V218" marker-end="url(#arrow-license)"/>
+<text class="t-strong" x="562" y="196">いいえ</text>
+<rect class="box" x="450" y="220" width="200" height="70" rx="8"/>
+<text class="t-strong" x="464" y="246">追加の契約は不要</text>
+<text class="t-small" x="464" y="268">1 の表示だけで足りる</text>
+
+<rect class="box" x="8" y="220" width="400" height="70" rx="8"/>
+<text class="t-strong" x="22" y="246">あわせて確認</text>
+<text class="t-small" x="22" y="268">18歳未満が使いうるシステムに組み込む場合は、導入者が対応する責任を負う</text>
+</svg>
+</div>
+<figcaption>MaaS（Model as a Service）の条件は、関連会社を含む年間の総売上高が2,000万米ドルを超え、第三者に API などでモデルの出力を提供する場合です。内部利用、研究、MaaS 以外の商用利用、自社製品の機能としての利用は、対象外とされています。生成された出力の所有権は、Meta は主張しません。</figcaption>
+</figure>
+
+<h2>選ぶときの観点</h2>
+<div class="note">
+<p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
+</div>
+<ul>
+<li><strong>動かす場所:</strong> API で使うか、自分で動かすか。自分で動かすなら、メモリの要件を確認する（Muse Spark Open は 700GB 以上）。</li>
+<li><strong>価格:</strong> Gemini 4 Argon は導入価格が11月末で終わる。DeepSeek はピークとオフピークで単価が違い、Search &amp; Fetch は10月末から課金される。</li>
+<li><strong>ライセンス:</strong> Muse Spark Open は無償だが、表示の義務と、MaaS の条件がある。</li>
+<li><strong>入出力:</strong> 音声や PDF の入力が要るか。出力は、確認できた範囲ではいずれもテキスト。</li>
+<li><strong>数字の見方:</strong> ベンチマークは各社の自己申告で、条件も指標も違う。自分のタスクで試す。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>オープンウェイト</dt><dd>モデルの重み（学習結果）が公開されていて、自分の環境で動かせるもの。ソースコードや学習データまで公開されるとは限らない。</dd>
+<dt>MoE（Mixture-of-Experts）</dt><dd>複数の専門家（サブネットワーク）のうち、一部だけを選んで動かす構造。総パラメーター数より、有効パラメーター数が小さい。</dd>
+<dt>VRAM</dt><dd>GPU が使うメモリ。モデルを動かすのに必要な量が、そのまま要件になる。</dd>
+<dt>NVFP4、BF16</dt><dd>数値の表現形式。NVFP4 は小さく、BF16 は大きい。</dd>
+<dt>コンテキスト</dt><dd>一度にモデルが扱える入力と出力の量（トークン数）。</dd>
+<dt>KV キャッシュ</dt><dd>推論時に、過去の計算結果を保存しておく領域。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
+<p>ベンチマークの数字は、各社の自己申告で、独自に検証したものではありません。ここでは、横並びの順位づけはしていません。</p>
+<p>DeepSeek V4.1-Flash の具体的な単価、コンテキスト長、ライセンスは、確認できなかったため扱っていません。Google の発表にあるモデルカード（PDF）は読んでいません。</p>
+<p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="ai-coding-productivity.html">AIコーディングで生産性は上がったか</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（3つのモデルの提供形態・価格・ライセンス・日程の整理）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
