@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="9月21日から10月16日までに発表・発売された6つのAI端末を、Amazon、Apple、Google、Microsoft の公式ページから整理し、価格、日程、AIの制約、日本での提供状況を図で比べる。">
+<title>AI端末の選択肢が広がった：ウェアラブル、タブレット、ホームディスプレイ、折りたたみiPhone、ノートPC | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI端末の選択肢が広がった：ウェアラブル、タブレット、ホームディスプレイ、折りたたみiPhone、ノートPC</h1><p class="summary">9月21日から10月16日までに発表・発売された6つのAI端末を、Amazon、Apple、Google、Microsoft の公式ページから整理し、価格、日程、AIの制約、日本での提供状況を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年9月21日から10月16日までに、AIアシスタントを前提にした端末が相次いで発表・発売されました。ウェアラブル（Amazon Bee）、タブレット（Amazon Alexa Tablet）、ホームディスプレイ（Apple HomeView）、折りたたみのiPhone（iPhone Duo）、ノートPC（Googlebook、Surface Laptop Ultra）です。価格は、$74.99 から $899 以上まで幅があります。</p>
+<p>実際に選ぶときは、<strong>AIアシスタントに制約がある</strong>ことと、<strong>日本での提供が各社の発表では確認できない</strong>ことに気をつけたいところです。Siri AI はベータで英語のみ、EU では当初提供されません。Googlebook と HomeView は、発売地域に日本が挙がっていません。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">6<small>つ</small></p><p class="stat-label">9/21〜10/16 に発表・発売された端末</p></div>
+<div class="stat"><p class="stat-value">$74.99</p><p class="stat-label">最も安い端末（Bee Frontier、米国）</p></div>
+<div class="stat"><p class="stat-value">3<small>つ</small></p><p class="stat-label">AIアシスタントの名前（Alexa+、Siri AI、Gemini）</p></div>
+<div class="stat"><p class="stat-value">11/13</p><p class="stat-label">HomeView の発売日（6つのうち最も遅い）</p></div>
+</div>
+
+<h2>6つの端末</h2>
+
+<div class="table-wrap">
+<table>
+<caption>各社の公式ページ（9月21日〜10月16日付）より。価格は米国のもの</caption>
+<thead><tr><th>端末</th><th>提供元</th><th>種類</th><th>AI</th><th>価格</th><th>日程</th></tr></thead>
+<tbody>
+<tr><td>Googlebook</td><td>Google（Acer、ASUS、Dell、HP、Lenovo が製造）</td><td>ノートPC</td><td>Gemini Intelligence（Magic Pointer など）。NPU は 45 TOPS 超</td><td>$899〜</td><td>9/21 予約開始、10/4 米国で発売</td></tr>
+<tr><td>Apple HomeView</td><td>Apple</td><td>7インチのホームディスプレイ</td><td>Siri AI（ベータ）、Apple Intelligence。チップは A18</td><td>$299（卓上型、壁掛け型とも）</td><td>10/13 発表・予約、11/13 発売</td></tr>
+<tr><td>iPhone Duo</td><td>Apple</td><td>折りたたみのiPhone</td><td>Siri AI（iOS 27 のベータ、英語のみ）。チップは A20 Pro</td><td>本体価格の記載なし（24か月のリースで月額 $57.99〜）</td><td>10/15 発表、10/16 予約開始</td></tr>
+<tr><td>Alexa Tablet（8、11、12 Pro）</td><td>Amazon</td><td>Android のタブレット</td><td>Alexa+</td><td>8：$229.99、11：$329.99、12 Pro：$499.99〜</td><td>10/14 出荷（米国・カナダ・メキシコ）</td></tr>
+<tr><td>Bee Frontier / Eclipse</td><td>Amazon</td><td>ウェアラブル／スマホ背面に付けるデバイス</td><td>会話の要約。Alexa+ と連携</td><td>Frontier：$74.99、Eclipse：$99.99〜</td><td>10/15 発表。Frontier は発売中、Eclipse は近日</td></tr>
+<tr><td>Surface Laptop Ultra</td><td>Microsoft</td><td>15インチのノートPC</td><td>NVIDIA RTX Spark N1X、NVIDIA の NPU。Copilot キー</td><td>公式ページで確認できず</td><td>発売日は確認できず</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">価格の比較（米国、最小構成）</p>
+<p class="viz-sub">単位は米ドル。価格を確認できなかった iPhone Duo と Surface Laptop Ultra は含まない</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 366" role="img" aria-label="7つの端末の最小構成の価格。Bee Frontier 74.99ドル、Bee Eclipse 99.99ドルから、Alexa Tablet 8 229.99ドル、Apple HomeView 299ドル、Alexa Tablet 11 329.99ドル、Alexa Tablet 12 Pro 499.99ドルから、Googlebook 899ドルから。">
+<g class="grid">
+<line x1="260" y1="24" x2="260" y2="330"/><line x1="375" y1="24" x2="375" y2="330"/>
+<line x1="490" y1="24" x2="490" y2="330"/><line x1="605" y1="24" x2="605" y2="330"/>
+<line x1="720" y1="24" x2="720" y2="330"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="260" y="350">$0</text><text class="t-muted" x="375" y="350">$250</text>
+<text class="t-muted" x="490" y="350">$500</text><text class="t-muted" x="605" y="350">$750</text>
+<text class="t-muted" x="720" y="350">$1,000</text>
+</g>
+
+<text class="t-strong" x="8" y="42">Bee Frontier</text><text class="t-small" x="8" y="58">ウェアラブル</text>
+<path class="bar" d="M260,34 h30 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-30 z"><title>Bee Frontier $74.99</title></path>
+<text class="t-ink" x="302" y="49">$74.99</text>
+
+<text class="t-strong" x="8" y="86">Bee Eclipse</text><text class="t-small" x="8" y="102">スマホ背面のデバイス</text>
+<path class="bar" d="M260,78 h42 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-42 z"><title>Bee Eclipse $99.99から（近日発売）</title></path>
+<text class="t-ink" x="314" y="93">$99.99〜（近日）</text>
+
+<text class="t-strong" x="8" y="130">Alexa Tablet 8</text><text class="t-small" x="8" y="146">タブレット</text>
+<path class="bar" d="M260,122 h102 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-102 z"><title>Alexa Tablet 8 $229.99</title></path>
+<text class="t-ink" x="374" y="137">$229.99</text>
+
+<text class="t-strong" x="8" y="174">Apple HomeView</text><text class="t-small" x="8" y="190">ホームディスプレイ</text>
+<path class="bar" d="M260,166 h134 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-134 z"><title>Apple HomeView $299</title></path>
+<text class="t-ink" x="406" y="181">$299</text>
+
+<text class="t-strong" x="8" y="218">Alexa Tablet 11</text><text class="t-small" x="8" y="234">タブレット</text>
+<path class="bar" d="M260,210 h148 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-148 z"><title>Alexa Tablet 11 $329.99</title></path>
+<text class="t-ink" x="424" y="225">$329.99</text>
+
+<text class="t-strong" x="8" y="262">Alexa Tablet 12 Pro</text><text class="t-small" x="8" y="278">タブレット</text>
+<path class="bar" d="M260,254 h226 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-226 z"><title>Alexa Tablet 12 Pro $499.99から（Nanomatte は $549.99）</title></path>
+<text class="t-ink" x="502" y="269">$499.99〜</text>
+
+<text class="t-strong" x="8" y="306">Googlebook</text><text class="t-small" x="8" y="322">ノートPC</text>
+<path class="bar" d="M260,298 h410 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-410 z"><title>Googlebook $899から</title></path>
+<text class="t-ink" x="686" y="313">$899〜</text>
+</svg>
+</div>
+<figcaption>最も安い端末と最も高い端末では、約12倍の開きがあります。iPhone Duo の本体価格は、Apple の発表に記載がありません。Surface Laptop Ultra の価格は、公式ページで確認できませんでした。</figcaption>
+</figure>
+
+<h2>日程</h2>
+
+<figure class="viz">
+<p class="viz-title">発表・発売の日程</p>
+<p class="viz-sub">2026年9月21日〜11月13日。端末ごとの行</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 420" role="img" aria-label="発表と発売の日程。Googlebookは9月21日に予約開始、10月4日に米国で発売。Apple HomeViewは10月13日に発表と予約開始、11月13日に発売。Alexa Tabletは10月14日に出荷開始。Beeは10月15日に発表。iPhone Duoは10月15日に発表、10月16日に予約開始。">
+<g class="grid">
+<line x1="190" y1="48" x2="190" y2="366"/><line x1="310" y1="48" x2="310" y2="366"/>
+<line x1="478" y1="48" x2="478" y2="366"/><line x1="682" y1="48" x2="682" y2="366"/>
+<line x1="826" y1="48" x2="826" y2="366"/>
+<line x1="8" y1="120" x2="872" y2="120"/><line x1="8" y1="180" x2="872" y2="180"/>
+<line x1="8" y1="240" x2="872" y2="240"/><line x1="8" y1="300" x2="872" y2="300"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="190" y="36">9/21</text><text class="t-muted" x="310" y="36">10/1</text>
+<text class="t-muted" x="478" y="36">10/15</text><text class="t-muted" x="682" y="36">11/1</text>
+<text class="t-muted" x="826" y="36">11/13</text>
+</g>
+<text class="t-strong" x="8" y="95">Googlebook</text>
+<text class="t-strong" x="8" y="155">Apple HomeView</text>
+<text class="t-strong" x="8" y="215">Alexa Tablet</text>
+<text class="t-strong" x="8" y="275">Bee</text>
+<text class="t-strong" x="8" y="335">iPhone Duo</text>
+
+<circle class="mk-announce" cx="190" cy="90" r="7"><title>9月21日 予約開始</title></circle>
+<text x="178" y="70">9/21 予約開始</text>
+<polygon class="mk-found" points="346,82 354,90 346,98 338,90"><title>10月4日 米国で発売（10月5日にカナダ、英国、アイルランド、フランス、ドイツ、オーストラリア）</title></polygon>
+<text x="334" y="70">10/4 米国で発売</text>
+
+<circle class="mk-announce" cx="454" cy="150" r="7"><title>10月13日 発表、予約開始</title></circle>
+<text x="442" y="130">10/13 発表・予約開始</text>
+<polygon class="mk-found" points="826,142 834,150 826,158 818,150"><title>11月13日 発売</title></polygon>
+<text x="872" y="130" text-anchor="end">11/13 発売</text>
+
+<polygon class="mk-found" points="466,202 474,210 466,218 458,210"><title>10月14日 出荷開始（米国・カナダ・メキシコ）。10月19日に英国・ドイツ・フランス・イタリア・スペイン</title></polygon>
+<text x="454" y="190">10/14 出荷開始（米国・カナダ・メキシコ）</text>
+
+<circle class="mk-announce" cx="478" cy="270" r="7"><title>10月15日 発表。Frontier は発売中、Eclipse は近日発売</title></circle>
+<text x="466" y="250">10/15 発表（Frontier は発売中）</text>
+
+<circle class="mk-announce" cx="476" cy="330" r="5"><title>10月15日 発表</title></circle>
+<circle class="mk-announce" cx="492" cy="330" r="5"><title>10月16日 予約開始</title></circle>
+<text x="466" y="310">10/15 発表・10/16 予約開始</text>
+
+<g transform="translate(8 404)">
+<circle class="mk-announce" cx="6" cy="-4" r="6"/><text x="18" y="0">発表・予約開始</text>
+<polygon class="mk-found" points="172,-12 180,-4 172,4 164,-4"/><text x="186" y="0">発売・出荷</text>
+</g>
+</svg>
+</div>
+<figcaption>10月13日から16日の4日間に、Apple、Amazon が続けて発表しています。HomeView の発売は11月13日で、6つの中で最も遅くなります。Surface Laptop Ultra は、発売日を確認できなかったため含めていません。</figcaption>
+</figure>
+
+<h2>日本での提供状況</h2>
+<p>次の図は、各社の発表から読み取れる、地域ごとの提供状況です。「記載なし」「挙がっていない」は、<strong>日本で提供されないと断定するものではありません</strong>。各社の発表の中で、確認できなかったという意味です。</p>
+
+<figure class="viz">
+<p class="viz-title">提供地域（各社の発表から読み取れる範囲）</p>
+<p class="viz-sub">米国、英国・欧州の主要国、日本</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 372" role="img" aria-label="提供地域の表。Googlebookは米国で10月4日、英国・アイルランド・フランス・ドイツで10月5日に発売、日本は発売地域に挙がっていない。Apple HomeViewは米国で11月13日、英国は11月13日でEUは販売なし、日本は発売国に挙がっていない。Alexa Tabletは米国で10月14日、英国・ドイツ・フランス・イタリア・スペインで10月19日に出荷、日本ではKids Tabletsのみ。Beeはfrontierが発売中、ほかの地域は記載なし。iPhone Duoは米国で10月16日に予約開始、Siri AIはEUでは当初提供されず、日本は記載なし。">
+<g class="grid">
+<line x1="8" y1="60" x2="872" y2="60"/><line x1="8" y1="120" x2="872" y2="120"/>
+<line x1="8" y1="180" x2="872" y2="180"/><line x1="8" y1="240" x2="872" y2="240"/>
+<line x1="8" y1="300" x2="872" y2="300"/>
+</g>
+<text class="t-strong" x="290" y="40">米国</text>
+<text class="t-strong" x="490" y="40">英国・欧州の主要国</text>
+<text class="t-strong" x="700" y="40">日本</text>
+
+<text class="t-strong" x="8" y="94">Googlebook</text>
+<circle class="mk-period" cx="298" cy="90" r="6"/><text class="t-ink" x="314" y="94">10/4 発売</text>
+<circle class="mk-period" cx="498" cy="90" r="6"/><text class="t-ink" x="514" y="86">10/5 発売</text><text class="t-small" x="514" y="102">英・愛・仏・独</text>
+<text class="t-muted" x="700" y="94">—</text><text class="t-ink" x="722" y="86">発売地域に</text><text class="t-small" x="722" y="102">挙がっていない</text>
+
+<text class="t-strong" x="8" y="154">Apple HomeView</text>
+<circle class="mk-period" cx="298" cy="150" r="6"/><text class="t-ink" x="314" y="154">11/13 発売</text>
+<polygon class="mk-found" points="498,142 506,150 498,158 490,150"/><text class="t-ink" x="514" y="146">英国は 11/13 発売</text><text class="t-small" x="514" y="162">EU は販売なし</text>
+<text class="t-muted" x="700" y="154">—</text><text class="t-ink" x="722" y="146">発売国に</text><text class="t-small" x="722" y="162">挙がっていない</text>
+
+<text class="t-strong" x="8" y="214">Alexa Tablet</text>
+<circle class="mk-period" cx="298" cy="210" r="6"/><text class="t-ink" x="314" y="214">10/14 出荷</text>
+<circle class="mk-period" cx="498" cy="210" r="6"/><text class="t-ink" x="514" y="206">10/19 出荷</text><text class="t-small" x="514" y="222">英・独・仏・伊・西</text>
+<polygon class="mk-found" points="708,202 716,210 708,218 700,210"/><text class="t-ink" x="722" y="206">Kids Tablets のみ</text><text class="t-small" x="722" y="222">10/14 出荷</text>
+
+<text class="t-strong" x="8" y="274">Bee</text>
+<circle class="mk-period" cx="298" cy="270" r="6"/><text class="t-ink" x="314" y="266">Frontier は発売中</text><text class="t-small" x="314" y="282">Eclipse は近日</text>
+<text class="t-muted" x="490" y="274">—</text><text class="t-ink" x="512" y="274">記載なし</text>
+<text class="t-muted" x="700" y="274">—</text><text class="t-ink" x="722" y="274">記載なし</text>
+
+<text class="t-strong" x="8" y="334">iPhone Duo</text>
+<circle class="mk-period" cx="298" cy="330" r="6"/><text class="t-ink" x="314" y="334">10/16 予約開始</text>
+<polygon class="mk-found" points="498,322 506,330 498,338 490,330"/><text class="t-ink" x="514" y="326">Siri AI は EU では</text><text class="t-small" x="514" y="342">当初提供されない</text>
+<text class="t-muted" x="700" y="334">—</text><text class="t-ink" x="722" y="334">記載なし</text>
+
+<g transform="translate(8 364)">
+<circle class="mk-period" cx="6" cy="-4" r="6"/><text x="18" y="0">提供・予約あり</text>
+<polygon class="mk-found" points="190,-12 198,-4 190,4 182,-4"/><text x="204" y="0">一部のみ・条件つき</text>
+<text class="t-muted" x="400" y="0">—</text><text x="420" y="0">記載なし・挙がっていない</text>
+</g>
+</svg>
+</div>
+<figcaption>米国では6つの端末の大半が提供されます。日本は、Alexa Tablet の Kids Tablets を除き、各社の発表では確認できませんでした。日本での発売や価格は、各社の日本向けの発表を確認する必要があります。</figcaption>
+</figure>
+
+<h2>AIアシスタントの制約</h2>
+<p>端末は違っても、中で動くAIアシスタントは、3つの名前に集約されます。それぞれの制約を、公式の記述から整理しました。</p>
+<div class="cards">
+<div class="card"><h3>Siri AI（Apple）</h3>
+<ul><li>HomeView ではソフトウェア 27.2 のベータ。iPhone Duo では iOS 27 のベータで、最初は英語のみ</li><li>EU では当初提供されず、中国では利用できない。13歳未満には提供されない</li><li>サーバー側のモデルに依存する機能には、1日の利用上限がある。将来は有料での拡大提供を予定</li><li>個人の文脈（メッセージ、カレンダーなど）を使うには、対応する iPhone または iPad が必要</li></ul></div>
+<div class="card"><h3>Alexa+（Amazon）</h3>
+<ul><li>Bee で Amazon.com や Alexa+ との連携を使うには、Bee Pro（月額 $11.99）が必要</li><li>購入者全員が使えるのは、会話の要約、リキャップ、14日間のメモリー。新規顧客は Bee Pro を30日間無料で使える</li><li>Alexa Tablet の On-Screen Intelligence は、デフォルトでオフ。使うには明示的なオプトインが必要</li><li>Alexa+ の料金は、今回確認した発表には記載がない</li></ul></div>
+<div class="card"><h3>Gemini（Google）</h3>
+<ul><li>Googlebook の Magic Pointer などは、ユーザーが依頼したときにだけ動作する。オフにもできる</li><li>Gemini Intelligence を前提に設計され、Android スマートフォンと最初から連携する</li><li>Google AI Pro が12か月付く</li></ul></div>
+</div>
+
+<h2>プライバシーの設計</h2>
+<p>音声やカメラ、画面を扱う端末なので、データの扱いも比べておきたいところです。以下は、各社の説明です。第三者が検証したものではありません。</p>
+<div class="cards">
+<div class="card"><h3>Apple HomeView</h3>
+<ul><li>カメラとマイクのデータは Secure Exclaves で処理され、HomeView のソフトウェア、アプリ、ユーザー、Apple のいずれもアクセスできない</li><li>Siri の処理は、オンデバイス処理または Private Cloud Compute</li><li>Private Cloud Compute で処理されたデータは保存されず、Apple を含む誰にもアクセスできない</li></ul></div>
+<div class="card"><h3>Amazon Bee</h3>
+<ul><li>音声は保存されず、リアルタイムで処理されたあとに削除される</li><li>文字起こしは、デバイスが作成・管理する鍵で暗号化され、利用者が共有を選ばない限り本人だけが見られる</li><li>Amazon を含む誰もアクセスできない処理環境（Bee Private Compute）で処理される</li><li>Eclipse は、通話を録音するたびに、通話相手の許可を得るよう促される</li></ul></div>
+<div class="card"><h3>Alexa Tablet</h3>
+<ul><li>On-Screen Intelligence はデフォルトでオフ</li><li>Alexa が動作中は視覚的なインジケーターが表示される</li><li>各機能はいつでも無効にできる</li></ul></div>
+<div class="card"><h3>Googlebook</h3>
+<ul><li>ChromeOS と同じセキュリティ設計、Google Titan のハードウェアルートオブトラスト</li><li>オンデバイスのマルウェア検出</li><li>隔離された Linux 環境は、Level 5 のセキュリティ認証を取得した pKVM ハイパーバイザーで提供</li></ul></div>
+</div>
+
+<h2>端末ごとの要点</h2>
+<div class="cards">
+<div class="card"><h3>Googlebook</h3>
+<ul><li>Android の技術基盤と ChromeOS のデスクトップ基盤を組み合わせた新しいノートPCのカテゴリ</li><li>アルミニウム、マグネシウム合金、カーボンファイバー。最大 2.8K の OLED。Intel と Qualcomm のプロセッサ。バッテリーは最大14時間</li><li>Magic Pointer、Rambler（音声を整理された文章に）、Create My Widget</li><li>Continue On、Files アプリ、Cast My Apps でスマートフォンと連携</li><li>Googlebook OS の機能追加とアップデートを最長10年提供</li></ul></div>
+<div class="card"><h3>Apple HomeView</h3>
+<ul><li>7インチ Liquid Retina、A18 チップ。顔認識で最大6人を識別し、個別のホーム画面を使える</li><li>FaceTime、インターコム、Apple Music、スマートホーム（カメラ、サーモスタット、照明、ドアの施錠）</li><li>HomeKit と Matter 対応のアクセサリーと連携。LG Electronics と Schneider Electric と共同開発の Apple Home Collection は12月に開始予定</li><li>壁掛け用マウントは $59.95〜$129.95</li></ul></div>
+<div class="card"><h3>iPhone Duo</h3>
+<ul><li>折りたたみ式。内側 7.58インチ、外側 5.36インチ（角丸を含む標準長方形として計測した値）</li><li>A20 Pro、デュアルバッテリー、IP68。48MP の Fusion Main と Ultra Wide、2x テレフォト</li><li>Siri AI を、内側の大きなディスプレイでアプリと並べて開き、画面の内容について質問できる</li><li>下取りで $175〜$885 の即時クレジット</li></ul></div>
+<div class="card"><h3>Alexa Tablet</h3>
+<ul><li>12 Pro（12インチ、120Hz）、11（11インチ、2.5K）、8（8.7インチ、329g）</li><li>Android で動作し、Google Play ストアに完全アクセスできる</li><li>On-Screen Intelligence、ライブセッション（ウェイクワードなしで連続的に会話）</li><li>Pro Keyboard $149.99、Pro Pen $89.99（12 Pro 専用）</li></ul></div>
+<div class="card"><h3>Bee Frontier / Eclipse</h3>
+<ul><li>Frontier：シリコン製のリストバンド。IP67、最大7日間のバッテリー、USB-C</li><li>Eclipse：クレジットカード程度のサイズで、スマホ背面に磁石で取り付ける。バッテリーは1回の充電で21日以上</li><li>Alexa+ に接続すると、ハンズフリーで要約、ToDo、会話内の情報を確認できる</li></ul></div>
+<div class="card"><h3>Surface Laptop Ultra</h3>
+<ul><li>NVIDIA RTX Spark N1X、NVIDIA の NPU。24〜128GB のユニファイドメモリ</li><li>15インチ、3270 × 2180、最大120Hz。重さ 2.0kg。動画再生で最大15時間</li><li>Windows 11 Pro、Copilot キー、Wi-Fi 7、USB4 のポート3つ</li><li>交換できる部品が多い。ペン入力は非対応</li></ul></div>
+</div>
+
+<h2>選ぶときの観点</h2>
+<div class="note">
+<p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
+</div>
+<ul>
+<li><strong>日本で使えるか:</strong> 発売地域と、Siri AI や Alexa+ の対応言語を確認する。</li>
+<li><strong>AIの完成度:</strong> Siri AI はベータで英語のみ、利用上限もある。Alexa Tablet の On-Screen Intelligence は、デフォルトでオフ。</li>
+<li><strong>続けて払う費用:</strong> Bee は Bee Pro（月額 $11.99）が要る機能がある。Siri AI は将来、有料での拡大提供が予定されている。</li>
+<li><strong>連携する端末:</strong> HomeView の個人の文脈の機能には、対応する iPhone または iPad が必要。Googlebook は Android スマートフォンとの連携が前提。</li>
+<li><strong>プライバシーの設計:</strong> 音声や画面の扱い（保存の有無、オプトイン）が、端末ごとに違う。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>NPU / TOPS</dt><dd>NPU は、AI の処理に特化した演算装置。TOPS は、1秒あたりに実行できる演算の数を示す単位。</dd>
+<dt>オンデバイス処理</dt><dd>端末の中だけで処理すること。クラウドに送らない。</dd>
+<dt>Private Cloud Compute</dt><dd>Apple が、サーバー側の処理でもデータを保存しない設計とするもの。</dd>
+<dt>ベータ</dt><dd>正式版の前の、試験的な提供。</dd>
+<dt>オプトイン</dt><dd>利用者が明示的に許可して、初めて機能が有効になる方式。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
+<p>価格は米国のもので、各社の発表にあるものです。日本での価格や発売は、各社の発表では確認できませんでした。</p>
+<p>Surface Laptop Ultra は、公式ページで価格と発売日を確認できなかったため、仕様のみ載せました。iPhone Duo の本体価格は、Apple の発表に記載がありませんでした。</p>
+<p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="latest-ai-models.html">10月の最新AIモデル3つを比べる</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（6つのAI端末の価格、日程、AIの制約、日本での提供状況）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
