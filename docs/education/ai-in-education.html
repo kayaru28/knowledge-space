@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="NTT西日本と茨木市の校務AI、デジタルハリウッド大学のClaude全学導入、DeNA子会社の数学記述添削アプリSIRUSの3つを、公式の発表から整理し、使う人、動かす場所、日程、未公表の項目を図で比べる。">
+<title>教育の現場に広がるAI：校務、大学、受験（2026年10月） | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">教育</p><h1>教育の現場に広がるAI：校務、大学、受験（2026年10月）</h1><p class="summary">NTT西日本と茨木市の校務AI、デジタルハリウッド大学のClaude全学導入、DeNA子会社の数学記述添削アプリSIRUSの3つを、公式の発表から整理し、使う人、動かす場所、日程、未公表の項目を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月13日から15日の3日間に、教育の3つの場面で、AIの導入が発表されました。<strong>校務</strong>（小中学校の先生の事務。NTT西日本と茨木市）、<strong>大学</strong>（学生と教職員の全員。デジタルハリウッド大学）、<strong>受験</strong>（大学受験生の数学の記述答案。DeNA の子会社 BAKERU の SIRUS）です。</p>
+<p>使う人も、動かす場所も、段階も違います。校務AIは実証が始まったところで、効果の数字はまだ公表されていません。大学の導入は11月から。受験アプリはすでに無料で公開されています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>つ</small></p><p class="stat-label">10/13〜10/15 に発表された、教育でのAIの導入</p></div>
+<div class="stat"><p class="stat-value">2027/3/31</p><p class="stat-label">茨木市の校務AIの実証期間の終わり（振り返りを含む）</p></div>
+<div class="stat"><p class="stat-value">30<small>秒以内</small></p><p class="stat-label">SIRUS が数学の記述答案を採点する時間</p></div>
+<div class="stat"><p class="stat-value">約3,000<small>問</small></p><p class="stat-label">SIRUS に収録されたオリジナル問題</p></div>
+</div>
+
+<h2>3つの取り組み</h2>
+
+<div class="table-wrap">
+<table>
+<caption>各組織の公式発表（10月13日〜15日付）より。「記載なし」は、発表に書かれていなかった項目</caption>
+<thead><tr><th>項目</th><th>校務AI（茨木市×NTT西日本）</th><th>Claude の全学導入（デジタルハリウッド大学）</th><th>SIRUS（BAKERU）</th></tr></thead>
+<tbody>
+<tr><td>発表日</td><td>10/13</td><td>10/14</td><td>10/15</td></tr>
+<tr><td>使う人</td><td>市立の一部小中学校の教職員</td><td>全学生と全教職員（専任教員と全職員）</td><td>国公立大や難関私立大を目指す大学受験生</td></tr>
+<tr><td>使うAI</td><td>NTT版LLM「tsuzumi 2」の最新モデル（純国産プライベートLLM）</td><td>Anthropic の Claude</td><td>記載なし（AIが数学の記述答案を採点）</td></tr>
+<tr><td>動かす場所</td><td>オンプレミス環境の生成AIアプリ。比較的低コストな GPU サーバー上で、ローカル運用</td><td>大学が発行するアカウントから利用。全学AI基盤とキャンパスポータルと連携</td><td>App Store と Google Play のアプリ</td></tr>
+<tr><td>段階</td><td>実証（2027/3/31 まで）</td><td>2026年11月から利用開始</td><td>公開中（無料、2026年10月時点）</td></tr>
+<tr><td>主な用途</td><td>チャット形式の質問、校務文書の検索・要約、文章作成支援</td><td>学習支援、制作の壁打ち、研究、大学運営</td><td>手書き答案の採点、3つの観点のフィードバック、毎日の出題</td></tr>
+<tr><td>費用</td><td>記載なし</td><td>学生は費用負担なし。具体的な数値は記載なし</td><td>無料（2026年10月時点）</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">3つの取り組みの日程</p>
+<p class="viz-sub">2026年9月1日〜2027年3月31日。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="日程。デジタルハリウッド大学は9月1日に全学AI基盤の運用を開始、10月14日にClaudeの全学導入を発表、11月に利用開始。茨木市とNTT西日本は10月13日に校務AIの実証を開始し、2027年3月31日が期間の終わり。SIRUSは10月15日に提供を発表。">
+<g class="grid">
+<line x1="60" y1="48" x2="60" y2="270"/><line x1="270" y1="48" x2="270" y2="270"/>
+<line x1="480" y1="48" x2="480" y2="270"/><line x1="690" y1="48" x2="690" y2="270"/>
+<line x1="795" y1="48" x2="795" y2="270"/>
+<line x1="8" y1="125" x2="872" y2="125"/><line x1="8" y1="195" x2="872" y2="195"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="60" y="36">9/1</text><text class="t-muted" x="270" y="36">11/1</text>
+<text class="t-muted" x="480" y="36">1/1</text><text class="t-muted" x="690" y="36">3/1</text>
+<text class="t-muted" x="795" y="36">3/31</text>
+</g>
+<text class="t-strong" x="8" y="95">デジタルハリウッド大学</text>
+<text class="t-strong" x="8" y="165">茨木市×NTT西日本</text>
+<text class="t-strong" x="8" y="235">SIRUS</text>
+
+<circle class="mk-announce" cx="60" cy="90" r="7"><title>9月1日 全学AI基盤とキャンパスポータルの運用を開始</title></circle>
+<text x="48" y="114" >9/1 全学AI基盤の運用を開始</text>
+<circle class="mk-announce" cx="209" cy="90" r="7"><title>10月14日 Claude の全学導入を発表</title></circle>
+<text x="209" y="70" text-anchor="middle">10/14 発表</text>
+<polygon class="mk-found" points="270,82 278,90 270,98 262,90"><title>2026年11月 全学生・全教職員が Claude を使える環境を提供</title></polygon>
+<text x="290" y="70">11月 全学生・全教職員が利用開始</text>
+
+<rect class="mk-period" x="207" y="156" width="588" height="8" rx="4"><title>実証期間：2026年10月13日〜2027年3月31日（教職員の利用終了後の振り返りを含む）</title></rect>
+<circle class="mk-announce" cx="207" cy="160" r="7"><title>10月13日 校務AIの実証を開始</title></circle>
+<text x="195" y="140">10/13 実証を開始</text>
+<text class="t-muted" x="500" y="150" text-anchor="middle">実証期間（教職員の利用と振り返り）</text>
+<polygon class="mk-found" points="795,152 803,160 795,168 787,160"><title>2027年3月31日 実証期間の終わり</title></polygon>
+<text x="872" y="140" text-anchor="end">2027/3/31 期間の終わり</text>
+
+<circle class="mk-announce" cx="211" cy="230" r="7"><title>10月15日 SIRUS の提供を発表（無料）</title></circle>
+<text x="199" y="210">10/15 提供を発表（無料）</text>
+
+<g transform="translate(8 292)">
+<circle class="mk-announce" cx="6" cy="-4" r="6"/><text x="18" y="0">発表・開始</text>
+<polygon class="mk-found" points="130,-12 138,-4 130,4 122,-4"/><text x="144" y="0">利用開始・期間の終わり</text>
+<rect class="mk-period" x="330" y="-8" width="24" height="8" rx="4"/><text x="362" y="0">実証期間</text>
+</g>
+</svg>
+</div>
+<figcaption>SIRUS は、2025年11月にプロトタイプを公開し、受験生100人以上が利用したと、発表に書かれています。大学の導入は、11月の利用開始がこれからです。</figcaption>
+</figure>
+
+<h2>校務AI：茨木市とNTT西日本</h2>
+<p>茨木市の市立の一部小中学校の教職員を対象に、NTT西日本が、国産のLLM「tsuzumi 2」を使った校務AIの実証を始めました。背景は、校務に必要な情報が複数のサーバー上のファイルに分散していて、検索や文書作成に手間がかかっていたことです。</p>
+
+<figure class="viz">
+<p class="viz-title">校務AIの構成</p>
+<p class="viz-sub">NTT西日本・茨木市の発表に基づく図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="校務AIの構成。教職員が専用のアプリでチャット形式の質問をすると、ローカル環境のGPUサーバー上でNTT版LLMのtsuzumi 2が動き、利用者権限に応じたアクセス制御のもとで、複数のサーバーに分散していた校務文書を検索・要約し、文章作成を支援する。">
+<defs>
+<marker id="arrow-school" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="100" width="150" height="90" rx="8"/>
+<text class="t-strong" x="22" y="130">教職員</text>
+<text class="t-small" x="22" y="152">市立の一部</text><text class="t-small" x="22" y="168">小中学校</text>
+
+<line class="arrow" x1="158" y1="145" x2="190" y2="145" marker-end="url(#arrow-school)"/>
+<rect class="box" x="192" y="100" width="170" height="90" rx="8"/>
+<text class="t-strong" x="206" y="126">専用のアプリ</text>
+<text class="t-small" x="206" y="148">チャット形式で質問、</text><text class="t-small" x="206" y="164">文章作成を依頼</text>
+
+<line class="arrow" x1="362" y1="145" x2="400" y2="145" marker-end="url(#arrow-school)"/>
+<rect class="line-limit" x="402" y="44" width="330" height="202" rx="8"/>
+<text class="t-strong" x="416" y="34">ローカル環境（オンプレミス）</text>
+<rect class="box-key" x="420" y="66" width="294" height="84" rx="8"/>
+<text class="t-strong" x="434" y="94">GPU サーバー</text>
+<text class="t-small" x="434" y="116">比較的低コストなサーバー上で、</text><text class="t-small" x="434" y="132">NTT版LLM「tsuzumi 2」が動く</text>
+<rect class="box" x="420" y="166" width="294" height="58" rx="8"/>
+<text class="t-strong" x="434" y="192">アクセス制御</text>
+<text class="t-small" x="434" y="210">利用者権限に応じて設定</text>
+
+<line class="arrow" x1="732" y1="145" x2="768" y2="145" marker-end="url(#arrow-school)"/>
+<text class="t-small" x="750" y="134" text-anchor="middle">検索・要約</text>
+<rect class="box" x="770" y="100" width="102" height="90" rx="8"/>
+<text class="t-strong" x="782" y="126">校務文書</text>
+<text class="t-small" x="782" y="148">複数のサーバー</text><text class="t-small" x="782" y="164">に分散していた</text><text class="t-small" x="782" y="180">ファイル</text>
+</svg>
+</div>
+<figcaption>オンプレミス（自組織の設備）で、ローカル環境で運用するのが特徴です。評価の指標は、情報検索や文書作成に要する時間、回答の有用性、操作性、継続利用意向で、教職員へのアンケートとヒアリングで測ります。</figcaption>
+</figure>
+
+<div class="cards">
+<div class="card"><h3>役割分担</h3><ul><li>茨木市：実証フィールドの提供、教職員へのヒアリングや周知に向けた調整</li><li>NTT西日本：実証全体の調整、生成AIアプリケーションの開発、効果検証</li></ul></div>
+<div class="card"><h3>これから</h3><ul><li>実証で得られた知見や教職員の意見を踏まえ、校務AIの有効性と安全な活用方法を検討する</li><li>業務効率化と働き方改革を進め、児童・生徒と向き合う時間の確保を目指す</li><li>効果を示す数字は、まだ公表されていない</li></ul></div>
+<div class="card"><h3>「全国初」の根拠</h3><ul><li>小中学校の現場で、純国産のプライベートLLMを活用した校務AIの実証であること</li><li>NTT西日本調べ（令和8年9月時点）</li></ul></div>
+</div>
+
+<h2>大学の全学導入：デジタルハリウッド大学</h2>
+<p>デジタルハリウッド大学は、2026年11月から、全学生と全教職員（専任教員と全職員）が、Anthropic の Claude を使える環境を提供すると発表しました。国内の大学で Claude を全学導入するのは、同大学が初めてです（同大学調べ、2026年10月時点）。</p>
+<div class="cards">
+<div class="card"><h3>使い方</h3><ul><li>大学が発行するアカウントから利用する</li><li>2026年9月1日に運用を始めた、全学AI基盤とキャンパスポータルに連携している</li></ul></div>
+<div class="card"><h3>用途</h3><ul><li>学部：3DCG、VFX、ゲーム、映像、Web デザイン、プログラミング、企画・広報 PR など</li><li>大学院：新規事業の企画や試作、調査・分析、論文執筆の補助など</li><li>研究：文献調査、データ分析、論文・レポート執筆の支援</li><li>運営：授業内外の学習支援、制作過程での壁打ち、事務業務の効率化、学生対応の高度化</li></ul></div>
+<div class="card"><h3>教育方針と規程</h3><ul><li>AI の利用を禁じるのではなく、AI の利用を前提に課題を設計し、成果を評価する方向へ、教育を組み替える</li><li>成果物への AI 利用の申告や、第三者の著作物・個人情報の取り扱いに関する学内規程も整備する</li></ul></div>
+<div class="card"><h3>費用と位置づけ</h3><ul><li>学生は費用負担なく、十分な利用枠で使える環境を整えたとしている。具体的な料金や利用上限の数値は記載がない</li><li>文化庁の「文化芸術活動基盤強化基金」を活用した、クリエイター等の育成支援の一環</li></ul></div>
+</div>
+
+<h2>受験アプリ：SIRUS</h2>
+<p>SIRUS（シルス）は、大学受験生向けの数学記述添削AIアプリです。DeNA の新規事業創出を担う子会社 BAKERU が開発し、DeNA が提供しています。手書きの答案をスマートフォンで撮影すると、30秒以内に部分点まで採点します。</p>
+
+<figure class="viz">
+<p class="viz-title">SIRUS の流れ</p>
+<p class="viz-sub">BAKERU・DeNA の発表に基づく図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 230" role="img" aria-label="SIRUSの流れ。手書きの答案をスマートフォンで撮影し、30秒以内に部分点まで採点され、方針、論証、計算の3つの観点でフィードバックを受け、志望校の合格水準との差をもとに毎日3問を推薦される。">
+<defs>
+<marker id="arrow-sirus" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="40" width="190" height="140" rx="8"/>
+<text class="t-strong" x="22" y="68">1　撮影</text>
+<text class="t-small" x="22" y="94">手書きの答案を</text><text class="t-small" x="22" y="110">スマートフォンで</text><text class="t-small" x="22" y="126">撮影する</text>
+
+<line class="arrow" x1="198" y1="110" x2="226" y2="110" marker-end="url(#arrow-sirus)"/>
+<rect class="box-key" x="228" y="40" width="190" height="140" rx="8"/>
+<text class="t-strong" x="242" y="68">2　採点</text>
+<text class="t-small" x="242" y="94">30秒以内に、</text><text class="t-small" x="242" y="110">部分点まで</text><text class="t-small" x="242" y="126">採点する</text>
+
+<line class="arrow" x1="418" y1="110" x2="446" y2="110" marker-end="url(#arrow-sirus)"/>
+<rect class="box" x="448" y="40" width="190" height="140" rx="8"/>
+<text class="t-strong" x="462" y="68">3　フィードバック</text>
+<text class="t-small" x="462" y="94">3つの観点で示す</text><text class="t-small" x="462" y="110">方針（方針を立てる力）</text><text class="t-small" x="462" y="126">論証（正しく伝える力）</text><text class="t-small" x="462" y="142">計算（やり切る力）</text>
+
+<line class="arrow" x1="638" y1="110" x2="666" y2="110" marker-end="url(#arrow-sirus)"/>
+<rect class="box" x="668" y="40" width="204" height="140" rx="8"/>
+<text class="t-strong" x="682" y="68">4　次の出題</text>
+<text class="t-small" x="682" y="94">合格に必要な実力と</text><text class="t-small" x="682" y="110">現在の実力の差から、</text><text class="t-small" x="682" y="126">約3,000問のうち</text><text class="t-small" x="682" y="142">毎日3問を推薦する</text>
+</svg>
+</div>
+<figcaption>「あなたのための3問」は、分析に基づく推薦であり、合格を保証するものではない、と発表は書いています。ほかに、演習を積む「演習プラス」、苦手分野を克服する「分野別トレーニング」、分野ごとの実力と合格目安を示すレーダーチャートがあります。</figcaption>
+</figure>
+
+<ul>
+<li>料金は無料（2026年10月時点）。App Store と Google Play で配布されています。対応する OS のバージョンは、記載がありません。</li>
+<li>2025年11月にプロトタイプを公開し、受験生100人以上が利用しました。</li>
+<li>今後は、収録問題の拡充、数学以外の教科への展開、学校や地方の学習塾での教材としての利用を検討するとしています。</li>
+<li>発表の利用者の声は、β版の利用者1名（2026年度東京大学合格）のものです。</li>
+</ul>
+
+<h2>見方</h2>
+<div class="note">
+<p>各組織の発表を並べて読んだ上での、筆者の整理です。各組織がそう述べているわけではありません。</p>
+</div>
+<ul>
+<li><strong>AI の使い方の前提が違う:</strong> 校務AIは、教職員の事務を減らす（時間の確保が目的）。大学の全学導入は、学ぶ側と研究・運営の全員が使う（教育方針ごと変える）。SIRUS は、学習者が個別に練習する。</li>
+<li><strong>動かす場所の考え方も違う:</strong> 校務AIは、オンプレミスのローカル運用。大学は、外部のサービスを、大学のアカウントで使う。SIRUS は、アプリ。</li>
+<li><strong>効果の根拠は、まだない:</strong> 校務AIは評価がこれから、大学の導入は11月から、SIRUS は合格を保証するものではない。数字で効果を示した発表は、今回確認した3つにはありません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>校務</dt><dd>学校の教職員が行う、授業以外の事務（文書作成、連絡、記録など）。</dd>
+<dt>純国産LLM</dt><dd>国内の企業が開発した大規模言語モデル。</dd>
+<dt>プライベートLLM</dt><dd>自組織の環境の中だけで動かす大規模言語モデル。</dd>
+<dt>オンプレミス</dt><dd>自組織の設備の中で、システムを動かす方式。クラウドの反対。</dd>
+<dt>実証</dt><dd>本格的な導入の前に、小さな範囲で試して効果を確かめること。</dd>
+<dt>記述式の採点</dt><dd>途中の考え方まで書かせる答案を、部分点を含めて採点すること。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。各組織の公式発表（10月13日〜15日付）に基づいています。</p>
+<p>校務AIの効果、大学での利用状況、SIRUS の学習効果は、いずれも数字で示されていないため、扱っていません。</p>
+<p>大学の利用上限や料金、SIRUS が使う AI の種類、対応 OS のバージョンは、発表に記載がなかったため、扱っていません。</p>
+<p>内容は、各組織の公式発表をもとに、独自に整理したものです。関連する話題として、<a href="../ai/latest-ai-models.html">10月の最新AIモデル3つを比べる</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（校務AI、大学の全学導入、数学記述の添削アプリの整理）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
