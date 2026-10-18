@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。">
+<title>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは7製品・9件</strong>です。対応は、悪用が確認されているものから順に行います。</p>
+<p>注意したいのは、<strong>回避策が提供されていない製品がある</strong>ことです（NetScaler、Cisco Secure Email Gateway）。また、<strong>侵害の痕跡が消される可能性</strong>が示されている製品もあります（Cisco Secure Email Gateway、SiteGuard Server Edition）。更新するだけでなく、すでに侵害されていないかの調査も必要です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">7<small>製品</small></p><p class="stat-label">悪用が報告・確認されている製品</p></div>
+<div class="stat"><p class="stat-value">9<small>件</small></p><p class="stat-label">その製品のCVE（脆弱性の識別番号）</p></div>
+<div class="stat"><p class="stat-value">2<small>製品</small></p><p class="stat-label">回避策が提供されていない（NetScaler、Cisco Secure Email Gateway）</p></div>
+<div class="stat"><p class="stat-value">10/14</p><p class="stat-label">Microsoft の10月の更新プログラムが公開された日</p></div>
+</div>
+
+<h2>悪用が報告されている脆弱性</h2>
+<p>次の表は、悪用が報告されているものを、悪用の報告元とあわせて並べたものです。「対応」の欄で、更新のほかに回避策があるか、ないかも分かります。</p>
+
+<div class="table-wrap">
+<table>
+<caption>JPCERT/CC の注意喚起と週次レポート、IPA の資料より。修正バージョンの番号は、各開発元の最新情報で確認してください</caption>
+<thead><tr><th>製品</th><th>CVE</th><th>内容</th><th>悪用の報告元</th><th>対応</th></tr></thead>
+<tbody>
+<tr><td>NetScaler ADC・Gateway</td><td>CVE-2026-88771、88772</td><td>認証されていないリモートの攻撃者が任意のコードを実行するおそれ（88772 は DTLS が有効な構成）</td><td>Cloud Software Group</td><td>14.1-73.37、13.1-64.23 以降へ更新。<strong>回避策なし</strong></td></tr>
+<tr><td>NetScaler ADC・Gateway</td><td>CVE-2026-88779</td><td>メモリオーバーフロー</td><td>開発者</td><td>修正済みバージョンへ更新</td></tr>
+<tr><td>F5 BIG-IP APM</td><td>CVE-2026-94127</td><td>ヒープベースのバッファオーバーフロー。OAuth Authorization Server 構成が条件。認証されていないリモートの攻撃者が任意のコードを実行するおそれ</td><td>F5</td><td>ホットフィックス。適用できない場合は iRule（暫定策）</td></tr>
+<tr><td>Cisco Secure Email Gateway</td><td>CVE-2026-76461</td><td>SQLインジェクション。細工したメールの受信で、root権限でコマンドが実行されるおそれ</td><td>Cisco（2026年9月）</td><td>修正バージョンへ更新。<strong>回避策なし</strong></td></tr>
+<tr><td>SiteGuard Server Edition</td><td>CVE-2026-106931</td><td>OSコマンドインジェクション。統計機能が有効な場合、root権限または SYSTEM 権限でコマンドが実行されるおそれ</td><td>開発者（EGセキュアソリューションズ）</td><td>アップデート、または統計機能の無効化。<strong>更新前に診断情報を取得</strong></td></tr>
+<tr><td>Windows</td><td>CVE-2026-96951</td><td>Windows シェルのセキュリティ機能のバイパス</td><td>Microsoft</td><td>10月の更新プログラムを適用</td></tr>
+<tr><td>SonicWall 製品</td><td>CVE-2026-102255</td><td>サーバーサイドリクエストフォージェリ</td><td>カナダサイバーセキュリティセンターによると、実環境での悪用を示す公開情報あり</td><td>修正済みバージョンへ更新</td></tr>
+<tr><td>Rejetto HFS</td><td>CVE-2026-61500</td><td>暗号論的強度が不十分な乱数生成器の使用</td><td>VulnCheck</td><td>修正済みバージョンへ更新</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">注意喚起の公開と更新の流れ</p>
+<p class="viz-sub">2026年9月14日〜10月16日。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 446" role="img" aria-label="6つの製品の注意喚起の公開時期。Cisco Secure Email Gatewayは9月15日、F5 BIG-IP APMは9月24日、NetScalerは9月28日に公開され10月2日に更新、Movable Typeは10月7日、Microsoftの10月の更新とSiteGuard Server Editionは10月14日。Movable Type以外は悪用が確認されている。NetScalerでは9月24日以降、日本国内への攻撃試行が海外組織に観測されている。">
+<g class="grid">
+<line x1="230" y1="48" x2="230" y2="408"/><line x1="363" y1="48" x2="363" y2="408"/>
+<line x1="496" y1="48" x2="496" y2="408"/><line x1="629" y1="48" x2="629" y2="408"/>
+<line x1="762" y1="48" x2="762" y2="408"/>
+<line x1="8" y1="118" x2="872" y2="118"/><line x1="8" y1="174" x2="872" y2="174"/>
+<line x1="8" y1="230" x2="872" y2="230"/><line x1="8" y1="286" x2="872" y2="286"/>
+<line x1="8" y1="342" x2="872" y2="342"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="230" y="36">9/14</text><text class="t-muted" x="363" y="36">9/21</text>
+<text class="t-muted" x="496" y="36">9/28</text><text class="t-muted" x="629" y="36">10/5</text>
+<text class="t-muted" x="762" y="36">10/12</text>
+</g>
+
+<text class="t-strong" x="8" y="86">Cisco Secure Email Gateway</text><text class="t-small" x="8" y="104">悪用の確認あり（Cisco）</text>
+<text class="t-strong" x="8" y="142">F5 BIG-IP APM</text><text class="t-small" x="8" y="160">悪用の確認あり（F5）</text>
+<text class="t-strong" x="8" y="198">NetScaler ADC・Gateway</text><text class="t-small" x="8" y="216">悪用の確認あり（開発者）</text>
+<text class="t-strong" x="8" y="254">Movable Type</text><text class="t-small" x="8" y="272">悪用の記載なし</text>
+<text class="t-strong" x="8" y="310">Microsoft 10月の更新</text><text class="t-small" x="8" y="328">1件で悪用を確認</text>
+<text class="t-strong" x="8" y="366">SiteGuard Server Edition</text><text class="t-small" x="8" y="384">悪用の確認あり（開発者）</text>
+
+<circle class="mk-found" cx="249" cy="90" r="7"><title>9月15日 JPCERT/CC が注意喚起を公開（悪用は Cisco が9月に確認）</title></circle>
+<text x="249" y="70" text-anchor="middle">9/15 公開</text>
+
+<circle class="mk-found" cx="420" cy="146" r="7"><title>9月24日 JPCERT/CC が注意喚起を公開（F5 の公表は9月22日）</title></circle>
+<text x="408" y="126">9/24 公開（F5 の公表は 9/22）</text>
+
+<rect class="mk-period" x="420" y="198" width="418" height="8" rx="4"><title>9月24日以降、海外のセキュリティ組織が、日本国内の NetScaler を対象にした攻撃試行を観測（脆弱性の悪用を目的としたものかは不明）</title></rect>
+<text x="426" y="186">9/24〜 国内で攻撃試行を観測（悪用目的かは不明）</text>
+<circle class="mk-found" cx="496" cy="202" r="7"><title>9月28日 JPCERT/CC と IPA が注意喚起を公開</title></circle>
+<text x="496" y="226" text-anchor="middle">9/28 公開</text>
+<polygon class="mk-found" points="572,194 580,202 572,210 564,202"><title>10月2日 JPCERT/CC が注意喚起を更新（侵害調査の情報を追記）</title></polygon>
+<text x="572" y="226" text-anchor="middle">10/2 更新</text>
+
+<circle class="mk-announce" cx="667" cy="258" r="7"><title>10月7日 IPA が注意喚起を公開（悪用の記載なし）</title></circle>
+<text x="667" y="238" text-anchor="middle">10/7 公開（IPA）</text>
+
+<circle class="mk-found" cx="800" cy="314" r="7"><title>10月14日 JPCERT/CC と IPA が注意喚起を公開</title></circle>
+<text x="800" y="294" text-anchor="middle">10/14 公開</text>
+
+<circle class="mk-found" cx="800" cy="370" r="7"><title>10月14日 JPCERT/CC が注意喚起を公開</title></circle>
+<text x="800" y="350" text-anchor="middle">10/14 公開</text>
+
+<g transform="translate(8 432)">
+<circle class="mk-found" cx="6" cy="-4" r="6"/><text x="18" y="0">公開（悪用の確認あり）</text>
+<circle class="mk-announce" cx="206" cy="-4" r="6"/><text x="218" y="0">公開（悪用の記載なし）</text>
+<polygon class="mk-found" points="414,-12 422,-4 414,4 406,-4"/><text x="428" y="0">更新</text>
+<rect class="mk-period" x="478" y="-8" width="24" height="8" rx="4"/><text x="510" y="0">国内で攻撃試行を観測</text>
+</g>
+</svg>
+</div>
+<figcaption>9月中旬から10月中旬まで、ほぼ毎週のように、悪用が確認された脆弱性の注意喚起が出ています。NetScaler については、注意喚起の公開（9月28日）の前の9月24日から、日本国内の NetScaler を対象にした攻撃試行が観測されています。ただし、この脆弱性の悪用を目的としたものかは明らかになっていません。</figcaption>
+</figure>
+
+<h2>対応の考え方</h2>
+<p>注意喚起の内容を並べて読んだ上での、対応の流れの整理です。各機関がそう述べているわけではありません。</p>
+
+<figure class="viz">
+<p class="viz-title">どの順番で対応するか</p>
+<p class="viz-sub">外部に公開している機器・製品を対象にした流れ（筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 320" role="img" aria-label="対応の流れ。まず該当する製品とバージョンがあるかを確認する。ない場合は対応不要。ある場合は、悪用が確認されているかを見る。確認されていれば最優先で修正版へ更新し、更新の前に証跡を保全して侵害の有無を調べる。確認されていなければ、通常の更新で計画的に適用する。">
+<defs>
+<marker id="arrow-vuln" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="30" width="200" height="100" rx="8"/>
+<text class="t-strong" x="22" y="56">1　該当するか確認</text>
+<text class="t-small" x="22" y="78">外部に公開している機器・</text>
+<text class="t-small" x="22" y="94">製品に、該当する製品と</text>
+<text class="t-small" x="22" y="110">バージョンがあるか</text>
+
+<line class="arrow" x1="208" y1="80" x2="248" y2="80" marker-end="url(#arrow-vuln)"/>
+<text class="t-small" x="214" y="72">ある</text>
+
+<polygon class="box-key" points="310,30 370,80 310,130 250,80"/>
+<text class="t-strong" x="310" y="76" text-anchor="middle">悪用は</text>
+<text class="t-strong" x="310" y="94" text-anchor="middle">確認済みか</text>
+
+<line class="arrow" x1="370" y1="80" x2="418" y2="80" marker-end="url(#arrow-vuln)"/>
+<text class="t-strong" x="382" y="72">はい</text>
+<rect class="box" x="420" y="30" width="230" height="100" rx="8"/>
+<text class="t-strong" x="434" y="56">2　最優先で更新</text>
+<text class="t-small" x="434" y="78">修正版へ更新する。回避策が</text>
+<text class="t-small" x="434" y="94">示された製品は、更新までの</text>
+<text class="t-small" x="434" y="110">間に回避策を適用する</text>
+
+<line class="arrow" x1="650" y1="80" x2="680" y2="80" marker-end="url(#arrow-vuln)"/>
+<rect class="box-key" x="682" y="30" width="190" height="100" rx="8"/>
+<text class="t-strong" x="696" y="56">3　侵害の有無を調べる</text>
+<text class="t-small" x="696" y="78">更新の前に証跡を保全し、</text>
+<text class="t-small" x="696" y="94">ログ・設定・不審なファイル</text>
+<text class="t-small" x="696" y="110">を確認する</text>
+
+<path class="arrow" d="M310,130 V198" marker-end="url(#arrow-vuln)"/>
+<text class="t-strong" x="322" y="170">いいえ</text>
+<rect class="box" x="210" y="200" width="200" height="86" rx="8"/>
+<text class="t-strong" x="224" y="226">通常の更新で対応</text>
+<text class="t-small" x="224" y="248">計画的に更新プログラムを</text>
+<text class="t-small" x="224" y="264">適用する</text>
+
+<path class="arrow" d="M98,130 V198" marker-end="url(#arrow-vuln)"/>
+<text class="t-strong" x="110" y="170">ない</text>
+<rect class="box" x="8" y="200" width="180" height="86" rx="8"/>
+<text class="t-strong" x="22" y="226">対応は不要</text>
+<text class="t-small" x="22" y="248">資産の棚卸しは</text>
+<text class="t-small" x="22" y="264">定期的に行う</text>
+</svg>
+</div>
+<figcaption>悪用が確認されているものは、「更新する」だけで終わらせず、すでに侵入されていないかまで調べます。更新によって、侵害の痕跡が消える場合があるためです。</figcaption>
+</figure>
+
+<h3>侵害調査で示されている要点</h3>
+<div class="cards">
+<div class="card"><h3>NetScaler</h3><p>Mandiant と GTIG の報告では、確認された侵害事例で、Web シェルの設置や、侵害後のアクセス維持を目的とした活動がありました。</p>
+<ul><li>Web サーバーの設定ファイル（/etc/httpd.conf）の不審な変更</li><li>VPN 関連ディレクトリの不審なファイル</li><li>DTLS のハンドシェイク失敗、NSPPE プロセスの異常終了</li><li>/tmp の不審なファイル、/bin/sh の不審な SUID 権限</li></ul></div>
+<div class="card"><h3>Cisco Secure Email Gateway</h3><p>root 権限で攻撃が成功した場合、ログや痕跡が削除されている可能性があります。製品上のログだけでなく、周辺機器などのネットワークログと突き合わせて調べます。</p><p>JPCERT/CC は、別の脆弱性（CVE-2025-20393）を悪用した侵害が国内で発生したことを確認しています。</p></div>
+<div class="card"><h3>SiteGuard Server Edition</h3><p>開発者によると、アップデートの完了後に、侵害の痕跡が削除される可能性があります。</p><p>該当バージョンを使っている場合は、Web 管理画面で「診断情報」を取得し、攻撃の痕跡を保全してからアップデートします。</p></div>
+</div>
+
+<h2>製品別の要点</h2>
+
+<div class="cards">
+<div class="card"><h3>NetScaler ADC・Gateway</h3>
+<ul><li>公開：JPCERT/CC 9/28（10/2 更新）、IPA 9/28</li><li>影響：14.1-73.37 より前、13.1-64.23 より前、ADC FIPS の 14.1-73.37 FIPS より前、FIPS・NDcPP の 13.1-37.279 より前</li><li>Citrix が管理するクラウドサービスは、Cloud Software Group が更新済み</li><li>88771 はデフォルト構成を含むすべての構成が対象。88772 は DTLS が有効な構成（VPN 仮想サーバーでは既定で有効）</li><li>回避策は提供されていない</li></ul></div>
+<div class="card"><h3>F5 BIG-IP APM</h3>
+<ul><li>公開：F5 9/22、JPCERT/CC 9/24</li><li>影響：21.1.0、17.5.0〜17.5.1、17.1.0〜17.1.3</li><li>OAuth Authorization Server として構成され、仮想サーバーに APM access policy と OAuth profile が設定されている場合</li><li>ホットフィックス、または暫定策の iRule</li><li>watchTowr Labs が詳細を解説。JPCERT/CC は、今後エクスプロイトコードが公表され、攻撃が広がる可能性があるとしている</li></ul></div>
+<div class="card"><h3>Cisco Secure Email Gateway</h3>
+<ul><li>公開：JPCERT/CC 9/15</li><li>影響：AsyncOS の 16.5 系は 16.5.0-780 より前、16.0 系は 16.0.4-302 より前、15.5 系以前は 15.5.5-014 より前</li><li>修正バージョンへのアップグレード。回避策は提供されていない</li></ul></div>
+<div class="card"><h3>SiteGuard Server Edition</h3>
+<ul><li>公開：JPCERT/CC 10/14</li><li>影響：Apache 版・Nginx 版・IIS 版は Ver8.00 の Update5 より前（Ver2.20 以降）。FreeBSD 版は Ver7.00 の Update6 より前。デフォルトで有効な統計機能が有効な場合</li><li>アップデート。困難な場合は、パッチの適用、または統計機能の無効化</li></ul></div>
+<div class="card"><h3>Microsoft 10月の更新</h3>
+<ul><li>公開：10/14（JPCERT/CC、IPA）</li><li>悪用が公表されたのは CVE-2026-96951 の1件</li><li>件数や深刻度の内訳は、両機関の資料には記載がない</li><li>Windows Update などで適用。再起動が必要になる場合がある</li></ul></div>
+<div class="card"><h3>Movable Type</h3>
+<ul><li>公開：IPA 10/7（JVN#91153973）。悪用の記載はない</li><li>コードインジェクションと SQL インジェクション。CVE-2026-96408（CVSS 9.4、緊急）、CVE-2026-103668（CVSS 8.6、重要）</li><li>修正：9.3.0 / 9.0.10 / 8.8.6 / 8.0.13。Premium は 9.3.0 / 9.0.10 / 2.18</li><li>サポート終了の 8.4 系、7 系以前、Premium 1 系は影響を受けるが、修正版は示されていない</li><li>回避策：CGI 版は mt-upgrade.cgi、mt-search.cgi、mt-ftsearch.cgi の削除または実行権限の削除。PSGI 版は RestrictedPSGIApp の設定</li></ul></div>
+</div>
+
+<h2>そのほかの週次レポートの項目</h2>
+<p>JPCERT/CC の週次レポート（10月15日号。対象期間は10月4日〜10日）には、次の項目もあります。</p>
+<p><span class="tag">Drupal のモジュール</span><span class="tag">Splunk</span><span class="tag">Cisco</span><span class="tag">Elastic</span><span class="tag">Veeam Backup &amp; Replication</span><span class="tag">WordPress</span><span class="tag">Google Chrome</span><span class="tag">Atlassian</span><span class="tag">Microsoft Edge</span><span class="tag">MikroTik RouterOS</span><span class="tag">pgvector</span><span class="tag">Loom for AWS</span><span class="tag">GitLab AI Gateway</span></p>
+<p>Atlassian の製品は、実証コードの公開を JPCERT/CC が確認していますが、悪用の記載はありません。MikroTik RouterOS は、未認証のリモートコード実行につながる脆弱性、GitLab AI Gateway は任意のコマンドの実行につながる脆弱性です。</p>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>CVE</dt><dd>脆弱性に付けられる世界共通の識別番号。</dd>
+<dt>悪用</dt><dd>修正版が出る前、または出た直後に、実際の攻撃に使われること。</dd>
+<dt>回避策</dt><dd>修正版に更新できないときに、影響を避けるための設定変更など。</dd>
+<dt>侵害調査</dt><dd>脆弱性を悪用されて、すでに侵入されていないかを調べること。</dd>
+<dt>DTLS</dt><dd>UDP 上で通信を暗号化するための仕組み。</dd>
+<dt>SSRF（サーバーサイドリクエストフォージェリ）</dt><dd>サーバーに、攻撃者が指定した宛先へ通信させる攻撃。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
+<p>修正バージョンの番号など、注意喚起に明記されていない項目は、開発元の最新情報で確認する必要があります。</p>
+<p>ここで取り上げたのは、JPCERT/CC と IPA が10月中旬までに取り上げたもののうち、本文を直接確認できたものです。Linux の Copy Fail（IPA）や、報道で伝えられた別の脆弱性は、一次情報を確認できていないため、今回は扱っていません。</p>
+<p>内容は、JPCERT/CC と IPA の資料をもとに、独自に整理したものです。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
