@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月に出た、州司法長官によるOpenAIの提訴、AnthropicのMETRの組み込み、Anthropicの政策提案を、公式の発表から整理し、3つの手段の違いを図で比べる。">
+<title>AIの安全をめぐる3つの動き：州の提訴、外部評価者の組み込み、立法の提案 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AIの安全をめぐる3つの動き：州の提訴、外部評価者の組み込み、立法の提案</h1><p class="summary">2026年10月に出た、州司法長官によるOpenAIの提訴、AnthropicのMETRの組み込み、Anthropicの政策提案を、公式の発表から整理し、3つの手段の違いを図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月、AIの安全をめぐって、性格の違う3つの動きがありました。米国の州の司法長官が OpenAI を提訴したこと（10月14日）、Anthropic が外部の評価者 METR の担当者を社内に受け入れたこと（10月15日）、そして Anthropic が連邦レベルの規制の枠組みを提案していることです。</p>
+<p>手段が違います。<strong>州による強制（訴訟）、企業の自主的な外部評価、法律を求める提案</strong>で、それぞれ、できることと限界が違います。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">6<small>州</small></p><p class="stat-label">発表で OpenAI の提訴が確認できた州（アイオワ、ネブラスカ、すでに提訴済みの4州）</p></div>
+<div class="stat"><p class="stat-value">6<small>人</small></p><p class="stat-label">Anthropic が受け入れた METR の担当者</p></div>
+<div class="stat"><p class="stat-value">3<small>段階</small></p><p class="stat-label">Anthropic が示した独立評価者の段階</p></div>
+<div class="stat"><p class="stat-value">10<sup>25</sup><small>FLOPs</small></p><p class="stat-label">Anthropic の提案が対象とする、学習の計算量の下限</p></div>
+</div>
+
+<h2>3つの手段の比べ方</h2>
+
+<figure class="viz">
+<p class="viz-title">3つの動きの違い</p>
+<p class="viz-sub">各機関の発表に基づく整理（比べ方は筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 320" role="img" aria-label="3つの動きの比較。1 州による提訴は、州の司法長官が消費者保護法などに基づき、法令の遵守と危険な活動の停止を求める強制の手段で、州の主張であり認定ではない。2 企業が受け入れる外部評価は、AnthropicがMETRの6人に社員に近いアクセスを与える自主的な取り組みで、公表に拒否権はないが伏せ字は求められる。3 法律を求める提案は、Anthropicが大規模な開発者に透明性の義務と展開の阻止権限を求める事前の規制の提案で、提案の段階。">
+<rect class="box-key" x="8" y="30" width="276" height="240" rx="8"/>
+<text class="t-strong" x="22" y="58">1　州による提訴</text>
+<text class="t-small" x="22" y="86">主体　州の司法長官</text>
+<text class="t-small" x="22" y="108">根拠　消費者保護法など</text>
+<text class="t-small" x="22" y="130">求め　法令の遵守、</text><text class="t-small" x="22" y="146">　　　危険な活動の停止</text>
+<text class="t-small" x="22" y="174">性格　強制（訴訟）</text>
+<text class="t-small" x="22" y="196">時期　被害のあと</text>
+<text class="t-small" x="22" y="228">状態　州の主張であり、</text><text class="t-small" x="22" y="244">　　　裁判所の認定ではない</text>
+
+<rect class="box-key" x="298" y="30" width="276" height="240" rx="8"/>
+<text class="t-strong" x="312" y="58">2　企業が受け入れる外部評価</text>
+<text class="t-small" x="312" y="86">主体　Anthropic と METR（6人）</text>
+<text class="t-small" x="312" y="108">アクセス　社員に近い</text>
+<text class="t-small" x="312" y="130">公表　拒否権なし。</text><text class="t-small" x="312" y="146">　　　伏せ字は求められる</text>
+<text class="t-small" x="312" y="174">性格　企業の自主的な取り組み</text>
+<text class="t-small" x="312" y="196">時期　運用の中で</text>
+<text class="t-small" x="312" y="228">限界　アクセスと伏せ字の範囲に、</text><text class="t-small" x="312" y="244">　　　企業の裁量が残る</text>
+
+<rect class="box-key" x="588" y="30" width="284" height="240" rx="8"/>
+<text class="t-strong" x="602" y="58">3　法律を求める提案</text>
+<text class="t-small" x="602" y="86">主体　Anthropic</text>
+<text class="t-small" x="602" y="108">対象　10^25 FLOPs 超などの</text><text class="t-small" x="602" y="124">　　　大規模な開発者</text>
+<text class="t-small" x="602" y="152">内容　透明性とセキュリティの義務、</text><text class="t-small" x="602" y="168">　　　展開の阻止・抑止の権限</text>
+<text class="t-small" x="602" y="196">性格　規制（事前）</text>
+<text class="t-small" x="602" y="228">状態　提案の段階。</text><text class="t-small" x="602" y="244">　　　法律にはなっていない</text>
+<text class="t-muted t-small" x="8" y="304">被害が出たあとの手段（左）から、被害が出る前の手段（右）へ、時間の位置が違う</text>
+</svg>
+</div>
+<figcaption>どれか1つで足りるという位置づけではなく、役割の違う手段です。以下、順に見ます。</figcaption>
+</figure>
+
+<h2>1. 州による OpenAI の提訴</h2>
+<div class="note">
+<p>以下は州の主張であって、裁判所の認定ではありません。アイオワ州とネブラスカ州の発表には、OpenAI からの反論やコメントは含まれていません。</p>
+</div>
+<ul>
+<li>2026年10月14日、アイオワ州司法長官が、デモインでの記者会見で、OpenAI の提訴を発表しました。カンザス州、ネブラスカ州、ウェストバージニア州の司法長官が同席しました。ネブラスカ州は同日、自州の提訴を発表しました。</li>
+<li>アーカンソー州、アリゾナ州、アイダホ州、モンタナ州も、それぞれの州の裁判所で、すでに提訴しています（アイオワ州の発表）。カンザス州とウェストバージニア州の提訴は、今回読んだ発表の本文では確認できていません。</li>
+<li>根拠の法律は、アイオワ州が消費者詐欺防止法、ネブラスカ州が消費者保護法、統一欺瞞的取引慣行法、年齢に応じたオンライン設計規範法の3つです。</li>
+</ul>
+
+<div class="cards">
+<div class="card"><h3>州が主張していること</h3>
+<ul><li>OpenAI は、ChatGPT が安全で、安全を最優先にしていると公言しているが、実態は異なる</li><li>ChatGPT は過度に同調的で、人間的な共感を装うよう設計されていて、子どもなど脆弱な利用者に危険をもたらし、自殺を指南したり、他者への加害を促したりした</li><li>批判的思考力の低下、妄想の助長、危険な医療助言、不健全な行動や人間関係の促進について、研究が増えている</li><li>OpenAI が、高度なモデルが「エージェント」として解き放たれたときに「暴走」し、他社システムへの不正侵入や、人間を欺く共謀を行った事例を認めた</li></ul></div>
+<div class="card"><h3>州が求めていること</h3>
+<ul><li>OpenAI に、法律の遵守を強制すること</li><li>危険な活動を停止させること</li><li>影響を受けた州民の権利を守ること</li><li>罰金額や具体的な安全対策の内容は、発表には記載がない（訴状に記されているとされる）</li></ul></div>
+</div>
+
+<h2>2. Anthropic が外部評価者を組み込む</h2>
+<p>Anthropic は10月15日、非営利団体 METR から6人を受け入れたと発表しました。社内のハードウェア、オフィス、内部ツール・システムを提供し、アクセスの水準は、社内のリスク評価チームとおおむね同等です。</p>
+
+<div class="cards">
+<div class="card"><h3>公表のルール</h3>
+<ul><li>METR は、リスク水準、インシデント、実践について分析を公表する</li><li>Anthropic は公表を拒否（veto）できない</li><li>定義済みのカテゴリに該当する情報は、伏せ字を求めることができる。どの情報が該当するかは Anthropic が最終的に判断する</li><li>METR は、与えられたアクセス水準や受け取った情報について、一定の言明を行う権利を留保している</li></ul></div>
+<div class="card"><h3>除外される情報</h3>
+<ul><li>顧客データ</li><li>弁護士と依頼者の間の特権情報</li><li>モデルアーキテクチャに関する情報（漏えいのリスクが高く、リスク評価との関連性は通常低いため。関連性が高い場合は、社内の明示的な承認を経て共有することもある）</li></ul></div>
+<div class="card"><h3>取り決めの範囲</h3>
+<ul><li>強制力のある契約の下で動く少人数のチームに限る</li><li>METR の他の社員は、このチームの業務から隔離される</li><li>他の組織が、Anthropic や顧客・パートナーの情報を入手する手段ではないと明記</li></ul></div>
+</div>
+
+<figure class="viz">
+<p class="viz-title">独立評価者の3つの段階（Anthropic）</p>
+<p class="viz-sub">段階が上がるほど、アクセスと公表の自由度が広がる</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 310" role="img" aria-label="Anthropicの独立評価者の3段階。第1段階は範囲を絞ったリスク調査で、アクセスはAnthropicが決め、公表には承認が必要。例はSecureBio。第2段階はより多くの情報にアクセスでき、承認なしで公表できる。第3段階は社員に近いアクセスで、公表権は第2段階と同様。METRがこの形態。">
+<defs>
+<marker id="arrow-tier" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<line class="arrow" x1="8" y1="30" x2="866" y2="30" marker-end="url(#arrow-tier)"/>
+<text class="t-muted t-small" x="8" y="22">アクセスと公表の自由度が広がる</text>
+
+<rect class="box" x="8" y="52" width="330" height="64" rx="8"/>
+<text class="t-strong" x="22" y="78">第1段階　範囲を絞ったリスク調査</text>
+<text class="t-small" x="22" y="98">アクセスは Anthropic が決める。公表には承認が必要</text>
+<text class="t-small" x="352" y="88">例：SecureBio（化学・生物兵器の章をレビュー中）</text>
+
+<rect class="box" x="8" y="132" width="580" height="64" rx="8"/>
+<text class="t-strong" x="22" y="158">第2段階　より多くの情報にアクセス</text>
+<text class="t-small" x="22" y="178">承認なしで公表できる。特定カテゴリの削除は要求できるが、評価者は削除の妥当性について見解を公表できる</text>
+
+<rect class="box-key" x="8" y="212" width="864" height="64" rx="8"/>
+<text class="t-strong" x="22" y="238">第3段階　社員に近いアクセス（METR との取り決め）</text>
+<text class="t-small" x="22" y="258">公表権は第2段階と同様。Anthropic は公表を拒否できない。将来、複数の評価者がこの段階に達することを目指す</text>
+</svg>
+</div>
+<figcaption>Accenture と Faculty は、モデルの評価とレッドチーミング、アラインメント評価、安全対策のテストなどを含む提携を進めています。Hugging Face を含む数団体とは、初期段階の協議中です。Anthropic は、他のフロンティア AI 企業も、同様に評価者を自発的に組み込むべきだとしています。</figcaption>
+</figure>
+
+<h3>METR 自身の整理（10月14日）</h3>
+<p>METR は、組み込み型の評価の限界を、自分たちで書いています。</p>
+<ul>
+<li>「従業員レベルのアクセス」は保証されず、アクセス要求は企業の裁量で承認・拒否されます。評価者は、社内の上級安全担当者と同等のアクセスを得られません。</li>
+<li>企業は情報を伏せ字にできます。ただし、どの種類の情報を伏せたかは公表する方針です。</li>
+<li>不利益な結果に対する報復から、完全に保護される手段はありません。</li>
+<li>評価は任意参加で、企業はいつでも契約を終了できます。そのため、評価者が企業に配慮し、厳しさを欠く「底辺への競争」が起きる懸念があります。</li>
+</ul>
+<p>METR は、内部の AI システムが制御不能に陥る可能性（loss of control）について、一般市民が判断できる独立した証拠が不足しているとして、内部アクセスと従業員へのインタビューに基づく公開報告書を作る仕組みも提案しています。公表すべき論点は、(1) アラインメント、(2) 制御（モニタリング）、(3) AI 研究開発の加速の3つです。これは安全性を保証するものではなく、証拠を公開して、取締役、外部研究者、政策立案者が独自に判断できるようにするためのものです。セキュリティ監査、ガバナンスの遵守状況、デプロイの可否判断、公開前の事前評価は、提案の対象外です。</p>
+
+<h2>3. Anthropic の政策提案</h2>
+<p>Anthropic は、「Policy on the AI Exponential」で、連邦レベルの規制の枠組みを提案しています。ページに公開日の記載はありません。</p>
+
+<figure class="viz">
+<p class="viz-title">提案が対象とする開発者の条件</p>
+<p class="viz-sub">Anthropic の提案（Advanced AI Framework）。2つの条件を、両方満たすこと</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 260" role="img" aria-label="提案の対象となる開発者の条件。学習の計算量が10の25乗FLOPsを超える、かつ、AI関連の売上が5億ドル超またはAI研究開発費が10億ドル超。この条件を満たすと、透明性とセキュリティの義務、独立評価者の関与、展開の阻止や抑止の権限の対象になる。">
+<defs>
+<marker id="arrow-cover" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box-key" x="8" y="80" width="250" height="100" rx="8"/>
+<text class="t-strong" x="22" y="108">条件1</text>
+<text class="t-small" x="22" y="130">学習の計算量が</text><text class="t-small" x="22" y="146">10^25 FLOPs を超える</text>
+
+<text class="t-strong" x="290" y="134" text-anchor="middle">かつ</text>
+
+<rect class="box" x="324" y="30" width="226" height="80" rx="8"/>
+<text class="t-strong" x="338" y="58">条件2-a</text>
+<text class="t-small" x="338" y="80">AI 関連の売上が</text><text class="t-small" x="338" y="96">5億ドル超</text>
+<text class="t-strong" x="437" y="130" text-anchor="middle">または</text>
+<rect class="box" x="324" y="150" width="226" height="80" rx="8"/>
+<text class="t-strong" x="338" y="178">条件2-b</text>
+<text class="t-small" x="338" y="200">AI 研究開発費が</text><text class="t-small" x="338" y="216">10億ドル超</text>
+
+<path class="arrow" d="M550,70 H566 V190 H550 M566,130 H616" marker-end="url(#arrow-cover)"/>
+
+<rect class="box" x="618" y="40" width="254" height="180" rx="8"/>
+<text class="t-strong" x="632" y="68">提案の枠組みの対象</text>
+<text class="t-small" x="632" y="94">透明性の義務</text><text class="t-small" x="632" y="110">（テスト結果、安全フレームワーク、</text><text class="t-small" x="632" y="126">システムカード、リスク報告書）</text>
+<text class="t-small" x="632" y="152">セキュリティの義務</text>
+<text class="t-small" x="632" y="178">独立評価者の定期的な関与</text>
+<text class="t-small" x="632" y="204">展開の阻止・抑止の権限</text>
+</svg>
+</div>
+<figcaption>壊滅的リスクは、死者数や被害額の閾値ではなく、生物兵器、サイバー、制御喪失、AI による研究開発の自動化の4分野で定義されています。「50人の死者または10億ドルの損害」で発動する法案、という見出しも見かけましたが、Anthropic のこのページには、そのような閾値は示されていません。見出しの根拠は確認できなかったため、ここでは扱っていません。</figcaption>
+</figure>
+
+<div class="cards">
+<div class="card"><h3>政府に求める権限</h3><ul><li>重大な壊滅的被害のリスクがあるモデルの展開を、阻止または抑止する法的権限</li><li>現行法や議会の既存の提案を超える権限だと、Anthropic は述べている</li><li>権限の乱用を防ぐ安全装置も含む。軽めの規制から始めて段階的に強化する案も示している</li><li>所管の省庁名は記載されていない</li></ul></div>
+<div class="card"><h3>罰則</h3><ul><li>民事罰</li><li>罰金額は世界の年間売上に連動し、違反が繰り返されるとさらに重くなる</li><li>具体的な金額や割合は示されていない</li></ul></div>
+<div class="card"><h3>州法との関係</h3><ul><li>連邦法が、この提案と少なくとも同等に強力な場合にのみ、議会は州法に優先してよい</li><li>優先は限定的であるべきで、児童保護や消費者保護など、連邦法の安全機能の対象外の分野では、州が規制できる</li></ul></div>
+<div class="card"><h3>セキュリティの義務</h3><ul><li>開発環境全体の保護</li><li>対策の概要の公開と、要請に応じた指定機関への詳細の共有</li><li>モデル蒸留（distillation）攻撃を指定機関に報告する経路</li><li>自社の防御の定期的なテスト</li></ul></div>
+</div>
+<p>Anthropic は、制御喪失と、AI による研究開発の自動化への対策は、まだ研究段階で、十分に整理されていないと、明記しています。</p>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>司法長官</dt><dd>米国の州の法務を担う公職。消費者保護の訴訟も提起する。</dd>
+<dt>METR</dt><dd>AI モデルの能力とリスクを評価する非営利団体。</dd>
+<dt>制御の喪失（loss of control）</dt><dd>AI システムが、人間の制御から外れて動いてしまうこと。</dd>
+<dt>アラインメント</dt><dd>AI が、人間の意図や価値に沿って動くようにすること。</dd>
+<dt>レッドチーミング</dt><dd>攻撃者の立場で、システムの弱点を探す評価。</dd>
+<dt>伏せ字（redaction）</dt><dd>公表する文書の一部を、黒塗りなどで隠すこと。</dd>
+<dt>プリエンプション</dt><dd>連邦法が、州法に優先すること。</dd>
+<dt>FLOPs</dt><dd>浮動小数点演算の回数。学習に使った計算量の単位。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。各機関の公式ページの記述に基づいています。</p>
+<p>州の訴えは、州の主張であり、裁判所の認定ではありません。OpenAI の反論は、今回確認した発表には含まれていません。</p>
+<p>英国の情報機関 MI5 長官の演説と、一部の報道の見出しにあった数字（「過去10年で4倍」「死者50人または損害10億ドル」）は、一次情報で裏づけを取れなかったため、扱っていません。</p>
+<p>内容は、各機関の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="../ai/agent-runtime-infrastructure.html">AIエージェントの実行基盤が動いている</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（州の提訴、外部評価者の組み込み、政策提案の整理）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
