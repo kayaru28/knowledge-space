@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月14日に Microsoft が発表した、YAM Store、CoGUI、Iron Man の解体について、公式の発表から、犯罪の「サービス経済」の構造、経緯、措置の規模、組織の対策を図で整理する。">
+<title>日本を狙った詐欺の裏側：Microsoft が3つの犯罪サービスを解体した | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>日本を狙った詐欺の裏側：Microsoft が3つの犯罪サービスを解体した</h1><p class="summary">2026年10月14日に Microsoft が発表した、YAM Store、CoGUI、Iron Man の解体について、公式の発表から、犯罪の「サービス経済」の構造、経緯、措置の規模、組織の対策を図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月14日、Microsoft の Digital Crimes Unit（DCU）が、Health-ISAC と共同で、国境を越えるサイバー犯罪を支える3つのサービス（YAM Store、CoGUI、Iron Man）を解体したと発表しました。きっかけは、2025年末に日本の警察庁が、日本の人々を狙った悪質なメッセージのキャンペーンを Microsoft に通報したことです。</p>
+<p>詐欺のメッセージは、被害者が目にする一部にすぎません。その裏には、アカウント、フィッシングキット、偽サイトのテンプレートを売る「サービス経済」があります。今回の措置は、メッセージの送り手ではなく、<strong>供給者</strong>を狙ったものです。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">10億<small>通以上</small></p><p class="stat-label">2026年1月以降、3つのサービスが可能にした悪意あるメッセージ</p></div>
+<div class="stat"><p class="stat-value">75,000<small>以上</small></p><p class="stat-label">標的にされた組織</p></div>
+<div class="stat"><p class="stat-value">20,000<small>以上</small></p><p class="stat-label">無効にした YAM Store 関連のアカウント</p></div>
+<div class="stat"><p class="stat-value">100,000<small>以上</small></p><p class="stat-label">ブロックした、なりすましや詐欺に使われたドメイン</p></div>
+</div>
+
+<h2>3つのサービス</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Microsoft の発表2本（10月14日付）より</caption>
+<thead><tr><th>サービス</th><th>役割</th><th>特徴</th></tr></thead>
+<tbody>
+<tr><td>YAM Store（Storm-3119）</td><td>初期アクセスを売る店。侵害・不正取得した Microsoft 365／Azure for Education のテナントや、Microsoft・Google のアカウントを販売</td><td>オンラインショップのように運営。非営利団体や教育機関などのドメインを乗っ取り、そこから Microsoft 365 のアカウントを不正に作成することもあった。アカウント、ライセンス、ストレージを、経過年数や組織の種類（.edu、.org など）で分類して販売</td></tr>
+<tr><td>CoGUI（Storm-2990）</td><td>フィッシングキット。企業、金融機関、政府機関などを装った既製のWebサイトやメッセージを提供</td><td>日本と米国の被害者を主な対象にしていた。2026年半ばから、後継の Iron Man に置き換わりつつあった</td></tr>
+<tr><td>Iron Man（Storm-2990）</td><td>フィッシングキット。信頼される組織を装う数千の既製テンプレートを提供</td><td>ブランド、業種、国ごとに調整したメール、SMS、Web コンテンツを素早く展開できる。2026年6月に販売が始まった</td></tr>
+</tbody>
+</table>
+</div>
+<p>Iron Man のテンプレート数は、On the Issues が「2,300以上、150を超える国・地域の組織を装う」、Security ブログが「2,335以上、139以上の国と地域」と、2本で違う書き方をしています。ここでは、どちらも原文のとおりにしました。</p>
+
+<figure class="viz">
+<p class="viz-title">犯罪の「サービス経済」の構造</p>
+<p class="viz-sub">Microsoft の発表に基づく図（役割の整理は発表による）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 330" role="img" aria-label="犯罪のサービス経済の構造。供給者であるYAM Storeがアカウントとテナントを販売し、フィッシングキット（CoGUIとIron Man）が偽サイトのテンプレートを販売する。攻撃者がこれらを購入し、偽のメールやSMSや偽サイトで被害者を狙う。今回の措置の対象は供給者。">
+<defs>
+<marker id="arrow-crime" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="line-limit" x="2" y="34" width="258" height="244" rx="8"/>
+<text class="t-strong" x="8" y="24">供給者</text>
+<text class="t-small" x="90" y="24">今回の措置の対象（点線の囲み）</text>
+
+<rect class="box" x="12" y="50" width="238" height="96" rx="8"/>
+<text class="t-strong" x="26" y="76">YAM Store</text>
+<text class="t-small" x="26" y="98">侵害・不正取得した Microsoft／</text><text class="t-small" x="26" y="114">Google のアカウントや</text><text class="t-small" x="26" y="130">テナントを販売</text>
+
+<rect class="box" x="12" y="164" width="238" height="96" rx="8"/>
+<text class="t-strong" x="26" y="190">フィッシングキット</text>
+<text class="t-small" x="26" y="212">CoGUI → Iron Man</text><text class="t-small" x="26" y="228">偽サイトやメッセージの</text><text class="t-small" x="26" y="244">テンプレートを販売</text>
+
+<line class="arrow" x1="250" y1="98" x2="372" y2="140" marker-end="url(#arrow-crime)"/>
+<text class="t-small" x="294" y="106">購入</text>
+<line class="arrow" x1="250" y1="212" x2="372" y2="172" marker-end="url(#arrow-crime)"/>
+<text class="t-small" x="294" y="216">購入</text>
+
+<text class="t-strong" x="374" y="24">攻撃者</text>
+<rect class="box" x="374" y="100" width="180" height="112" rx="8"/>
+<text class="t-strong" x="388" y="128">下流の攻撃者</text>
+<text class="t-small" x="388" y="150">キットとインフラを買い、</text><text class="t-small" x="388" y="166">フィッシングや</text><text class="t-small" x="388" y="182">不正取引を行う</text>
+
+<line class="arrow" x1="554" y1="156" x2="656" y2="156" marker-end="url(#arrow-crime)"/>
+<text class="t-small" x="605" y="136" text-anchor="middle">偽メール・SMS</text><text class="t-small" x="605" y="150" text-anchor="middle">・偽サイト</text>
+
+<text class="t-strong" x="660" y="24">被害者</text>
+<rect class="box-key" x="660" y="100" width="212" height="112" rx="8"/>
+<text class="t-strong" x="674" y="128">被害者</text>
+<text class="t-small" x="674" y="150">消費者、医療機関、</text><text class="t-small" x="674" y="166">金融機関、企業など</text><text class="t-small" x="674" y="182">日本と米国が特に多い</text>
+
+<text class="t-small" x="374" y="262">決済は主に暗号資産（USDT、Ethereum）。</text>
+<text class="t-small" x="374" y="278">YAM Store は Alipay、WeChat Pay も受け付ける。</text>
+<text class="t-muted t-small" x="8" y="312">「被害者が目にするのは、詐欺のメッセージだけであることが多い」（Microsoft の発表の趣旨）</text>
+</svg>
+</div>
+<figcaption>今回の措置は、被害者に届くメッセージを一通ずつ止めるのではなく、メッセージを可能にしていた供給者のドメインとインフラを止めるものです。</figcaption>
+</figure>
+
+<h2>経緯</h2>
+
+<figure class="viz">
+<p class="viz-title">調査の始まりから解体の発表まで</p>
+<p class="viz-sub">2025年10月〜2026年10月</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 240" role="img" aria-label="経緯。2025年末に日本の警察庁がMicrosoftに通報して調査が始まった。2026年1月以降の悪意あるメッセージを集計。2026年6月にIron Manの販売が始まり、CoGUIが置き換わりつつあった。2026年10月14日に解体を発表。">
+<g class="grid">
+<line x1="60" y1="64" x2="60" y2="170"/><line x1="240" y1="64" x2="240" y2="170"/>
+<line x1="420" y1="64" x2="420" y2="170"/><line x1="600" y1="64" x2="600" y2="170"/>
+<line x1="780" y1="64" x2="780" y2="170"/>
+</g>
+<line class="axis" x1="60" y1="116" x2="840" y2="116"/>
+<g text-anchor="middle">
+<text class="t-muted" x="60" y="190">2025/10</text><text class="t-muted" x="240" y="190">2026/1</text>
+<text class="t-muted" x="420" y="190">2026/4</text><text class="t-muted" x="600" y="190">2026/7</text>
+<text class="t-muted" x="780" y="190">2026/10</text>
+</g>
+
+<circle class="mk-announce" cx="180" cy="116" r="7"><title>2025年末 日本の警察庁が、日本の人々を狙った悪質なメッセージのキャンペーンを Microsoft に通報</title></circle>
+<text class="t-strong" x="180" y="84" text-anchor="middle">2025年末</text><text class="t-small" x="180" y="100" text-anchor="middle">警察庁が通報</text>
+
+<polygon class="mk-found" points="240,108 248,116 240,124 232,116"><title>2026年1月以降 3つのサービスが可能にした悪意あるメッセージの集計の始まり</title></polygon>
+<text class="t-strong" x="262" y="144" text-anchor="start">2026年1月〜</text><text class="t-small" x="262" y="160" text-anchor="start">メッセージの集計の始まり</text>
+
+<circle class="mk-announce" cx="540" cy="116" r="7"><title>2026年6月 Iron Man の販売開始。CoGUI は置き換わりつつあった</title></circle>
+<text class="t-strong" x="540" y="84" text-anchor="middle">2026年6月</text><text class="t-small" x="540" y="100" text-anchor="middle">Iron Man の販売開始</text>
+
+<circle class="mk-period" cx="811" cy="116" r="8"><title>2026年10月14日 3つのサービスの解体を発表</title></circle>
+<text class="t-strong" x="840" y="84" text-anchor="end">2026/10/14</text><text class="t-small" x="840" y="100" text-anchor="end">解体を発表</text>
+</svg>
+</div>
+<figcaption>調査は、日本の警察庁の通報から始まりました。警察庁は情報提供と捜査支援を続け、JC3（日本サイバー犯罪対策センター）は、130以上の会員組織から得た情報で、日本の企業や金融機関への一連の攻撃が、広範なパターンの一部であることを裏づけました。</figcaption>
+</figure>
+
+<h3>協力した組織</h3>
+<ul>
+<li>日本の警察庁（NPA）、JC3（日本サイバー犯罪対策センター）</li>
+<li>Health-ISAC（医療分野への影響に関する知見）</li>
+<li>Resecurity、Cloudflare、Oracle、Proofpoint、TRM Labs（情報提供と捜査支援）</li>
+<li>米国シークレットサービスや国際的な法執行機関とも、情報を共有した</li>
+<li>複数の組織の情報を組み合わせ、AIツールの支援も受けて、当初は無関係に見えたアカウント、Webサイト、インフラを結びつけた</li>
+</ul>
+
+<h2>実施した措置と規模</h2>
+
+<figure class="viz">
+<p class="viz-title">Microsoft が実施した措置の規模</p>
+<p class="viz-sub">いずれも「以上」の数字</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 180" role="img" aria-label="措置の規模。YAM Storeに関連して無効にしたアカウントは2万以上、なりすましや詐欺に使われていてブロックしたドメインは10万以上。">
+<g class="grid">
+<line x1="270" y1="20" x2="270" y2="130"/><line x1="370" y1="20" x2="370" y2="130"/>
+<line x1="470" y1="20" x2="470" y2="130"/><line x1="570" y1="20" x2="570" y2="130"/>
+<line x1="670" y1="20" x2="670" y2="130"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="270" y="152">0</text><text class="t-muted" x="370" y="152">25,000</text>
+<text class="t-muted" x="470" y="152">50,000</text><text class="t-muted" x="570" y="152">75,000</text>
+<text class="t-muted" x="670" y="152">100,000</text>
+</g>
+<text class="t-strong" x="8" y="56">無効にしたアカウント</text><text class="t-small" x="8" y="74">YAM Store に関連</text>
+<path class="bar" d="M270,46 h76 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-76 z"><title>無効にしたアカウント 20,000以上</title></path>
+<text class="t-ink" x="364" y="62">20,000以上</text>
+<text class="t-strong" x="8" y="112">ブロックしたドメイン</text><text class="t-small" x="8" y="130">なりすましや詐欺に使われたもの</text>
+<path class="bar" d="M270,96 h396 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-396 z"><title>ブロックしたドメイン 100,000以上</title></path>
+<text class="t-ink" x="686" y="112">100,000以上</text>
+</svg>
+</div>
+<figcaption>アカウントとドメインでは、単位が違うものの、止めた対象の数には5倍の差があります。数字は、Microsoft の発表にあるものです。</figcaption>
+</figure>
+
+<div class="cards">
+<div class="card"><h3>法的手続き</h3><p>米国フロリダ州南部地区連邦地方裁判所の命令に基づき、3つのサービスの基盤になっていたドメインを差し押さえ、リダイレクトしました。</p></div>
+<div class="card"><h3>アカウントとインフラ</h3><p>YAM Store に関連する20,000以上のアカウントを無効にしました。Microsoft のサービス上でホストされていたインフラを削除し、解体を継続的に進めています。</p></div>
+<div class="card"><h3>ドメインのブロック</h3><p>なりすましや詐欺に使われていた100,000以上のドメインをブロックしました。</p></div>
+</div>
+
+<h3>被害の規模（2026年1月以降）</h3>
+<ul>
+<li>3つのサービスの合計で、10億通以上の悪意あるメッセージを可能にした。</li>
+<li>75,000以上の組織を標的にした。そのうち7億5,000万通以上が、Microsoft の顧客を狙ったもの。</li>
+<li>150以上の国・地域の、消費者、医療機関、金融機関、その他の企業に影響した。</li>
+<li>運営者に、数千万ドル規模の収益をもたらしたとされる。</li>
+</ul>
+
+<h2>手口</h2>
+<p>キットが提供するテンプレートは、銀行、小売、運輸、通信、宅配、警察、税務などの官公庁を装います。メッセージは、次のような内容で、クリック、個人情報の入力、支払いを促します。</p>
+<div class="cards">
+<div class="card"><h3>装う内容</h3><ul><li>偽の配送通知</li><li>通行料や罰金の未払い通知</li><li>税金の還付</li><li>アカウントの確認</li></ul></div>
+<div class="card"><h3>見破られないための仕組み</h3><ul><li>国別のジオフェンシング</li><li>偽の CAPTCHA</li><li>IP のブロック／許可リスト</li><li>研究者の検知を避ける設定</li></ul></div>
+<div class="card"><h3>下流の攻撃</h3><ul><li>緊急性を煽るメッセージ</li><li>悪性リンク経由の認証情報の窃取</li><li>デバイスコードフィッシング（トークンの取得）</li><li>盗んだ決済情報による不正購入や金融詐欺</li></ul></div>
+<div class="card"><h3>Iron Man System の機能</h3><ul><li>被害者の操作を、リアルタイムで監視・制御できる方式（WebSocket）</li><li>Telegram による即時の通知</li><li>パネルは主に中国のホスティング事業者に置かれている</li></ul></div>
+</div>
+
+<h3>YAM Store がアカウントを手に入れる5つの段階</h3>
+<ol>
+<li><strong>偵察:</strong> Tor 経由で匿名のまま、クラウドを使う組織を特定する。</li>
+<li><strong>テナントの掌握:</strong> アプリケーション専用の認証でディレクトリを操作し、パスワードのリセットやライセンスの割り当てを行う。</li>
+<li><strong>ストレージの悪用:</strong> Global Administrator の侵害後、サービスプリンシパルを追加し、SharePoint／OneDrive をホスティングに使う。</li>
+<li><strong>フィッシングと DNS の基盤:</strong> Cloudflare を通じて、フィッシングのドメイン、SSL 証明書、ルーティングを一元管理する。</li>
+<li><strong>ストアフロントと収益化:</strong> 自動化した店舗で転売し、下位の再販売者も置く。</li>
+</ol>
+
+<h2>組織の対策</h2>
+<p>Microsoft の Security ブログが挙げている推奨策です。侵害の指標（IoC）の一覧は、本文には載っていません。</p>
+<div class="cards">
+<div class="card"><h3>ユーザー教育</h3><p>緊急性や公式を装う文面を疑い、送信者や企業に、別の経路で確認します。サインインのときは、対象のアプリを確認します。</p></div>
+<div class="card"><h3>メール保護</h3><p>Exchange Online Protection と Defender for Office 365 の推奨設定を確認します。Safe Links を、内部の受信者にも適用します。</p></div>
+<div class="card"><h3>権限</h3><p>最小権限とゼロトラストの原則を適用し、Global Administrator の権限を絞ります。</p></div>
+<div class="card"><h3>認証</h3><p>パスキーと MFA を導入し、特権アカウントには、耐フィッシング性の高い MFA を条件付きアクセスで要求します。MFA やパスキーの登録は、信頼できる場所とデバイスからのみ許可します。</p></div>
+<div class="card"><h3>ネットワーク</h3><p>ネットワーク保護を有効にし、悪性ドメインへのアクセスを防ぎます。</p></div>
+</div>
+<p>個人が自分を守るための具体的な手順は、On the Issues の発表には示されておらず、Microsoft Threat Intelligence の別のブログを参照するよう案内されています。上のユーザー教育の「疑う、別の経路で確認する」が、個人にも当てはまる基本です。</p>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>初期アクセスブローカー（IAB）</dt><dd>侵入のための入り口（アカウントや認証情報）を、攻撃者に売る業者。</dd>
+<dt>フィッシング・アズ・ア・サービス</dt><dd>偽サイトやメッセージの作成キットを、サブスクリプションで貸し出す犯罪サービス。</dd>
+<dt>テナント</dt><dd>Microsoft 365 などで、組織ごとに割り当てられる利用環境。</dd>
+<dt>ジオフェンシング</dt><dd>地域を限って、表示や挙動を変える仕組み。</dd>
+<dt>デバイスコードフィッシング</dt><dd>正規のログイン画面を使い、利用者にコードを入力させて、トークンを取得する手口。</dd>
+<dt>ドメインの差し押さえ</dt><dd>裁判所の命令で、ドメインを管理下に置き、悪用を止めること。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。Microsoft の発表2本（10月14日付）に基づいています。</p>
+<p>数字は Microsoft の発表にある値で、独自に検証したものではありません。Iron Man のテンプレート数と国・地域数は、2本で違うため、両方を載せました。</p>
+<p>逮捕や起訴など、法執行機関側の動きは、今回確認した発表には記載がないため、扱っていません。</p>
+<p>内容は、Microsoft の発表をもとに、独自に整理したものです。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（3つのサービスの構造、経緯、措置の規模、組織の対策）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
