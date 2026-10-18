@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。">
+<title>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース</h1><p class="summary">9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>9月28日から10月9日までの間に、AIエージェントを動かす基盤に関する発表が5件ありました。隔離（Microsoft、gVisor）、起動と状態の保存（Cloudflare）、実行環境の統合（Deno が Cloudflare に合流）、データベース（Supabase が Turso を買収）と、層が違います。共通しているのは、「エージェントを安全に・速く・状態を持って動かす」ための部品が、次々に整ってきていることです。</p>
+<p>実務で気をつけたいのは、<strong>移行の期限が示されたものがある</strong>ことです。Cloudflare の旧 Container / Sandbox クラスの保守は2026年12月31日まで、Deno Deploy は約6か月後に終了、Deno ランタイムの開発は約1年後に終わります。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">5<small>件</small></p><p class="stat-label">9/28〜10/9 に出た、エージェントの実行基盤に関する発表</p></div>
+<div class="stat"><p class="stat-value">約6<small>倍</small></p><p class="stat-label">Cloudflare Containers の起動の高速化（中央値 4.049秒 → 648ミリ秒）</p></div>
+<div class="stat"><p class="stat-value">12/31</p><p class="stat-label">Cloudflare の旧 Container / Sandbox クラスの保守が終わる日</p></div>
+<div class="stat"><p class="stat-value">約1<small>年後</small></p><p class="stat-label">Deno ランタイムの開発が終わる時期</p></div>
+</div>
+
+<h2>5件の発表</h2>
+<p>次の表は、5件の発表を、公式ブログの記述に沿って整理したものです。</p>
+
+<div class="table-wrap">
+<table>
+<caption>各社の公式ブログ（9月30日〜10月9日付）より。数字や機能は各社の発表にあるもので、独自に検証したものではありません</caption>
+<thead><tr><th>組織</th><th>公表日</th><th>何が起きたか</th><th>実務での注意</th></tr></thead>
+<tbody>
+<tr><td>Microsoft（MXC）</td><td>10/7</td><td>Microsoft Execution Containers が一般提供。エージェントなど、信頼できない、または動的に生成されたワークロード向けの、ポリシー駆動の実行レイヤー</td><td>MicroVM は実験的。アクティビティレポートは Windows のプロセスコンテナのみ。Intune、Entra、Agent 365 の機能は「近日」とされ、時期の記載なし</td></tr>
+<tr><td>Cloudflare Containers</td><td>9/30</td><td>エージェント向けに刷新。起動が約6倍速。ファイルシステムのスナップショット（公開ベータ）。新しいスケジューリングポリシー（公開ベータ）</td><td>新機能は ctx.container のみ。旧 Container クラスと旧 Sandbox クラスは 12/31 まで保守。料金、上限、一般提供の時期は記載なし</td></tr>
+<tr><td>gVisor</td><td>10/2（承認は 9/28）</td><td>Google が gVisor を、名称と商標を含めて CNCF に寄贈。まず Sandbox 段階</td><td>短期の影響は小さい（公式の記述）。数週間でメンテナ制へ、数か月で組織単位の投票へ、GitHub リポジトリは google 組織の外へ</td></tr>
+<tr><td>Deno</td><td>10/9</td><td>Deno チームが Cloudflare に合流。workerd と celld を統合し、Workers と Durable Objects のセルフホストを簡素化</td><td>ランタイムは1年間の月次リリースのあと開発終了。Deno Deploy は6か月後に終了。JSR は継続</td></tr>
+<tr><td>Supabase / Turso</td><td>10/2</td><td>Supabase が Turso の買収を発表。Turso は SQLite を Rust で作り直し、1台のサーバーで数百万のデータベースを管理できる基盤を持つ</td><td>完了時期、条件、金額は記載なし。既存ユーザーに変更はないとされる</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">発表の時系列</p>
+<p class="viz-sub">2026年9月28日〜10月9日。間隔は等間隔ではなく、順序を示します</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 340" role="img" aria-label="発表の時系列。9月28日にgVisorのCNCFへの寄贈が承認、9月30日にCloudflare Containersが刷新、10月2日にgVisorの寄贈が公表されSupabaseがTursoの買収を発表、10月7日にMicrosoft Execution Containersが一般提供、10月9日にDenoがCloudflareに合流。">
+<g class="grid">
+<line x1="8" y1="70" x2="872" y2="70"/><line x1="8" y1="122" x2="872" y2="122"/>
+<line x1="8" y1="174" x2="872" y2="174"/><line x1="8" y1="226" x2="872" y2="226"/>
+<line x1="8" y1="278" x2="872" y2="278"/>
+</g>
+<line class="axis" x1="130" y1="26" x2="130" y2="322"/>
+<text class="t-muted" x="112" y="16" text-anchor="end">日付</text><text class="t-muted" x="150" y="16">出来事</text><text class="t-muted" x="650" y="16">層</text>
+
+<text class="t-strong" x="112" y="49" text-anchor="end">9/28</text>
+<circle class="mk-announce" cx="130" cy="44" r="7"/>
+<text class="t-ink" x="150" y="49">gVisor の CNCF への寄贈が承認される</text><text x="650" y="49">隔離</text>
+
+<text class="t-strong" x="112" y="101" text-anchor="end">9/30</text>
+<circle class="mk-announce" cx="130" cy="96" r="7"/>
+<text class="t-ink" x="150" y="101">Cloudflare Containers が刷新される（起動が約6倍速）</text><text x="650" y="101">実行環境・状態の保存</text>
+
+<text class="t-strong" x="112" y="153" text-anchor="end">10/2</text>
+<circle class="mk-announce" cx="130" cy="148" r="7"/>
+<text class="t-ink" x="150" y="153">gVisor の CNCF への寄贈が公表される</text><text x="650" y="153">隔離</text>
+
+<text class="t-strong" x="112" y="205" text-anchor="end">10/2</text>
+<circle class="mk-announce" cx="130" cy="200" r="7"/>
+<text class="t-ink" x="150" y="205">Supabase が Turso の買収を発表</text><text x="650" y="205">データベース</text>
+
+<text class="t-strong" x="112" y="257" text-anchor="end">10/7</text>
+<circle class="mk-announce" cx="130" cy="252" r="7"/>
+<text class="t-ink" x="150" y="257">Microsoft Execution Containers が一般提供</text><text x="650" y="257">隔離</text>
+
+<text class="t-strong" x="112" y="309" text-anchor="end">10/9</text>
+<circle class="mk-announce" cx="130" cy="304" r="7"/>
+<text class="t-ink" x="150" y="309">Deno が Cloudflare に合流</text><text x="650" y="309">実行環境</text>
+</svg>
+</div>
+<figcaption>約2週間のあいだに、隔離（Microsoft、gVisor）、実行環境と状態の保存（Cloudflare、Deno の合流）、データベース（Supabase）と、基盤の複数の層で発表が続きました。gVisor は、承認と公表で2回出てきます。</figcaption>
+</figure>
+
+<h2>層ごとの整理</h2>
+<p>エージェントが動く流れに沿って、発表を層に分けたものです。各社がそう述べているわけではなく、筆者の整理です。</p>
+
+<figure class="viz">
+<p class="viz-title">エージェントの実行基盤の層と、今回の発表</p>
+<p class="viz-sub">上から下へ、エージェントが使う順（筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 392" role="img" aria-label="エージェントの実行基盤の5つの層。エージェント、隔離と権限、実行環境、状態の保存、データベース。隔離にはMicrosoft MXCとgVisor、実行環境にはCloudflare ContainersとWorkersおよびDeno、状態の保存にはファイルシステムのスナップショットとDurable Objects、データベースにはSupabaseによるTursoの買収が対応する。">
+<g>
+<rect class="box" x="8" y="24" width="190" height="64" rx="8"/><text class="t-strong" x="22" y="52">エージェント</text><text class="t-small" x="22" y="72">動かす主体</text>
+<rect class="box" x="8" y="96" width="190" height="64" rx="8"/><text class="t-strong" x="22" y="124">隔離・権限</text><text class="t-small" x="22" y="144">何に触れてよいか</text>
+<rect class="box" x="8" y="168" width="190" height="64" rx="8"/><text class="t-strong" x="22" y="196">実行環境</text><text class="t-small" x="22" y="216">どこで・どう動かすか</text>
+<rect class="box" x="8" y="240" width="190" height="64" rx="8"/><text class="t-strong" x="22" y="268">状態の保存</text><text class="t-small" x="22" y="288">中断・再開と記憶</text>
+<rect class="box" x="8" y="312" width="190" height="64" rx="8"/><text class="t-strong" x="22" y="340">データベース</text><text class="t-small" x="22" y="360">大量の小さなDB</text>
+</g>
+<g>
+<rect class="box-key" x="210" y="32" width="330" height="48" rx="8"/><text class="t-strong" x="224" y="52">Copilot、Codex、Replit など</text><text class="t-small" x="224" y="70">MXC に対応（Claude Code などは対応予定）</text>
+
+<rect class="box-key" x="210" y="104" width="330" height="48" rx="8"/><text class="t-strong" x="224" y="124">Microsoft MXC（10/7 一般提供）</text><text class="t-small" x="224" y="142">ポリシーをエージェントの外側で適用</text>
+<rect class="box-key" x="552" y="104" width="320" height="48" rx="8"/><text class="t-strong" x="566" y="124">gVisor（10/2 CNCF へ寄贈）</text><text class="t-small" x="566" y="142">ユーザー空間で動く Linux の実装</text>
+
+<rect class="box-key" x="210" y="176" width="330" height="48" rx="8"/><text class="t-strong" x="224" y="196">Cloudflare Containers（9/30 刷新）</text><text class="t-small" x="224" y="214">準備済み VM を復元し、起動が約6倍速</text>
+<rect class="box-key" x="552" y="176" width="320" height="48" rx="8"/><text class="t-strong" x="566" y="196">Workers と Deno（10/9 合流）</text><text class="t-small" x="566" y="214">セルフホストできる workerd へ統合</text>
+
+<rect class="box-key" x="210" y="248" width="330" height="48" rx="8"/><text class="t-strong" x="224" y="268">ファイルシステムのスナップショット</text><text class="t-small" x="224" y="286">Cloudflare（9/30）。公開ベータ</text>
+<rect class="box-key" x="552" y="248" width="320" height="48" rx="8"/><text class="t-strong" x="566" y="268">Durable Objects</text><text class="t-small" x="566" y="286">状態を持つ分散シングルトン（Workers）</text>
+
+<rect class="box-key" x="210" y="320" width="330" height="48" rx="8"/><text class="t-strong" x="224" y="340">Supabase が Turso を買収（10/2）</text><text class="t-small" x="224" y="358">1台のサーバーで数百万のDBを管理</text>
+</g>
+</svg>
+</div>
+<figcaption>隔離と実行環境の層では、複数の発表が重なっています。状態の保存とデータベースは、それぞれ1〜2件です。エージェントを本番で動かすには、これらの層をつなげて選ぶ必要があります。</figcaption>
+</figure>
+
+<h2>起動の速さ</h2>
+<p>Cloudflare は、Containers を刷新して、起動が約6倍速くなったと説明しています。新規の仮想マシンを一から起動する代わりに、割り当て前の準備済みの仮想マシンを復元する方式です。次の図は、独立したベンチマーク（ComputeSDK）の結果です。</p>
+
+<figure class="viz">
+<p class="viz-title">サンドボックスが使えるようになるまでの時間</p>
+<p class="viz-sub">100個のサンドボックスを同時に起動して計測。短いほど速い</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 340" role="img" aria-label="起動時間の比較。中央値は従来4.049秒、新しい方式648ミリ秒で6.2倍。95パーセンタイルは5.839秒、910ミリ秒で6.4倍。99パーセンタイルは6.717秒、1,129ミリ秒で5.9倍。">
+<rect class="bar-old" x="190" y="6" width="14" height="14" rx="2"/><text x="210" y="18">従来</text>
+<rect class="bar" x="262" y="6" width="14" height="14" rx="2"/><text x="282" y="18">新しいスケジューリング</text>
+<g class="grid">
+<line x1="190" y1="36" x2="190" y2="300"/><line x1="326" y1="36" x2="326" y2="300"/>
+<line x1="462" y1="36" x2="462" y2="300"/><line x1="598" y1="36" x2="598" y2="300"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="190" y="322">0</text><text class="t-muted" x="326" y="322">2秒</text>
+<text class="t-muted" x="462" y="322">4秒</text><text class="t-muted" x="598" y="322">6秒</text>
+</g>
+
+<text class="t-strong" x="8" y="82">中央値</text>
+<path class="bar-old" d="M190,52 h271 a4,4 0 0 1 4,4 v14 a4,4 0 0 1 -4,4 h-271 z"><title>従来 中央値 4.049秒</title></path>
+<text class="t-ink" x="473" y="68">4.049秒</text>
+<path class="bar" d="M190,80 h40 a4,4 0 0 1 4,4 v14 a4,4 0 0 1 -4,4 h-40 z"><title>新しい方式 中央値 648ミリ秒（6.2倍）</title></path>
+<text class="t-ink" x="246" y="96">648ミリ秒（6.2倍）</text>
+
+<text class="t-strong" x="8" y="178">95パーセンタイル</text>
+<path class="bar-old" d="M190,148 h393 a4,4 0 0 1 4,4 v14 a4,4 0 0 1 -4,4 h-393 z"><title>従来 95パーセンタイル 5.839秒</title></path>
+<text class="t-ink" x="595" y="164">5.839秒</text>
+<path class="bar" d="M190,176 h58 a4,4 0 0 1 4,4 v14 a4,4 0 0 1 -4,4 h-58 z"><title>新しい方式 95パーセンタイル 910ミリ秒（6.4倍）</title></path>
+<text class="t-ink" x="264" y="192">910ミリ秒（6.4倍）</text>
+
+<text class="t-strong" x="8" y="274">99パーセンタイル</text>
+<path class="bar-old" d="M190,244 h453 a4,4 0 0 1 4,4 v14 a4,4 0 0 1 -4,4 h-453 z"><title>従来 99パーセンタイル 6.717秒</title></path>
+<text class="t-ink" x="655" y="260">6.717秒</text>
+<path class="bar" d="M190,272 h73 a4,4 0 0 1 4,4 v14 a4,4 0 0 1 -4,4 h-73 z"><title>新しい方式 99パーセンタイル 1,129ミリ秒（5.9倍）</title></path>
+<text class="t-ink" x="279" y="288">1,129ミリ秒（5.9倍）</text>
+</svg>
+</div>
+<figcaption>中央値でも、遅い側の99パーセンタイルでも、約6倍速くなっています。Cloudflare は、自社の予備的な試験で、1つのアカウントが6か所のロケーションで10万個の Container を5.387秒で起動したとも説明しています。数字は各社の発表にあるもので、独自に検証したものではありません。</figcaption>
+</figure>
+
+<h2>移行の期限</h2>
+<p>今回の発表には、既存の利用者に影響する期限が含まれています。</p>
+
+<figure class="viz">
+<p class="viz-title">移行の期限</p>
+<p class="viz-sub">2026年10月9日から約1年。目盛りは3か月ごと</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 252" role="img" aria-label="移行の期限。2026年10月9日にDenoの合流が発表され、2026年12月31日にCloudflareの旧ContainerクラスとSandboxクラスの保守が終わり、約6か月後にDeno Deployが終了し、約1年後にDenoランタイムの開発が終わる。">
+<g class="grid">
+<line x1="60" y1="60" x2="60" y2="190"/><line x1="255" y1="60" x2="255" y2="190"/>
+<line x1="450" y1="60" x2="450" y2="190"/><line x1="645" y1="60" x2="645" y2="190"/>
+<line x1="840" y1="60" x2="840" y2="190"/>
+</g>
+<line class="axis" x1="60" y1="110" x2="840" y2="110"/>
+<g text-anchor="middle">
+<text class="t-muted" x="60" y="208">10/9</text><text class="t-muted" x="255" y="208">+3か月</text>
+<text class="t-muted" x="450" y="208">+6か月</text><text class="t-muted" x="645" y="208">+9か月</text>
+<text class="t-muted" x="840" y="208">+12か月</text>
+</g>
+
+<circle class="mk-period" cx="60" cy="110" r="7"><title>2026年10月9日 Deno が Cloudflare への合流を発表</title></circle>
+<text class="t-strong" x="14" y="68">2026/10/9</text><text x="14" y="86">Deno が合流を発表</text>
+
+<polygon class="mk-found" points="237,102 245,110 237,118 229,110"><title>2026年12月31日 Cloudflare の旧 Container クラスと旧 Sandbox クラスの保守が終了</title></polygon>
+<text class="t-strong" x="237" y="68" text-anchor="middle">2026/12/31</text><text x="237" y="86" text-anchor="middle">Cloudflare 旧クラスの保守終了</text>
+
+<circle class="mk-announce" cx="450" cy="110" r="7"><title>約6か月後 Deno Deploy が終了</title></circle>
+<text class="t-strong" x="450" y="140" text-anchor="middle">約6か月後</text><text x="450" y="158" text-anchor="middle">Deno Deploy が終了</text>
+
+<circle class="mk-announce" cx="840" cy="110" r="7"><title>約1年後 Deno ランタイムの開発が終了</title></circle>
+<text class="t-strong" x="872" y="140" text-anchor="end">約1年後</text><text x="872" y="158" text-anchor="end">Deno ランタイムの開発が終了</text>
+
+<g transform="translate(8 238)">
+<circle class="mk-period" cx="6" cy="-4" r="6"/><text x="18" y="0">発表</text>
+<polygon class="mk-found" points="100,-12 108,-4 100,4 92,-4"/><text x="114" y="0">Cloudflare の保守終了</text>
+<circle class="mk-announce" cx="306" cy="-4" r="6"/><text x="318" y="0">Deno の終了</text>
+</g>
+</svg>
+</div>
+<figcaption>Deno Deploy の利用者には、Cloudflare Workers への移行支援が（有料顧客向けに）示されています。Cloudflare の旧クラスは、保守が終わったあとも既存のデプロイは動き続けますが、更新は止まります。Deno ランタイムは、オープンソースのままで、継続を希望する第三者を歓迎するとされています。</figcaption>
+</figure>
+
+<h2>発表ごとの要点</h2>
+<div class="cards">
+<div class="card"><h3>Microsoft Execution Containers（MXC）</h3>
+<ul><li>公開：10/7（Windows Developer Blog）</li><li>ポリシーはエージェントの制御外にあり、エージェント自身が追加のアクセス権を得ることはできない</li><li>コンテナ：プロセス（Windows 11、macOS、Linux）、セッション・WSL（Windows 11）、MicroVM（Windows 11、Linux。実験的）</li><li>制御できる対象：コンテナ、プロセス、ファイルシステム、ネットワーク、ユーザーインターフェース</li><li>モード：Enforcement（適用）、Learning（未許可をブロックして記録）、Permissive（記録して許可）</li><li>対応：Copilot、OpenClaw、Codex、Replit、LM Studio、Unsloth AI。NVIDIA は OpenShell を統合。Claude Code などは対応予定</li></ul></div>
+<div class="card"><h3>Cloudflare Containers</h3>
+<ul><li>公開：9/30</li><li>実行時に、サンドボックスごとのイメージとインスタンスをコードから選べる</li><li>ファイルシステムのスナップショット（公開ベータ）。作業の中断時に保存し、再開時に復元する</li><li>新機能は ctx.container のみ。旧クラスは 12/31 まで保守</li><li>料金、上限、一般提供の時期は記載なし</li></ul></div>
+<div class="card"><h3>gVisor</h3>
+<ul><li>公開：10/2（申請 9/7、審査 9/22、承認 9/28）</li><li>コンテナと仮想マシンの中間に位置するサンドボックス型のコンテナランタイム</li><li>数週間以内にメンテナ制へ、数か月以内に組織単位の投票へ。リポジトリは google 組織の外へ</li><li>短期の影響は「Not much」（公式）</li></ul></div>
+<div class="card"><h3>Deno が Cloudflare に合流</h3>
+<ul><li>公開：10/9</li><li>workerd と celld を統合し、Workers と Durable Objects のセルフホストを簡素化する</li><li>Durable Objects に注目する理由：安価なサーバーレス実行、永続的な状態、WebSocket、高水準の JavaScript インターフェースがあり、エージェントの実行基盤に有用だとされる</li><li>JSR は継続。rusty_v8 は workerd への統合を目指す</li><li>取引条件の記載はない</li></ul></div>
+<div class="card"><h3>Supabase が Turso を買収</h3>
+<ul><li>公開：10/2</li><li>Turso は SQLite を Rust で作り直している。1台のサーバーで「数百万」のデータベースを管理でき、使われないものは停止する</li><li>エージェントがファイルを作るように、低コストでデータベースを作れる環境を目指す</li><li>Supabase は現在、週に100万以上のデータベースを立ち上げている</li><li>既存ユーザーに変更はない。完了時期、条件、金額は記載なし</li></ul></div>
+</div>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>サンドボックス</dt><dd>信頼できないプログラムを、外部に影響を与えないよう隔離して動かす仕組み。</dd>
+<dt>Durable Objects</dt><dd>Cloudflare の、状態を持つ分散シングルトン。</dd>
+<dt>スナップショット</dt><dd>ある時点の状態を保存し、あとで復元できるようにしたもの。</dd>
+<dt>CNCF</dt><dd>Cloud Native Computing Foundation。Kubernetes などを管理する団体。</dd>
+<dt>SQLite</dt><dd>ファイル1つで動く軽量なデータベース。</dd>
+<dt>パーセンタイル</dt><dd>値を小さい順に並べたとき、下から何％の位置にあるかを示す指標。99パーセンタイルは、遅い側の1％の境目。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。各社の公式ブログの記述に基づいていて、状況は更新されます。</p>
+<p>料金、一般提供の時期、取引の条件など、公式発表に記載のない項目は扱っていません。</p>
+<p>起動時間などの数字は、各社の公式発表にある値で、独自に検証したものではありません。</p>
+<p>内容は、各社の公式発表をもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（5件の発表、層ごとの整理、起動速度の比較、移行の期限）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
