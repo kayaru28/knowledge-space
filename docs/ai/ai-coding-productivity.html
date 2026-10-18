@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Microsoft の数万人を追った研究と、802人の開発者を追った研究の、2本の論文（arXiv）をもとに、AIコーディングツールの導入で何がどれだけ増え、何が追いつかなくなったのか、どこまで言えるのかを図で整理する。">
+<title>AIコーディングで生産性は上がったか：2本の研究から見える「増えた量」と「追いつかないレビュー」 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AIコーディングで生産性は上がったか：2本の研究から見える「増えた量」と「追いつかないレビュー」</h1><p class="summary">Microsoft の数万人を追った研究と、802人の開発者を追った研究の、2本の論文（arXiv）をもとに、AIコーディングツールの導入で何がどれだけ増え、何が追いつかなくなったのか、どこまで言えるのかを図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>AIコーディングツールを導入した開発者は、マージされるプルリクエスト（PR）の数が増えました。Microsoft の研究では約24%、802人の開発者を追ったもう1つの研究では、1人あたり2.09倍（保守的な推定では1.46倍）です。</p>
+<p>ただし、どちらも測ったのは「PRの数」で、価値や品質そのものではありません。さらに後者の研究では、<strong>提出量が増えたぶん、レビューが追いつかなくなっていました</strong>。1人あたりのレビュー負荷は約2倍になり、人間のレビューは薄くなっています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">+24%</p><p class="stat-label">Microsoft の約4か月の研究での、導入者のマージPR数の増加</p></div>
+<div class="stat"><p class="stat-value">2.09<small>倍</small></p><p class="stat-label">802人の開発者を追った研究での、1人あたりPR数の増加</p></div>
+<div class="stat"><p class="stat-value">約2<small>倍</small></p><p class="stat-label">同じ研究での、1人あたりのレビュー負荷</p></div>
+<div class="stat"><p class="stat-value">+216%</p><p class="stat-label">同僚の4分の1超が使っているときの、試用のオッズの上昇</p></div>
+</div>
+
+<h2>2つの研究</h2>
+<p>このページは、2026年7月に arXiv に投稿された2本の論文をもとにしています。どちらも実際の開発組織のデータを使っていますが、対象も測り方も違うので、数字をそのまま比べることはできません。</p>
+
+<div class="table-wrap">
+<table>
+<caption>論文の本文より。arXiv の投稿は、査読を経ていない可能性があります</caption>
+<thead><tr><th>項目</th><th>論文1（Microsoft）</th><th>論文2（802人の企業）</th></tr></thead>
+<tbody>
+<tr><td>題名</td><td>Adoption and Impact of Command-Line AI Coding Agents</td><td>AI Writes Faster Than Humans Can Review</td></tr>
+<tr><td>投稿日</td><td>2026年7月1日</td><td>2026年7月2日</td></tr>
+<tr><td>対象</td><td>Microsoft の数万人のソフトウェアエンジニア</td><td>中規模の B2B ソフトウェア企業（R&amp;D 部門は数百人規模）の開発者802人</td></tr>
+<tr><td>期間</td><td>2026年1月5日〜4月29日（約4か月）。事前の13週間も使用</td><td>2024年1月〜2026年4月</td></tr>
+<tr><td>ツール</td><td>Claude Code、GitHub Copilot CLI</td><td>Cursor、Claude Code</td></tr>
+<tr><td>指標</td><td>28日以内にマージされたPR数</td><td>1人あたりの月間マージ済みPR数</td></tr>
+<tr><td>方法</td><td>合成コントロールと、同一人物内の用量反応分析</td><td>導入時期がずれる差の差分法</td></tr>
+<tr><td>データ</td><td>Azure DevOps のPR</td><td>802人、364リポジトリ、196,212件のPR</td></tr>
+<tr><td>著者の立場</td><td>Microsoft の社員。AIツールを販売・推奨し、GitHub を所有する利害関係を論文が認めている</td><td>研究者ら。企業は、データ共有以外の分析や執筆に関与していない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>生産性はどれだけ上がったか</h2>
+<p>導入した人のマージPR数は、どちらの研究でも増えています。次の図は、それぞれの研究が示した増加率を並べたものです。<strong>基準や期間が違うため、棒の長さを直接比べることはできません。</strong></p>
+
+<figure class="viz">
+<p class="viz-title">マージされるPR数の増加率</p>
+<p class="viz-sub">それぞれの研究が基準にしたものとの比較。色は研究の違いを示す</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 270" role="img" aria-label="マージされるPR数の増加率。論文1のMicrosoftでは導入者が導入しなかった場合の推定より約24%多く、95%信用区間は14.5%から33.7%。論文2の802人の企業では、保守的な推定で46%増の1.46倍、施策前との比較で109%増の2.09倍。">
+<rect class="bar" x="250" y="6" width="14" height="14" rx="2"/><text x="270" y="18">論文1（Microsoft）</text>
+<rect class="bar-2" x="430" y="6" width="14" height="14" rx="2"/><text x="450" y="18">論文2（802人の企業）</text>
+<g class="grid">
+<line x1="250" y1="38" x2="250" y2="236"/><line x1="337" y1="38" x2="337" y2="236"/>
+<line x1="425" y1="38" x2="425" y2="236"/><line x1="512" y1="38" x2="512" y2="236"/>
+<line x1="600" y1="38" x2="600" y2="236"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="250" y="256">0%</text><text class="t-muted" x="337" y="256">+25%</text>
+<text class="t-muted" x="425" y="256">+50%</text><text class="t-muted" x="512" y="256">+75%</text>
+<text class="t-muted" x="600" y="256">+100%</text>
+</g>
+
+<text class="t-strong" x="8" y="76">論文1：Microsoft</text><text class="t-small" x="8" y="94">導入者 vs 非導入の推定（約4か月）</text>
+<path class="bar" d="M250,64 h80 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-80 z"><title>論文1 導入者のマージPR数は約+24.0%（95%信用区間 +14.5%〜+33.7%）</title></path>
+<text class="t-ink" x="342" y="81">+24%（95%信用区間 +14.5〜+33.7%）</text>
+
+<text class="t-strong" x="8" y="146">論文2：802人の企業</text><text class="t-small" x="8" y="164">保守的な設定の推定</text>
+<path class="bar-2" d="M250,134 h157 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-157 z"><title>論文2 組織全体の月次ショックを吸収する保守的な設定で1.46倍</title></path>
+<text class="t-ink" x="423" y="151">+46%（1.46倍）</text>
+
+<text class="t-strong" x="8" y="216">論文2：802人の企業</text><text class="t-small" x="8" y="234">施策前との比較（2026年4月）</text>
+<path class="bar-2" d="M250,204 h378 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-378 z"><title>論文2 施策前のベースラインに対して2.09倍（21.2件から44.3件）</title></path>
+<text class="t-ink" x="644" y="221">+109%（2.09倍）</text>
+</svg>
+</div>
+<figcaption>論文1は、導入しなかった場合の推定との比較で、論文2は、施策前のベースラインとの比較です。論文2の2.09倍は、1人あたりの月間PR数が21.2件から44.3件になったものです。論文2は、これを即時の効果ではないと明記しています。</figcaption>
+</figure>
+
+<h3>論文1のそのほかの結果</h3>
+<ul>
+<li>効果は約4か月のあいだ、続いていました。2月は+29.4%、3月〜4月は+20.0%で、信用区間は大きく重なっており、減衰は統計的に確認されませんでした。</li>
+<li>利用頻度が高いほど、増加も大きくなっていました（同一人物内の比較。因果ではなく関連）。週3日の利用で約+15.0%、週5日以上で約+50.1%です。</li>
+<li>単一のツールだけを使った人では、Claude Code の利用週は約+11.4%、Copilot CLI は約+24.9%でした。作業内容の違いなどの交絡の可能性があります。</li>
+</ul>
+
+<h3>論文2のそのほかの結果</h3>
+<ul>
+<li>企業全体のPR数は、ベースラインの3.1倍でした。</li>
+<li>2022年以降のリポジトリでは+44%、それ以前のレガシーなリポジトリでは+12%（有意でない）と、コードベースによって効果が違いました。</li>
+<li>職位による有意な差はありませんでした。モデルのリリースごとの効果は、同時期の組織全体の利用の急増と切り分けられませんでした。</li>
+</ul>
+
+<h2>レビューが追いつかない</h2>
+<p>論文2の題名は、「AIは人間がレビューできるより速く書く」という意味です。提出量が増えると、レビューする側の負荷が増えます。</p>
+
+<figure class="viz">
+<p class="viz-title">提出量とレビューの負荷</p>
+<p class="viz-sub">施策前のベースラインを1倍としたときの倍率（論文2）</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 250" role="img" aria-label="ベースラインを1倍としたときの倍率。組織全体のPR提出量は3.1倍、レビュー担当者の人数は1.5倍、1人あたりのレビュー負荷は約2倍。">
+<g class="grid">
+<line x1="250" y1="36" x2="250" y2="214"/><line x1="510" y1="36" x2="510" y2="214"/>
+<line x1="640" y1="36" x2="640" y2="214"/>
+</g>
+<line class="axis" x1="380" y1="36" x2="380" y2="214"/>
+<text class="t-muted" x="380" y="28" text-anchor="middle">基準（1倍）</text>
+<g text-anchor="middle">
+<text class="t-muted" x="250" y="234">0</text><text class="t-muted" x="380" y="234">1倍</text>
+<text class="t-muted" x="510" y="234">2倍</text><text class="t-muted" x="640" y="234">3倍</text>
+</g>
+
+<text class="t-strong" x="8" y="64">組織全体のPR提出量</text><text class="t-small" x="8" y="82">会社全体の生のPR数</text>
+<path class="bar-old" d="M250,48 h399 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-399 z"><title>組織全体のPR提出量 3.1倍</title></path>
+<text class="t-ink" x="665" y="65">3.1倍</text>
+
+<text class="t-strong" x="8" y="124">レビュー担当者の人数</text><text class="t-small" x="8" y="142">レビューを担う開発者の数</text>
+<path class="bar-old" d="M250,108 h191 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-191 z"><title>レビュー担当者の人数 1.5倍</title></path>
+<text class="t-ink" x="457" y="125">1.5倍</text>
+
+<text class="t-strong" x="8" y="184">1人あたりのレビュー負荷</text><text class="t-small" x="8" y="202">論文の記述：約2倍</text>
+<path class="bar" d="M250,168 h256 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-256 z"><title>1人あたりのレビュー負荷 約2倍</title></path>
+<text class="t-ink" x="522" y="185">約2倍</text>
+</svg>
+</div>
+<figcaption>PRの提出量は3.1倍になりましたが、レビューを担う開発者は1.5倍にしか増えませんでした。その差が、1人あたりのレビュー負荷が約2倍になった理由です。</figcaption>
+</figure>
+
+<p>レビューの中身も変わっていました。次の図は、PRのうち、各種のレビューを受けたものの割合の変化です。</p>
+
+<figure class="viz">
+<p class="viz-title">レビュー体制の変化</p>
+<p class="viz-sub">PRのうち、当該のレビューを受けたものの割合（論文2）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 262" role="img" aria-label="PRのうち各レビューを受けた割合の、施策前と最終期間の比較。人間のレビューを1件以上受けたPRは89%から68%に低下。自動のAIレビューを受けたPRは約19%から約84%に上昇。コメントを伴う人間のレビューを受けたPRは約39%から約21%に低下。">
+<circle class="dot-old" cx="304" cy="14" r="7"/><text x="318" y="18">施策前（ベースライン）</text>
+<circle class="dot-new" cx="520" cy="14" r="7"/><text x="534" y="18">最終期間</text>
+<g class="grid">
+<line x1="300" y1="40" x2="300" y2="226"/><line x1="425" y1="40" x2="425" y2="226"/>
+<line x1="550" y1="40" x2="550" y2="226"/><line x1="675" y1="40" x2="675" y2="226"/>
+<line x1="800" y1="40" x2="800" y2="226"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="300" y="246">0%</text><text class="t-muted" x="425" y="246">25%</text>
+<text class="t-muted" x="550" y="246">50%</text><text class="t-muted" x="675" y="246">75%</text>
+<text class="t-muted" x="800" y="246">100%</text>
+</g>
+
+<text class="t-strong" x="8" y="76">人間のレビューを1件以上受けたPR</text><text class="t-small" x="8" y="94">減っている</text>
+<line class="axis" x1="640" y1="82" x2="745" y2="82"/>
+<circle class="dot-old" cx="745" cy="82" r="8"><title>施策前 89%</title></circle>
+<circle class="dot-new" cx="640" cy="82" r="8"><title>最終期間 68%</title></circle>
+<text class="t-ink" x="745" y="62" text-anchor="middle">89%</text><text class="t-ink" x="640" y="62" text-anchor="middle">68%</text>
+
+<text class="t-strong" x="8" y="146">自動のAIレビューを受けたPR</text><text class="t-small" x="8" y="164">AIレビューのボットなどを含む</text>
+<line class="axis" x1="395" y1="152" x2="720" y2="152"/>
+<circle class="dot-old" cx="395" cy="152" r="8"><title>施策前 約19%</title></circle>
+<circle class="dot-new" cx="720" cy="152" r="8"><title>最終期間 約84%</title></circle>
+<text class="t-ink" x="395" y="132" text-anchor="middle">約19%</text><text class="t-ink" x="720" y="132" text-anchor="middle">約84%</text>
+
+<text class="t-strong" x="8" y="216">コメントを伴う人間のレビューを受けたPR</text><text class="t-small" x="8" y="234">実質的なレビュー</text>
+<line class="axis" x1="405" y1="222" x2="495" y2="222"/>
+<circle class="dot-old" cx="495" cy="222" r="8"><title>施策前 約39%</title></circle>
+<circle class="dot-new" cx="405" cy="222" r="8"><title>最終期間 約21%</title></circle>
+<text class="t-ink" x="495" y="202" text-anchor="middle">約39%</text><text class="t-ink" x="405" y="202" text-anchor="middle">約21%</text>
+</svg>
+</div>
+<figcaption>最終期間には、PRの大半が自動のAIレビューを受けるようになり、人間のレビューを受けたPRの割合と、コメントを伴う実質的な人間のレビューの割合は下がりました。コメントなしの承認は約50%で、ほぼ横ばいでした。自動レビューには、AIレビューのボットのほか、デプロイ、カバレッジ、ポリシー系のボットも含まれます。</figcaption>
+</figure>
+
+<h3>品質の指標は</h3>
+<ul>
+<li>PR単位では、AIが生成したPRのマージ率は、人間のPRとほぼ同じで、リバート（取り消し）率は低めでした。</li>
+<li>ただし、これらは粗く短期的な指標で、欠陥、インシデント、保守性を捉えていません。</li>
+<li>AIが生成したPRは、最初の人間のレビューからマージまでの時間が約20%長く、総サイクル時間は約22%長くなっていました。</li>
+</ul>
+
+<h2>広がり方</h2>
+<p>論文1は、ツールを最初に使うきっかけを調べています。最も強く効いていたのは、周囲の人が使っていることでした。</p>
+
+<figure class="viz">
+<p class="viz-title">初めて使う確率（オッズ）を押し上げたもの</p>
+<p class="viz-sub">周囲の状況ごとの、初回利用のオッズの上昇（論文1）</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 230" role="img" aria-label="初回利用のオッズの上昇。同じ上位マネージャーの同僚の25%超が使っている場合は約216%上昇、直属のマネージャーが使っている場合は約82%上昇、コードレビューの相手の25%超が使っている場合は約54%上昇。">
+<g class="grid">
+<line x1="250" y1="24" x2="250" y2="196"/><line x1="450" y1="24" x2="450" y2="196"/>
+<line x1="650" y1="24" x2="650" y2="196"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="250" y="216">0%</text><text class="t-muted" x="450" y="216">+100%</text>
+<text class="t-muted" x="650" y="216">+200%</text>
+</g>
+
+<text class="t-strong" x="8" y="46">同じ上位マネージャーの同僚</text><text class="t-small" x="8" y="64">25%超が使っている場合</text>
+<path class="bar" d="M250,38 h428 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-428 z"><title>同じ上位マネージャーの同僚の25%超が使用：オッズ約+216%</title></path>
+<text class="t-ink" x="696" y="55">+216%</text>
+
+<text class="t-strong" x="8" y="106">直属のマネージャー</text><text class="t-small" x="8" y="124">が使っている場合</text>
+<path class="bar" d="M250,98 h160 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-160 z"><title>直属のマネージャーが使用：オッズ約+82%</title></path>
+<text class="t-ink" x="428" y="115">+82%</text>
+
+<text class="t-strong" x="8" y="166">コードレビューの相手</text><text class="t-small" x="8" y="184">の25%超が使っている場合</text>
+<path class="bar" d="M250,158 h104 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-104 z"><title>コードレビューの相手の25%超が使用：オッズ約+54%</title></path>
+<text class="t-ink" x="372" y="175">+54%</text>
+</svg>
+</div>
+<figcaption>オッズの上昇は、確率の上昇そのものではありません。また、「同僚の影響」と、「似た人同士が集まること（同類性）」は、この分析では切り分けられないと、論文も述べています。論文1は、組織が展開するときは、周囲で目に見える形で使われることを重視すべきだと提言しています。</figcaption>
+</figure>
+
+<ul>
+<li>継続して使うかどうかは、事前のPR活動量が多い人（週2件以上）や、直属のマネージャーが使っている人で高くなりました。</li>
+<li>IDE 版 Copilot を以前から使っていた人は、初めて使うオッズは上がる一方、継続利用のオッズは約12〜15%低くなりました。</li>
+</ul>
+
+<h2>どこまで言えるか</h2>
+<p>どちらの論文も、自分の限界を明記しています。</p>
+<div class="cards">
+<div class="card"><h3>論文1（Microsoft）</h3>
+<ul><li>採用の分析は横断的で、同僚の影響と同類性を切り分けられない</li><li>導入者は自ら選んでいるため、選択バイアスがありうる</li><li>マージPR数は、品質、複雑性、コストを捉えない。論文自身が「マージPRは価値そのものではない」と明記</li><li>単一企業、単一期間。16週間では長期的な低下は評価できない</li><li>著者は Microsoft の社員で、同社はAIツールを販売し GitHub を所有している</li></ul></div>
+<div class="card"><h3>論文2（802人の企業）</h3>
+<ul><li>導入時期と利用量は開発者自身が選んでおり、ランダムに割り当てられていない。因果は厳密には特定されておらず、「強く示唆する」証拠として読む</li><li>若くAIに積極的な企業で、ツール予算に上限がない好条件。外的妥当性は限定的</li><li>PR数は活動量のみ。マージ率とリバート率は粗く短期的</li><li>論文は、約2倍の増加を「好条件では達成可能だが、即時でも典型的でも無償でもない」と位置づけている</li></ul></div>
+</div>
+
+<h2>実務に生かすなら</h2>
+<div class="note">
+<p>論文の内容を並べて読んだ上での、筆者の整理です。論文がそう述べているわけではありません。</p>
+</div>
+<ul>
+<li>PR数だけでなく、レビューの負荷（1人あたりの件数、コメントのあるレビューの割合）も一緒に測る。</li>
+<li>提出量が増えるなら、レビューの体制（人数、自動化の範囲、承認の基準）も合わせて設計する。</li>
+<li>広げるときは、周囲で目に見える形で使われることが効く（論文1の提言）。</li>
+<li>他社の数字をそのまま目標にしない。測っているもの（PRの数）と、条件（好条件の企業、Microsoft）が違う。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>プルリクエスト（PR）</dt><dd>コードの変更を、取り込んでもらうために出す依頼。</dd>
+<dt>マージ</dt><dd>PRの変更を、本流に取り込むこと。</dd>
+<dt>リバート</dt><dd>取り込んだ変更を、取り消して元に戻すこと。</dd>
+<dt>合成コントロール</dt><dd>導入しなかった場合の姿を、似た非導入者から推定する方法。</dd>
+<dt>差の差分法</dt><dd>導入した人と導入しない人の、導入前後の変化の差を比べる方法。</dd>
+<dt>オッズ</dt><dd>ある事象が起きる確率を、起きない確率で割った値。オッズの上昇は、確率の上昇そのものではない。</dd>
+<dt>信用区間</dt><dd>推定値が入ると考えられる範囲（ベイズ統計）。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。2本の論文は、査読を経ていない可能性がある arXiv の投稿（プレプリント）で、内容は更新される可能性があります。</p>
+<p>数字は、論文の本文にある値で、独自に検証したものではありません。</p>
+<p>Gartner の予測や、開発者の調査（State of Devs 2026 など）は、一次情報を確認できていないため、今回は扱っていません。</p>
+<p>内容は、2本の論文をもとに、独自に整理したものです。関連する話題として、<a href="agent-runtime-infrastructure.html">AIエージェントの実行基盤が動いている</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（2本の論文の整理、生産性の増加、レビュー負荷、広がり方、限界）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
