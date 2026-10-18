@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月15日に国際度量衡総会（CGPM）が採択した決議5をもとに、うるう秒がなくなる仕組み、なぜ今なのか、関連して決まった秒の再定義と月の時刻を、図で整理する。">
+<title>うるう秒が2027年5月20日に止まる：決議5で何が決まり、何が変わるのか | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>うるう秒が2027年5月20日に止まる：決議5で何が決まり、何が変わるのか</h1><p class="summary">2026年10月15日に国際度量衡総会（CGPM）が採択した決議5をもとに、うるう秒がなくなる仕組み、なぜ今なのか、関連して決まった秒の再定義と月の時刻を、図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月15日、フランスのヴェルサイユで開かれた第28回国際度量衡総会（CGPM）が、決議5「UTC の連続性を確保するために必要な技術的措置について」を採択しました。<strong>2027年5月20日から「連続した UTC」が発効し、うるう秒の挿入は行われなくなります。</strong></p>
+<p>そのかわり、UTC と地球の自転に基づく時刻（UT1）との差を、最大3,600秒（1時間）まで許します。決議文は、これで数世紀にわたって UTC の連続性が保たれるとしています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">2027/5/20</p><p class="stat-label">連続した UTC が発効する日</p></div>
+<div class="stat"><p class="stat-value">3,600<small>秒</small></p><p class="stat-label">UT1 と UTC の差の上限（1時間）</p></div>
+<div class="stat"><p class="stat-value">30<small>%</small></p><p class="stat-label">2035年までに負のうるう秒が必要になる確率の推定（2025年3月のワークショップ）</p></div>
+<div class="stat"><p class="stat-value">30<small>年</small></p><p class="stat-label">議論が続いた年数（CCTF 議長の声明）</p></div>
+</div>
+
+<h2>決まったこと</h2>
+
+<div class="table-wrap">
+<table>
+<caption>BIPM の決議5、採択済み決議の一覧、CCTF 議長の声明より</caption>
+<thead><tr><th>項目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>決議</td><td>決議5「On the technical actions needed to ensure the continuity of UTC」（UTC の連続性を確保するために必要な技術的措置について）</td></tr>
+<tr><td>採択</td><td>2026年10月15日。第28回 CGPM で採択された7件の決議のうちの1件</td></tr>
+<tr><td>発効</td><td>連続した UTC は、2027年5月20日に発効する</td></tr>
+<tr><td>差の上限</td><td>UT1 と UTC の差の最大値は、3,600秒（1時間）</td></tr>
+<tr><td>見通し</td><td>決議文：数世紀にわたって UTC の連続性を確保。CCTF 議長の声明：数千年（several millennia）にわたって維持されると見込まれる枠組み</td></tr>
+<tr><td>BIPM への依頼</td><td>ITU、IAU、IUGG、IERS などと協力して、決定の周知と適用の支援、UT1−UTC の推移の継続的な監視、CIPM への定期的な報告を行う</td></tr>
+<tr><td>見直しの時期</td><td>決議文に、明示的な見直し時期や再評価の条項はない</td></tr>
+</tbody>
+</table>
+</div>
+<p>決議文は「数世紀」、議長の声明は「数千年」と書いていて、BIPM の2つの文書で見通しの表現が違います。ここでは、どちらも原文のとおりに載せました。公式版の決議はフランス語版で、ここで引いたのは英語版の記述です。投票の結果は、BIPM のページに記載がなかったため、扱っていません。</p>
+
+<figure class="viz">
+<p class="viz-title">うるう秒をなくすまでの年表</p>
+<p class="viz-sub">2018年〜2040年。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 320" role="img" aria-label="うるう秒をなくすまでの年表。2018年に第26回CGPM決議2、2022年に第27回CGPM決議4で上限を2035年までに引き上げると決定、2025年3月にCCTFとIERSのワークショップで負のうるう秒の確率を30%と推定、2026年10月15日に第28回CGPM決議5を採択、2027年5月20日に連続したUTCが発効、2030年に第29回CGPMで秒の新しい定義を提案する予定、2035年がITUのWRC-23決議655の移行期間で遅くとも2040年。">
+<g class="grid">
+<line x1="60" y1="48" x2="60" y2="280"/><line x1="200" y1="48" x2="200" y2="280"/>
+<line x1="340" y1="48" x2="340" y2="280"/><line x1="480" y1="48" x2="480" y2="280"/>
+<line x1="655" y1="48" x2="655" y2="280"/><line x1="830" y1="48" x2="830" y2="280"/>
+<line x1="8" y1="160" x2="872" y2="160"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="60" y="36">2018</text><text class="t-muted" x="200" y="36">2022</text>
+<text class="t-muted" x="340" y="36">2026</text><text class="t-muted" x="480" y="36">2030</text>
+<text class="t-muted" x="655" y="36">2035</text><text class="t-muted" x="830" y="36">2040</text>
+</g>
+
+<circle class="mk-announce" cx="60" cy="100" r="7"><title>2018年 第26回 CGPM 決議2。UTC は TAI と同じ速度で整数秒のみ異なる時刻スケールで、国際的な基準に推奨される唯一の時刻スケールであることを確認</title></circle>
+<text x="8" y="80">2018 CGPM26 決議2</text>
+
+<circle class="mk-announce" cx="200" cy="100" r="7"><title>2022年 第27回 CGPM 決議4。UT1−UTC の上限を2035年までに引き上げることを決定</title></circle>
+<text x="150" y="124">2022 CGPM27 決議4</text><text class="t-small" x="150" y="140">上限の引き上げを2035年までに決定</text>
+
+<circle class="mk-period" cx="368" cy="100" r="8"><title>2026年10月15日 第28回 CGPM が決議5を採択</title></circle>
+<text class="t-strong" x="368" y="76" text-anchor="middle">2026/10/15 CGPM28 決議5 採択</text>
+
+<polygon class="mk-found" points="480,92 488,100 480,108 472,100"><title>2030年 第29回 CGPM で、秒の新しい定義を提案する予定（決議4）</title></polygon>
+<text x="440" y="124">2030 CGPM29</text><text class="t-small" x="440" y="140">秒の新定義を提案する予定</text>
+
+<circle class="mk-announce" cx="312" cy="220" r="7"><title>2025年3月 CCTF/IERS ワークショップ。負のうるう秒が2035年までに必要になる確率を30%と推定</title></circle>
+<text x="240" y="244">2025/3 CCTF/IERS ワークショップ</text><text class="t-small" x="240" y="260">負のうるう秒の確率 30%（2035年まで）</text>
+
+<circle class="mk-period" cx="388" cy="220" r="8"><title>2027年5月20日 連続した UTC が発効</title></circle>
+<text class="t-strong" x="360" y="198">2027/5/20 連続 UTC が発効</text>
+
+<polygon class="mk-found" points="655,212 663,220 655,228 647,220"><title>2035年 ITU の WRC-23 決議655が定めた移行期間（遅くとも2040年）</title></polygon>
+<text x="560" y="244">2035 ITU WRC-23 決議655</text><text class="t-small" x="560" y="260">移行期間（遅くとも2040年）</text>
+
+<g transform="translate(8 308)">
+<circle class="mk-announce" cx="6" cy="-4" r="6"/><text x="18" y="0">決議・出来事</text>
+<circle class="mk-period" cx="146" cy="-4" r="7"/><text x="160" y="0">決議5の採択と、発効</text>
+<polygon class="mk-found" points="332,-12 340,-4 332,4 324,-4"/><text x="346" y="0">予定・移行期間</text>
+</g>
+</svg>
+</div>
+<figcaption>2022年の決定では、上限の引き上げは「2035年まで」とされていました。決議5は、関係者との議論のうえで、CCTF が前倒しを提案した結果、発効日が2027年5月20日になりました。</figcaption>
+</figure>
+
+<h2>何が変わるのか</h2>
+<p>従来は、UTC が地球の自転の揺らぎに合わせて、うるう秒を挿入することで、UT1 に近い値を保っていました。この調整が、正確で連続した同期を必要とする産業や重要インフラ（交通、エネルギー、通信）に混乱を生んでいた、と CCTF 議長は述べています。</p>
+
+<figure class="viz">
+<p class="viz-title">うるう秒がなくなる仕組み（模式図）</p>
+<p class="viz-sub">UT1 と UTC の差の動きを、概念として示した図。縮尺や形は実際のものではありません</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="模式図。従来は、UT1とUTCの差が広がるたびにうるう秒を入れて差を小さく戻すので、差の動きはのこぎりの歯のようになる。今後は2027年5月20日以降、うるう秒を入れないので、差は途切れずに蓄積し、上限の3600秒に達するまで許される。">
+<text class="t-strong" x="20" y="30">従来：うるう秒を入れて、差を小さく戻す</text>
+<line class="axis" x1="20" y1="250" x2="420" y2="250"/><line class="axis" x1="20" y1="56" x2="20" y2="250"/>
+<text class="t-small" x="28" y="64">UT1 と UTC の差</text><text class="t-small" x="396" y="270" text-anchor="end">時間</text>
+<polyline class="line-main" points="20,230 120,150 120,230 220,150 220,230 320,150 320,230 420,150"/>
+<circle class="mk-found" cx="120" cy="150" r="6"><title>うるう秒を入れて、差を小さく戻す</title></circle>
+<circle class="mk-found" cx="220" cy="150" r="6"><title>うるう秒を入れて、差を小さく戻す</title></circle>
+<circle class="mk-found" cx="320" cy="150" r="6"><title>うるう秒を入れて、差を小さく戻す</title></circle>
+<text x="128" y="138">うるう秒</text>
+
+<text class="t-strong" x="460" y="30">今後（2027年5月20日から）：うるう秒は入れない</text>
+<line class="axis" x1="460" y1="250" x2="860" y2="250"/><line class="axis" x1="460" y1="56" x2="460" y2="250"/>
+<text class="t-small" x="468" y="64">UT1 と UTC の差</text><text class="t-small" x="836" y="270" text-anchor="end">時間</text>
+<line class="line-limit" x1="460" y1="92" x2="860" y2="92"/>
+<text class="t-strong" x="470" y="84">上限 3,600秒（1時間）</text>
+<polyline class="line-main" points="460,230 860,170"/>
+<text x="640" y="214">差は途切れずに蓄積する</text>
+<text class="t-small" x="640" y="130">上限に達するまでは長い（決議文：数世紀）</text>
+
+<text class="t-muted t-small" x="20" y="292">模式図：差の大きさや時間の長さは、実際のものではありません</text>
+</svg>
+</div>
+<figcaption>うるう秒は、UTC に1秒を足す（または引く）調整です。今後は、この調整をしないかわりに、UT1 との差が、最大1時間まで開くことを許します。</figcaption>
+</figure>
+
+<h2>なぜ今なのか</h2>
+<p>決議5の前文と、CCTF 議長の声明は、次の理由を挙げています。</p>
+<ul>
+<li>産業界や社会インフラ（交通、電力、通信、宇宙分野）は、将来の調整なしに連続した UTC を必要としている。</li>
+<li>運用システムのソフトウェアを設計するために、UT1−UTC の上限値を定める必要がある。</li>
+<li><strong>負のうるう秒</strong>は、これまで一度も適用されたことがなく、重大なリスクとされる。最近の地球の自転の変化で、その可能性が高まった。2025年3月のワークショップは、2035年までに必要になる確率を30%と推定した。</li>
+<li>IoT や分散システムが増え、うるう秒の挿入による誤作動のリスクが高まっている。</li>
+<li>事業者が独自の方法でうるう秒を扱うため、時刻の不整合が生じている。</li>
+<li>ITU-T、URSI、IEEE 1588 などから、連続した時刻への移行を早めるよう求める声が寄せられた。</li>
+<li>UTC の更新が遅れると、利用者が GNSS 時刻などに切り替える恐れがある。</li>
+</ul>
+
+<h2>影響を受けるところ</h2>
+<div class="cards">
+<div class="card"><h3>通信・情報システム・金融・交通・エネルギー</h3><p>同期に、連続した時刻が使えるようになります。うるう秒の処理を前提にした設計や設定がある場合は、見直しの対象になります。</p><p>これは決議の趣旨からの筆者の整理で、決議文に具体的な技術的措置は書かれていません。</p></div>
+<div class="card"><h3>ITU-R（無線の時刻信号）</h3><p>無線送信での UT1−UTC の伝送規格を更新する検討をしています。WRC-23 の決議655が、2035年（遅くとも2040年）までの移行期間を定めています。</p></div>
+<div class="card"><h3>IERS（地球回転の観測機関）</h3><p>CGPM の決議に沿って、うるう秒の運用と告知を変更する意向を示していると、決議5の前文は述べています。</p></div>
+<div class="card"><h3>月の時刻</h3><p>決議6が、国際月面基準時スケールの定義と、UTC へのトレーサビリティを扱います。月面の測位・航法・時刻のシステムに共通の基準時刻が要るためです。</p></div>
+</div>
+
+<h2>関連して決まったこと</h2>
+<div class="cards">
+<div class="card"><h3>決議4：秒の将来の定義</h3>
+<ul><li>2030年の第29回 CGPM に、秒の新しい定義を提案する下地をつくる</li><li>光周波数標準の中には、系統的な不確かさが、現行の定義（セシウム原子泉時計）の最良の実現より、約2桁小さいものがある</li><li>成功のために定めた必須の基準のうち2つは、まだ満たされていない。CCTF 議長は、2030年までに満たせる可能性があるとしている</li><li>候補は2つ：(1) 1つの光の原子遷移の周波数を定義定数にする、(2) 指定した原子遷移の光周波数の重み付き幾何平均を定義定数にする</li></ul></div>
+<div class="card"><h3>決議6：月の基準時刻</h3>
+<ul><li>国際月面基準時スケールの定義と、UTC へのトレーサビリティを扱う</li><li>宇宙機関に、月のプロジェクトの経験を共有するよう促す。特に、月の時刻を UTC に正確に関連づける方法と、相対論的な効果や不確かさの扱い</li><li>競合する時刻スケールが乱立するのを避ける、一貫した国際的なアプローチを目指す</li></ul></div>
+</div>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>UTC（協定世界時）</dt><dd>世界の標準時の基準。原子時計に基づく。</dd>
+<dt>UT1</dt><dd>地球の自転に基づく時刻。</dd>
+<dt>TAI（国際原子時）</dt><dd>原子時計だけで刻む時刻。</dd>
+<dt>うるう秒</dt><dd>UTC を UT1 に近づけるために、UTC に1秒を足す（または引く）調整。</dd>
+<dt>負のうるう秒</dt><dd>UTC から1秒を引く調整。これまで一度も使われていない。</dd>
+<dt>CGPM（国際度量衡総会）</dt><dd>メートル条約の加盟国が集まる最高決定機関。</dd>
+<dt>CCTF（時間周波数諮問委員会）</dt><dd>BIPM の、時刻と周波数の専門委員会。</dd>
+<dt>IERS（国際地球回転・基準系事業）</dt><dd>地球の自転を観測し、うるう秒の告知などを行う機関。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。BIPM（国際度量衡局）の公式ページの記述に基づいています。</p>
+<p>決議文は「数世紀」、CCTF 議長の声明は「数千年」と、連続性の見通しの表現が違います。ここでは、そのまま載せました。</p>
+<p>投票の結果は、BIPM のページに記載がなかったため、扱っていません。</p>
+<p>内容は、BIPM の公式ページをもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（決議5の内容、仕組みの変化、背景、関連する決議）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
