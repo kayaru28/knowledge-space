@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="9月30日から10月15日までに公開された5つの開発ツールの更新を、公式の発表から整理し、提供状況の違い、移行が必要なもの、数字の読み方を図で比べる。">
+<title>開発ツールの更新を整理する（2026年10月）：SvelteKit 3、bun check、dotnetup、HydraFusion、Aurora の DuckDB | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>開発ツールの更新を整理する（2026年10月）：SvelteKit 3、bun check、dotnetup、HydraFusion、Aurora の DuckDB</h1><p class="summary">9月30日から10月15日までに公開された5つの開発ツールの更新を、公式の発表から整理し、提供状況の違い、移行が必要なもの、数字の読み方を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>9月30日から10月15日までに、5つの開発ツールの更新が公開されました。<strong>提供状況はそれぞれ違います</strong>。Aurora の DuckDB 統合は一般提供、SvelteKit 3 は正式版、bun check はリリース済み、dotnetup はパブリックプレビュー、HydraFusion は研究プレビューです。</p>
+<p>自分のプロジェクトで手を動かす必要があるのは、<strong>SvelteKit 3</strong>（設定の場所、<code>$lib</code>、最低バージョンなど、破壊的変更が多い）です。ほかは、使うかどうかを選べる新機能です。数字（速度やコストの削減）は、いずれも開発元の自己申告です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">5<small>つ</small></p><p class="stat-label">9/30〜10/15 の開発ツールの更新</p></div>
+<div class="stat"><p class="stat-value">6.4<small>倍</small></p><p class="stat-label">bun check が tsc 7.0.2 より速かった最大の倍率（Bun の測定）</p></div>
+<div class="stat"><p class="stat-value">v22.17</p><p class="stat-label">SvelteKit 3 が要求する Node.js の最低バージョン</p></div>
+<div class="stat"><p class="stat-value">追加料金なし</p><p class="stat-label">Aurora PostgreSQL の Iceberg・Parquet 直接クエリ</p></div>
+</div>
+
+<h2>5つの更新</h2>
+
+<div class="table-wrap">
+<table>
+<caption>各社の公式ページ（9月30日〜10月15日付）より</caption>
+<thead><tr><th>ツール</th><th>公開日</th><th>提供状況</th><th>何が変わったか</th><th>気をつける点</th></tr></thead>
+<tbody>
+<tr><td>Aurora PostgreSQL（AWS）</td><td>9/30</td><td>一般提供</td><td>データレイクの Iceberg・Parquet を、PostgreSQL の外部テーブルから直接クエリ。組み込みの DuckDB が実行</td><td>Aurora PostgreSQL 17.11 / 18.6 以降。追加料金なし</td></tr>
+<tr><td>HydraFusion（GitHub Copilot）</td><td>9/30（10/14 に更新）</td><td>研究プレビュー</td><td>複数のモデルを組み合わせて1つの回答を作る。VS Code と Copilot app に拡大。10/14 に HydraFusion Max</td><td>仕様は変わる可能性。最初は単発のタスク向き</td></tr>
+<tr><td>SvelteKit 3</td><td>10/1</td><td>正式版</td><td>設定が <code>vite.config.ts</code> へ。<code>$lib</code> が <code>#lib</code> に。最低バージョンの引き上げ</td><td>破壊的変更が多い。移行の手順あり</td></tr>
+<tr><td>Bun v1.4.3</td><td>10/10</td><td>リリース</td><td>組み込みの型チェッカー <code>bun check</code></td><td>型チェックのみ。JS や .d.ts は出力しない。言語サーバーなし</td></tr>
+<tr><td>dotnetup</td><td>10/15</td><td>パブリックプレビュー</td><td>.NET の SDK とランタイムを、ユーザー領域で導入・管理・更新</td><td>機能や動作は変わる可能性。Windows のシステムレベルは将来</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">公開の日程</p>
+<p class="viz-sub">2026年9月30日〜10月15日。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 400" role="img" aria-label="5つの開発ツールの公開日程。Aurora PostgreSQLは9月30日に一般提供。HydraFusionは9月30日にVS CodeとCopilot appに拡大し、10月14日にMaxを追加。SvelteKit 3は10月1日。Bun v1.4.3は10月10日。dotnetupは10月15日にパブリックプレビュー。">
+<g class="grid">
+<line x1="200" y1="48" x2="200" y2="370"/><line x1="410" y1="48" x2="410" y2="370"/>
+<line x1="620" y1="48" x2="620" y2="370"/><line x1="830" y1="48" x2="830" y2="370"/>
+<line x1="8" y1="110" x2="872" y2="110"/><line x1="8" y1="170" x2="872" y2="170"/>
+<line x1="8" y1="230" x2="872" y2="230"/><line x1="8" y1="290" x2="872" y2="290"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="200" y="36">9/30</text><text class="t-muted" x="410" y="36">10/5</text>
+<text class="t-muted" x="620" y="36">10/10</text><text class="t-muted" x="830" y="36">10/15</text>
+</g>
+<text class="t-strong" x="8" y="85">Aurora PostgreSQL</text>
+<text class="t-strong" x="8" y="145">HydraFusion</text>
+<text class="t-strong" x="8" y="205">SvelteKit</text>
+<text class="t-strong" x="8" y="265">Bun</text>
+<text class="t-strong" x="8" y="325">dotnetup</text>
+
+<circle class="mk-announce" cx="200" cy="80" r="7"><title>9月30日 Aurora PostgreSQL の Iceberg・Parquet 直接クエリが一般提供</title></circle>
+<text x="188" y="60">9/30 一般提供</text>
+
+<circle class="mk-announce" cx="200" cy="140" r="7"><title>9月30日 HydraFusion が VS Code と GitHub Copilot app に拡大（研究プレビュー）</title></circle>
+<text x="188" y="120">9/30 VS Code と Copilot app に拡大</text>
+<polygon class="mk-found" points="788,132 796,140 788,148 780,140"><title>10月14日 HydraFusion Max の追加とモデルプールの更新</title></polygon>
+<text x="872" y="120" text-anchor="end">10/14 HydraFusion Max</text>
+
+<circle class="mk-announce" cx="242" cy="200" r="7"><title>10月1日 SvelteKit 3.0 公開</title></circle>
+<text x="230" y="180">10/1 SvelteKit 3.0 公開</text>
+
+<circle class="mk-announce" cx="620" cy="260" r="7"><title>10月10日 Bun v1.4.3（bun check）</title></circle>
+<text x="620" y="240" text-anchor="middle">10/10 Bun v1.4.3</text>
+
+<circle class="mk-announce" cx="830" cy="320" r="7"><title>10月15日 dotnetup がパブリックプレビュー</title></circle>
+<text x="872" y="300" text-anchor="end">10/15 パブリックプレビュー</text>
+
+<g transform="translate(8 392)">
+<circle class="mk-announce" cx="6" cy="-4" r="6"/><text x="18" y="0">公開</text>
+<polygon class="mk-found" points="100,-12 108,-4 100,4 92,-4"/><text x="114" y="0">更新</text>
+</g>
+</svg>
+</div>
+<figcaption>約2週間のあいだに、データベース、フレームワーク、ランタイム、SDK 管理、AI 支援と、領域の違うツールが続いて公開されました。</figcaption>
+</figure>
+
+<h2>SvelteKit 3：移行が必要な更新</h2>
+<p>SvelteKit 3 は、使い勝手はほぼ同じで、型安全性と洗練度が高まった、と Svelte チームは説明しています。一方で、設定の場所や最低バージョンなど、<strong>破壊的変更が多い</strong>ので、既存のアプリには移行の作業が要ります。</p>
+
+<figure class="viz">
+<p class="viz-title">SvelteKit 3 への移行の流れ</p>
+<p class="viz-sub">公式の移行ガイドに基づく手順（図は筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 220" role="img" aria-label="SvelteKit 3への移行の流れ。1 最新の2.xへ更新、2 最低バージョンに更新、3 npx sv migrate sveltekit-3 で自動移行、4 TODOリストを確認して手作業で対応、5 動作確認。">
+<defs>
+<marker id="arrow-kit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="40" width="150" height="130" rx="8"/>
+<text class="t-strong" x="20" y="66">1　最新の 2.x へ</text>
+<text class="t-small" x="20" y="90">移行の前に、まず</text><text class="t-small" x="20" y="106">2.x の最新版に</text><text class="t-small" x="20" y="122">更新しておく</text>
+
+<line class="arrow" x1="158" y1="105" x2="184" y2="105" marker-end="url(#arrow-kit)"/>
+<rect class="box" x="186" y="40" width="150" height="130" rx="8"/>
+<text class="t-strong" x="198" y="66">2　最低バージョン</text>
+<text class="t-small" x="198" y="90">Node.js v22.17</text><text class="t-small" x="198" y="106">TypeScript v6</text><text class="t-small" x="198" y="122">Svelte v5.57.1</text><text class="t-small" x="198" y="138">Vite v8.0.12 など</text>
+
+<line class="arrow" x1="336" y1="105" x2="362" y2="105" marker-end="url(#arrow-kit)"/>
+<rect class="box-key" x="364" y="40" width="150" height="130" rx="8"/>
+<text class="t-strong" x="376" y="66">3　自動で移行</text>
+<text class="t-small" x="376" y="90">npx sv migrate</text><text class="t-small" x="376" y="106">sveltekit-3</text><text class="t-small" x="376" y="122">--tasks all</text><text class="t-small" x="376" y="138">--confirm</text>
+
+<line class="arrow" x1="514" y1="105" x2="540" y2="105" marker-end="url(#arrow-kit)"/>
+<rect class="box" x="542" y="40" width="150" height="130" rx="8"/>
+<text class="t-strong" x="554" y="66">4　手作業で対応</text>
+<text class="t-small" x="554" y="90">移行できなかった</text><text class="t-small" x="554" y="106">箇所の TODO を</text><text class="t-small" x="554" y="122">確認し、設定や</text><text class="t-small" x="554" y="138">#lib などを直す</text>
+
+<line class="arrow" x1="692" y1="105" x2="718" y2="105" marker-end="url(#arrow-kit)"/>
+<rect class="box" x="720" y="40" width="152" height="130" rx="8"/>
+<text class="t-strong" x="732" y="66">5　動作確認</text>
+<text class="t-small" x="732" y="90">CSRF、フォーム、</text><text class="t-small" x="732" y="106">アダプター、</text><text class="t-small" x="732" y="122">リモート関数など</text><text class="t-small" x="732" y="138">の挙動を確かめる</text>
+</svg>
+</div>
+<figcaption>自動で移行できるのは一部です。移行できない箇所は、TODO リストとして出力されます。公式アダプターもすべて SvelteKit 3 が必要になり、adapter-cloudflare は wrangler ^4.67.0 以上、adapter-netlify は Netlify CLI v17.31.0 以上が要ります。adapter-vercel は edge ランタイムに非対応です。</figcaption>
+</figure>
+
+<div class="cards">
+<div class="card"><h3>設定の場所</h3><ul><li><code>svelte.config.js</code> はサポートされなくなった</li><li>設定は <code>vite.config.js</code> の <code>sveltekit()</code> プラグインに渡す</li><li><code>config.kit.*</code> は、プラグインのトップレベルオプションになる</li></ul></div>
+<div class="card"><h3><code>$lib</code> から <code>#lib</code> へ</h3><ul><li><code>$lib</code> は自動生成されなくなった</li><li><code>package.json</code> の <code>imports</code> で <code>#lib</code> を定義する</li><li>インポートには拡張子が必要</li></ul></div>
+<div class="card"><h3>削除・置き換えられた設定</h3><ul><li><code>csrf.checkOrigin</code> は <code>csrf.trustedOrigins</code> に</li><li><code>prerender.origin</code> は <code>paths.origin</code> に</li><li><code>vitePlugin</code>、<code>preloadStrategy</code>、<code>files.lib</code> は削除</li></ul></div>
+<div class="card"><h3><code>$app</code> の変更</h3><ul><li><code>$app/environment</code> は <code>$app/env</code> に</li><li><code>$app/stores</code> は削除（<code>$app/state</code> を使う）</li><li><code>base</code>、<code>assets</code>、<code>resolveRoute</code> は削除（<code>asset</code> と <code>resolve</code>）</li></ul></div>
+<div class="card"><h3>セキュリティ</h3><ul><li>CSRF 保護は常に有効</li><li>Content-Type ヘッダーのない異オリジンのフォーム送信（変更系）は拒否される</li><li>Cookie は <code>cookie</code> v2 に。<code>path</code> の既定値は <code>'/'</code></li></ul></div>
+</div>
+
+<h2>bun check：型チェックだけを速くする</h2>
+<p>Bun v1.4.3 の <code>bun check</code> は、<code>tsconfig.json</code> を読み込んで、<code>tsc</code> と同じエラーを報告する、組み込みの型チェッカーです。<strong>型チェックのみ</strong>で、JavaScript や .d.ts は出力せず、言語サーバーもありません。エディタは引き続き TypeScript を使います。次の図は、Bun が示した速度の比較です。</p>
+
+<figure class="viz">
+<p class="viz-title">bun check は tsc 7.0.2 の何倍速かったか</p>
+<p class="viz-sub">Apple silicon 16コアの Mac。Bun の測定。1倍が tsc 7.0.2</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 800 380" role="img" aria-label="bun checkがtsc 7.0.2より速かった倍率。Next.js packages/nextが6.4倍、mikro-ormが5.0倍、VS Code srcが4.8倍、lit packages/reactが4.6倍、Playwrightが4.2倍、Storybook scriptsが3.5倍、Next.js rootが3.1倍、Nuxtが3.0倍。">
+<g class="grid">
+<line x1="220" y1="28" x2="220" y2="322"/><line x1="340" y1="28" x2="340" y2="322"/>
+<line x1="460" y1="28" x2="460" y2="322"/><line x1="580" y1="28" x2="580" y2="322"/>
+</g>
+<line class="axis" x1="280" y1="28" x2="280" y2="322"/>
+<text class="t-muted" x="280" y="20" text-anchor="middle">tsc 7.0.2（1倍）</text>
+<g text-anchor="middle">
+<text class="t-muted" x="220" y="342">0</text><text class="t-muted" x="340" y="342">2倍</text>
+<text class="t-muted" x="460" y="342">4倍</text><text class="t-muted" x="580" y="342">6倍</text>
+</g>
+
+<text class="t-strong" x="8" y="55">Next.js packages/next</text>
+<path class="bar" d="M220,40 h380 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-380 z"><title>Next.js packages/next 0.28秒 vs 1.82秒（6.4倍）</title></path>
+<text class="t-ink" x="618" y="55">6.4倍（0.28秒 vs 1.82秒）</text>
+
+<text class="t-strong" x="8" y="91">mikro-orm</text>
+<path class="bar" d="M220,76 h296 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-296 z"><title>mikro-orm 1.20秒 vs 5.97秒（5.0倍）</title></path>
+<text class="t-ink" x="534" y="91">5.0倍（1.20秒 vs 5.97秒）</text>
+
+<text class="t-strong" x="8" y="127">VS Code src</text>
+<path class="bar" d="M220,112 h284 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-284 z"><title>VS Code src 1.24秒 vs 5.98秒（4.8倍）</title></path>
+<text class="t-ink" x="522" y="127">4.8倍（1.24秒 vs 5.98秒）</text>
+
+<text class="t-strong" x="8" y="163">lit packages/react</text>
+<path class="bar" d="M220,148 h272 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-272 z"><title>lit packages/react 0.46秒 vs 2.12秒（4.6倍）</title></path>
+<text class="t-ink" x="510" y="163">4.6倍（0.46秒 vs 2.12秒）</text>
+
+<text class="t-strong" x="8" y="199">Playwright</text>
+<path class="bar" d="M220,184 h248 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-248 z"><title>Playwright 0.15秒 vs 0.64秒（4.2倍）</title></path>
+<text class="t-ink" x="486" y="199">4.2倍（0.15秒 vs 0.64秒）</text>
+
+<text class="t-strong" x="8" y="235">Storybook scripts</text>
+<path class="bar" d="M220,220 h206 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-206 z"><title>Storybook scripts 0.27秒 vs 0.96秒（3.5倍）</title></path>
+<text class="t-ink" x="444" y="235">3.5倍（0.27秒 vs 0.96秒）</text>
+
+<text class="t-strong" x="8" y="271">Next.js（ルート）</text>
+<path class="bar" d="M220,256 h182 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-182 z"><title>Next.js root 0.42秒 vs 1.28秒（3.1倍）</title></path>
+<text class="t-ink" x="420" y="271">3.1倍（0.42秒 vs 1.28秒）</text>
+
+<text class="t-strong" x="8" y="307">Nuxt</text>
+<path class="bar" d="M220,292 h176 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-176 z"><title>Nuxt 0.27秒 vs 0.80秒（3.0倍）</title></path>
+<text class="t-ink" x="414" y="307">3.0倍（0.27秒 vs 0.80秒）</text>
+</svg>
+</div>
+<figcaption>速度は3.0倍から6.4倍、メモリは2.2倍から4.9倍少ないと、Bun は述べています。いずれも Bun 自身の測定です。ファイル数は、VS Code src が9,795、mikro-orm が2,883、Nuxt が839でした。</figcaption>
+</figure>
+
+<h3>正確性についての Bun の記載</h3>
+<ul>
+<li>TypeScript 7.0.2 の適合テスト51,210件が、すべて合格したとしています。</li>
+<li>実プロジェクト72件（1,103の設定）の比較では、不一致は1件（vuejs/core）でした。</li>
+<li>別の11種類のコンパイラオプションでの比較（69プロジェクト）では、不一致は12件（<code>strict</code> オフの場合のみ）でした。</li>
+<li>大規模なオフライン実行（3,032,182個のプログラム）では、不一致は191件でした。</li>
+<li>不一致が見つかったら、Bun のバグとして報告するよう求めています。</li>
+</ul>
+
+<h2>HydraFusion：複数のモデルを組み合わせる</h2>
+<p>HydraFusion は、GitHub Copilot の研究プレビューです。モデルピッカーには1つの選択肢として表示されますが、中では複数のモデルを組み合わせて動きます。リクエストごとに、次のどれかを選びます。</p>
+<div class="cards">
+<div class="card"><h3>Single</h3><p>選ばれた1つのモデルが、タスクを直接解きます。</p></div>
+<div class="card"><h3>Cascade</h3><p>効率のよいモデルが下書きを作り、品質ゲートが、採用するか、より強いモデルへ引き継ぐかを判断します。</p></div>
+<div class="card"><h3>Critique</h3><p>あるモデルが下書きを作り、別のモデルファミリーの読み取り専用のクリティックがレビューします。そのあと、下書きを作ったモデルが1回だけ修正します。</p></div>
+</div>
+
+<figure class="viz">
+<p class="viz-title">HydraFusion の評価（GitHub のオフライン評価）</p>
+<p class="viz-sub">Claude Opus 5 との比較。推定コストの低下と、品質の差（ポイント）</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 200" role="img" aria-label="HydraFusionの評価。TerminalBench 2.1では推定コストが67%低く品質は4.9ポイント高い。DeepSWEではコストが36%低く品質は1.5ポイント低い。CheckpointBenchではコストが65%低く品質は0.1ポイント低い。">
+<g class="grid">
+<line x1="220" y1="20" x2="220" y2="150"/><line x1="340" y1="20" x2="340" y2="150"/>
+<line x1="460" y1="20" x2="460" y2="150"/><line x1="580" y1="20" x2="580" y2="150"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="220" y="172">0%</text><text class="t-muted" x="340" y="172">30%</text>
+<text class="t-muted" x="460" y="172">60%</text><text class="t-muted" x="580" y="172">90%</text>
+</g>
+<text class="t-muted" x="8" y="14">推定コストの低下</text>
+
+<text class="t-strong" x="8" y="52">TerminalBench 2.1</text>
+<path class="bar" d="M220,38 h264 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-264 z"><title>TerminalBench 2.1 推定コスト 67% 低い、品質 +4.9 ポイント</title></path>
+<text class="t-ink" x="500" y="52">67% 低い／品質 +4.9 ポイント</text>
+
+<text class="t-strong" x="8" y="96">DeepSWE</text>
+<path class="bar" d="M220,82 h140 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-140 z"><title>DeepSWE 推定コスト 36% 低い、品質 −1.5 ポイント</title></path>
+<text class="t-ink" x="376" y="96">36% 低い／品質 −1.5 ポイント</text>
+
+<text class="t-strong" x="8" y="140">CheckpointBench</text>
+<path class="bar" d="M220,126 h256 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-256 z"><title>CheckpointBench 推定コスト 65% 低い、品質 −0.1 ポイント</title></path>
+<text class="t-ink" x="492" y="140">65% 低い／品質 −0.1 ポイント</text>
+</svg>
+</div>
+<figcaption>GitHub のオフライン評価の結果で、条件は、最も調整された構成、中程度の推論レベル、記事記載のベンチマークの版とモデルプールに限られます。GitHub 自身が、実際の開発者の作業での効果は未検証で、コストは推定値だと述べています。</figcaption>
+</figure>
+
+<ul>
+<li>使い方：VS Code 1.140 以降（または Insiders）で、Copilot Chat のモデルピッカーから選びます。表示されない場合は、設定 <code>chat.copilot.hydraFusion.enabled</code> を有効にします。</li>
+<li>対象：Copilot Pro、Pro+、Business、Enterprise。Business と Enterprise は、管理者がプレビュー機能を有効にする必要があります。</li>
+<li>料金：HydraFusion が使ったモデルのトークン量に基づき、各モデルの標準料金で計算されます。</li>
+<li>10月14日の更新：上位版の HydraFusion Max が加わりました。モデルプールは、Claude Opus 5.5、GPT-6 Astra、GPT-6.1 Sol、GPT-6 Luna です。</li>
+<li>GitHub が述べている限界：中間の下書きは最終結果まで表示されないため、待ち時間の見通しが悪い。現時点では単発のタスクに適していて、複数ターンの長いセッションは今後の課題です。</li>
+</ul>
+
+<h2>Aurora PostgreSQL：データレイクを直接クエリする</h2>
+<p>Aurora PostgreSQL で、S3 などにある Iceberg や Parquet のデータを、運用データと一緒に、同じ SQL で問い合わせられるようになりました。ETL やデータの複製は要りません。</p>
+
+<figure class="viz">
+<p class="viz-title">問い合わせの流れ</p>
+<p class="viz-sub">AWS の発表に基づく図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="問い合わせの流れ。アプリやBIツールが、これまでと同じPostgreSQLインターフェースでAurora PostgreSQLに問い合わせる。Aurora PostgreSQLの中で、組み込みのDuckDBが、S3、S3 Tables、Glue Data CatalogにあるIcebergとParquetのデータに対して問い合わせを実行する。データは移動しない。">
+<defs>
+<marker id="arrow-aurora" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="90" width="190" height="110" rx="8"/>
+<text class="t-strong" x="22" y="122">アプリ・BIツール</text>
+<text class="t-small" x="22" y="146">これまでと同じ</text><text class="t-small" x="22" y="162">PostgreSQL の</text><text class="t-small" x="22" y="178">インターフェース</text>
+
+<line class="arrow" x1="198" y1="145" x2="262" y2="145" marker-end="url(#arrow-aurora)"/>
+<text class="t-small" x="230" y="136" text-anchor="middle">SQL</text>
+
+<rect class="box" x="264" y="40" width="300" height="210" rx="8"/>
+<text class="t-strong" x="280" y="68">Aurora PostgreSQL</text>
+<text class="t-small" x="280" y="88">17.11 / 18.6 以降</text>
+<rect class="box-key" x="284" y="108" width="260" height="62" rx="8"/>
+<text class="t-strong" x="298" y="134">組み込みの DuckDB</text>
+<text class="t-small" x="298" y="154">クエリを実行するエンジン</text>
+<rect class="box" x="284" y="184" width="260" height="50" rx="8"/>
+<text class="t-strong" x="298" y="206">外部テーブル（foreign table）</text>
+<text class="t-small" x="298" y="224">データを移さずに参照する</text>
+
+<line class="arrow" x1="564" y1="75" x2="650" y2="75" marker-end="url(#arrow-aurora)"/>
+<line class="arrow" x1="564" y1="145" x2="650" y2="145" marker-end="url(#arrow-aurora)"/>
+<line class="arrow" x1="564" y1="215" x2="650" y2="215" marker-end="url(#arrow-aurora)"/>
+<text class="t-small" x="607" y="64" text-anchor="middle">照会</text>
+
+<rect class="box" x="652" y="46" width="220" height="58" rx="8"/><text class="t-strong" x="666" y="70">Amazon S3</text><text class="t-small" x="666" y="90">Iceberg・Parquet</text>
+<rect class="box" x="652" y="116" width="220" height="58" rx="8"/><text class="t-strong" x="666" y="140">Amazon S3 Tables</text><text class="t-small" x="666" y="160">Iceberg・Parquet</text>
+<rect class="box" x="652" y="186" width="220" height="58" rx="8"/><text class="t-strong" x="666" y="210">AWS Glue Data Catalog</text><text class="t-small" x="666" y="230">外部の Iceberg REST カタログも</text>
+</svg>
+</div>
+<figcaption>運用データとデータレイクのデータを、同じ PostgreSQL のインターフェースから問い合わせられます。レイテンシが重要なワークロードでは、標準的な SQL 文で、Iceberg・Parquet のデータをネイティブのテーブルへ実体化（マテリアライズ）することもできます。</figcaption>
+</figure>
+
+<ul>
+<li>対応：Aurora PostgreSQL 17.11、18.6 以降。一般提供です。</li>
+<li>設定：Amazon RDS コンソール、または任意の PostgreSQL クライアントで行います。</li>
+<li>リージョン：すべての AWS 商用リージョンと AWS GovCloud（US）で利用できます。</li>
+<li>料金：追加料金はかかりません。</li>
+<li>このページには、対応バージョンとリージョン以外の具体的な制限は書かれていません。詳細は公式ドキュメントで確認が必要です。</li>
+</ul>
+
+<h2>dotnetup：.NET の SDK を管理する</h2>
+<p>dotnetup は、ユーザーアカウントの中で、.NET の SDK とランタイムを導入・管理・更新するツールチェーンマネージャーです。Rust の rustup や Node の nvm に近い位置づけです。macOS と Linux で、apt、brew、tarball、dotnet-install.sh などが混在していた問題の解消を目指しています。</p>
+<div class="cards">
+<div class="card"><h3>特徴</h3><ul><li>どのプラットフォームでも同じコマンド</li><li>管理者権限は不要。ユーザー所有のフォルダに置く</li><li>複数のサービシングバージョン、プレビュー、デイリービルドを同時に入れられる</li><li>メジャーや機能バンド単位で追跡し、毎月の更新を自動で反映する</li><li>global.json に対応し、チームビルドの再現性を保つ</li></ul></div>
+<div class="card"><h3>使い方の例</h3><ul><li><code>dotnetup init</code>：シェルプロファイルを設定し、最新の安定版 SDK を取得</li><li><code>dotnetup list</code>：インストール済みの一覧</li><li><code>dotnetup update</code>：月次の更新</li><li><code>dotnetup sdk install preview</code>、<code>dotnetup sdk install daily</code></li><li><code>dotnetup self update</code></li></ul></div>
+<div class="card"><h3>制約と今後</h3><ul><li>パブリックプレビュー。機能や動作は変わる可能性がある</li><li>現時点では、ユーザーローカルの運用に限られる</li><li>Windows のシステムレベル（管理者）のインストールの管理は、将来のリリースで検討</li><li>ロードマップ：Windows 管理者インストーラー、GitHub Actions や Azure DevOps への統合、UX の改善</li></ul></div>
+</div>
+<p>dotnet-install のスクリプトでも多くのことはできますが、dotnetup は、インストール済みの管理、署名と checksum の検証、複数の SDK／ランタイムの高速な導入、全プラットフォームで共通の CLI が利点だと、記事は説明しています。</p>
+
+<h2>選ぶときの観点</h2>
+<div class="note">
+<p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
+</div>
+<ul>
+<li><strong>手を動かす必要があるか:</strong> SvelteKit 3 を使っているなら移行が必要。ほかは新機能を試すかどうかを選べる。</li>
+<li><strong>提供状況:</strong> プレビューのものは、業務の中心には置かず、試す範囲にとどめる。</li>
+<li><strong>数字の見方:</strong> bun check の速度やメモリ、HydraFusion のコスト削減は、開発元の測定で、条件が限られる。自分のプロジェクトで測る。</li>
+<li><strong>置き換えか、追加か:</strong> bun check は tsc の代わりに型チェックだけを行う。言語サーバーや出力はない。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>Iceberg / Parquet</dt><dd>Iceberg は大規模なデータ分析用のテーブル形式。Parquet は列指向のファイル形式。</dd>
+<dt>DuckDB</dt><dd>組み込んで使える分析用のデータベースエンジン。</dd>
+<dt>外部テーブル（foreign table）</dt><dd>データを取り込まずに、外部のデータをテーブルのように参照する仕組み。</dd>
+<dt>ツールチェーンマネージャー</dt><dd>複数のバージョンの開発ツールを切り替えて管理するツール（rustup や nvm など）。</dd>
+<dt>研究プレビュー</dt><dd>正式な提供の前に、試験的に使ってもらうための提供。仕様は変わりうる。</dd>
+<dt>適合テスト</dt><dd>言語の仕様どおりに動くかを確かめるためのテスト群。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
+<p>速度、メモリ、コストの数字は、開発元の自己申告で、独自に検証したものではありません。</p>
+<p>HydraFusion の評価は、GitHub 自身のオフライン評価の結果で、実際の開発での効果は未検証と、GitHub が述べています。</p>
+<p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="../ai/ai-coding-productivity.html">AIコーディングで生産性は上がったか</a>があります。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（5つの開発ツールの更新、提供状況、SvelteKit 3 の移行手順、bun check の速度）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
