@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年9月ごろから国内で続く漏えいについて、各社の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。">
+<title>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2,
+.sources > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before,
+.sources > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+.sources li { font-size: 14px; }
+.sources .date { color: var(--muted); font-size: 12px; }
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h2 { margin: 4px 0 6px; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2, .sources > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか</h1><p class="summary">2026年9月ごろから国内で続く漏えいについて、各社の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。</p><p class="meta">更新日 2026-10-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年9月ごろから、国内の組織で、不正アクセスによる個人情報の漏えいの公表が相次いでいます。JPCERT/CC と IPA は、10月上旬に続けて注意喚起を出しました。</p>
+<p>特徴は、<strong>原因が1つの脆弱性に絞られていない</strong>ことです。外部に公開しているアプリやAPI、利用中の外部サービスのアカウントなど、入口が複数にまたがっています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">4<small>社</small></p><p class="stat-label">公式発表を直接確認できた事例（9月末〜10月中旬に公表）</p></div>
+<div class="stat"><p class="stat-value">183万〜2,252万<small>件</small></p><p class="stat-label">4社が公表した件数の範囲（発表時点）</p></div>
+<div class="stat"><p class="stat-value">4<small>類型</small></p><p class="stat-label">JPCERT/CC が整理した攻撃の入口</p></div>
+<div class="stat"><p class="stat-value">3<small>点検</small></p><p class="stat-label">IPA が経営者に求める点検（公開アプリ・外部サービス・保有データ）</p></div>
+</div>
+
+<h2>何が起きているのか</h2>
+<ul>
+<li>金融機関や通信事業者など、幅広い業種で公表が続いています（IPA）。</li>
+<li>大量の個人情報を扱うオンラインサービスやアカウントサービスが、侵入を受けています（IPA）。</li>
+<li>利用者向けのアプリだけでなく、BIツールや従業員向けの管理システムのように、不特定多数の利用を想定していないシステムでも、保存している情報が漏えいした例があります（JPCERT/CC）。</li>
+<li>特定の製品やサービスの脆弱性を狙った攻撃とは、現時点では断定されていません（IPA、JPCERT/CC）。</li>
+<li>技術的な情報の共有が十分ではなく、把握できていることは限られていて断片的です。新しい情報が分かれば、注意喚起は更新されます（JPCERT/CC）。</li>
+</ul>
+
+<h2>公表された事例（4社）</h2>
+<p>2026年9月末から10月中旬にかけて、業種の異なる4社が、不正アクセスによる情報漏えいを公式サイトで公表しました。以下は、各社の発表（10月15〜16日付）を読んで整理したものです。事例は、何が起きているかを具体的に知るためのもので、特定の組織を評価するものではありません。調査が続いているものも多く、数字は発表時点のものです。</p>
+
+<figure class="viz">
+<p class="viz-title">発生から公表までの流れ</p>
+<p class="viz-sub">2026年9月28日〜10月16日。図の記号にカーソルを合わせると日付が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 416" role="img" aria-label="4社の不正アクセスの発生から公表までの時系列。ヤマト運輸は9月28日に確認し10月16日に調査結果を公表。ソースネクストは10月9日から不正利用があり13日に確認、15日に公表。バーガーキングは10月2日から7日に不正アクセスがあり13日に判明、15日に公表。日本経済新聞社は10月7日に不正アクセスがあり16日に公表。JPCERT/CCは10月8日、IPAは10月9日に注意喚起を出した。">
+<g class="grid">
+<line x1="204" y1="48" x2="204" y2="372"/><line x1="306" y1="48" x2="306" y2="372"/>
+<line x1="408" y1="48" x2="408" y2="372"/><line x1="510" y1="48" x2="510" y2="372"/>
+<line x1="612" y1="48" x2="612" y2="372"/><line x1="714" y1="48" x2="714" y2="372"/>
+<line x1="816" y1="48" x2="816" y2="372"/>
+<line x1="8" y1="130" x2="872" y2="130"/><line x1="8" y1="190" x2="872" y2="190"/>
+<line x1="8" y1="250" x2="872" y2="250"/><line x1="8" y1="310" x2="872" y2="310"/>
+</g>
+<g class="t-muted" text-anchor="middle">
+<text class="t-muted" x="204" y="36">9/28</text><text class="t-muted" x="306" y="36">10/1</text>
+<text class="t-muted" x="408" y="36">10/4</text><text class="t-muted" x="510" y="36">10/7</text>
+<text class="t-muted" x="612" y="36">10/10</text><text class="t-muted" x="714" y="36">10/13</text>
+<text class="t-muted" x="816" y="36">10/16</text>
+</g>
+<g>
+<text class="t-strong" x="8" y="105">ヤマト運輸</text>
+<text class="t-strong" x="8" y="165">ソースネクスト</text>
+<text class="t-strong" x="8" y="225">バーガーキング</text>
+<text class="t-strong" x="8" y="285">日本経済新聞社</text>
+<text class="t-strong" x="8" y="345">JPCERT/CC・IPA</text>
+</g>
+
+<line class="axis" x1="204" y1="100" x2="816" y2="100"/>
+<text class="t-muted" x="520" y="92" text-anchor="middle">調査・続報</text>
+<polygon class="mk-found" points="204,92 212,100 204,108 196,100"><title>9月28日 不正アクセスを確認</title></polygon>
+<text x="204" y="80" text-anchor="middle">9/28 確認</text>
+<circle class="mk-announce" cx="238" cy="100" r="7"><title>9月29日 第1報を公表</title></circle>
+<text x="238" y="124" text-anchor="middle">9/29 第1報</text>
+<circle class="mk-announce" cx="816" cy="100" r="7"><title>10月16日 第4報（調査結果）を公表</title></circle>
+<text x="816" y="124" text-anchor="middle">10/16 第4報</text>
+
+<rect class="mk-period" x="578" y="153" width="136" height="14" rx="4"><title>10月9日ごろから 会員情報取得APIが不正に利用された</title></rect>
+<text x="578" y="142">10/9〜 不正利用</text>
+<polygon class="mk-found" points="714,152 722,160 714,168 706,160"><title>10月13日 不正アクセスを確認し、同日に封じ込め</title></polygon>
+<text x="714" y="184" text-anchor="middle">10/13 確認</text>
+<circle class="mk-announce" cx="782" cy="160" r="7"><title>10月15日 公表</title></circle>
+<text x="782" y="184" text-anchor="middle">10/15 公表</text>
+
+<rect class="mk-period" x="340" y="213" width="170" height="14" rx="4"><title>10月2日から7日にかけて不正アクセス</title></rect>
+<text x="340" y="202">10/2〜10/7 不正アクセス</text>
+<polygon class="mk-found" points="714,212 722,220 714,228 706,220"><title>10月13日 漏えいが判明</title></polygon>
+<text x="714" y="244" text-anchor="middle">10/13 判明</text>
+<circle class="mk-announce" cx="782" cy="220" r="7"><title>10月15日 公表</title></circle>
+<text x="782" y="244" text-anchor="middle">10/15 公表</text>
+
+<rect class="mk-period" x="500" y="273" width="20" height="14" rx="4"><title>10月7日の未明から朝にかけて不正アクセス</title></rect>
+<text x="500" y="262">10/7 不正アクセス</text>
+<circle class="mk-announce" cx="816" cy="280" r="7"><title>10月16日 公表</title></circle>
+<text x="816" y="304" text-anchor="middle">10/16 公表</text>
+
+<rect class="mk-advisory" x="537" y="333" width="14" height="14" rx="2"><title>10月8日 JPCERT/CC が注意喚起を公開（10月9日に更新）</title></rect>
+<text x="544" y="322" text-anchor="middle">JPCERT/CC 10/8</text>
+<rect class="mk-advisory" x="571" y="333" width="14" height="14" rx="2"><title>10月9日 IPA が注意喚起を公開</title></rect>
+<text x="578" y="364" text-anchor="middle">IPA 10/9</text>
+
+<g transform="translate(8 396)">
+<rect class="mk-period" x="0" y="-9" width="24" height="12" rx="4"/><text x="32" y="1">不正アクセスの期間</text>
+<polygon class="mk-found" points="196,-9 204,-1 196,7 188,-1"/><text x="212" y="1">確認・判明</text>
+<circle class="mk-announce" cx="318" cy="-2" r="6"/><text x="330" y="1">公表</text>
+<rect class="mk-advisory" x="382" y="-9" width="12" height="12" rx="2"/><text x="402" y="1">注意喚起（公的機関）</text>
+</g>
+</svg>
+</div>
+<figcaption>不正アクセスの開始から公表までは、ソースネクストが約6日、日本経済新聞社が約9日、バーガーキングが約13日です。ヤマト運輸は、確認の翌日に第1報を出し、調査結果をまとめた第4報は18日後でした。日本経済新聞社の不正アクセスの時刻は、発表では「7日の未明から朝」とされています。</figcaption>
+</figure>
+
+<figure class="viz">
+<p class="viz-title">公表された件数の比較</p>
+<p class="viz-sub">単位は万件。発表時点の数字で、人数とは一致しない</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 270" role="img" aria-label="公表件数の横棒グラフ。ソースネクスト約2,252万件、バーガーキング約1,118万件、ヤマト運輸のお客さま情報約526万件、日本経済新聞社約183万件。">
+<g class="grid">
+<line x1="190" y1="16" x2="190" y2="226"/><line x1="286" y1="16" x2="286" y2="226"/>
+<line x1="382" y1="16" x2="382" y2="226"/><line x1="478" y1="16" x2="478" y2="226"/>
+<line x1="574" y1="16" x2="574" y2="226"/><line x1="670" y1="16" x2="670" y2="226"/>
+</g>
+<g class="t-muted" text-anchor="middle">
+<text class="t-muted" x="190" y="246">0</text><text class="t-muted" x="286" y="246">500万</text>
+<text class="t-muted" x="382" y="246">1,000万</text><text class="t-muted" x="478" y="246">1,500万</text>
+<text class="t-muted" x="574" y="246">2,000万</text><text class="t-muted" x="670" y="246">2,500万</text>
+</g>
+
+<text class="t-strong" x="8" y="38">ソースネクスト</text><text class="t-small" x="8" y="55">会員情報システム</text>
+<path class="bar" d="M190,28 h428 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-428 z"><title>ソースネクスト 22,519,960件（約2,252万件）</title></path>
+<text class="t-ink" x="630" y="45">約2,252万件</text>
+
+<text class="t-strong" x="8" y="92">バーガーキング</text><text class="t-small" x="8" y="109">公式アプリの会員情報</text>
+<path class="bar" d="M190,82 h211 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-211 z"><title>バーガーキング 約1,118万件</title></path>
+<text class="t-ink" x="413" y="99">約1,118万件</text>
+
+<text class="t-strong" x="8" y="146">ヤマト運輸</text><text class="t-small" x="8" y="163">クロネコ代金後払い（お客さま情報）</text>
+<path class="bar" d="M190,136 h97 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-97 z"><title>ヤマト運輸 お客さま情報 約526万件（ほかにお届け先情報 約5万件、加盟店情報 約4,100件）</title></path>
+<text class="t-ink" x="299" y="153">約526万件</text>
+
+<text class="t-strong" x="8" y="200">日本経済新聞社</text><text class="t-small" x="8" y="217">開発用クラウドサービス</text>
+<path class="bar" d="M190,190 h31 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-31 z"><title>日本経済新聞社 約183万件（うち氏名などを含む個人情報は約15万件、残りは識別子のみ）</title></path>
+<text class="t-ink" x="233" y="207">約183万件（うち氏名などを含む個人情報は約15万件）</text>
+</svg>
+</div>
+<figcaption>件数の桁は、最大のソースネクストと最小の日本経済新聞社で約12倍違います。「件」は人数と一致するとは限りません。日本経済新聞社の約183万件は、大半が単体では個人を特定できない識別子です。ヤマト運輸は、お客さま情報のほかに、お届け先情報（約5万件）と加盟店情報（約4,100件）も対象です。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>各社の公式発表（10月15〜16日付）より。調査中のものは今後変わる可能性があります</caption>
+<thead><tr><th>組織</th><th>公表日</th><th>対象</th><th>経緯と漏えいした情報</th></tr></thead>
+<tbody>
+<tr><td>ヤマト運輸</td><td>10/16（第4報）</td><td>クロネコ代金後払いサービス</td><td>9月28日に不正アクセスを確認。氏名、住所、電話番号、メールアドレス、商品明細などが持ち出された。原因は発表に記載なし</td></tr>
+<tr><td>ソースネクスト</td><td>10/15</td><td>会員情報を管理するシステム</td><td>10月9日ごろから会員情報の取得に使うAPIが不正に利用されたと説明。10月13日に確認し、同日に封じ込め。メールアドレス、パスワード、氏名、住所、電話番号、生年月日などが含まれる可能性（項目は登録状況で異なる）</td></tr>
+<tr><td>バーガーキング（ビーケー・ジャパン）</td><td>10/15</td><td>公式アプリの会員情報を管理するシステム</td><td>10月2日から7日にかけて不正アクセスがあり、10月13日に漏えいが判明。会員ID、メールアドレス、氏名、電話番号、生年月日などが対象。原因は調査中</td></tr>
+<tr><td>日本経済新聞社</td><td>10/16</td><td>システム開発に使うクラウドサービス</td><td>10月7日の未明から朝にかけて不正アクセスがあった。クラウドへ接続するための認証情報が盗まれたと説明。個人情報保護委員会へは10月11日に報告</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>事例から見えること</h3>
+<div class="note">
+<p>ここは、各社の発表を並べて読んだ上での整理です。各社や関係機関がそう述べているわけではありません。</p>
+</div>
+<ul>
+<li><strong>入口はさまざまです。</strong>ソースネクストはAPIの不正利用、日本経済新聞社はクラウドの認証情報の窃取を挙げています。ヤマト運輸とバーガーキングは、原因を調査中、または記載なしです。APIの不正な操作は、JPCERT/CC が整理した類型Bと重なります。外部サービスのアカウントは、IPA が点検を求めている対象です。</li>
+<li><strong>クレジットカード情報は、4社とも対象外としています。</strong>ヤマト運輸と日本経済新聞社は「含まれない」、ソースネクストは「対象システムに保存していない」、バーガーキングは「保持していない」と説明しています。</li>
+<li><strong>発表時点で二次被害を確認していないと述べたのは、ヤマト運輸、バーガーキング、日本経済新聞社です。</strong></li>
+<li><strong>規模が大きいです。</strong>100万件から2,000万件超まで及びます。</li>
+<li><strong>利用者へは、不審なメール、SMS、電話への注意が呼びかけられています。</strong>（ヤマト運輸、バーガーキング、ソースネクスト）</li>
+</ul>
+
+<h2>確認されている攻撃の入口</h2>
+<p>JPCERT/CC は、寄せられた情報をもとに、攻撃の入口を4つの類型（A〜D）で整理しています。すべての事案が同じ手口というわけではありません。IPA は、このほかに、外部サービスのアカウントの侵害が起点になっていると見られるとしています（E）。</p>
+
+<figure class="viz">
+<p class="viz-title">攻撃者はどこから入るのか</p>
+<p class="viz-sub">A〜D は JPCERT/CC の整理、E は IPA の指摘。事例の対応づけは筆者の整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 496" role="img" aria-label="攻撃者から個人情報を含むデータへ至る5つの入口。A 公開しているソフトウェアの既知の脆弱性、B 公開アプリのAPIの不正な操作、C BIツールMetabaseのSQLインジェクション、D Webシェルの設置、E 外部サービスのアカウントの侵害。Bはソースネクストの事例、Eは日本経済新聞社の事例と重なる。">
+<defs>
+<marker id="arrow-entry" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="200" width="120" height="80" rx="8"/>
+<text class="t-strong" x="68" y="246" text-anchor="middle">攻撃者</text>
+<path class="arrow" d="M128,240 H160 M160,60 V420"/>
+
+<line class="arrow" x1="160" y1="60" x2="358" y2="60" marker-end="url(#arrow-entry)"/>
+<text x="172" y="52">脆弱性を探して悪用</text>
+<rect class="box" x="360" y="28" width="250" height="64" rx="8"/>
+<text class="t-strong" x="374" y="56">A　公開しているソフトウェア</text>
+<text class="t-small" x="374" y="76">更新していない既知の脆弱性</text>
+
+<line class="arrow" x1="160" y1="150" x2="358" y2="150" marker-end="url(#arrow-entry)"/>
+<text x="172" y="142">APIを直接呼び出す</text>
+<rect class="box" x="360" y="118" width="250" height="64" rx="8"/>
+<text class="t-strong" x="374" y="140">B　公開アプリのAPI</text>
+<text class="t-small" x="374" y="158">画面にない内部APIを直接操作</text>
+<circle class="dot-case" cx="378" cy="171" r="4"/><text class="t-small" x="388" y="175">事例: ソースネクスト（APIの不正利用）</text>
+
+<line class="arrow" x1="160" y1="240" x2="358" y2="240" marker-end="url(#arrow-entry)"/>
+<text x="172" y="232">API経由で悪用</text>
+<rect class="box" x="360" y="208" width="250" height="64" rx="8"/>
+<text class="t-strong" x="374" y="236">C　BIツール（Metabase）</text>
+<text class="t-small" x="374" y="256">SQLインジェクション CVE-2026-72898</text>
+
+<line class="arrow" x1="160" y1="330" x2="358" y2="330" marker-end="url(#arrow-entry)"/>
+<text x="172" y="322">不正なファイルを設置</text>
+<rect class="box" x="360" y="298" width="250" height="64" rx="8"/>
+<text class="t-strong" x="374" y="326">D　アプリケーションサーバー</text>
+<text class="t-small" x="374" y="346">公開Webサーバーから到達でき、Webシェルを置かれる</text>
+
+<line class="arrow" x1="160" y1="420" x2="358" y2="420" marker-end="url(#arrow-entry)"/>
+<text x="172" y="412">認証情報を使って侵入</text>
+<rect class="box" x="360" y="388" width="250" height="64" rx="8"/>
+<text class="t-strong" x="374" y="410">E　外部サービスのアカウント</text>
+<text class="t-small" x="374" y="428">クラウド、VPNなどの外部サービス</text>
+<circle class="dot-case" cx="378" cy="441" r="4"/><text class="t-small" x="388" y="445">事例: 日本経済新聞社（認証情報の窃取）</text>
+
+<g>
+<line class="arrow" x1="610" y1="60" x2="698" y2="60" marker-end="url(#arrow-entry)"/><text class="t-small" x="654" y="52" text-anchor="middle">持ち出し</text>
+<line class="arrow" x1="610" y1="150" x2="698" y2="150" marker-end="url(#arrow-entry)"/><text class="t-small" x="654" y="142" text-anchor="middle">持ち出し</text>
+<line class="arrow" x1="610" y1="240" x2="698" y2="240" marker-end="url(#arrow-entry)"/><text class="t-small" x="654" y="232" text-anchor="middle">持ち出し</text>
+<line class="arrow" x1="610" y1="330" x2="698" y2="330" marker-end="url(#arrow-entry)"/><text class="t-small" x="654" y="322" text-anchor="middle">持ち出し</text>
+<line class="arrow" x1="610" y1="420" x2="698" y2="420" marker-end="url(#arrow-entry)"/><text class="t-small" x="654" y="412" text-anchor="middle">持ち出し</text>
+</g>
+<rect class="box-key" x="700" y="24" width="172" height="432" rx="8"/>
+<text class="t-strong" x="786" y="236" text-anchor="middle">個人情報を含む</text>
+<text class="t-strong" x="786" y="256" text-anchor="middle">データ</text>
+<text class="t-small" x="786" y="284" text-anchor="middle">会員・顧客・従業員の</text>
+<text class="t-small" x="786" y="300" text-anchor="middle">情報など</text>
+
+<g transform="translate(8 482)">
+<circle class="dot-case" cx="6" cy="-4" r="4"/><text class="t-small" x="18" y="0">公式発表で原因として挙げられた事例（筆者の整理）</text>
+</g>
+</svg>
+</div>
+<figcaption>攻撃の入口は1つではなく、公開しているソフトウェア、API、管理系のツール、サーバー、外部サービスのアカウントと、複数にまたがっています。そのため、対策も「1つの脆弱性を直す」だけでは足りません。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>A〜D は JPCERT/CC、E は IPA の整理</caption>
+<thead><tr><th>類型</th><th>何をされるか</th><th>見直すポイント</th></tr></thead>
+<tbody>
+<tr><td>A. 既知の脆弱性の探索</td><td>組織ごとに、さまざまなソフトウェアの既知の脆弱性を探し、悪用を試みる</td><td>修正プログラムの適用</td></tr>
+<tr><td>B. APIの不正な操作</td><td>公開されているスマホアプリを解析して、APIの接続先やキーを特定する。画面からは操作できない内部APIを直接呼び出して、権限の変更やアカウントの作成を試みる。ほかのシステムで盗まれたAPIキーが使われることもある</td><td>APIのアクセス制御、回数制限、トークンの管理</td></tr>
+<tr><td>C. BIツール Metabase の脆弱性</td><td>SQLインジェクションの脆弱性（CVE-2026-72898）が、API経由で悪用される</td><td>該当バージョンの更新</td></tr>
+<tr><td>D. Webシェルの設置</td><td>公開Webサーバーから到達できるアプリケーションサーバーに不正なファイルを置かれ、外部からコマンドを実行される</td><td>公開範囲の見直し、侵入後の横展開への備え</td></tr>
+<tr><td>E. 外部サービスのアカウント</td><td>外部公開しているサービスやアカウントの侵害が起点になっていると見られる</td><td>多要素認証、アカウントの棚卸し</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>組織がすぐ行う点検</h2>
+<p>IPA は、経営者に向けて、次の3つの点検を速やかに行うよう求めています。異常なログやアカウントが見つかったときは、速やかにセキュリティインシデントとして扱います。漏えいの可能性があるため、専門のセキュリティベンダーへの調査依頼が強く勧められています。</p>
+
+<figure class="viz">
+<p class="viz-title">点検の流れ（IPA の整理）</p>
+<p class="viz-sub">3つの点検を行い、異常の有無で次の動きが分かれる</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 330" role="img" aria-label="IPAが求める点検の流れ。外部公開アプリ、利用中の外部サービス、保有データの3つを点検し、異常があればインシデントとして対応して専門ベンダーに調査を依頼する。異常がなくても多要素認証や権限、ログ、暗号化などの追加対策を検討する。">
+<defs>
+<marker id="arrow-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="20" width="330" height="80" rx="8"/>
+<text class="t-strong" x="22" y="46">1　外部に公開しているアプリ</text>
+<text class="t-small" x="22" y="68">棚卸し／ログの確認（直近1か月→3か月）</text>
+<text class="t-small" x="22" y="86">未適用の脆弱性対応があれば適用</text>
+
+<rect class="box" x="8" y="125" width="330" height="80" rx="8"/>
+<text class="t-strong" x="22" y="151">2　自組織が使っている外部サービス</text>
+<text class="t-small" x="22" y="173">クラウド、VPNなどを洗い出す</text>
+<text class="t-small" x="22" y="191">ログイン失敗、ログイン元、身に覚えのないアカウント</text>
+
+<rect class="box" x="8" y="230" width="330" height="80" rx="8"/>
+<text class="t-strong" x="22" y="256">3　保有しているデータ</text>
+<text class="t-small" x="22" y="278">不要なデータは持たない</text>
+<text class="t-small" x="22" y="296">必要最小限に絞り、保管場所も再検討</text>
+
+<path class="arrow" d="M338,60 H372 M338,165 H372 M338,270 H372 M372,60 V270 M372,165 H408" marker-end="url(#arrow-flow)"/>
+
+<polygon class="box-key" points="480,100 552,165 480,230 408,165"/>
+<text class="t-strong" x="480" y="162" text-anchor="middle">異常は</text>
+<text class="t-strong" x="480" y="180" text-anchor="middle">あるか</text>
+
+<path class="arrow" d="M480,100 V62 H638" marker-end="url(#arrow-flow)"/>
+<text class="t-strong" x="498" y="84">ある</text>
+<rect class="box" x="640" y="20" width="232" height="84" rx="8"/>
+<text class="t-strong" x="654" y="46">インシデントとして対応</text>
+<text class="t-small" x="654" y="68">専門のセキュリティベンダーへ</text>
+<text class="t-small" x="654" y="86">調査を依頼することが勧められている</text>
+
+<path class="arrow" d="M480,230 V268 H638" marker-end="url(#arrow-flow)"/>
+<text class="t-strong" x="498" y="254">ない</text>
+<rect class="box" x="640" y="226" width="232" height="84" rx="8"/>
+<text class="t-strong" x="654" y="252">追加の対策を検討</text>
+<text class="t-small" x="654" y="274">多要素認証、権限、アカウントの棚卸し</text>
+<text class="t-small" x="654" y="292">ログの保存、API連携の管理、暗号化</text>
+</svg>
+</div>
+<figcaption>点検で異常がなくても、追加の対策を検討するよう勧められています。点検のあとも、社内体制の整備に加えて、国外拠点や取引先を含めた対応が必要とされています。</figcaption>
+</figure>
+
+<h3>APIまわりの対策（JPCERT/CC）</h3>
+<div class="cards">
+<div class="card"><h3>回数を制限する</h3><p>一定時間あたりのリクエスト数を制限します。ログインやパスワードの再設定、SMS送信、検索のように、悪用されやすい機能には、個別の制限を設けます。</p></div>
+<div class="card"><h3>入口ごとに制御する</h3><p>非公開のものも含め、APIの出入口ごとにアクセス制御を行い、許可された利用者と操作だけを受け付けます。</p></div>
+<div class="card"><h3>権限と期限を絞る</h3><p>利用者やトークンには必要最小限の権限だけを与え、有効期限をつけます。不要になったものや漏えいが疑われるものは、すぐ無効にできるようにします。</p></div>
+<div class="card"><h3>公開しない</h3><p>業務で使わない管理機能などが、インターネットに公開されていないかを確認します。</p></div>
+</div>
+
+<h2>利用者として気をつけること</h2>
+<p>ここは注意喚起の内容ではなく、一般的な心がけです。各社の発表にも、同じ趣旨の呼びかけがあります。</p>
+<div class="cards">
+<div class="card"><h3>連絡は公式から確認する</h3><p>漏えいの連絡を名乗るメールやSMSのリンクは開かず、公式サイトや公式アプリから状況を確認します。</p></div>
+<div class="card"><h3>パスワードを使い回さない</h3><p>ソースネクストは、全会員のパスワードを無効にした上で、同じメールアドレスとパスワードの組み合わせを他のサービスでも使っている場合は、そちらも変更するよう求めています。</p></div>
+<div class="card"><h3>多要素認証を有効にする</h3><p>多要素認証が使えるサービスでは、有効にします。</p></div>
+</div>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>API</dt><dd>アプリやサービスが、ほかのプログラムとやり取りするための入り口。</dd>
+<dt>脆弱性</dt><dd>ソフトウェアの欠陥のうち、攻撃に悪用されうるもの。</dd>
+<dt>Webシェル</dt><dd>侵入後にサーバーへ置かれる、遠隔操作用の小さなプログラム。</dd>
+<dt>BIツール</dt><dd>社内のデータを集めて、分析や可視化を行うためのツール。</dd>
+<dt>SQLインジェクション</dt><dd>入力欄などから不正なデータベース命令を送り込み、データを不正に読み出したり操作したりする攻撃。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月19日時点の情報です。状況は更新されていくため、最新の内容は各機関のページで確認してください。</p>
+<p>事例は、各社が公式サイトで公表した内容（10月15〜16日付）に基づきます。調査は継続中で、数字や原因は更新される可能性があります。</p>
+<p>公表している組織はここに挙げた4社だけではありません。ここでは、公式発表を直接確認できたものだけを取り上げています。</p>
+<p>内容は、下記の一次情報（各社の公式発表、JPCERT/CC、IPA）をもとに、独自に整理したものです。</p>
+</div>
+<section class="sources"><h2>調べ直して使った情報源</h2><ul><li><a href="https://www.jpcert.or.jp/at/2026/at260030.html">JPCERT/CC 注意喚起「直近で相次いでいる国内組織における不正アクセスに関する注意喚起」（JPCERT-AT-2026-0030）</a> <span class="date">公開 2026-10-08 ／ 確認 2026-10-19</span></li><li><a href="https://www.ipa.go.jp/security/security-alert/2026/alert20261009.html">IPA「不正アクセスによる漏えい等の事案を踏まえ、速やかに実施すべき対策等について」</a> <span class="date">公開 2026-10-09 ／ 確認 2026-10-19</span></li><li><a href="https://www.yamato-hd.co.jp/important/info_260929_1.html">ヤマトホールディングス「【第4報】「クロネコ代金後払いサービス」への不正アクセスに関する調査結果と今後の対応について」</a> <span class="date">公開 2026-10-16 ／ 確認 2026-10-19</span></li><li><a href="https://www.sourcenext.com/support/i/2026/1015_info/">ソースネクスト「不正アクセスによるお客様情報流出のお詫びとお知らせ」</a> <span class="date">公開 2026-10-15 ／ 確認 2026-10-19</span></li><li><a href="https://www.burgerking.co.jp/images/notice/2026/10/15/d4d114ca-ebd7-4f3d-94ef-c4ea7a84a139.pdf">ビーケー・ジャパン「不正アクセスによる公式アプリ会員情報漏えいに関するお詫びとお知らせ」（PDF）</a> <span class="date">公開 2026-10-15 ／ 確認 2026-10-19</span></li><li><a href="https://www.nikkei.co.jp/nikkeiinfo/news/information/1561.html">日本経済新聞社「不正アクセスによる個人情報漏洩について」</a> <span class="date">公開 2026-10-16 ／ 確認 2026-10-19</span></li></ul></section>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は情報源のページで確認してください。</p></div>
+</footer>
+</body>
+</html>
