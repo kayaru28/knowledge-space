@@ -54,8 +54,7 @@ main { padding-top: 32px; }
 .eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
 h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
 main { counter-reset: section; }
-main > h2,
-.sources > h2 {
+main > h2 {
   counter-increment: section;
   margin: 80px 0 20px;
   padding-top: 20px;
@@ -63,8 +62,7 @@ main > h2,
   font-size: 26px;
   line-height: 1.5;
 }
-main > h2::before,
-.sources > h2::before {
+main > h2::before {
   content: counter(section, decimal-leading-zero);
   display: block;
   margin-bottom: 2px;
@@ -150,8 +148,6 @@ dl.terms { margin: 12px 0; }
 dl.terms dt { margin-top: 12px; font-weight: 700; }
 dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
-.sources li { font-size: 14px; }
-.sources .date { color: var(--muted); font-size: 12px; }
 
 .index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
 .index-list li { max-width: none; margin: 0; }
@@ -162,7 +158,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 @media (max-width: 600px) {
   body { font-size: 15px; }
-  main > h2, .sources > h2 { margin-top: 56px; font-size: 22px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
   figure.viz { padding: 12px; }
   .viz-wide { min-width: 640px; }
   .viz-mid { min-width: 560px; }
@@ -494,12 +490,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p>2026年10月19日時点の情報です。状況は更新されていくため、最新の内容は各機関のページで確認してください。</p>
 <p>事例は、各社が公式サイトで公表した内容（10月15〜16日付）に基づきます。調査は継続中で、数字や原因は更新される可能性があります。</p>
 <p>公表している組織はここに挙げた4社だけではありません。ここでは、公式発表を直接確認できたものだけを取り上げています。</p>
-<p>内容は、下記の一次情報（各社の公式発表、JPCERT/CC、IPA）をもとに、独自に整理したものです。</p>
+<p>内容は、各社の公式発表、JPCERT/CC、IPA の注意喚起をもとに、独自に整理したものです。</p>
 </div>
-<section class="sources"><h2>調べ直して使った情報源</h2><ul><li><a href="https://www.jpcert.or.jp/at/2026/at260030.html">JPCERT/CC 注意喚起「直近で相次いでいる国内組織における不正アクセスに関する注意喚起」（JPCERT-AT-2026-0030）</a> <span class="date">公開 2026-10-08 ／ 確認 2026-10-19</span></li><li><a href="https://www.ipa.go.jp/security/security-alert/2026/alert20261009.html">IPA「不正アクセスによる漏えい等の事案を踏まえ、速やかに実施すべき対策等について」</a> <span class="date">公開 2026-10-09 ／ 確認 2026-10-19</span></li><li><a href="https://www.yamato-hd.co.jp/important/info_260929_1.html">ヤマトホールディングス「【第4報】「クロネコ代金後払いサービス」への不正アクセスに関する調査結果と今後の対応について」</a> <span class="date">公開 2026-10-16 ／ 確認 2026-10-19</span></li><li><a href="https://www.sourcenext.com/support/i/2026/1015_info/">ソースネクスト「不正アクセスによるお客様情報流出のお詫びとお知らせ」</a> <span class="date">公開 2026-10-15 ／ 確認 2026-10-19</span></li><li><a href="https://www.burgerking.co.jp/images/notice/2026/10/15/d4d114ca-ebd7-4f3d-94ef-c4ea7a84a139.pdf">ビーケー・ジャパン「不正アクセスによる公式アプリ会員情報漏えいに関するお詫びとお知らせ」（PDF）</a> <span class="date">公開 2026-10-15 ／ 確認 2026-10-19</span></li><li><a href="https://www.nikkei.co.jp/nikkeiinfo/news/information/1561.html">日本経済新聞社「不正アクセスによる個人情報漏洩について」</a> <span class="date">公開 2026-10-16 ／ 確認 2026-10-19</span></li></ul></section>
+
 </main>
 <footer class="site-footer">
-<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は情報源のページで確認してください。</p></div>
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
 </footer>
 </body>
 </html>

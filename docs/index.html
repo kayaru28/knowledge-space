@@ -54,8 +54,7 @@ main { padding-top: 32px; }
 .eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
 h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
 main { counter-reset: section; }
-main > h2,
-.sources > h2 {
+main > h2 {
   counter-increment: section;
   margin: 80px 0 20px;
   padding-top: 20px;
@@ -63,8 +62,7 @@ main > h2,
   font-size: 26px;
   line-height: 1.5;
 }
-main > h2::before,
-.sources > h2::before {
+main > h2::before {
   content: counter(section, decimal-leading-zero);
   display: block;
   margin-bottom: 2px;
@@ -150,8 +148,6 @@ dl.terms { margin: 12px 0; }
 dl.terms dt { margin-top: 12px; font-weight: 700; }
 dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
-.sources li { font-size: 14px; }
-.sources .date { color: var(--muted); font-size: 12px; }
 
 .index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
 .index-list li { max-width: none; margin: 0; }
@@ -162,7 +158,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 @media (max-width: 600px) {
   body { font-size: 15px; }
-  main > h2, .sources > h2 { margin-top: 56px; font-size: 22px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
   figure.viz { padding: 12px; }
   .viz-wide { min-width: 640px; }
   .viz-mid { min-width: 560px; }
@@ -178,7 +174,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <header class="page-head"><h1>まとめ一覧</h1><p class="summary">ニュースや一般知識を調べて、図を交えて分かりやすくまとめたページ</p></header><ul class="index-list"><li><a class="index-card" href="security/domestic-data-breaches.html"><span class="tag">セキュリティ</span><span class="meta">更新日 2026-10-19</span><h2>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか</h2><p>2026年9月ごろから国内で続く漏えいについて、各社の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。</p></a></li></ul>
 </main>
 <footer class="site-footer">
-<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は情報源のページで確認してください。</p></div>
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
 </footer>
 </body>
 </html>
