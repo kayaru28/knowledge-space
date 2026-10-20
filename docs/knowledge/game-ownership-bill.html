@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="米下院議員が10月15日に発表した「Power To The Players Act」と、欧州の市民イニシアチブを、公式ページで確認できた範囲で整理し、「所有」と「利用の許諾」の違いを図で示す。まだ分からないことも一覧にする。">
+<title>買ったゲームは誰のものか：米議員が「ゲーム所有権」の法案を発表（2026年10月） | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>買ったゲームは誰のものか：米議員が「ゲーム所有権」の法案を発表（2026年10月）</h1><p class="summary">米下院議員が10月15日に発表した「Power To The Players Act」と、欧州の市民イニシアチブを、公式ページで確認できた範囲で整理し、「所有」と「利用の許諾」の違いを図で示す。まだ分からないことも一覧にする。</p><p class="meta">初回公開 2026-10-20 ／ 更新日 2026-10-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>米国の下院議員 Ritchie Torres 氏（ニューヨーク州選出）が、2026年10月15日、「<strong>Power To The Players Act</strong>」という法案を提出すると発表しました。連邦取引委員会（FTC）に規則を作らせ、消費者が、<strong>買ったゲームを所有し、遊び続けられる</strong>ようにするものです。</p>
+<p>背景には、ゲーム会社が、デジタル専用のゲームや機器に移っていることがあります（議員の説明）。デジタルで「買った」ゲームは、多くの場合、物を所有するのではなく、遊ぶことを許された状態（利用の許諾、ライセンス）に近いものです。販売やサービスが終わると遊べなくなることがあり、欧州でも同じ問題が議論されています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">10/15</p><p class="stat-label">法案の提出を発表した日</p></div>
+<div class="stat"><p class="stat-value">発表段階</p><p class="stat-label">提出されたかどうかと法案の本文は、今回は確認できていない</p></div>
+<div class="stat"><p class="stat-value">129万<small>超</small></p><p class="stat-label">欧州の市民イニシアチブ「Stop Destroying Videogames」の有効署名</p></div>
+<div class="stat"><p class="stat-value">24<small>か国</small></p><p class="stat-label">その署名が必要数に達した EU 加盟国</p></div>
+</div>
+
+<h2>発表されたこと</h2>
+<p>議員の公式サイトで確認できた範囲です。</p>
+<ul>
+<li>法案の名前は「Power To The Players Act」です。</li>
+<li>議員は、この法案を<strong>提出すると発表</strong>しました（10月15日）。</li>
+<li>内容は、FTC に規則を作らせ、消費者が、買ったゲームを所有し、遊び続けられるようにすることです。</li>
+<li>背景として、ゲーム会社がデジタル専用のゲームや機器へ移っていることを挙げています。</li>
+</ul>
+
+<h2>「所有」と「利用の許諾」の違い</h2>
+<figure class="viz">
+<p class="viz-title">買った人ができること：所有と利用の許諾</p>
+<p class="viz-sub">一般的な違いを筆者が整理したもの。個別の契約や国の法律によって異なる</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 360" role="img" aria-label="所有と利用の許諾の一般的な違い。遊び続けられるか：所有は手元にあり機器が動く限り遊べる、利用の許諾は提供する会社の条件の範囲で遊べる。人に譲れるか：所有は一般に譲ったり売ったりできる、利用の許諾は利用規約で制限されることが多い。販売やサービスが終わったら：所有はオンラインの機能を除けば遊べる、利用の許諾は遊べなくなる場合がある。法案のねらいは、FTCの規則で、買ったゲームを所有し、遊び続けられるようにすること。">
+<defs>
+<marker id="arrow-own" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<text class="t-strong" x="370" y="32" text-anchor="middle">物として所有する</text>
+<text class="t-strong" x="706" y="32" text-anchor="middle">利用を許諾される（ライセンス）</text>
+
+<text class="t-strong" x="8" y="80">遊び続けられるか</text>
+<rect class="box" x="204" y="50" width="332" height="56" rx="8"/>
+<text class="t-small" x="220" y="83">手元にあり、機器が動く限り遊べる</text>
+<rect class="box" x="548" y="50" width="324" height="56" rx="8"/>
+<text class="t-small" x="564" y="83">提供する会社の条件の範囲で遊べる</text>
+
+<text class="t-strong" x="8" y="150">人に譲れるか</text>
+<rect class="box" x="204" y="120" width="332" height="56" rx="8"/>
+<text class="t-small" x="220" y="153">一般に、譲ったり売ったりできる</text>
+<rect class="box" x="548" y="120" width="324" height="56" rx="8"/>
+<text class="t-small" x="564" y="153">利用規約で制限されることが多い</text>
+
+<text class="t-strong" x="8" y="214">販売やサービスが</text>
+<text class="t-strong" x="8" y="234">終わったら</text>
+<rect class="box" x="204" y="190" width="332" height="56" rx="8"/>
+<text class="t-small" x="220" y="223">オンラインの機能を除けば遊べる</text>
+<rect class="box-key" x="548" y="190" width="324" height="56" rx="8"/>
+<text class="t-strong" x="564" y="223">遊べなくなる場合がある</text>
+
+<line class="arrow" x1="710" y1="246" x2="710" y2="282" marker-end="url(#arrow-own)"/>
+<rect class="box" x="204" y="284" width="668" height="64" rx="8"/>
+<text class="t-strong" x="220" y="310">法案のねらい（議員の説明）</text>
+<text class="t-small" x="220" y="334">FTC の規則で、デジタルで買ったゲームも、所有し、遊び続けられるようにする</text>
+</svg>
+</div>
+<figcaption>デジタルで買ったゲームは、多くの場合、右側の「利用の許諾」に近いものです。販売やサービスが終わったときに遊べなくなる場合があることが、今回の法案と、欧州の市民イニシアチブの出発点になっています。</figcaption>
+</figure>
+
+<h2>欧州の動き</h2>
+<ul>
+<li>欧州委員会は、2026年6月16日、欧州市民イニシアチブ「Stop Destroying Videogames」への回答を採択しました。成功した市民イニシアチブとしては14件目です。</li>
+<li>このイニシアチブは、129万件を超える有効な署名を集め、24の加盟国で必要数に達しました。</li>
+<li>回答の中身（新しい法律を提案するかどうか）は、今回確認した欧州委員会のページには書かれていませんでした。</li>
+</ul>
+
+<h2>まだ分からないこと</h2>
+<p>報道で伝えられているものの、一次情報で確認できなかった項目です。確認できたら更新します。</p>
+<div class="table-wrap">
+<table>
+<caption>2026年10月20日時点</caption>
+<thead><tr><th>項目</th><th>状況</th></tr></thead>
+<tbody>
+<tr><td>法案が議会に提出されたか、法案の番号と本文</td><td>未確認（議会の記録を確認できなかった）</td></tr>
+<tr><td>サーバーを止める前に、オフラインで遊べるようにする義務</td><td>未確認（報道のみ）</td></tr>
+<tr><td>ゲームを人に譲る権利</td><td>未確認（報道のみ）</td></tr>
+<tr><td>きっかけとされるゲームの販売終了とサーバー停止の日程</td><td>未確認（販売元のページを読めなかった）</td></tr>
+<tr><td>欧州委員会の回答の中身</td><td>未確認（報道のみ）</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>ライセンス（利用の許諾）</dt><dd>物を渡すのではなく、決められた条件で使うことを許すこと。</dd>
+<dt>FTC（連邦取引委員会）</dt><dd>米国で、消費者保護や公正な取引を所管する機関。規則を作る権限を持つ。</dd>
+<dt>欧州市民イニシアチブ</dt><dd>EU の市民が、100万件以上の署名を集めて、欧州委員会に法律の提案を求める仕組み。</dd>
+<dt>オンラインの機能</dt><dd>対戦や、サーバーにつないで使う機能。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月20日時点の情報です。議員の公式サイトと、欧州市民イニシアチブの公式ページに基づいています。</p>
+<p>法案は発表の段階で、内容は今後変わる可能性があります。法案の本文が公開されたら、更新します。</p>
+<p>「所有」と「利用の許諾」の違いは一般的な整理で、個別の契約や国の法律によって異なります。</p>
+<p>内容は、公式ページをもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-20</span>初回公開（法案の発表、所有と利用の許諾の違い、欧州の動き、まだ分からないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

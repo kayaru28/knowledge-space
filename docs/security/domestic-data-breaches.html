@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="2026年9月ごろから国内で続く漏えいについて、各社の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。">
+<meta name="description" content="2026年9月ごろから国内で続く漏えいについて、各組織の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例（11組織）、外部サービスからの波及、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。">
 <title>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
@@ -190,15 +190,16 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか</h1><p class="summary">2026年9月ごろから国内で続く漏えいについて、各社の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか</h1><p class="summary">2026年9月ごろから国内で続く漏えいについて、各組織の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例（11組織）、外部サービスからの波及、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-20</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月ごろから、国内の組織で、不正アクセスによる個人情報の漏えいの公表が相次いでいます。JPCERT/CC と IPA は、10月上旬に続けて注意喚起を出しました。</p>
 <p>特徴は、<strong>原因が1つの脆弱性に絞られていない</strong>ことです。外部に公開しているアプリやAPI、利用中の外部サービスのアカウントなど、入口が複数にまたがっています。</p>
+<p>10月16日から19日にかけても、百貨店、通信事業者、Web制作サービス、家電量販店、スポーツ団体などで、不正アクセスの公表が続きました（10月20日追記）。</p>
 </section>
 
 <div class="stats">
-<div class="stat"><p class="stat-value">4<small>社</small></p><p class="stat-label">公式発表を直接確認できた事例（9月末〜10月中旬に公表）</p></div>
-<div class="stat"><p class="stat-value">183万〜2,252万<small>件</small></p><p class="stat-label">4社が公表した件数の範囲（発表時点）</p></div>
+<div class="stat"><p class="stat-value">11<small>組織</small></p><p class="stat-label">公式発表を直接確認できた事例（9月末〜10月19日に公表）</p></div>
+<div class="stat"><p class="stat-value">54万〜2,252万<small>件</small></p><p class="stat-label">件数を公表した6組織の範囲（発表時点）</p></div>
 <div class="stat"><p class="stat-value">4<small>類型</small></p><p class="stat-label">JPCERT/CC が整理した攻撃の入口</p></div>
 <div class="stat"><p class="stat-value">3<small>点検</small></p><p class="stat-label">IPA が経営者に求める点検（公開アプリ・外部サービス・保有データ）</p></div>
 </div>
@@ -288,18 +289,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <figure class="viz">
 <p class="viz-title">公表された件数の比較</p>
-<p class="viz-sub">単位は万件。発表時点の数字で、人数とは一致しない</p>
+<p class="viz-sub">単位は万件。発表時点の数字で、人数とは一致しない。下の2組織は10月19日の公表分</p>
 <div class="viz-scroll">
-<svg class="viz-mid" viewBox="0 0 760 270" role="img" aria-label="公表件数の横棒グラフ。ソースネクスト約2,252万件、バーガーキング約1,118万件、ヤマト運輸のお客さま情報約526万件、日本経済新聞社約183万件。">
+<svg class="viz-mid" viewBox="0 0 760 378" role="img" aria-label="公表件数の横棒グラフ。ソースネクスト約2,252万件、バーガーキング約1,118万件、ヤマト運輸のお客さま情報約526万件、日本経済新聞社約183万件、阪急阪神百貨店約126万件、ニフティ最大約54万件。">
 <g class="grid">
-<line x1="190" y1="16" x2="190" y2="226"/><line x1="286" y1="16" x2="286" y2="226"/>
-<line x1="382" y1="16" x2="382" y2="226"/><line x1="478" y1="16" x2="478" y2="226"/>
-<line x1="574" y1="16" x2="574" y2="226"/><line x1="670" y1="16" x2="670" y2="226"/>
+<line x1="190" y1="16" x2="190" y2="334"/><line x1="286" y1="16" x2="286" y2="334"/>
+<line x1="382" y1="16" x2="382" y2="334"/><line x1="478" y1="16" x2="478" y2="334"/>
+<line x1="574" y1="16" x2="574" y2="334"/><line x1="670" y1="16" x2="670" y2="334"/>
 </g>
 <g class="t-muted" text-anchor="middle">
-<text class="t-muted" x="190" y="246">0</text><text class="t-muted" x="286" y="246">500万</text>
-<text class="t-muted" x="382" y="246">1,000万</text><text class="t-muted" x="478" y="246">1,500万</text>
-<text class="t-muted" x="574" y="246">2,000万</text><text class="t-muted" x="670" y="246">2,500万</text>
+<text class="t-muted" x="190" y="354">0</text><text class="t-muted" x="286" y="354">500万</text>
+<text class="t-muted" x="382" y="354">1,000万</text><text class="t-muted" x="478" y="354">1,500万</text>
+<text class="t-muted" x="574" y="354">2,000万</text><text class="t-muted" x="670" y="354">2,500万</text>
 </g>
 
 <text class="t-strong" x="8" y="38">ソースネクスト</text><text class="t-small" x="8" y="55">会員情報システム</text>
@@ -317,9 +318,17 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <text class="t-strong" x="8" y="200">日本経済新聞社</text><text class="t-small" x="8" y="217">開発用クラウドサービス</text>
 <path class="bar" d="M190,190 h31 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-31 z"><title>日本経済新聞社 約183万件（うち氏名などを含む個人情報は約15万件、残りは識別子のみ）</title></path>
 <text class="t-ink" x="233" y="207">約183万件（うち氏名などを含む個人情報は約15万件）</text>
+
+<text class="t-strong" x="8" y="254">阪急阪神百貨店</text><text class="t-small" x="8" y="271">共通の会員ID（H2O ID）</text>
+<path class="bar" d="M190,244 h20 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-20 z"><title>阪急阪神百貨店 約126万件（H2O ID のほぼ全会員）</title></path>
+<text class="t-ink" x="226" y="261">約126万件</text>
+
+<text class="t-strong" x="8" y="308">ニフティ</text><text class="t-small" x="8" y="325">回線の申し込みの管理システム</text>
+<path class="bar" d="M190,298 h6 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-6 z"><title>ニフティ 最大542,513件（調査中）</title></path>
+<text class="t-ink" x="212" y="315">最大 約54万件（調査中）</text>
 </svg>
 </div>
-<figcaption>件数の桁は、最大のソースネクストと最小の日本経済新聞社で約12倍違います。「件」は人数と一致するとは限りません。日本経済新聞社の約183万件は、大半が単体では個人を特定できない識別子です。ヤマト運輸は、お客さま情報のほかに、お届け先情報（約5万件）と加盟店情報（約4,100件）も対象です。</figcaption>
+<figcaption>件数の桁は、最大のソースネクストと最小のニフティで約41倍違います。「件」は人数と一致するとは限りません。日本経済新聞社の約183万件は、大半が単体では個人を特定できない識別子です。ヤマト運輸は、お客さま情報のほかに、お届け先情報（約5万件）と加盟店情報（約4,100件）も対象です。</figcaption>
 </figure>
 
 <div class="table-wrap">
@@ -345,6 +354,84 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li><strong>発表時点で二次被害を確認していないと述べたのは、ヤマト運輸、バーガーキング、日本経済新聞社です。</strong></li>
 <li><strong>規模が大きいです。</strong>100万件から2,000万件超まで及びます。</li>
 <li><strong>利用者へは、不審なメール、SMS、電話への注意が呼びかけられています。</strong>（ヤマト運輸、バーガーキング、ソースネクスト）</li>
+</ul>
+
+<h2>10月16〜19日に公表された事例（7組織）</h2>
+<p>10月20日の追記です。各組織の公式発表（10月16〜19日付）を読んで整理しました。調査中のものがほとんどで、件数や原因は今後変わる可能性があります。報道はあったものの、公式発表を確認できなかった事例は載せていません。</p>
+
+<div class="table-wrap">
+<table>
+<caption>各組織の公式発表（10月16〜19日付）より</caption>
+<thead><tr><th>組織</th><th>公表日</th><th>対象</th><th>経緯と情報</th></tr></thead>
+<tbody>
+<tr><td>阪急阪神百貨店</td><td>10/19</td><td>予約サイト経由で顧客管理システム。通販サイトと注文サービスにも不正アクセス</td><td>10月16日に予約サイト経由の不正アクセスを確認し、サイトを停止。17日に通販サイト（HANKYU HANSHIN E-STORES）と Remo Order でも確認し、停止。19日に、共通の会員ID「H2O ID」のほぼ全会員分、約126万件の個人情報の一部の漏えいが判明。項目は、ID、氏名、性別、メールアドレス、住所、電話番号、年齢、生年月日など。クレジットカード番号の全桁とセキュリティコードは保持していない。不正利用や二次被害は確認されていない</td></tr>
+<tr><td>ニフティ</td><td>10/19（第一報）</td><td>回線の申し込みを受け付ける管理システム（申し込みに使うWebサイトとは別の、情報登録用の管理ツール）</td><td>10月19日に不正アクセスを確認。2019年以降に光回線を申し込んだ人（同社サイト経由を除く）の、会員ID、氏名、性別、生年月日、住所、電話番号、メールアドレスが、最大542,513件漏えいした可能性（調査中）。口座とクレジットカードの情報は、このシステムにない</td></tr>
+<tr><td>Studio</td><td>10/16（第一報。17・18日に更新）</td><td>Web制作サービスのクラウド環境</td><td>第三者が一部機能の脆弱性を悪用し、9月30日〜10月1日に不正アクセス。10月13日に検知し、13〜14日に修正。全顧客が対象の可能性。アカウント情報、サイトのフォームに送信された内容、外部サービスのAPIキーなどの認証情報が含まれる。暗号化して保存していた情報も、復号に必要な鍵が同じ不正アクセスで読み出されたため、内容が知られた可能性がある。取得の事実は確認できていないが、取得されたものとみなして対応</td></tr>
+<tr><td>Joshin</td><td>10/19（17日にも公表）</td><td>社内のネットワーク</td><td>10月16日に不正アクセスを認識し、外部からのアクセスを制限した結果、一部のサービスを提供できない状態。情報流出の有無は確認中。個人情報漏えいの可能性を否定できないとして、個人情報保護委員会へ第一報</td></tr>
+<tr><td>日本サッカー協会（JFA）</td><td>10/18</td><td>公式アプリ「JFA Passport」</td><td>10月17日の3時25分ごろから19時ごろまで不正アクセス。アプリの一部機能を停止。漏えいの有無は調査中。ほかのシステムへの影響は確認されていない。当面、ログアウト、再ログイン、再インストールを控えるよう求めている</td></tr>
+<tr><td>トラストバンク</td><td>10/19</td><td>ふるさと納税サイト「ふるさとチョイス」</td><td>不正アクセスの疑いで、関連サービスを一時停止。事実関係と影響範囲を確認中で、詳細は調査結果を踏まえて改めて知らせるとしている</td></tr>
+<tr><td>スクウェア・エニックス</td><td>掲載日の記載なし</td><td>スクウェア・エニックス アカウント</td><td>他社サービスから流出したと見られるメールアドレス（またはアカウントID）とパスワードの組み合わせで、不正ログインされるケースを確認。被害が疑われるアカウントにはログイン制限をかけた。不正アクセスが増え続ける場合は、全アカウントのパスワードをリセットする可能性にも触れている</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">外部サービス1か所への侵入が、使っている組織に広がる（Studio の例）</p>
+<p class="viz-sub">Studio と埼玉県の発表をもとに筆者が整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="攻撃者がWeb制作サービスStudioのクラウド環境に侵入すると、そこにあるアカウント情報、フォームの送信内容、外部サービスの認証情報、復号の鍵が対象になる。影響は、Studioでサイトを作った組織と、そのフォームに入力した人の個人情報にまで広がる。利用した組織は、入力した人への通知や、個人情報保護委員会への報告を検討する必要がある。">
+<defs>
+<marker id="arrow-spread" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="110" width="100" height="64" rx="8"/>
+<text class="t-strong" x="58" y="147" text-anchor="middle">攻撃者</text>
+
+<line class="arrow" x1="108" y1="142" x2="168" y2="142" marker-end="url(#arrow-spread)"/>
+<text class="t-small" x="138" y="100" text-anchor="middle">脆弱性を悪用</text>
+<text class="t-small" x="138" y="118" text-anchor="middle">9/30〜10/1</text>
+
+<rect class="box-key" x="170" y="24" width="250" height="236" rx="8"/>
+<text class="t-strong" x="186" y="52">Studio のクラウド環境</text>
+<text class="t-small" x="186" y="84">・アカウント情報</text>
+<text class="t-small" x="186" y="110">・サイトのフォームの送信内容</text>
+<text class="t-small" x="186" y="136">・外部サービスのAPIキーなど</text>
+<text class="t-small" x="186" y="162">・ライブプレビューのURL</text>
+<text class="t-strong" x="186" y="196">・復号の鍵</text>
+<text class="t-small" x="186" y="216">　暗号化して保存した情報も</text>
+<text class="t-small" x="186" y="234">　読まれた可能性</text>
+
+<line class="arrow" x1="420" y1="80" x2="470" y2="80" marker-end="url(#arrow-spread)"/>
+<rect class="box" x="472" y="32" width="200" height="96" rx="8"/>
+<text class="t-strong" x="486" y="60">Studio でサイトを</text>
+<text class="t-strong" x="486" y="80">作った組織</text>
+<text class="t-small" x="486" y="108">全顧客が対象の可能性</text>
+
+<line class="arrow" x1="672" y1="80" x2="698" y2="80" marker-end="url(#arrow-spread)"/>
+<rect class="box" x="700" y="32" width="172" height="96" rx="8"/>
+<text class="t-strong" x="714" y="60">フォームに</text>
+<text class="t-strong" x="714" y="80">入力した人</text>
+<text class="t-small" x="714" y="108">例：埼玉県の施設 162件</text>
+
+<line class="arrow" x1="572" y1="128" x2="572" y2="166" marker-end="url(#arrow-spread)"/>
+<rect class="box" x="472" y="168" width="400" height="92" rx="8"/>
+<text class="t-strong" x="486" y="194">利用した組織が検討すること</text>
+<text class="t-small" x="486" y="218">・フォームに入力した人への通知</text>
+<text class="t-small" x="486" y="240">・個人情報保護委員会への報告（10/17 に、いったん保留）</text>
+</svg>
+</div>
+<figcaption>侵入を受けたのはWeb制作サービス1社ですが、そのサービスでサイトを作った組織と、そのフォームに入力した人の情報まで影響が及びました。Studio は10月16日に「報告が必要な場合がある」と案内しましたが、17日に、個人情報保護委員会の要請で、個別の報告をいったん保留するよう案内を改めました。入力した人への通知の検討は、変わらず必要とされています。</figcaption>
+</figure>
+
+<h3>続報から見えること</h3>
+<div class="note">
+<p>ここは、各組織の発表を並べて読んだ上での整理です。各組織がそう述べているわけではありません。</p>
+</div>
+<ul>
+<li><strong>外部サービスから波及します。</strong>Studio の件では、侵入を受けたのはWeb制作サービス1社ですが、それを使ってサイトを作った組織と、そのフォームに入力した人の情報にまで影響が広がりました。IPA が点検を求める「自組織が使っている外部サービス」の重要さを示す例です。</li>
+<li><strong>暗号化だけでは守れない場合があります。</strong>Studio は、暗号化して保存していた情報も、復号に必要な鍵が同じ不正アクセスで読み出されたと説明しています。鍵をデータと同じ場所に置いていると、暗号化の効果は薄れます。</li>
+<li><strong>共通のIDは、被害が広がります。</strong>阪急阪神百貨店では、予約サイト経由の侵入で、複数のサービスに共通の会員ID（H2O ID）のほぼ全会員分が漏えいしました。</li>
+<li><strong>盗んだパスワードを使い回す攻撃もあります。</strong>スクウェア・エニックスは、他社で流出した組み合わせを使った不正ログインを確認しています。パスワードの使い回しをやめることは、利用者側の対策にもなります。</li>
+<li><strong>停止して調査中のものが多いです。</strong>Joshin、JFA、トラストバンク、ニフティは、公表時点で、原因や漏えいの範囲が分かっていません。</li>
 </ul>
 
 <h2>確認されている攻撃の入口</h2>
@@ -491,7 +578,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p>ここは注意喚起の内容ではなく、一般的な心がけです。各社の発表にも、同じ趣旨の呼びかけがあります。</p>
 <div class="cards">
 <div class="card"><h3>連絡は公式から確認する</h3><p>漏えいの連絡を名乗るメールやSMSのリンクは開かず、公式サイトや公式アプリから状況を確認します。</p></div>
-<div class="card"><h3>パスワードを使い回さない</h3><p>ソースネクストは、全会員のパスワードを無効にした上で、同じメールアドレスとパスワードの組み合わせを他のサービスでも使っている場合は、そちらも変更するよう求めています。</p></div>
+<div class="card"><h3>パスワードを使い回さない</h3><p>ソースネクストは、全会員のパスワードを無効にした上で、同じメールアドレスとパスワードの組み合わせを他のサービスでも使っている場合は、そちらも変更するよう求めています。スクウェア・エニックスは、他社で流出した組み合わせを使った不正ログインを確認しています。</p></div>
 <div class="card"><h3>多要素認証を有効にする</h3><p>多要素認証が使えるサービスでは、有効にします。</p></div>
 </div>
 
@@ -506,12 +593,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月19日時点の情報です。状況は更新されていくため、最新の内容は各機関のページで確認してください。</p>
-<p>事例は、各社が公式サイトで公表した内容（10月15〜16日付）に基づきます。調査は継続中で、数字や原因は更新される可能性があります。</p>
-<p>公表している組織はここに挙げた4社だけではありません。ここでは、公式発表を直接確認できたものだけを取り上げています。</p>
+<p>2026年10月20日時点の情報です。状況は更新されていくため、最新の内容は各機関のページで確認してください。</p>
+<p>事例は、各組織が公式サイトで公表した内容（10月15〜19日付）に基づきます。調査は継続中で、数字や原因は更新される可能性があります。</p>
+<p>公表している組織はここに挙げた11組織だけではありません。ここでは、公式発表を直接確認できたものだけを取り上げています。</p>
 <p>内容は、各社の公式発表、JPCERT/CC、IPA の注意喚起をもとに、独自に整理したものです。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（4社の事例、攻撃の入口、点検の流れ）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-20</span>10月16〜19日に公表された7組織の事例と、外部サービスからの波及の図を追加</li><li><span class="date">2026-10-19</span>初回公開（4社の事例、攻撃の入口、点検の流れ）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

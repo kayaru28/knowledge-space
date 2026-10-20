@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。">
+<meta name="description" content="JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。">
 <title>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
@@ -190,10 +190,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-20</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは7製品・9件</strong>です。対応は、悪用が確認されているものから順に行います。</p>
 <p>注意したいのは、<strong>回避策が提供されていない製品がある</strong>ことです（NetScaler、Cisco Secure Email Gateway）。また、<strong>侵害の痕跡が消される可能性</strong>が示されている製品もあります（Cisco Secure Email Gateway、SiteGuard Server Edition）。更新するだけでなく、すでに侵害されていないかの調査も必要です。</p>
+<p>10月20日追記：悪用は確認されていないものの深刻度が高いものとして、Linux カーネルの <strong>PwnEscape</strong>（CVE-2026-99999）を加えました。仮想マシンの中から、ホスト側の Linux のメモリを読み出せるもので、仮想マシンを動かすホストの管理者は、カーネルの更新が必要です。</p>
 </section>
 
 <div class="stats">
@@ -281,6 +282,72 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </div>
 <figcaption>9月中旬から10月中旬まで、ほぼ毎週のように、悪用が確認された脆弱性の注意喚起が出ています。NetScaler については、注意喚起の公開（9月28日）の前の9月24日から、日本国内の NetScaler を対象にした攻撃試行が観測されています。ただし、この脆弱性の悪用を目的としたものかは明らかになっていません。</figcaption>
 </figure>
+
+<h2>悪用は確認されていないが、深刻度が高いもの：PwnEscape</h2>
+<p>10月20日の追記です。Linux カーネルの脆弱性 PwnEscape（CVE-2026-99999）を、CVE の記録、発見者（pwn.ai）の解説、Vercel の報告をもとに整理しました。CVE の記録は10月15日に公開され、CVSS 3.1 の基本値は 9.3（緊急）です。CISA の評価では、悪用は確認されていません。</p>
+
+<figure class="viz">
+<p class="viz-title">仮想マシンの中から、ホストのメモリが読み出される仕組み</p>
+<p class="viz-sub">発見者の解説をもとに、筆者が単純化して図にしたもの</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="仮想マシンが、チェックサムの情報を細工したパケットを送る。ホストのLinuxカーネルでは、1 チェックサムを仕上げる処理が開始位置を確かめずにIPv4ヘッダーを書き換え、ヘッダーの長さが20バイトから60バイトに変わる。2 パケットを分割して送るとき、長くなったヘッダーの分だけホストのメモリを読み込む。3 メモリの中身が外に出る。修正は、チェックサムを仕上げる前に開始位置がIPv4ヘッダーより後ろにあるかを確かめるもの。">
+<defs>
+<marker id="arrow-pwn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="60" width="150" height="120" rx="8"/>
+<text class="t-strong" x="22" y="88">仮想マシン</text>
+<text class="t-strong" x="22" y="108">（ゲスト）</text>
+<text class="t-small" x="22" y="140">チェックサムの情報を</text>
+<text class="t-small" x="22" y="158">細工したパケット</text>
+
+<line class="arrow" x1="158" y1="120" x2="204" y2="120" marker-end="url(#arrow-pwn)"/>
+
+<rect class="box" x="190" y="16" width="682" height="196" rx="8"/>
+<text class="t-strong" x="206" y="42">ホストの Linux カーネル（IPv4 の処理）</text>
+
+<rect class="box" x="206" y="60" width="196" height="132" rx="8"/>
+<text class="t-strong" x="220" y="86">1　チェックサムを仕上げる</text>
+<text class="t-small" x="220" y="114">開始位置を確かめずに処理し</text>
+<text class="t-small" x="220" y="134">IPv4 ヘッダーを書き換える</text>
+<text class="t-small" x="220" y="160">ヘッダーの長さが</text>
+<text class="t-small" x="220" y="178">20バイト → 60バイトに</text>
+
+<line class="arrow" x1="402" y1="126" x2="430" y2="126" marker-end="url(#arrow-pwn)"/>
+<rect class="box" x="432" y="60" width="196" height="132" rx="8"/>
+<text class="t-strong" x="446" y="86">2　パケットを分割して送る</text>
+<text class="t-small" x="446" y="114">長くなったヘッダーの分だけ</text>
+<text class="t-small" x="446" y="134">本来のデータの外側にある</text>
+<text class="t-small" x="446" y="154">ホストのメモリを読み込む</text>
+
+<line class="arrow" x1="628" y1="126" x2="658" y2="126" marker-end="url(#arrow-pwn)"/>
+<rect class="box-key" x="660" y="60" width="196" height="132" rx="8"/>
+<text class="t-strong" x="674" y="86">3　メモリの中身が外に出る</text>
+<text class="t-small" x="674" y="114">ヘッダーの一部として</text>
+<text class="t-small" x="674" y="134">送り出される</text>
+<text class="t-small" x="674" y="160">1回あたり32バイト</text>
+<text class="t-small" x="674" y="178">（本番環境でも確認）</text>
+
+<rect class="box" x="190" y="232" width="682" height="48" rx="8"/>
+<text class="t-strong" x="206" y="262">修正</text>
+<text class="t-small" x="250" y="262">チェックサムを仕上げる前に、開始位置が IPv4 ヘッダーより後ろにあるかを確かめる</text>
+</svg>
+</div>
+<figcaption>KVM の脆弱性ではなく、Linux のネットワーク処理の問題です。仮想マシンからパケットを送る経路を通じて届きますが、発見者は、すべての構成で同じ経路を通るとは限らないとしています。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>CVE の記録、発見者、Vercel の公表より</caption>
+<thead><tr><th>項目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>実証されたこと</td><td>ホストのメモリの読み出しは、Vercel の本番のサンドボックスでも確認された。ホストのメモリへの書き込みと、ホストでの root 権限での実行は、研究者が用意した実験環境（KVM、Firecracker）で確認したもので、本番環境での任意のコマンド実行は主張していない。Vercel は、顧客データにアクセスされたという報告はないとしている</td></tr>
+<tr><td>影響するカーネル</td><td>2.6.27 以降</td></tr>
+<tr><td>修正済みの安定版</td><td>5.10.272、5.15.223、6.1.190、6.6.159、6.12.113、6.18.57、7.2.11、および 7.3 以降</td></tr>
+<tr><td>対応</td><td>仮想マシンやサンドボックスを動かすホストのカーネルを、修正済みのものに更新する。ディストリビューションのカーネルを使っている場合は、各ディストリビューションの更新情報を確認する</td></tr>
+<tr><td>発見の経緯</td><td>Vercel が8月18日に公表した、サンドボックスの隔離を破るチャレンジ（賞金総額100万ドル）の中で、pwn.ai の研究者が見つけた。9月4日にカーネルの開発者へ非公開で報告し、10月8日にネットワークの開発ツリー、10月14日に本流（メインライン）へ修正が入った</td></tr>
+</tbody>
+</table>
+</div>
 
 <h2>対応の考え方</h2>
 <p>注意喚起の内容を並べて読んだ上での、対応の流れの整理です。各機関がそう述べているわけではありません。</p>
@@ -381,12 +448,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月19日時点の情報です。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
+<p>2026年10月20日時点の情報です。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
 <p>修正バージョンの番号など、注意喚起に明記されていない項目は、開発元の最新情報で確認する必要があります。</p>
 <p>ここで取り上げたのは、JPCERT/CC と IPA が10月中旬までに取り上げたもののうち、本文を直接確認できたものです。Linux の Copy Fail（IPA）や、報道で伝えられた別の脆弱性は、一次情報を確認できていないため、今回は扱っていません。</p>
-<p>内容は、JPCERT/CC と IPA の資料をもとに、独自に整理したものです。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
+<p>内容は、JPCERT/CC と IPA の資料をもとに、独自に整理したものです。PwnEscape は、CVE の記録、発見者、Vercel の公表をもとにしています。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
