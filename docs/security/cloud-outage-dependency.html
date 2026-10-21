@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月の Google Cloud のロンドンのゾーンの電源障害と、IDCFクラウドのランサムウェア被害を、止まった範囲、時系列、取り出せたデータの数で比べ、ゾーンやリージョン、バックアップの備えが何に効いたかを公式の発表をもとに図で整理する。裁判所の mints の不調も扱う。">
+<title>クラウドが止まると何が止まるか：ロンドンのゾーンの電源障害と、IDCFクラウドのランサムウェア被害 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>クラウドが止まると何が止まるか：ロンドンのゾーンの電源障害と、IDCFクラウドのランサムウェア被害</h1><p class="summary">2026年10月の Google Cloud のロンドンのゾーンの電源障害と、IDCFクラウドのランサムウェア被害を、止まった範囲、時系列、取り出せたデータの数で比べ、ゾーンやリージョン、バックアップの備えが何に効いたかを公式の発表をもとに図で整理する。裁判所の mints の不調も扱う。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月、クラウドが止まる出来事が続きました。ただし、止まり方はまったく違います。</p>
+<p>10月20日の Google Cloud では、ロンドンのリージョンの中の<strong>1つのゾーンで電源の障害</strong>が起き、約8時間、そのゾーンのサービスが使えなくなりました。影響が出た製品は38にのぼります。一方、10月7日からの IDCFクラウドでは、<strong>ランサムウェア攻撃</strong>で東日本リージョン1の4つのゾーンが被害を受け、495の企業・自治体のデータが、取り出しや復元が困難な見通しとされました。</p>
+<p>前者は設備の故障で、ゾーンを分けて置けば避けられる種類の障害です。後者は事業者の基盤への攻撃で、同じリージョンの複数のゾーンが一度に被害を受けました。どこに、どんな写しを持っておくかで、取り戻せるものが変わります。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">38</p><p class="stat-label">Google の障害で影響が出た製品（Service Health の公開データ）</p></div>
+<div class="stat"><p class="stat-value">約8<small>時間</small></p><p class="stat-label">Google の障害の時間（日本時間 10月20日 15:08〜23:00）</p></div>
+<div class="stat"><p class="stat-value">495</p><p class="stat-label">IDCFクラウドで影響を受けた企業・自治体</p></div>
+<div class="stat"><p class="stat-value">194</p><p class="stat-label">そのうち、バックアップを取り出せると確認された数（スナップショット機能の利用者）</p></div>
+</div>
+
+<h2>リージョンとゾーン</h2>
+<p>クラウドの事業者は、サービスを地域ごとの「リージョン」に分け、リージョンの中をさらに設備が独立した「ゾーン」に分けています。Google の説明では、リージョンは3つ以上のゾーンから成り、3つ以上の物理的なデータセンターに置かれます。そして「ゾーンは、リージョンの中の1つの障害単位とみなすべき」としています。</p>
+<p>Google は、高い可用性のために、アプリケーションをリージョン内の複数のゾーンに置くこと、リージョン全体を失う場合に備えて別のリージョンでも動かせるよう計画すること、データを別のリージョンに複製することを勧めています。</p>
+
+<figure class="viz">
+<p class="viz-title">どこが止まったか</p>
+<p class="viz-sub">Google Cloud の Service Health と、IDCフロンティアのお知らせ（第2報・第3報）をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 330" role="img" aria-label="止まった範囲の比較。Google Cloudでは、ロンドンのリージョンeurope-west2の3つのゾーンのうち、ゾーンbだけが電源の障害で止まった。IDCFクラウドでは、東日本リージョン1の6つのゾーンのうち、tesla、henry、pascal、jouleの4つがランサムウェアの被害を受けた。radianとnewtonのゾーンと、ほかのリージョンでは不正アクセスは確認されていないが、管理コンソールは一時停止した。">
+<text class="t-strong" x="20" y="26">Google Cloud（10月20日）</text>
+<rect class="box" x="20" y="40" width="410" height="200" rx="8"/>
+<text class="t-muted t-small" x="34" y="62">リージョン europe-west2（ロンドン）</text>
+
+<rect class="box" x="40" y="84" width="115" height="84" rx="6"/>
+<text x="97" y="122" text-anchor="middle">ゾーン a</text>
+<text class="t-small t-muted" x="97" y="144" text-anchor="middle">動作</text>
+<rect class="box-key" x="167" y="84" width="115" height="84" rx="6" stroke-width="3"><title>europe-west2-b：電源の事象により障害。Google Cloud のサービスが使えなくなった</title></rect>
+<text class="t-strong" x="224" y="122" text-anchor="middle">ゾーン b</text>
+<text class="t-small" x="224" y="144" text-anchor="middle">電源の障害で停止</text>
+<rect class="box" x="294" y="84" width="115" height="84" rx="6"/>
+<text x="351" y="122" text-anchor="middle">ゾーン c</text>
+<text class="t-small t-muted" x="351" y="144" text-anchor="middle">動作</text>
+
+<text class="t-small" x="34" y="200">リージョン内の一部のサービスでも、</text>
+<text class="t-small" x="34" y="220">エラーの増加と断続的なネットワークの問題</text>
+
+<text class="t-strong" x="450" y="26">IDCFクラウド（10月7日〜）</text>
+<rect class="box" x="450" y="40" width="410" height="160" rx="8"/>
+<text class="t-muted t-small" x="464" y="62">東日本リージョン1</text>
+
+<rect class="box-key" x="465" y="74" width="120" height="48" rx="6" stroke-width="3"><title>tesla ゾーン：ランサムウェアの被害</title></rect>
+<text class="t-strong" x="525" y="103" text-anchor="middle">tesla</text>
+<rect class="box-key" x="595" y="74" width="120" height="48" rx="6" stroke-width="3"><title>henry ゾーン：ランサムウェアの被害</title></rect>
+<text class="t-strong" x="655" y="103" text-anchor="middle">henry</text>
+<rect class="box-key" x="725" y="74" width="120" height="48" rx="6" stroke-width="3"><title>pascal ゾーン：ランサムウェアの被害</title></rect>
+<text class="t-strong" x="785" y="103" text-anchor="middle">pascal</text>
+<rect class="box-key" x="465" y="134" width="120" height="48" rx="6" stroke-width="3"><title>joule ゾーン：ランサムウェアの被害</title></rect>
+<text class="t-strong" x="525" y="163" text-anchor="middle">joule</text>
+<rect class="box" x="595" y="134" width="120" height="48" rx="6"><title>radian ゾーン：不正アクセスは確認されていない（第3報）</title></rect>
+<text x="655" y="163" text-anchor="middle">radian</text>
+<rect class="box" x="725" y="134" width="120" height="48" rx="6"><title>newton ゾーン：不正アクセスは確認されていない（第3報）</title></rect>
+<text x="785" y="163" text-anchor="middle">newton</text>
+
+<rect class="box" x="450" y="212" width="128" height="40" rx="6"/>
+<text class="t-small" x="514" y="237" text-anchor="middle">東日本リージョン2</text>
+<rect class="box" x="591" y="212" width="128" height="40" rx="6"/>
+<text class="t-small" x="655" y="237" text-anchor="middle">東日本リージョン3</text>
+<rect class="box" x="732" y="212" width="128" height="40" rx="6"/>
+<text class="t-small" x="796" y="237" text-anchor="middle">西日本リージョン1</text>
+<text class="t-small" x="450" y="274">被害のなかった場所でも、外部からアクセスできる</text>
+<text class="t-small" x="450" y="292">管理コンソールは一時停止（第2報）</text>
+
+<g transform="translate(20 318)">
+<rect class="box-key" x="0" y="-12" width="22" height="14" rx="3" stroke-width="3"/><text class="t-small" x="30" y="0">障害・被害</text>
+<rect class="box" x="120" y="-12" width="22" height="14" rx="3"/><text class="t-small" x="150" y="0">動作、または被害を確認されていない</text>
+</g>
+</svg>
+</div>
+<figcaption>Google はゾーンを「1つの障害単位」と説明しています。今回の Google の件は、その単位の中で収まった障害でした。IDCF の件では、同じリージョンの6つのゾーンのうち4つが一度に被害を受けました。</figcaption>
+</figure>
+
+<h2>Google Cloud：ロンドンの1つのゾーンの電源障害</h2>
+<p>障害は日本時間の10月20日 15:08 に始まりました。最初の公表は約2時間半後で、そのときは原因も回避策も示されていません。原因が「電源の事象」と公表されたのは開始から約5時間後で、その時点で電源はすでに解消していました。</p>
+
+<figure class="viz">
+<p class="viz-title">Google Cloud の約8時間（10月20日）</p>
+<p class="viz-sub">時刻は日本時間。Service Health の更新をもとに作成。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="Google Cloudの障害の時系列。日本時間15時08分に開始。17時35分に最初の公表、回避策はなし。18時24分に別のゾーンやリージョンへの移動を案内。20時12分に原因がゾーンbの電源の事象と公表し、電源は解消。20時58分に既存の処理を優先して回復中。21時10分に大半の処理で回復。23時00分に終了。">
+<g class="grid">
+<line x1="100" y1="40" x2="100" y2="214"/><line x1="180" y1="40" x2="180" y2="214"/>
+<line x1="260" y1="40" x2="260" y2="214"/><line x1="340" y1="40" x2="340" y2="214"/>
+<line x1="420" y1="40" x2="420" y2="214"/><line x1="500" y1="40" x2="500" y2="214"/>
+<line x1="580" y1="40" x2="580" y2="214"/><line x1="660" y1="40" x2="660" y2="214"/>
+<line x1="740" y1="40" x2="740" y2="214"/><line x1="820" y1="40" x2="820" y2="214"/>
+</g>
+<g class="t-muted t-small" text-anchor="middle">
+<text x="100" y="234">15時</text><text x="180" y="234">16時</text><text x="260" y="234">17時</text>
+<text x="340" y="234">18時</text><text x="420" y="234">19時</text><text x="500" y="234">20時</text>
+<text x="580" y="234">21時</text><text x="660" y="234">22時</text><text x="740" y="234">23時</text>
+<text x="820" y="234">24時</text>
+</g>
+
+<text x="8" y="72">障害</text>
+<rect class="bar-old" x="111" y="60" width="403" height="16" rx="4"><title>15:08〜20:12：調査中（原因は未公表）</title></rect>
+<rect class="bar" x="516" y="60" width="224" height="16" rx="4"><title>20:12〜23:00：電源は解消し、基盤のサービスから順に回復</title></rect>
+<text class="t-small" x="111" y="52">15:08 開始</text>
+<text class="t-small" x="740" y="52" text-anchor="end">23:00 終了</text>
+
+<text x="8" y="114">公表</text>
+<circle class="mk-announce" cx="307" cy="110" r="6"><title>17:35 最初の公表。europe-west2 リージョンで、複数のサービスのエラー増加と断続的なネットワーク障害。回避策は「今のところなし」</title></circle>
+<text x="319" y="114">17:35 最初の公表</text>
+<circle class="mk-announce" cx="372" cy="140" r="6"><title>18:24 回避策として、可能なら影響を受けた処理を、使える別の場所（ゾーンまたはリージョン）へ移すよう案内</title></circle>
+<text x="384" y="144">18:24 別のゾーン・リージョンへの移動を案内</text>
+<circle class="mk-period" cx="516" cy="110" r="7"><title>20:12 電源の事象により europe-west2-b ゾーンで障害が起きたと公表。電源の事象は解消</title></circle>
+<text x="528" y="114">20:12 原因（ゾーン b の電源）を公表</text>
+<circle class="mk-announce" cx="577" cy="170" r="6"><title>20:58 既存の処理の回復を優先。新しい処理はまだ作れない場合がある</title></circle>
+<text x="589" y="174">20:58 既存の処理を優先して回復</text>
+<circle class="mk-period" cx="593" cy="200" r="7"><title>21:10 大半の処理で回復を確認</title></circle>
+<text x="605" y="204">21:10 大半の処理で回復</text>
+</svg>
+</div>
+<figcaption>灰色は原因が公表されるまでの時間、緑は電源の解消後に回復していった時間です。最後の更新（23:03）は、大半の利用者で解消し、ごく一部にまだ影響があるとしています。社内の調査が終わったら分析を公開するとしていて、10月22日時点ではまだ公開されていません。</figcaption>
+</figure>
+
+<p>影響が出た製品は38です。仮想マシン（Compute Engine）やディスク（Persistent Disk）、Kubernetes Engine のような土台のサービスに加えて、Cloud SQL、Spanner、BigQuery、Pub/Sub、Cloud Storage、ロードバランサ、VPC など、その上に作られたデータベースや分析、ネットワークのサービスにも及びました。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：1つのゾーンの電源から38の製品に影響が出たのは、多くのサービスが同じ土台の上で動いているためです。Google 自身が勧めるとおり複数のゾーンに分けて置いていれば、避けられる種類の障害でした。ただし、リージョンの一部のサービスでもエラーの増加やネットワークの問題が出ています。また、回復のときは既存の処理が優先され、新しい処理はしばらく作れませんでした。障害が起きてから別の場所に移す、という方法は、そのとき使えるとは限りません。</p>
+</div>
+
+<h2>IDCFクラウド：ランサムウェアによる被害</h2>
+<p>IDCFクラウドでは、10月7日の午前3時40分ごろに障害が起き、同じ日のうちにランサムウェア攻撃によるものと判明しました。IDCフロンティアは、二次被害やデータ漏えいを防ぐため、東日本リージョン1をネットワークから遮断し、システムを止めています。</p>
+
+<figure class="viz">
+<p class="viz-title">IDCフロンティアの発表（10月7日〜21日）</p>
+<p class="viz-sub">同社のお知らせ（第1報〜第6報と、その後の更新）をもとに作成。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 262" role="img" aria-label="IDCFクラウドの発表の時系列。10月7日に障害が発生し、第1報と第2報でランサムウェア攻撃と判明、東日本リージョン1を遮断、管理コンソールを停止。10月8日の第3報で4つのゾーンが被害、データの取り出しや復元は困難な見通し。10月9日の第4報で対応体制。10月14日の第5報でデータ流出の痕跡なし、194の利用者はバックアップを取り出せると確認。10月18日の第6報でバックアップの機能を再開。10月21日に新たな事実はないと更新。">
+<g class="grid">
+<line x1="80" y1="40" x2="80" y2="218"/><line x1="132" y1="40" x2="132" y2="218"/><line x1="184" y1="40" x2="184" y2="218"/>
+<line x1="236" y1="40" x2="236" y2="218"/><line x1="288" y1="40" x2="288" y2="218"/><line x1="340" y1="40" x2="340" y2="218"/>
+<line x1="392" y1="40" x2="392" y2="218"/><line x1="444" y1="40" x2="444" y2="218"/><line x1="496" y1="40" x2="496" y2="218"/>
+<line x1="548" y1="40" x2="548" y2="218"/><line x1="600" y1="40" x2="600" y2="218"/><line x1="652" y1="40" x2="652" y2="218"/>
+<line x1="704" y1="40" x2="704" y2="218"/><line x1="756" y1="40" x2="756" y2="218"/><line x1="808" y1="40" x2="808" y2="218"/>
+</g>
+<g class="t-muted t-small" text-anchor="middle">
+<text x="80" y="238">10/7</text><text x="132" y="238">8</text><text x="184" y="238">9</text><text x="236" y="238">10</text>
+<text x="288" y="238">11</text><text x="340" y="238">12</text><text x="392" y="238">13</text><text x="444" y="238">14</text>
+<text x="496" y="238">15</text><text x="548" y="238">16</text><text x="600" y="238">17</text><text x="652" y="238">18</text>
+<text x="704" y="238">19</text><text x="756" y="238">20</text><text x="808" y="238">21</text>
+</g>
+
+<circle class="mk-found" cx="80" cy="60" r="7"><title>10/7 午前3時40分ごろ障害が発生。第1報で第三者からの不正アクセス、第2報でランサムウェア攻撃と判明。東日本リージョン1をネットワークから遮断してシステムを停止。外部からアクセスできる管理コンソールも一時停止。対象は495の企業・自治体</title></circle>
+<text x="92" y="64">第1報・第2報：ランサムウェアと判明、遮断</text>
+<circle class="mk-found" cx="132" cy="96" r="7"><title>10/8 第3報。被害は tesla、henry、pascal、joule の4ゾーン。データの取り出しや復元は困難な見通しで、利用者自身のバックアップからのみ復元できる</title></circle>
+<text x="144" y="100">第3報：4ゾーンが被害、取り出し・復元は困難な見通し</text>
+<circle class="mk-announce" cx="184" cy="132" r="6"><title>10/9 第4報。10/7 午前9時に緊急対策本部を設置し、親会社のソフトバンクと連携。監督官庁や警察などへ報告・相談</title></circle>
+<text x="196" y="136">第4報：対応体制</text>
+<circle class="mk-period" cx="444" cy="60" r="7"><title>10/14 第5報。被害を受けた4ゾーンで、データの持ち出しを示す痕跡は確認されず、外部への流出はなかったと判断。スナップショット機能を使っていた194の利用者について、バックアップデータの取り出しが可能と確認</title></circle>
+<text x="456" y="64">第5報：流出の痕跡なし、194は取り出し可能</text>
+<circle class="mk-period" cx="652" cy="96" r="7"><title>10/18 第6報。被害のなかったゾーン・リージョンの利用者向けに「IDCFクラウド バックアップ」を再開。スナップショット機能は停止が続く</title></circle>
+<text x="664" y="100">第6報：バックアップを再開</text>
+<circle class="mk-announce" cx="808" cy="132" r="6"><title>10/21 18時の更新。前回のお知らせ以降、新たに公表すべき重要な事実はない</title></circle>
+<text x="796" y="136" text-anchor="end">新たな事実なし（更新）</text>
+
+<rect class="bar-old" x="80" y="176" width="740" height="14" rx="4"><title>10/7〜：東日本リージョン1はネットワークから遮断し、システムを停止（第2報）</title></rect>
+<text class="t-small" x="86" y="208">東日本リージョン1：ネットワークから遮断し、システムを停止（10/7〜）</text>
+
+<g transform="translate(450 258)">
+<circle class="mk-found" cx="6" cy="-4" r="6"/><text class="t-small" x="18" y="0">被害の判明</text>
+<circle class="mk-period" cx="126" cy="-4" r="6"/><text class="t-small" x="138" y="0">回復に向けた進展</text>
+<circle class="mk-announce" cx="276" cy="-4" r="6"/><text class="t-small" x="288" y="0">その他の発表</text>
+</g>
+</svg>
+</div>
+<figcaption>侵入経路は、10月21日の更新までのお知らせでは明らかにされていません。第5報は、外部のセキュリティ専門企業と調べた結果として、データの外部への流出はなかったと判断しています。</figcaption>
+</figure>
+
+<p>第3報の時点では、被害を受けた4つのゾーンのデータは、取り出しや復元が困難な見通しとされ、復元できるのは利用者自身が持つバックアップからだけとされました。その後の第5報で、スナップショット機能を使っていた利用者については、バックアップデータを取り出せることが確認されています。</p>
+
+<figure class="viz">
+<p class="viz-title">影響を受けた495の企業・自治体のうち、取り出せると確認された数</p>
+<p class="viz-sub">IDCフロンティアのお知らせ（第2報・第5報）より</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 150" role="img" aria-label="影響を受けた495の企業・自治体のうち、194はスナップショット機能を使っていて、バックアップデータを取り出せると確認された。残る301については、お知らせで取り出し可能とは書かれていない。">
+<text class="t-strong" x="20" y="34">495</text>
+<text class="t-small t-muted" x="60" y="34">影響を受けた企業・自治体</text>
+<rect class="bar-2" x="20" y="52" width="329" height="34" rx="4"><title>194：スナップショット機能を使っていて、バックアップデータの取り出しが可能と確認（第5報）</title></rect>
+<rect class="bar-old" x="351" y="52" width="509" height="34" rx="4"><title>301：お知らせでは、取り出し可能とは書かれていない</title></rect>
+<text class="t-strong" x="20" y="112">194</text>
+<text class="t-small" x="20" y="132">スナップショット機能を使っていて、取り出し可能と確認</text>
+<text class="t-strong" x="860" y="112" text-anchor="end">301</text>
+<text class="t-small" x="860" y="132" text-anchor="end">お知らせでは、取り出し可能とは書かれていない</text>
+</svg>
+</div>
+<figcaption>301は、495から194を引いた数です。第3報は、被害を受けたゾーンの利用者に、別の環境での再構築と、自分のバックアップからの復元を案内しています。</figcaption>
+</figure>
+
+<p>被害のなかったゾーンやリージョンにも影響は及びました。外部からアクセスできる管理コンソールが止まったため、仮想サーバーの起動や停止は、利用者の要望に応じて IDCフロンティアが代行しました。バックアップの機能も一時止まり、10月18日に安全を確認して再開しています。スナップショット機能は、まだ止まったままです。</p>
+
+<h2>裁判所の mints：1日ほど不安定な状態</h2>
+<p>民事裁判の書類をオンラインで出すシステム「mints」では、10月15日の午前9時ごろから、サインインできない、事件が表示されない、記録の一覧の画面が表示されないなど、不安定な状態が続きました。裁判所のお知らせでは、10月16日の午前9時の時点で同じ事象は確認されておらず、支障なく使える状態になったとしています。原因は書かれていません。</p>
+
+<h2>3件の比較</h2>
+<div class="table-wrap">
+<table>
+<caption>Google Cloud の Service Health、IDCフロンティアのお知らせ、裁判所のお知らせより</caption>
+<thead><tr><th></th><th>Google Cloud</th><th>IDCFクラウド</th><th>mints</th></tr></thead>
+<tbody>
+<tr><th>起きたこと</th><td>1つのゾーンの電源障害</td><td>ランサムウェア攻撃</td><td>サインインできないなどの不安定な状態</td></tr>
+<tr><th>範囲</th><td>ロンドンのゾーン b（リージョン内の一部のサービスにも影響）</td><td>東日本リージョン1の4つのゾーン（他の場所でも管理コンソールが停止）</td><td>システム全体</td></tr>
+<tr><th>期間</th><td>約8時間</td><td>10月7日から対応が続く</td><td>約1日</td></tr>
+<tr><th>データ</th><td>失われたという記載はない</td><td>取り出しや復元が困難な見通し。194は取り出し可能と確認</td><td>記載なし</td></tr>
+<tr><th>原因の説明</th><td>電源の事象。詳しい分析はこれから</td><td>第三者のランサムウェア攻撃。侵入経路は未公表</td><td>記載なし</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>備えの考え方</h2>
+<p>今回の2件で、どの備えが何に効いたかを並べます。何を、どこまで備えるかは、止まったときの影響の大きさと費用で決まります。この表は一般的な基準ではなく、今回起きたことの整理です。</p>
+<div class="table-wrap">
+<table>
+<caption>筆者の整理（「—」は、今回の公式の資料からは評価できないもの）</caption>
+<thead><tr><th>備え</th><th>1つのゾーンの設備の故障（Google の件）</th><th>事業者の基盤への攻撃（IDCF の件）</th></tr></thead>
+<tbody>
+<tr><td>同じリージョンの複数のゾーンに分けて置く</td><td>Google が勧める方法。1つのゾーンの障害を避けられる</td><td>4つのゾーンが一度に被害を受けた</td></tr>
+<tr><td>別のリージョンにも置く・複製する</td><td>Google が勧める方法（リージョン全体の障害への備え）</td><td>他のリージョンに被害はなかった。ただし管理コンソールは一時停止</td></tr>
+<tr><td>事業者の機能でとるバックアップ・スナップショット</td><td>—</td><td>スナップショットを使っていた194は取り出し可能と確認。バックアップの機能は一時停止のあと再開</td></tr>
+<tr><td>事業者の外に、自分で写しを持つ</td><td>—</td><td>事業者が復元の手段として案内</td></tr>
+</tbody>
+</table>
+</div>
+
+<dl class="terms">
+<dt>リージョン</dt><dd>クラウドの事業者が、サービスを提供する地理的な区域。</dd>
+<dt>ゾーン</dt><dd>リージョンの中の、設備が独立した区画。1つの障害単位として扱われる。</dd>
+<dt>ワークロード（処理）</dt><dd>クラウドの上で動かしている処理やシステム。</dd>
+<dt>管理コンソール</dt><dd>利用者がサーバーの起動・停止や設定を行うための画面。</dd>
+<dt>スナップショット</dt><dd>ある時点のディスクの状態を、そのまま写しとったもの。</dd>
+<dt>ランサムウェア</dt><dd>データを暗号化するなどして使えなくし、元に戻すことと引き換えに金銭を要求する攻撃。</dd>
+<dt>オンプレミス</dt><dd>自社の建物などに置いた機器でシステムを動かすこと。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。Google の詳しい分析と、IDCフロンティアの調査結果は、まだ公表されていません。Google の障害で影響を受けたと報じられた個別の会社は、各社の公式の発表で Google の障害との関係を確認できなかったため、扱っていません。mints の原因は公表されていません。内容は、Google Cloud、IDCフロンティア、裁判所の公開資料をもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（リージョンとゾーン、Google Cloud の電源障害、IDCFクラウドのランサムウェア被害、mints の不調、3件の比較、備えの整理）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

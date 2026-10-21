@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月17日に報告された eMudhra の中間認証局8つの秘密鍵の侵害について、信頼の鎖のどこが破られたか、Chrome・Mozilla・Go・認証局の対応の時系列、遮断が届く3つの道筋を、公式の記録をもとに図で整理する。Let&#x27;s Encrypt のドメイン確認の強化も扱う。">
+<title>証明書の信頼はどう守られているか：eMudhra の中間認証局の鍵の侵害と、各社の4日間の対応 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>証明書の信頼はどう守られているか：eMudhra の中間認証局の鍵の侵害と、各社の4日間の対応</h1><p class="summary">2026年10月17日に報告された eMudhra の中間認証局8つの秘密鍵の侵害について、信頼の鎖のどこが破られたか、Chrome・Mozilla・Go・認証局の対応の時系列、遮断が届く3つの道筋を、公式の記録をもとに図で整理する。Let&#x27;s Encrypt のドメイン確認の強化も扱う。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月17日、インドの認証局 eMudhra の中間認証局の証明書8つについて、<strong>秘密鍵が誰でも割り出せる状態だった</strong>ことが報告されました。Mozilla は、報告者の方法を知らないまま、自分たちでも鍵を割り出せたことを確認しています。原因は鍵の作り方の欠陥で、秘密鍵の値が極端に小さかったためです。</p>
+<p>この鍵があれば、どのドメイン名の証明書でも作れてしまいます。Chrome と Mozilla は報告の当日に、配信型の遮断リストでこれらを遮断しました。そのあと鍵を割り出す人が次々に現れたため、10月20日、Mozilla と Chrome は上位のルート証明書そのものの信頼を外す方針を決めました。Go も10月19日のセキュリティリリースで、8つの公開鍵を含む証明書チェーンを検証の結果から除外しています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">8<small>つ</small></p><p class="stat-label">鍵が割り出せた中間認証局の証明書（TLS 用6、コード署名用2）</p></div>
+<div class="stat"><p class="stat-value">約1<small>時間</small>40<small>分</small></p><p class="stat-label">報告の受信から、Chrome が遮断リストを出すまで</p></div>
+<div class="stat"><p class="stat-value">約3<small>万件</small></p><p class="stat-label">別の経路へ移す必要がある証明書（eMudhra の初期の見積もり）</p></div>
+<div class="stat"><p class="stat-value">0<small>件</small></p><p class="stat-label">遮断までに CT ログに載った、この中間認証局からの TLS 証明書（Chrome）</p></div>
+</div>
+
+<h2>証明書の信頼のしくみと、破られた場所</h2>
+<p>ブラウザや OS は、信頼する「ルート証明書」の一覧を持っています。ルートは中間認証局に署名し、中間認証局が Web サイトの証明書を発行します。中間認証局の秘密鍵を持っていれば、ルートまでつながった「正しく見える」証明書を、どのドメイン名に対しても作れます。</p>
+
+<figure class="viz">
+<p class="viz-title">信頼の鎖と、今回破られた場所</p>
+<p class="viz-sub">Mozilla の Bugzilla と Sectigo の書き込みをもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 320" role="img" aria-label="信頼の鎖の模式図。eMudhraのECCのルート証明書と、クロス署名したSectigoのルートが、中間認証局8つに署名している。中間認証局の秘密鍵の値が極端に小さく、誰でも割り出せた。鍵があれば、どのドメイン名の証明書でも作れてしまう。ただし、遮断までにCTログに載ったTLS証明書は0件だった。">
+<defs><marker id="arrow-cert-chain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<text class="t-muted t-small" x="40" y="28">ブラウザ・OS が信頼するルート</text>
+<rect class="box" x="40" y="38" width="320" height="58" rx="6"/>
+<text class="t-strong" x="200" y="62" text-anchor="middle">eMudhra の ECC のルート（G3）</text>
+<text class="t-small" x="200" y="82" text-anchor="middle">emSign ECC Root CA - G3</text>
+
+<rect class="box" x="520" y="38" width="320" height="58" rx="6"/>
+<text class="t-strong" x="680" y="62" text-anchor="middle">Sectigo のルート（クロス署名）</text>
+<text class="t-small" x="680" y="82" text-anchor="middle">Chrome・Mozilla ではすでに信頼されていない</text>
+
+<line class="arrow" x1="200" y1="98" x2="360" y2="138" marker-end="url(#arrow-cert-chain)"/>
+<text class="t-small" x="250" y="128">署名</text>
+<line class="arrow" x1="680" y1="98" x2="520" y2="138" marker-end="url(#arrow-cert-chain)"/>
+<text class="t-small" x="612" y="128">クロス署名</text>
+
+<rect class="box-key" x="200" y="140" width="480" height="62" rx="6"><title>EM DV／OV／EV TLS CA - G3B・G3C の6つと、コード署名用の2つ。2025年4月30日に作った24の中間認証局のうち、B 系列と C 系列の P-384 の鍵</title></rect>
+<text class="t-strong" x="440" y="166" text-anchor="middle">中間認証局 8つ（TLS 用6、コード署名用2）</text>
+<text class="t-small" x="440" y="188" text-anchor="middle">秘密鍵の値が極端に小さく、誰でも割り出せた</text>
+
+<line class="arrow" x1="440" y1="204" x2="440" y2="246" marker-end="url(#arrow-cert-chain)"/>
+<text class="t-small" x="452" y="230">鍵があれば署名できる</text>
+
+<rect class="box" x="220" y="250" width="440" height="56" rx="6" stroke-dasharray="4 4"/>
+<text x="440" y="274" text-anchor="middle">どのドメイン名の証明書でも作れてしまう</text>
+<text class="t-small t-muted" x="440" y="294" text-anchor="middle">遮断までに CT ログに載った TLS 証明書は 0件（Chrome）</text>
+</svg>
+</div>
+<figcaption>8つの中間証明書の発行者名は、Bugzilla の一覧では「emSign Root TLS CA - G3」です。Mozilla が信頼を外したルートは「emSign ECC Root CA - G3」で、eMudhra はこれを「G3（ECC のルート）」と呼んでいます。Sectigo のルートは、Microsoft と Apple ではまだ信頼されていました。</figcaption>
+</figure>
+
+<h2>4日間の対応</h2>
+
+<figure class="viz">
+<p class="viz-title">組織ごとの対応（10月17日〜20日）</p>
+<p class="viz-sub">時刻は UTC（日本時間は9時間進めた時刻）。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 312" role="img" aria-label="組織ごとの対応の時系列。10月17日18時05分にChromeが報告を受信し、19時45分にCRLSetで遮断。Mozillaは22時59分にOneCRLで遮断。10月18日9時38分にeMudhraが8つを失効。10月19日にGo 1.27.3と1.26.10を公開、14時55分にSectigoがクロス署名を失効。10月20日13時06分にMozillaがルートの信頼を外すと決定、14時36分にChromeも同じ方針を表明、16時27分にeMudhraがG3の下の発行を停止。">
+<g class="grid">
+<line x1="160" y1="40" x2="160" y2="286"/><line x1="309" y1="40" x2="309" y2="286"/>
+<line x1="458" y1="40" x2="458" y2="286"/><line x1="606" y1="40" x2="606" y2="286"/>
+<line x1="755" y1="40" x2="755" y2="286"/>
+</g>
+<g class="t-muted">
+<text x="164" y="32">10/17</text><text x="313" y="32">10/18</text><text x="462" y="32">10/19</text><text x="610" y="32">10/20</text><text x="759" y="32">10/21</text>
+</g>
+
+<text x="8" y="74">Chrome</text>
+<circle class="mk-period" cx="282" cy="70" r="8"><title>10/17 18:05 報告を受信。19:45 に CRLSet を更新し、TLS 用6つの中間認証局の公開鍵を遮断（ブラウザの更新や再起動は不要）</title></circle>
+<text x="294" y="74">18:05 報告を受信 → 19:45 CRLSet で遮断</text>
+<circle class="mk-period" cx="697" cy="70" r="8"><title>10/20 14:36 Mozilla と同じ方針をとると表明。Chrome Root Store のバージョン43で、上位の eMudhra のルートを外す</title></circle>
+<text x="709" y="74">ルートを外す方針</text>
+
+<text x="8" y="124">Mozilla</text>
+<circle class="mk-period" cx="302" cy="120" r="8"><title>10/17 20:06 Chrome から転送された報告を受信。21:48 に独自に鍵を割り出せたことを確認。22:59 に OneCRL で Firefox での遮断を完了</title></circle>
+<text x="314" y="124">22:59 OneCRL で遮断</text>
+<circle class="mk-period" cx="688" cy="120" r="8"><title>10/20 13:06 鍵を割り出した人が複数いることを受け、ルート emSign ECC Root CA - G3 の信頼を緊急に外すと決定。NSS を更新し、Firefox の臨時の版も出す</title></circle>
+<text x="700" y="124">ルートの信頼を外す</text>
+
+<text x="8" y="174">eMudhra</text>
+<circle class="mk-found" cx="368" cy="170" r="8"><title>10/18 09:38 8つの証明書を失効（理由：caCompromise）</title></circle>
+<text x="380" y="174">09:38 8つを失効</text>
+<circle class="mk-found" cx="708" cy="170" r="8"><title>10/20 16:27 G3 の下のすべての中間認証局からの発行を停止。約3万件を RSA のルート G1 の下へ移す</title></circle>
+<text x="720" y="174">G3 の下の発行を停止</text>
+
+<text x="8" y="224">Sectigo</text>
+<circle class="mk-found" cx="550" cy="220" r="8"><title>10/19 14:55 クロス署名した証明書の失効を完了</title></circle>
+<text x="562" y="224">14:55 クロス署名を失効</text>
+
+<text x="8" y="274">Go</text>
+<rect class="bar-2" x="458" y="264" width="148" height="12" rx="4"><title>10/19 Go 1.27.3 と 1.26.10 を公開（crypto/x509 のセキュリティ修正）。リリース履歴には日付だけが書かれている</title></rect>
+<text x="614" y="274">1.27.3／1.26.10 を公開</text>
+
+<g transform="translate(8 304)">
+<circle class="mk-period" cx="6" cy="-4" r="6"/><text x="18" y="0">ブラウザの対応</text>
+<circle class="mk-found" cx="146" cy="-4" r="6"/><text x="158" y="0">認証局の対応</text>
+<rect class="bar-2" x="270" y="-10" width="24" height="12" rx="3"/><text x="302" y="0">日付のみの記録</text>
+</g>
+</svg>
+</div>
+<figcaption>Chrome は報告から約1時間40分で、ブラウザの更新なしに遮断しました。報告の受信時刻は、Chrome の発表が18:05、Mozilla の記録が20:06（Chrome からの転送）で、それぞれの記録のとおりに載せています。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>Mozilla の Bugzilla、dev-security-policy の議論、Go のリリース履歴とコミットより</caption>
+<thead><tr><th>組織</th><th>対応</th></tr></thead>
+<tbody>
+<tr><td>Chrome</td><td>10/17 に CRLSet で TLS 用6つを遮断。コード署名用の2つは、Chrome が TLS で使わせないため遮断は不要。Chrome Root Store v43 で上位のルートを外す</td></tr>
+<tr><td>Mozilla</td><td>10/17 に OneCRL で遮断。10/20 にルート emSign ECC Root CA - G3 の信頼を緊急に外す。NSS の更新と、Firefox の臨時の版</td></tr>
+<tr><td>eMudhra</td><td>10/18 に8つを失効。10/20 に G3 の下での発行を停止。約3万件（97% が ACME 経由）を、RSA のルート G1 の下の中間認証局へ移す</td></tr>
+<tr><td>Sectigo</td><td>10/19 にクロス署名した証明書を失効</td></tr>
+<tr><td>Go</td><td>10/19 の Go 1.27.3 と 1.26.10。8つの公開鍵（SPKI）のハッシュを持つ証明書を含むチェーンを、検証の結果から除外する。macOS や Windows の OS の検証を使う場合にも適用</td></tr>
+<tr><td>Apple・Microsoft</td><td>報告を受けた（Bugzilla の記録）。それぞれの対応内容は、公式の発表を確認できていない</td></tr>
+</tbody>
+</table>
+</div>
+<p>Go の Issue とコミットは、対象を「特定の認証局」としか書いておらず、eMudhra の名前を出していません。時期と件数（8つ）は今回の件と一致します。</p>
+
+<h2>原因：鍵の作り方の欠陥</h2>
+<ul>
+<li>8つの鍵は、2025年4月30日の鍵生成の儀式（キーセレモニー）で作られた24の中間認証局の一部です。24は、3つの系列（A、B、C）×2つの方式（RSA4096、P-384）×4つの用途（DV、OV、EV、コード署名）でした。</li>
+<li>影響を受けたのは、B 系列と C 系列の P-384 の鍵すべてです。</li>
+<li>Mozilla の分析では、P-384 の秘密鍵は本来、非常に大きな範囲から無作為に選ぶ整数です。8つの鍵は、どれも256未満の整数で、ほぼ一瞬で割り出せました。A 系列と、その置き換えの A-1 系列の P-384 の鍵は、より多くの手間をかけても割り出せなかったとしています。</li>
+<li>eMudhra は、鍵はハードウェア（Utimaco の HSM）で生成したと説明しています。鍵の生成を起動したスクリプトを詳しく調べているとしています。ほかの発行用の認証局は別のメーカーの HSM で作っていて、同じ問題はないとしています。</li>
+<li>eMudhra によると、G3B と G3C は欧州と米国の業務用に作ったもので、本番で使っていたのは1つだけでした。Web サイトなどの証明書は発行しておらず、コード署名用の2つも証明書を発行していません。</li>
+</ul>
+<p>Mozilla は、2025年の別の件（同じ6つの中間認証局の CRL の署名が正しくなかった件）との関係も指摘しています。悪用されたかどうかは、確認した資料には書かれていません。鍵を割り出す方法の詳細は、このページでは扱いません。</p>
+
+<h2>遮断が届く3つの道筋</h2>
+<p>Mozilla は、多くの機器やソフトには失効情報を受け取る有効な仕組みがないことを懸念しています。ルートの信頼を外したのは、失効情報を使わない利用者や、特定の中間認証局だけを外す仕組みのない利用者を守るためだと説明しています。</p>
+
+<figure class="viz">
+<p class="viz-title">遮断が利用者に届く3つの道筋</p>
+<p class="viz-sub">今回の各社の対応をもとにした、筆者の整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 316" role="img" aria-label="遮断が届く3つの道筋。1つ目は配信型の遮断リスト（CRLSetとOneCRL）で、更新や再起動なしに数時間でChromeとFirefoxに効く。2つ目はソフトウェアの更新（Go 1.27.3など）で、利用者が更新して初めて効く。3つ目はルート証明書の削除（NSSとChrome Root Store）で、ルートの一覧を取り込む製品に広がり、失効を確かめない機器やライブラリも守る。">
+<defs><marker id="arrow-cert-route" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<rect class="box-key" x="16" y="128" width="190" height="60" rx="6"/>
+<text class="t-strong" x="111" y="153" text-anchor="middle">鍵が割り出せた</text>
+<text class="t-strong" x="111" y="173" text-anchor="middle">中間認証局 8つ</text>
+
+<line class="arrow" x1="208" y1="150" x2="262" y2="62" marker-end="url(#arrow-cert-route)"/>
+<line class="arrow" x1="208" y1="158" x2="262" y2="158" marker-end="url(#arrow-cert-route)"/>
+<line class="arrow" x1="208" y1="166" x2="262" y2="254" marker-end="url(#arrow-cert-route)"/>
+
+<rect class="box" x="266" y="30" width="300" height="60" rx="6"/>
+<text x="416" y="54" text-anchor="middle">1. 配信型の遮断リスト（CRLSet・OneCRL）</text>
+<text class="t-small t-muted" x="416" y="74" text-anchor="middle">更新や再起動なしで、数時間で効く</text>
+<rect class="box" x="266" y="128" width="300" height="60" rx="6"/>
+<text x="416" y="152" text-anchor="middle">2. ソフトウェアの更新（Go 1.27.3 など）</text>
+<text class="t-small t-muted" x="416" y="172" text-anchor="middle">利用者が更新して初めて効く</text>
+<rect class="box" x="266" y="226" width="300" height="60" rx="6"/>
+<text x="416" y="250" text-anchor="middle">3. ルート証明書の削除（NSS・Chrome）</text>
+<text class="t-small t-muted" x="416" y="270" text-anchor="middle">ルートの一覧を取り込む製品にも広がる</text>
+
+<line class="arrow" x1="568" y1="60" x2="618" y2="60" marker-end="url(#arrow-cert-route)"/>
+<line class="arrow" x1="568" y1="158" x2="618" y2="158" marker-end="url(#arrow-cert-route)"/>
+<line class="arrow" x1="568" y1="256" x2="618" y2="256" marker-end="url(#arrow-cert-route)"/>
+
+<text x="626" y="56">Chrome・Firefox</text>
+<text class="t-small t-muted" x="626" y="74">10/17 のうちに遮断</text>
+<text x="626" y="154">更新したプログラム・ブラウザ</text>
+<text class="t-small t-muted" x="626" y="172">Go で作ったプログラムは再ビルドが必要</text>
+<text x="626" y="252">失効を確かめない機器や</text>
+<text x="626" y="270">ライブラリ</text>
+
+<text class="t-small t-muted" x="16" y="310">失効（CRL）だけでは、失効情報を確かめない機器には届かない。そのため2と3が必要になる</text>
+</svg>
+</div>
+<figcaption>Mozilla は、Python の certifi や Rust の webpki-roots など、ルートの一覧を同梱するプロジェクトでも対応が進んでいると書いています。</figcaption>
+</figure>
+
+<h2>関連する動き：Let's Encrypt が、ドメインを確かめる拠点を増やす</h2>
+<p>Let's Encrypt は10月15日、証明書を出す前にドメインを持っていることを確かめる拠点を増やすと告知しました。本拠地のデータセンターに加えて、ネットワーク上の別の場所（リモートパースペクティブ）からも確かめる仕組みで、その数を4か所から6か所にします。</p>
+
+<figure class="viz">
+<p class="viz-title">ドメインを確かめる問い合わせの数</p>
+<p class="viz-sub">Let's Encrypt の告知をもとにした模式図。拠点の位置は実際のものではありません</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="Let's Encryptのドメイン確認の模式図。これまでは本拠地1か所とリモート4か所の計5か所から問い合わせていた。11月10日からは本拠地1か所とリモート6か所の計7か所になる予定。本拠地と、一定数以上のリモートが正しい応答を受け取ったときだけ確認が通る。">
+<defs><marker id="arrow-le" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<text class="t-strong" x="210" y="26" text-anchor="middle">これまで：本拠地＋リモート4（計5）</text>
+<rect class="box" x="150" y="128" width="120" height="44" rx="6"/>
+<text class="t-small" x="210" y="155" text-anchor="middle">確かめるドメイン</text>
+<line class="arrow" x1="210" y1="58" x2="210" y2="124" marker-end="url(#arrow-le)"/>
+<rect class="mk-announce" x="202" y="50" width="16" height="16"><title>本拠地のデータセンター</title></rect>
+<line class="arrow" x1="297" y1="122" x2="274" y2="136" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="297" cy="122" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="264" y1="224" x2="246" y2="176" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="264" cy="224" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="156" y1="224" x2="174" y2="176" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="156" cy="224" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="123" y1="122" x2="146" y2="136" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="123" cy="122" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+
+<text class="t-strong" x="650" y="26" text-anchor="middle">11月10日から（予定）：本拠地＋リモート6（計7）</text>
+<rect class="box" x="590" y="128" width="120" height="44" rx="6"/>
+<text class="t-small" x="650" y="155" text-anchor="middle">確かめるドメイン</text>
+<line class="arrow" x1="650" y1="58" x2="650" y2="124" marker-end="url(#arrow-le)"/>
+<rect class="mk-announce" x="642" y="50" width="16" height="16"><title>本拠地のデータセンター</title></rect>
+<line class="arrow" x1="722" y1="93" x2="700" y2="124" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="722" cy="93" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="740" y1="170" x2="714" y2="164" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="740" cy="170" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="690" y1="233" x2="676" y2="176" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="690" cy="233" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="610" y1="233" x2="624" y2="176" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="610" cy="233" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="560" y1="170" x2="586" y2="164" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="560" cy="170" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+<line class="arrow" x1="578" y1="93" x2="600" y2="124" marker-end="url(#arrow-le)"/>
+<circle class="mk-period" cx="578" cy="93" r="8"><title>リモートパースペクティブ（別の場所からの確認）</title></circle>
+
+<g transform="translate(180 276)">
+<rect class="mk-announce" x="0" y="-11" width="12" height="12"/><text x="20" y="0">本拠地</text>
+<circle class="mk-period" cx="96" cy="-5" r="6"/><text x="110" y="0">リモートパースペクティブ</text>
+</g>
+<text class="t-small t-muted" x="440" y="296" text-anchor="middle">本拠地と、一定数以上のリモートが正しい応答を受け取ったときだけ、確認が通る</text>
+</svg>
+</div>
+<figcaption>攻撃者が、ある1か所の近くでインターネットの経路を乗っ取っても（BGP ハイジャック）、ほかの場所からの確認でずれが分かります。拠点が増えるほど、すり抜けるには多くの経路を同時に乗っ取る必要があります。</figcaption>
+</figure>
+
+<ul>
+<li>予定：ステージング環境で10月27日、本番環境で11月10日。業界の基準（Baseline Requirements 3.2.2.9）への準拠期限は12月15日です。</li>
+<li>基準は、リモートパースペクティブが、少なくとも2つの異なる地域インターネットレジストリ（RIR）の地域にまたがることを求めています。</li>
+<li>Let's Encrypt は、利用者への影響はほとんどないと見込んでいます。</li>
+</ul>
+<p>eMudhra の件は「認証局の鍵そのもの」の問題で、Let's Encrypt の件は「証明書を出す前の確認」の強化です。どちらも、信頼の鎖のどこか1か所が破られたときに、被害を小さくするための仕組みです（筆者の整理）。</p>
+
+<h2>利用者が確かめること</h2>
+<div class="cards">
+<div class="card"><h3>Go で作ったプログラム</h3><p>Go 1.27.3 または 1.26.10 以降でビルドし直します。Go は、OS の検証を使う場合にも、8つの公開鍵を含むチェーンを除外します。</p></div>
+<div class="card"><h3>ブラウザ</h3><p>最新版に更新します。Android 版 Firefox は、一部で遮断リストが起動時に読み込まれない問題があり、158.0.2 で修正されました。</p></div>
+<div class="card"><h3>ルートの一覧を同梱するライブラリ</h3><p>certifi などを更新します。失効情報を確かめない環境では、ここが更新されるまで守られません。</p></div>
+<div class="card"><h3>eMudhra の証明書を使う Web サイト</h3><p>ECC のルート G3 の下の証明書は、別の経路に移す必要があります。eMudhra は RSA のルート G1 の下へ移すとしています。</p></div>
+</div>
+<p>このカードは、各社の対応からの筆者の整理です。</p>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>認証局（CA）</dt><dd>Web サイトなどの身元を確かめ、証明書を発行する組織。</dd>
+<dt>ルート証明書</dt><dd>ブラウザや OS が最初から信頼している、認証局の大元の証明書。</dd>
+<dt>中間認証局</dt><dd>ルートから署名を受け、実際に証明書を発行する認証局。</dd>
+<dt>秘密鍵</dt><dd>証明書に署名するための鍵。漏れると、なりすましの証明書を作られる。</dd>
+<dt>失効</dt><dd>期限の前に、証明書を無効にすること。</dd>
+<dt>CRLSet・OneCRL</dt><dd>Chrome と Firefox が配信する、遮断する証明書の一覧。</dd>
+<dt>クロス署名</dt><dd>別の認証局のルートからも署名を受けて、信頼される経路を増やすこと。</dd>
+<dt>CT（Certificate Transparency）ログ</dt><dd>発行された証明書を、誰でも確かめられるように記録する公開の台帳。</dd>
+<dt>HSM</dt><dd>鍵を安全に生成・保管するための専用の装置。</dd>
+<dt>BGP ハイジャック</dt><dd>インターネットの経路情報を偽り、通信を横取りする攻撃。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月21日時点の情報です。調査や対応は続いていて、内容が変わる可能性があります。</p>
+<p>Apple と Microsoft の対応は、公式の発表を確認できていないため扱っていません。悪用の有無は、確認した資料に記載がありませんでした。鍵を割り出す方法の詳細は載せていません。</p>
+<p>内容は、Mozilla、Chrome、Go、Let's Encrypt などの公開資料をもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（信頼の鎖と破られた場所、4日間の対応、原因、遮断が届く3つの道筋、Let&#x27;s Encrypt の確認拠点の追加）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

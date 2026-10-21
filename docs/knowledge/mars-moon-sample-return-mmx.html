@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月20日に H3ロケット10号機で打ち上げられた JAXA の火星衛星探査機 MMX について、打ち上げの流れ、ミッションの年表、3つのモジュールの切り離し、観測機器と提供機関、フォボスを選んだ理由を、JAXA の発表と公式資料をもとに図で整理する。">
+<title>火星の衛星フォボスから砂を持ち帰る：MMX の打ち上げと、2031年の帰還までの道のり | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>火星の衛星フォボスから砂を持ち帰る：MMX の打ち上げと、2031年の帰還までの道のり</h1><p class="summary">2026年10月20日に H3ロケット10号機で打ち上げられた JAXA の火星衛星探査機 MMX について、打ち上げの流れ、ミッションの年表、3つのモジュールの切り離し、観測機器と提供機関、フォボスを選んだ理由を、JAXA の発表と公式資料をもとに図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月20日 4時41分03秒（日本時間）、JAXA の火星衛星探査機 MMX（Martian Moons eXploration）が、H3ロケット10号機で種子島宇宙センターから打ち上げられました。ロケットは計画どおり飛行し、打上げから約1時間11分13秒後に MMX を分離して、軌道に投入したことが確認されました。</p>
+<p>MMX は、火星の衛星フォボスに2回着陸して、<strong>10g 以上の砂（レゴリス）を採り、2031年に地球へ持ち帰る</strong>計画です。JAXA は、これを「人類初の火星圏からのサンプルリターン」と位置づけています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">4,480<small>kg</small></p><p class="stat-label">探査機の打ち上げ質量</p></div>
+<div class="stat"><p class="stat-value">10<small>g 以上</small></p><p class="stat-label">フォボスから持ち帰る砂の目標</p></div>
+<div class="stat"><p class="stat-value">2<small>回</small></p><p class="stat-label">フォボスへの着陸（先に探査車、次に探査機本体）</p></div>
+<div class="stat"><p class="stat-value">約5<small>年</small></p><p class="stat-label">ミッション期間（帰還は2031年）</p></div>
+</div>
+
+<h2>ミッションの流れ</h2>
+<p>約1年かけて火星へ向かい、2027年から2030年まで火星の周りでフォボスを観測して、試料を採ります。そのあと約1年かけて地球へ戻り、2031年に帰還カプセルをオーストラリアで回収します。</p>
+
+<figure class="viz">
+<p class="viz-title">MMX の年表</p>
+<p class="viz-sub">2026年〜2031年。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 270" role="img" aria-label="MMXの年表。2026年10月20日に打ち上げ、約1年の往路で2027年に火星に到着。2027年から2030年まで火星圏でフォボスを観測し試料を採取、2029年に探査車IDEFIXがフォボスに着陸。2030年に火星圏を出発し、約1年の復路を経て2031年にオーストラリアでカプセルを回収する。">
+<g class="grid">
+<line x1="160" y1="44" x2="160" y2="214"/><line x1="275" y1="44" x2="275" y2="214"/>
+<line x1="390" y1="44" x2="390" y2="214"/><line x1="505" y1="44" x2="505" y2="214"/>
+<line x1="620" y1="44" x2="620" y2="214"/><line x1="735" y1="44" x2="735" y2="214"/>
+<line x1="850" y1="44" x2="850" y2="214"/>
+</g>
+<g text-anchor="middle">
+<text class="t-muted" x="160" y="34">2026</text><text class="t-muted" x="275" y="34">2027</text>
+<text class="t-muted" x="390" y="34">2028</text><text class="t-muted" x="505" y="34">2029</text>
+<text class="t-muted" x="620" y="34">2030</text><text class="t-muted" x="735" y="34">2031</text>
+<text class="t-muted" x="850" y="34">2032</text>
+</g>
+
+<text x="8" y="74">往路（約1年）</text>
+<rect class="bar-old" x="252" y="60" width="109" height="20" rx="4"><title>2026年10月20日の打ち上げから、約1年で火星へ</title></rect>
+
+<text x="8" y="114">火星圏：観測と採取</text>
+<rect class="bar" x="361" y="100" width="316" height="20" rx="4"><title>2027年〜2030年。擬周回軌道からフォボスを観測し、2回着陸して試料を採る。ダイモスも観測する</title></rect>
+<text class="t-small" x="369" y="138">擬周回軌道から観測 → 着陸2回で試料を採取。ダイモスも観測</text>
+
+<text x="8" y="174">復路（約1年）</text>
+<rect class="bar-old" x="677" y="160" width="115" height="20" rx="4"><title>2030年に火星圏を出発し、約1年で地球へ</title></rect>
+
+<circle class="mk-period" cx="252" cy="206" r="8"><title>2026年10月20日 4時41分03秒 H3ロケット10号機で打ち上げ。約1時間11分13秒後に分離</title></circle>
+<text class="t-strong" x="252" y="236" text-anchor="middle">2026/10/20 打ち上げ</text>
+
+<polygon class="mk-found" points="562,198 570,206 562,214 554,206"><title>2029年 探査車 IDEFIX がフォボスに着陸（DLR の発表）</title></polygon>
+<text x="562" y="236" text-anchor="middle">2029 IDEFIX 着陸</text>
+
+<circle class="mk-period" cx="792" cy="206" r="8"><title>2031年 帰還カプセルを大気圏に再突入させ、オーストラリアで回収（打上げ計画書は2031年度）</title></circle>
+<text class="t-strong" x="866" y="236" text-anchor="end">2031 カプセルを回収</text>
+
+<text class="t-muted t-small" x="8" y="262">公式の予定は年単位のため、年の中での棒の位置は目安です（到着は2027年、出発は2030年、帰還は2031年）</text>
+</svg>
+</div>
+<figcaption>火星への到着について、DLR（ドイツ航空宇宙センター）の発表は「2027年下半期」としています。帰還は、打上げ計画書が「2031年度」、公式サイトが「2031年」と書いています。</figcaption>
+</figure>
+
+<h2>打ち上げから分離まで</h2>
+<p>H3ロケットは、第1段エンジン LE-9 が2基、固体ロケットブースタ SRB-3 が4本の「H3-24L」形態でした。第2段エンジンを2回に分けて燃やし、そのあいだに約53分の慣性飛行をはさんで、火星へ向かう軌道に MMX を送り出します。</p>
+
+<figure class="viz">
+<p class="viz-title">打ち上げから MMX の分離までの飛行計画</p>
+<p class="viz-sub">打上げ計画書の、10月20日に打ち上げる場合の計画。途中の慣性飛行（約53分）は省略して描いています</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 230" role="img" aria-label="打ち上げからMMX分離までの飛行計画。第1段エンジンは0秒から4分52秒まで燃焼。1分56秒と1分58秒にSRB-3を分離、3分17秒にフェアリングを分離、4分59秒に第1段を分離。第2段の1回目の燃焼は5分12秒から10分40秒。約53分の慣性飛行のあと、2回目の燃焼は1時間3分57秒から1時間10分21秒。1時間11分12秒にMMXを分離する計画で、実際は約1時間11分13秒後に分離した。">
+<defs><marker id="arrow-mmx-launch" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<line class="axis" x1="110" y1="28" x2="110" y2="98"/><text x="116" y="32">SRB-3 分離 1:56・1:58</text>
+<line class="axis" x1="159" y1="50" x2="159" y2="98"/><text x="165" y="54">フェアリング分離 3:17</text>
+<line class="axis" x1="221" y1="72" x2="221" y2="98"/><text x="227" y="76">第1段 分離 4:59</text>
+
+<rect class="bar" x="40" y="100" width="177" height="22" rx="4"><title>第1段エンジン：0秒〜4分52秒</title></rect>
+<rect class="bar-2" x="229" y="100" width="199" height="22" rx="4"><title>第2段エンジン 1回目：5分12秒〜10分40秒（高度329km まで）</title></rect>
+<line class="axis" x1="428" y1="111" x2="545" y2="111" stroke-dasharray="4 4"/>
+<rect class="bar-2" x="545" y="100" width="261" height="22" rx="4"><title>第2段エンジン 2回目：1時間3分57秒〜1時間10分21秒</title></rect>
+<line class="arrow" x1="806" y1="111" x2="836" y2="111" marker-end="url(#arrow-mmx-launch)"/>
+<circle class="mk-period" cx="846" cy="111" r="8"><title>MMX 分離：計画は1時間11分12秒後（高度592km、慣性速度11.2km/s）。実際は約1時間11分13秒後</title></circle>
+<text class="t-strong" x="866" y="76" text-anchor="end">MMX 分離 1:11:12（計画）</text>
+<text class="t-small" x="866" y="92" text-anchor="end">実際は約 1:11:13</text>
+
+<text class="t-small" x="128" y="142" text-anchor="middle">第1段エンジン 0:00〜4:52</text>
+<text class="t-small" x="328" y="142" text-anchor="middle">第2段 1回目 5:12〜10:40</text>
+<text class="t-small" x="486" y="96" text-anchor="middle">慣性飛行 約53分</text>
+<text class="t-small" x="675" y="142" text-anchor="middle">第2段 2回目 1:03:57〜1:10:21</text>
+
+<line class="axis" x1="40" y1="170" x2="440" y2="170"/>
+<line class="axis" x1="520" y1="170" x2="860" y2="170"/>
+<polyline class="axis" fill="none" points="448,164 456,176 464,164 472,176 480,164 488,176 496,164 504,176 512,164"/>
+<g class="t-muted t-small" text-anchor="middle">
+<text x="40" y="188">0分</text><text x="149" y="188">3分</text><text x="258" y="188">6分</text><text x="367" y="188">9分</text>
+<text x="547" y="188">1時間4分</text><text x="629" y="188">1時間6分</text><text x="710" y="188">1時間8分</text><text x="792" y="188">1時間10分</text>
+</g>
+<g transform="translate(40 216)">
+<rect class="bar" x="0" y="-10" width="18" height="12" rx="3"/><text x="24" y="0">第1段</text>
+<rect class="bar-2" x="90" y="-10" width="18" height="12" rx="3"/><text x="114" y="0">第2段</text>
+<text class="t-muted t-small" x="200" y="0">時刻は打上げからの経過時間（分:秒、または 時:分:秒）。時間軸は前半と後半で縮尺が違います</text>
+</g>
+</svg>
+</div>
+<figcaption>計画書は、火星へ向かう軌道に投入するミッションなので、打ち上げる日によって第2段の1回目の燃焼停止より後の時刻が変わる、と注記しています。実際の分離（約1時間11分13秒後）は、計画とほぼ同じでした。</figcaption>
+</figure>
+
+<h2>探査機のしくみ：3つのモジュールを順に切り離す</h2>
+<p>MMX は、往路モジュール（推進モジュール）、探査モジュール、復路モジュールの3つでできています。段階が進むごとに、要らなくなったモジュールを切り離していきます。大きさは、高さ5.3m、長さ9.0m、幅4.5mです。</p>
+
+<figure class="viz">
+<p class="viz-title">段階ごとに使うモジュール</p>
+<p class="viz-sub">MMX の公式サイトの説明をもとにした模式図。大きさや形は実際のものではありません</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="段階ごとに使うモジュールの模式図。打ち上げと往路では、往路モジュール、探査モジュール、復路モジュールの3つがつながっている。火星の周回軌道に入ったあとは、探査モジュールと復路モジュールが残る。地球への帰還では、復路モジュールだけを使い、最後に帰還カプセルを分離して、オーストラリアで回収する。">
+<defs><marker id="arrow-mmx-module" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<text class="t-strong" x="125" y="34" text-anchor="middle">打ち上げ・往路</text>
+<text class="t-strong" x="430" y="34" text-anchor="middle">火星圏（2027〜2030年）</text>
+<text class="t-strong" x="735" y="34" text-anchor="middle">復路（〜2031年）</text>
+
+<rect class="box" x="25" y="56" width="200" height="40" rx="6"/><text x="125" y="81" text-anchor="middle">往路モジュール（推進）</text>
+<rect class="box" x="25" y="106" width="200" height="40" rx="6"/><text x="125" y="131" text-anchor="middle">探査モジュール</text>
+<rect class="box-key" x="25" y="156" width="200" height="40" rx="6"/><text x="125" y="181" text-anchor="middle">復路モジュール</text>
+
+<rect class="box" x="330" y="56" width="200" height="40" rx="6" fill="none" stroke-dasharray="4 4" opacity="0.6"/><text class="t-muted" x="430" y="81" text-anchor="middle">往路モジュール：切り離し</text>
+<rect class="box" x="330" y="106" width="200" height="40" rx="6"/><text x="430" y="131" text-anchor="middle">探査モジュール</text>
+<rect class="box-key" x="330" y="156" width="200" height="40" rx="6"/><text x="430" y="181" text-anchor="middle">復路モジュール</text>
+
+<rect class="box" x="635" y="56" width="200" height="40" rx="6" fill="none" stroke-dasharray="4 4" opacity="0.6"/><text class="t-muted" x="735" y="81" text-anchor="middle">往路モジュール</text>
+<rect class="box" x="635" y="106" width="200" height="40" rx="6" fill="none" stroke-dasharray="4 4" opacity="0.6"/><text class="t-muted" x="735" y="131" text-anchor="middle">探査モジュール：切り離し</text>
+<rect class="box-key" x="635" y="156" width="200" height="40" rx="6"/><text x="735" y="181" text-anchor="middle">復路モジュール</text>
+
+<line class="arrow" x1="235" y1="126" x2="320" y2="126" marker-end="url(#arrow-mmx-module)"/>
+<text class="t-small" x="277" y="116" text-anchor="middle">周回軌道へ</text>
+<line class="arrow" x1="540" y1="126" x2="625" y2="126" marker-end="url(#arrow-mmx-module)"/>
+<text class="t-small" x="582" y="116" text-anchor="middle">火星圏を出発</text>
+
+<line class="arrow" x1="735" y1="198" x2="735" y2="234" marker-end="url(#arrow-mmx-module)"/>
+<circle class="mk-period" cx="735" cy="248" r="10"><title>帰還カプセル。試料と、地上に送りきれなかったデータを載せて大気圏に再突入し、オーストラリアで回収する</title></circle>
+<text x="753" y="252">帰還カプセル</text>
+<text class="t-small" x="735" y="282" text-anchor="middle">大気圏に再突入し、オーストラリアで回収</text>
+
+<text class="t-small" x="125" y="220" text-anchor="middle">約1年で火星へ</text>
+<text class="t-small" x="430" y="220" text-anchor="middle">観測、着陸2回、試料の採取</text>
+<text class="t-small" x="430" y="236" text-anchor="middle">探査車 IDEFIX を降ろす</text>
+</svg>
+</div>
+<figcaption>枠が濃い緑のものが、最後まで残って地球へ戻る復路モジュールです。点線は、切り離して使わなくなったモジュールです。</figcaption>
+</figure>
+
+<h2>試料の採り方と、先に降りる探査車</h2>
+<div class="cards">
+<div class="card"><h3>2つの採取装置</h3>
+<ul><li><strong>C-SMP（コアラー）</strong>：地表から深さ約2cm までの物質を採る</li><li><strong>P-SMP（ニューマティック採取機構）</strong>：窒素ガスを吹き付けて、表面の物質を採る。NASA が提供し、米国の Honeybee Robotics が製作</li><li>目標は、合わせて10g 以上</li></ul></div>
+<div class="card"><h3>探査車 IDEFIX</h3>
+<ul><li>DLR とフランス国立宇宙研究センター（CNES）が共同で開発。質量25kg</li><li>探査機が地表から約40m の高さで切り離し、自由落下させる。フォボスの重力は地球の1,000分の1にも満たないので、着陸装置は要らない。着地後、自分で起き上がって動き出す</li><li>2029年に着陸する予定。表面の組成、温度、性状を調べ、探査機本体が降りる場所を先に確かめる</li><li>−170℃〜+70℃ に耐える</li></ul></div>
+</div>
+<p>IDEFIX の運用期間は、DLR の発表の中で「約3か月」と「100日」の2つの書き方がされています。DLR は走行装置、起き上がりと移動の仕組み、ラマン分光計、放射計を、CNES はカメラ、地表の力学的な性質の測定、コンピュータや電源などのサービスモジュールを担当しています。</p>
+
+<h2>観測機器と、提供した機関</h2>
+
+<div class="table-wrap">
+<table>
+<caption>JAXA の打上げ計画書（表4）と MMX の公式サイトより</caption>
+<thead><tr><th>機器</th><th>何をするか</th><th>提供</th></tr></thead>
+<tbody>
+<tr><td>TENGOO（望遠カメラ）</td><td>地形を約40cm の解像度で撮る</td><td>JAXA</td></tr>
+<tr><td>OROCHI（広角分光カメラ）</td><td>可視光で地形と物質を調べる。含水物質や有機物も</td><td>JAXA</td></tr>
+<tr><td>LIDAR（レーザ高度計）</td><td>表面の高さと、光の反射率の分布</td><td>JAXA</td></tr>
+<tr><td>MIRS（近赤外分光装置）</td><td>近赤外線（0.9〜3.6μm）で鉱物の組成を調べる</td><td>CNES（フランス）</td></tr>
+<tr><td>MEGANE（ガンマ線・中性子線分光計）</td><td>フォボスの元素を調べる</td><td>NASA（米国）</td></tr>
+<tr><td>CMDM（ダストモニタ）</td><td>10μm 以上のちりの量</td><td>JAXA</td></tr>
+<tr><td>MSA（イオンエネルギ質量分析器）</td><td>衛星、火星、太陽風から来るイオン</td><td>JAXA</td></tr>
+<tr><td>IDEFIX（探査ローバ）</td><td>表面の砂の物理的な性質</td><td>CNES・DLR（フランス・ドイツ）</td></tr>
+<tr><td>C-SMP（サンプリング装置）</td><td>深さ約2cm までの試料を採る</td><td>JAXA</td></tr>
+<tr><td>P-SMP（ニューマティック採取機構）</td><td>窒素ガスで表面の試料を採る</td><td>NASA（米国）</td></tr>
+<tr><td>SRC（サンプルリターンカプセル）</td><td>試料を地球へ持ち帰る</td><td>JAXA</td></tr>
+<tr><td>IREM（惑星空間放射環境モニタ）</td><td>高エネルギーの陽子と、放射線の環境</td><td>JAXA</td></tr>
+<tr><td>SHV（高精細カメラ）</td><td>火星の衛星を4K・8K で撮る</td><td>NHK</td></tr>
+</tbody>
+</table>
+</div>
+<p>計画書と公式サイトに提供元が書かれていない機器は、表では JAXA としました。これは筆者の推定です。</p>
+
+<h2>なぜフォボスなのか</h2>
+<p>火星そのものは重力が強く、着陸して試料を持ち帰るのが難しい天体です。フォボスは小さく、時間がたってもあまり変化していないと考えられていて、火星圏の歴史の情報を残している可能性があります。フォボスの大きさは27×22×18km で、1日に3回、火星を回っています。</p>
+
+<figure class="viz">
+<p class="viz-title">火星の衛星はどうやってできたか：2つの説</p>
+<p class="viz-sub">MMX の公式サイトの説明をもとにした模式図。大きさや距離は実際のものではありません</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 280" role="img" aria-label="火星の衛星の起源についての2つの説の模式図。巨大衝突説は、火星に大きな天体がぶつかり、飛び散った破片が集まって衛星になったとする。捕獲説は、太陽系の外側から来た小惑星が、火星の重力にとらえられて衛星になったとする。MMXは、観測と持ち帰った試料の分析で、どちらが正しいかを見分けることを目指す。">
+<defs><marker id="arrow-mmx-origin" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<text class="t-strong" x="20" y="30">巨大衝突説</text>
+<circle class="dot-old" cx="60" cy="70" r="14"/><text class="t-small" x="60" y="100" text-anchor="middle">大きな天体</text>
+<line class="arrow" x1="74" y1="80" x2="118" y2="112" marker-end="url(#arrow-mmx-origin)"/>
+<circle class="box" cx="170" cy="140" r="46"/><text x="170" y="145" text-anchor="middle">火星</text>
+<circle class="dot-case" cx="236" cy="104" r="4"/><circle class="dot-case" cx="248" cy="124" r="3"/><circle class="dot-case" cx="252" cy="146" r="4"/><circle class="dot-case" cx="246" cy="168" r="3"/><circle class="dot-case" cx="232" cy="186" r="4"/>
+<line class="arrow" x1="264" y1="146" x2="320" y2="146" marker-end="url(#arrow-mmx-origin)"/>
+<circle class="mk-period" cx="346" cy="146" r="9"/>
+<text class="t-small" x="250" y="246" text-anchor="middle">衝突で飛び散った破片が集まり、衛星になった</text>
+
+<text class="t-strong" x="460" y="30">捕獲説</text>
+<circle class="dot-old" cx="500" cy="70" r="10"/><text class="t-small" x="516" y="62">小惑星（太陽系の外側から）</text>
+<path class="arrow" d="M 508 78 Q 600 110 650 110" marker-end="url(#arrow-mmx-origin)"/>
+<circle class="box" cx="730" cy="150" r="46"/><text x="730" y="155" text-anchor="middle">火星</text>
+<circle class="axis" cx="730" cy="150" r="72" fill="none" stroke-dasharray="4 4"/>
+<circle class="mk-period" cx="664" cy="121" r="9"/>
+<text class="t-small" x="730" y="246" text-anchor="middle">火星の重力にとらえられ、衛星になった</text>
+
+<text class="t-strong" x="440" y="272" text-anchor="middle">MMX は、観測と持ち帰った試料の分析で、どちらが正しいかを見分けることを目指す</text>
+</svg>
+</div>
+<figcaption>緑の丸が、いまのフォボスにあたります。どちらの説が正しいかによって、フォボスをつくる物質がどこから来たのかが変わります。</figcaption>
+</figure>
+
+<p>JAXA の打上げ計画書は、MMX のねらいを次のようにまとめています。</p>
+<ul>
+<li>試料に含まれる含水鉱物、水、有機物を調べ、地球型の惑星で生命が生まれ、住める環境ができた起源を探る。</li>
+<li>太陽系ができたころに、有機物や水がどう運ばれ、天体に供給されたかの解明に役立てる。</li>
+<li>火星の衛星は、将来の火星有人探査で軌道上の拠点になると見られている。その表面の地形、地盤、周りの環境の詳しい情報を得る。</li>
+</ul>
+
+<h2>中国の計画との関係</h2>
+
+<div class="table-wrap">
+<table>
+<caption>JAXA の資料と、CNSA の計画を伝えた記事（2025年4月）より</caption>
+<thead><tr><th>項目</th><th>MMX（日本）</th><th>天問3号（中国）</th></tr></thead>
+<tbody>
+<tr><td>試料を採る場所</td><td>火星の衛星フォボス</td><td>火星の表面</td></tr>
+<tr><td>打ち上げ</td><td>2026年10月20日（済み）</td><td>2028年ごろの予定</td></tr>
+<tr><td>打ち上げの回数</td><td>1回</td><td>2回</td></tr>
+<tr><td>地球への帰還</td><td>2031年（計画書は2031年度）</td><td>確認した資料に記載なし</td></tr>
+</tbody>
+</table>
+</div>
+<p>手がかりにした記事は「中国と競う」と書いていましたが、2つの計画は試料を採る天体が違います。MMX は、火星「圏」からの試料を最初に持ち帰ることを目指しています。天問3号の予定は2025年4月の発表時点のもので、変わる可能性があります。</p>
+
+<h2>これからの見どころ</h2>
+<div class="cards">
+<div class="card"><h3>2027年：火星に到着</h3><p>火星の周回軌道に入り、フォボスとほぼ同じ軌道を回る擬周回軌道から観測を始めます。</p></div>
+<div class="card"><h3>着陸場所の決定</h3><p>まず全体の形を測り、次に着陸候補地を詳しく観測して、降りる場所を決めます。</p></div>
+<div class="card"><h3>2029年：IDEFIX の着陸</h3><p>先に探査車が降りて表面を調べ、そのあと探査機本体が着陸して試料を採ります。</p></div>
+<div class="card"><h3>2031年：カプセルの回収</h3><p>2030年に火星圏を出発し、約1年後にオーストラリアでカプセルを回収します。</p></div>
+</div>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>サンプルリターン</dt><dd>天体から試料（砂や石）を採って、地球に持ち帰る探査。</dd>
+<dt>レゴリス</dt><dd>天体の表面を覆う、細かい砂や岩のかけら。</dd>
+<dt>擬周回軌道（QSO）</dt><dd>探査機が、フォボスの周りを回っているように見える軌道。実際には、フォボスとほぼ同じ軌道で火星を回っている。</dd>
+<dt>火星遷移軌道</dt><dd>地球の近くから火星へ向かうための軌道。</dd>
+<dt>慣性飛行</dt><dd>エンジンを止めて、勢いだけで飛ぶこと。</dd>
+<dt>衛星フェアリング</dt><dd>打ち上げのとき、探査機を空気や熱から守るカバー。</dd>
+</dl>
+
+<h2>この記事について</h2>
+<div class="note">
+<p>2026年10月21日時点の情報です。JAXA の発表と打上げ計画書、MMX の公式サイト、DLR（ドイツ航空宇宙センター）の発表、NASA の解説ページ、中国国家航天局（CNSA）の計画を伝えた記事に基づいています。</p>
+<p>予定は計画段階のもので、今後変わる可能性があります。帰還の時期（2031年度／2031年）と、IDEFIX の運用期間（約3か月／100日）は、資料によって書き方が違うため、両方を載せました。</p>
+<p>内容は、上記の資料をもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（打ち上げの結果と飛行計画、ミッションの年表、モジュールの構成、観測機器、フォボスの起源の2つの説、中国の天問3号との違い）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
