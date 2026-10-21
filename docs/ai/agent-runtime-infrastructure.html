@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。">
+<meta name="description" content="9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。10月21日に、使う側の設計例としてデジタル庁の「源内」を追加。">
 <title>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
@@ -190,10 +190,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース</h1><p class="summary">9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース</h1><p class="summary">9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。10月21日に、使う側の設計例としてデジタル庁の「源内」を追加。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>9月28日から10月9日までの間に、AIエージェントを動かす基盤に関する発表が5件ありました。隔離（Microsoft、gVisor）、起動と状態の保存（Cloudflare）、実行環境の統合（Deno が Cloudflare に合流）、データベース（Supabase が Turso を買収）と、層が違います。共通しているのは、「エージェントを安全に・速く・状態を持って動かす」ための部品が、次々に整ってきていることです。</p>
 <p>実務で気をつけたいのは、<strong>移行の期限が示されたものがある</strong>ことです。Cloudflare の旧 Container / Sandbox クラスの保守は2026年12月31日まで、Deno Deploy は約6か月後に終了、Deno ランタイムの開発は約1年後に終わります。</p>
+<p>10月21日追記：使う側の例として、デジタル庁が政府職員約18万人向けの「ガバメントAI 源内」で AIエージェントの利用環境を始め、外への送信を止めるなどの制限と、立場ごとの決まり（源内基準）を公表しました。</p>
 </section>
 
 <div class="stats">
@@ -392,6 +393,85 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <ul><li>公開：10/2</li><li>Turso は SQLite を Rust で作り直している。1台のサーバーで「数百万」のデータベースを管理でき、使われないものは停止する</li><li>エージェントがファイルを作るように、低コストでデータベースを作れる環境を目指す</li><li>Supabase は現在、週に100万以上のデータベースを立ち上げている</li><li>既存ユーザーに変更はない。完了時期、条件、金額は記載なし</li></ul></div>
 </div>
 
+<h2>使う側の設計例：デジタル庁の「源内」</h2>
+<p>10月21日の追記です。ここまでの5件は、基盤を作る側の発表でした。10月20日、使う側の例として、デジタル庁が、政府職員約18万人が使える AI 基盤「ガバメントAI 源内」で、AIエージェントの利用環境の提供を始め、あわせて「ガバメントAI 源内 ガバナンス・セキュリティ・セーフティに関する基準」（源内基準、第1版）を公表しました。AIセーフティ・インスティテュート（AISI）の協力を得て作られ、利用者、管理者、開発者の立場ごとに、責務と守ることを定めています。</p>
+
+<figure class="viz">
+<p class="viz-title">外へは送らせず、取りに行くのは記録する（源内工房）</p>
+<p class="viz-sub">源内基準（第1版、令和8年10月時点）の記載をもとに筆者が作図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="源内工房の制限。権限を与えられた職員だけが指示でき、重要な処理の前には職員が確認または承認する。源内工房はガバメントクラウドの中で動き、外部のWebへの取得（GET）は許可して通信先、量、日時を記録する。外部へのデータの送信（POSTやPUT）は遮断される。入出力や通信などの操作は、改ざんを防ぐ形でログに記録される。">
+<defs>
+<marker id="arrow-gennai" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="80" width="160" height="110" rx="8"/>
+<text class="t-strong" x="22" y="108">職員</text>
+<text class="t-small" x="22" y="134">権限を与えられた</text>
+<text class="t-small" x="22" y="154">職員だけが使える</text>
+<text class="t-small" x="22" y="174">（初期状態は使えない）</text>
+
+<line class="arrow" x1="168" y1="112" x2="248" y2="112" marker-end="url(#arrow-gennai)"/>
+<text class="t-small" x="208" y="104" text-anchor="middle">指示</text>
+<line class="arrow" x1="248" y1="160" x2="168" y2="160" marker-end="url(#arrow-gennai)"/>
+<text class="t-small" x="208" y="184" text-anchor="middle">重要な処理の前に</text>
+<text class="t-small" x="208" y="200" text-anchor="middle">確認・承認</text>
+
+<rect class="box-key" x="226" y="20" width="420" height="266" rx="10" fill-opacity="0.35"/>
+<text class="t-strong" x="242" y="44">ガバメントクラウド</text>
+
+<rect class="box" x="250" y="70" width="230" height="110" rx="8"/>
+<text class="t-strong" x="266" y="98">源内工房</text>
+<text class="t-small" x="266" y="122">AIエージェントが</text>
+<text class="t-small" x="266" y="142">作業する環境</text>
+<text class="t-small" x="266" y="164">設定は起動のたびに所定の内容へ</text>
+
+<line class="arrow" x1="365" y1="180" x2="365" y2="212" marker-end="url(#arrow-gennai)"/>
+<text class="t-small" x="375" y="202">操作と通信を記録</text>
+<rect class="box" x="250" y="214" width="230" height="60" rx="8"/>
+<text class="t-strong" x="266" y="240">ログ</text>
+<text class="t-small" x="266" y="262">改ざんを防ぐ形で保存</text>
+
+<rect class="box" x="720" y="40" width="152" height="80" rx="8"/>
+<text class="t-strong" x="734" y="70">外部の Web</text>
+<text class="t-small" x="734" y="96">検索・情報の取得</text>
+
+<line class="arrow" x1="480" y1="90" x2="718" y2="80" marker-end="url(#arrow-gennai)"/>
+<text class="t-strong" x="500" y="70">GET（取得）</text>
+<text class="t-small" x="500" y="114">許可して、記録する</text>
+
+<line class="arrow" x1="480" y1="150" x2="640" y2="150"/>
+<line class="arrow" x1="634" y1="140" x2="654" y2="160"/><line class="arrow" x1="654" y1="140" x2="634" y2="160"/>
+<text class="t-strong" x="500" y="176">POST・PUT</text>
+<text class="t-small" x="500" y="196">（送信）は遮断</text>
+<text class="t-small" x="664" y="156">外へは出ない</text>
+</svg>
+</div>
+<figcaption>源内工房では、外部へのデータの送信は、利用者の意図にかかわらずシステムで止められます。一方、Web 検索に必要な取得は許可し、通信先、通信量、日時の記録を残します。ネットワーク層の防御は回避できない構成で、問題があれば利用権限を止められるとされています。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>源内基準（第1版、令和8年10月時点）より。2つの環境の制限の違い</caption>
+<thead><tr><th>面</th><th>エージェントチャット</th><th>源内工房</th></tr></thead>
+<tbody>
+<tr><td>使い始め</td><td>留意事項を確認して同意した利用者が使える。10月20日から各府省庁へ順次導入</td><td>初期状態では使えない。一定の水準を満たすと確認された職員の申請に基づき、管理者が権限を与える。令和8年12月ごろまでの導入を目指す</td></tr>
+<tr><td>ファイル</td><td>利用者ごとの領域（マイドライブ）の中だけ。AI が上書き・削除できるのは、AI が作ったファイルだけで、原本は書き換えられない</td><td>利用者が変えられる設定は、許された範囲だけ。共通の設定は、起動のたびに所定の内容で上書きされる</td></tr>
+<tr><td>外部との通信</td><td>Web 検索はガバメントクラウドの中で完結し、取得元のサイトへは通信しない。管理されていない API や MCP サーバーへは直接アクセスできない</td><td>外部へのデータの送信（POST、PUT など）は遮断。取得（GET）は許可し、通信先・量・日時を記録</td></tr>
+<tr><td>実行</td><td>アップロードしただけで実行ファイルが動くことはない。ツールとコードは、決められた環境と権限の範囲で動く。利用者のパソコンは直接操作できない</td><td>ネットワーク層の防御は回避できない構成</td></tr>
+<tr><td>記録と停止</td><td>源内全体の決まりとして、入力の内容やファイル、出力などを、必要な範囲で記録し、一定期間保存する</td><td>入出力や外部との通信などを、改ざんを防ぐ形で記録。問題があれば利用権限を止められる</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="cards">
+<div class="card"><h3>想定しているリスク</h3><p>誤った判断の連続実行、作業ファイルの誤った消去や改変、権限を超えた処理、機密情報の不適切な扱いなどを挙げています。</p></div>
+<div class="card"><h3>利用者に求めること</h3><p>重要な処理の前に確認または承認する。ファイルの更新や削除など、影響の大きい処理は、利用者が実行するかを判断する。処理が目的や権限の範囲を外れていないかを監督する。</p></div>
+<div class="card"><h3>今後</h3><p>エージェントチャットと源内工房は、「源内OSS Ver.2.0」として、2027年2月ごろに、商用利用もできるライセンスで公開する予定です。</p></div>
+</div>
+<div class="note">
+<p>筆者の整理：基盤側の「隔離」の部品（MXC、gVisor、Cloudflare のサンドボックスなど）に対して、源内は、使う側が「どこまで許すか」を、ファイル、通信、実行、記録、人の承認の面で決めた例です。とくに、外への送信を止めて、取得は許して記録する、という線の引き方は具体的です。</p>
+</div>
+
 <h2>用語メモ</h2>
 <dl class="terms">
 <dt>サンドボックス</dt><dd>信頼できないプログラムを、外部に影響を与えないよう隔離して動かす仕組み。</dd>
@@ -400,16 +480,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <dt>CNCF</dt><dd>Cloud Native Computing Foundation。Kubernetes などを管理する団体。</dd>
 <dt>SQLite</dt><dd>ファイル1つで動く軽量なデータベース。</dd>
 <dt>パーセンタイル</dt><dd>値を小さい順に並べたとき、下から何％の位置にあるかを示す指標。99パーセンタイルは、遅い側の1％の境目。</dd>
+<dt>MCP サーバー</dt><dd>AI が外部のツールやデータを使うための窓口になるサーバー（Model Context Protocol）。</dd>
+<dt>GET と POST</dt><dd>Web の通信の種類。GET は情報を取りに行く、POST や PUT は情報を送り出す。</dd>
 </dl>
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月19日時点の情報です。各社の公式ブログの記述に基づいていて、状況は更新されます。</p>
+<p>2026年10月21日時点の情報です。各社の公式ブログと、デジタル庁の発表・源内基準の記述に基づいていて、状況は更新されます。</p>
 <p>料金、一般提供の時期、取引の条件など、公式発表に記載のない項目は扱っていません。</p>
 <p>起動時間などの数字は、各社の公式発表にある値で、独自に検証したものではありません。</p>
 <p>内容は、各社の公式発表をもとに、独自に整理したものです。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（5件の発表、層ごとの整理、起動速度の比較、移行の期限）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>使う側の設計例として、デジタル庁の「源内」の AIエージェント利用環境と源内基準（外への送信の遮断、取得の記録、権限と承認）を、図と表で追加</li><li><span class="date">2026-10-19</span>初回公開（5件の発表、層ごとの整理、起動速度の比較、移行の期限）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

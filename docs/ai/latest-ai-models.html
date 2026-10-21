@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。">
+<meta name="description" content="Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。10月21日に、米国土安全保障省の DeepSeek 排除の命令と、DeepSeek の推論フレームワーク DeepInfer の公開を追記。">
 <title>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
@@ -190,10 +190,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash</h1><p class="summary">Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash</h1><p class="summary">Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。10月21日に、米国土安全保障省の DeepSeek 排除の命令と、DeepSeek の推論フレームワーク DeepInfer の公開を追記。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月10日から10月17日にかけて、Google、Meta、DeepSeek がそれぞれ新しいAIモデルを出しました。<strong>Gemini 4 Argon は API で使うモデル、Muse Spark Open と DeepSeek V4.1-Flash は重みが公開されたモデル</strong>で、提供形態が違います。</p>
 <p>性能の数字（ベンチマーク）は、各社が自社で公表したもので、条件も指標も違うため、<strong>横に並べて順位をつけることはできません</strong>。選ぶときは、提供形態、価格、動かすのに必要なもの、ライセンスを見ます。</p>
+<p>10月19〜20日には、米国土安全保障省（DHS）が、連邦の民間機関から DeepSeek の製品を取り除く命令を官報で公表しました。DeepSeek は、自社の推論フレームワーク「DeepInfer」をオープンソースで公開しました（10月21日追記）。</p>
 </section>
 
 <div class="stats">
@@ -392,6 +393,63 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <figcaption>MaaS（Model as a Service）の条件は、関連会社を含む年間の総売上高が2,000万米ドルを超え、第三者に API などでモデルの出力を提供する場合です。内部利用、研究、MaaS 以外の商用利用、自社製品の機能としての利用は、対象外とされています。生成された出力の所有権は、Meta は主張しません。</figcaption>
 </figure>
 
+<h2>10月19〜20日の続報</h2>
+<p>10月21日の追記です。米国の連邦官報、DeepSeek の GitHub リポジトリ、Meta の発表で確認した範囲で整理しました。</p>
+
+<h3>米国土安全保障省（DHS）が、DeepSeek の製品を連邦の民間機関から外す</h3>
+<p>DHS は、長官が出した命令を、連邦官報で公表しました（10月19日に公開閲覧、20日に掲載）。根拠は、2018年の連邦調達サプライチェーン・セキュリティ法（FASCSA）で、連邦調達セキュリティ評議会の勧告と関連する証拠を検討した上での命令とされています。</p>
+
+<figure class="viz">
+<p class="viz-title">命令は「買わない」と「取り除く」の2つ</p>
+<p class="viz-sub">連邦官報の通知（2026年10月20日掲載）の記載をもとに筆者が作図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 270" role="img" aria-label="DHS長官の命令は、FASCSAに基づき2つのことを命じた。1つ目は、DeepSeekが開発したIT製品とサービスを、関連会社を含めて、連邦の民間機関の調達から外すこと。2つ目は、DeepSeekと関連会社の製品と、DeepSeekを使って開発された第三者の製品とサービスを、民間機関のITから取り除くこと。対象は連邦の民間機関で、通知は民間企業や個人の利用には触れていない。">
+<defs>
+<marker id="arrow-dhs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="80" width="190" height="110" rx="8"/>
+<text class="t-strong" x="22" y="110">DHS 長官の命令</text>
+<text class="t-small" x="22" y="136">根拠：FASCSA（2018年）</text>
+<text class="t-small" x="22" y="158">10/20 連邦官報に掲載</text>
+
+<path class="arrow" d="M198,135 H226 M226,72 V198"/>
+<line class="arrow" x1="226" y1="72" x2="252" y2="72" marker-end="url(#arrow-dhs)"/>
+<line class="arrow" x1="226" y1="198" x2="252" y2="198" marker-end="url(#arrow-dhs)"/>
+
+<rect class="box" x="254" y="24" width="400" height="96" rx="8"/>
+<text class="t-strong" x="270" y="52">1　調達から外す（買わない）</text>
+<text class="t-small" x="270" y="78">DeepSeek が開発したIT製品とサービス</text>
+<text class="t-small" x="270" y="100">（関連会社を含む）</text>
+
+<rect class="box-key" x="254" y="140" width="400" height="116" rx="8"/>
+<text class="t-strong" x="270" y="168">2　ITから取り除く（使わない）</text>
+<text class="t-small" x="270" y="194">DeepSeek と関連会社のすべての製品</text>
+<text class="t-strong" x="270" y="220">DeepSeek を使って開発された</text>
+<text class="t-strong" x="270" y="242">第三者の製品とサービスも含む</text>
+
+<path class="arrow" d="M654,72 H680 M654,198 H680 M680,72 V198"/>
+<line class="arrow" x1="680" y1="135" x2="700" y2="135" marker-end="url(#arrow-dhs)"/>
+<rect class="box" x="702" y="70" width="170" height="130" rx="8"/>
+<text class="t-strong" x="716" y="98">対象</text>
+<text class="t-small" x="716" y="124">連邦の民間機関</text>
+<text class="t-small" x="716" y="154">民間企業や個人の</text>
+<text class="t-small" x="716" y="174">利用には触れていない</text>
+</svg>
+</div>
+<figcaption>注目は2つ目で、DeepSeek の製品そのものだけでなく、DeepSeek を使って開発された他社の製品やサービスも、取り除く対象に入っています。署名された命令の本体は通知の付録にあり、命令の日付、例外の扱い、理由の詳細は、今回は確認していません。窓口は CISA のサイバーセキュリティ部門です。</figcaption>
+</figure>
+
+<h3>DeepInfer：DeepSeek の推論フレームワークをオープンソースで公開</h3>
+<div class="cards">
+<div class="card"><h3>何か</h3><p>DeepSeek の大規模な本番サービスを支える推論フレームワーク。オープンソース版は、オフライン推論と、大規模な提供に必要な主な機能を含みます。vLLM をもとにしています。ライセンスは Apache License 2.0。</p></div>
+<div class="card"><h3>動かせるもの</h3><p>対応モデルは DeepSeek-V4.1-Flash（既定は V4.1-Flash-1017）。対応ハードウェアは、NVIDIA の SM100 世代の GPU と、Huawei の Ascend 950 NPU です。</p></div>
+<div class="card"><h3>主な機能</h3><p>最適化したカーネル、並列化（Attention DP、MoE の EP など）、投機的デコード、構造化出力（正規表現、JSON スキーマ、EBNF 文法）など。</p></div>
+<div class="card"><h3>含まれないもの</h3><p>完全な推論サービスに要る、KV キャッシュのシステム、prefill と decode の分離、複数のレプリカの負荷分散は、今回の公開には含まれていません。性能はグラフで示され、数値の記載はありません。</p></div>
+</div>
+
+<h3>関連する動き：Meta の Muse Wonder</h3>
+<p>Meta は10月12日、エージェント向けの「Muse Wonder」と「Muse Wonder Full」を発表しました。Muse Wonder は Meta Model API と Muse Code で、Muse Wonder Full は Muse Code の有料会員向けに提供されます。会話をまたいで情報を保つ「Active Memory」と、難しい課題でも作業を続ける「Active Focus」を挙げています。発表には、価格、重みの公開、具体的なベンチマークの数値の記載はありません。重みを公開した Muse Spark Open とは、提供形態が違います。</p>
+
 <h2>選ぶときの観点</h2>
 <div class="note">
 <p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
@@ -402,6 +460,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li><strong>ライセンス:</strong> Muse Spark Open は無償だが、表示の義務と、MaaS の条件がある。</li>
 <li><strong>入出力:</strong> 音声や PDF の入力が要るか。出力は、確認できた範囲ではいずれもテキスト。</li>
 <li><strong>数字の見方:</strong> ベンチマークは各社の自己申告で、条件も指標も違う。自分のタスクで試す。</li>
+<li><strong>使う組織の決まり:</strong> 米国の連邦の民間機関では、DeepSeek の製品と、DeepSeek を使って作られた製品を取り除く命令が出た。自組織の調達や利用の決まりも確認する（10月21日追記）。</li>
 </ul>
 
 <h2>用語メモ</h2>
@@ -412,16 +471,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <dt>NVFP4、BF16</dt><dd>数値の表現形式。NVFP4 は小さく、BF16 は大きい。</dd>
 <dt>コンテキスト</dt><dd>一度にモデルが扱える入力と出力の量（トークン数）。</dd>
 <dt>KV キャッシュ</dt><dd>推論時に、過去の計算結果を保存しておく領域。</dd>
+<dt>推論フレームワーク</dt><dd>学習済みのモデルを、速く、たくさんの利用者向けに動かすためのソフトウェア。</dd>
+<dt>FASCSA</dt><dd>米国の連邦調達サプライチェーン・セキュリティ法（2018年）。安全上の懸念があるIT製品を、連邦の調達やシステムから外す命令の根拠になる。</dd>
 </dl>
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月19日時点の情報です。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
+<p>2026年10月21日時点の情報です。各社の公式ページと、米国の連邦官報の記述に基づいていて、状況は更新されます。</p>
 <p>ベンチマークの数字は、各社の自己申告で、独自に検証したものではありません。ここでは、横並びの順位づけはしていません。</p>
 <p>DeepSeek V4.1-Flash の具体的な単価、コンテキスト長、ライセンスは、確認できなかったため扱っていません。Google の発表にあるモデルカード（PDF）は読んでいません。</p>
 <p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="ai-coding-productivity.html">AIコーディングで生産性は上がったか</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（3つのモデルの提供形態・価格・ライセンス・日程の整理）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>米国土安全保障省の DeepSeek 排除の命令（図）、DeepInfer の公開、Meta の Muse Wonder を追加</li><li><span class="date">2026-10-19</span>初回公開（3つのモデルの提供形態・価格・ライセンス・日程の整理）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

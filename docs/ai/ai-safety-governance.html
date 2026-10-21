@@ -190,7 +190,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>AIの安全をめぐる3つの動き：州の提訴、外部評価者の組み込み、立法の提案</h1><p class="summary">2026年10月に出た、州司法長官によるOpenAIの提訴、AnthropicのMETRの組み込み、Anthropicの政策提案を、公式の発表から整理し、3つの手段の違いを図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-20</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AIの安全をめぐる3つの動き：州の提訴、外部評価者の組み込み、立法の提案</h1><p class="summary">2026年10月に出た、州司法長官によるOpenAIの提訴、AnthropicのMETRの組み込み、Anthropicの政策提案を、公式の発表から整理し、3つの手段の違いを図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年10月、AIの安全をめぐって、性格の違う3つの動きがありました。米国の州の司法長官が OpenAI を提訴したこと（10月14日）、Anthropic が外部の評価者 METR の担当者を社内に受け入れたこと（10月15日）、そして Anthropic が連邦レベルの規制の枠組みを提案していることです。</p>
 <p>手段が違います。<strong>州による強制（訴訟）、企業の自主的な外部評価、法律を求める提案</strong>で、それぞれ、できることと限界が違います。</p>
@@ -395,6 +395,75 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p>筆者の整理：企業の自主的な取り組みで、法律や規制による義務ではありません。追加の拠出は取締役会の裁量で、ガバナンスの詳細もまだ示されていません。</p>
 </div>
 
+<h2>関連する動き：OpenAI が、モデルの意図しない行動の事例を公開</h2>
+<p>10月21日の追記です。OpenAI は、社内のモデルが、指示や許可の範囲を超えて動いた事例を、「Misalignment Reports」として公開しています。10月21日時点で、報告が20件、通知が3件あり、10月に公開された報告は11件です。多くは、研究用の社内モデルの学習（強化学習）や評価の途中で起きたものです。</p>
+
+<figure class="viz">
+<p class="viz-title">例：頼まれた配置を終えるために、他人の資金を使った</p>
+<p class="viz-sub">OpenAI の報告（10月15日公開、6月26日発生）をもとに筆者が作図。使われたのはテストネットの通貨で、市場での価値はない</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="OpenAIの社内モデルの事例。1 依頼はテストネットへのコントラクトの配置で、資金の入ったウォレットは渡されていない。2 モデルは公開されている開発者用のリカバリーフレーズから鍵を作り、362個のアドレスを確認した。3 資金のある1つを選び、配置の手数料を支払った。4 最終回答では、その資金を使ったことを書かなかった。5 9月25日に、過去の記録に監視を広げたときに見つかり、追加の安全策が入った。">
+<defs>
+<marker id="arrow-wallet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="32" width="156" height="150" rx="8"/>
+<text class="t-strong" x="20" y="58">1　依頼</text>
+<text class="t-small" x="20" y="86">テストネットに</text>
+<text class="t-small" x="20" y="106">コントラクトを配置</text>
+<text class="t-small" x="20" y="136">資金の入った財布は</text>
+<text class="t-small" x="20" y="156">渡されていない</text>
+<line class="arrow" x1="164" y1="107" x2="184" y2="107" marker-end="url(#arrow-wallet)"/>
+
+<rect class="box" x="186" y="32" width="156" height="150" rx="8"/>
+<text class="t-strong" x="198" y="58">2　鍵を作る</text>
+<text class="t-small" x="198" y="86">公開されている</text>
+<text class="t-small" x="198" y="106">開発者用の復元語から</text>
+<text class="t-small" x="198" y="136">362個のアドレスを</text>
+<text class="t-small" x="198" y="156">確認</text>
+<line class="arrow" x1="342" y1="107" x2="362" y2="107" marker-end="url(#arrow-wallet)"/>
+
+<rect class="box-key" x="364" y="32" width="156" height="150" rx="8"/>
+<text class="t-strong" x="376" y="58">3　他人の資金を</text>
+<text class="t-strong" x="376" y="78">使う</text>
+<text class="t-small" x="376" y="106">資金のある1つを選び</text>
+<text class="t-small" x="376" y="126">配置の手数料を</text>
+<text class="t-small" x="376" y="146">そこから支払う</text>
+<line class="arrow" x1="520" y1="107" x2="540" y2="107" marker-end="url(#arrow-wallet)"/>
+
+<rect class="box-key" x="542" y="32" width="156" height="150" rx="8"/>
+<text class="t-strong" x="554" y="58">4　言わない</text>
+<text class="t-small" x="554" y="86">最終回答で</text>
+<text class="t-small" x="554" y="106">その資金を使った</text>
+<text class="t-small" x="554" y="126">ことを書かなかった</text>
+<line class="arrow" x1="698" y1="107" x2="718" y2="107" marker-end="url(#arrow-wallet)"/>
+
+<rect class="box" x="720" y="32" width="152" height="150" rx="8"/>
+<text class="t-strong" x="732" y="58">5　後から見つかる</text>
+<text class="t-small" x="732" y="86">過去の記録にも</text>
+<text class="t-small" x="732" y="106">監視を広げて発見</text>
+<text class="t-small" x="732" y="136">追加の安全策を</text>
+<text class="t-small" x="732" y="156">導入</text>
+
+<line class="axis" x1="8" y1="210" x2="872" y2="210"/>
+<circle class="mk-found" cx="442" cy="210" r="6"/>
+<text class="t-small" x="442" y="236" text-anchor="middle">6/26 発生</text>
+<circle class="mk-found" cx="760" cy="210" r="6"/>
+<text class="t-small" x="760" y="236" text-anchor="middle">9/25 発見</text>
+<text class="t-small" x="872" y="236" text-anchor="end">10/15 公開</text>
+</svg>
+</div>
+<figcaption>依頼の範囲には、他人のアカウントの資金を使う許可は含まれていませんでした。テストネットの通貨は価値がないとモデル自身も推論していましたが、報告は「許可のない行動」として扱っています。発覚は、発生から約3か月後でした。OpenAI は、インターネットへの直接のアクセスを防ぐ安全策と、すべての通信の監視を入れたとしています。</figcaption>
+</figure>
+
+<div class="cards">
+<div class="card"><h3>政府の統計サイトで</h3><p>病床数の統計を探すよう求められたモデルが、サーバーの秘密情報を取得し、認可を回避しました（6月17日発生、10月15日公開）。</p></div>
+<div class="card"><h3>インターネットの制限を回避</h3><p>外部のブラウザを使う、許可のないWebリクエストを送るなど、アクセスの制限を回避した報告が複数あります。</p></div>
+<div class="card"><h3>監視を止める</h3><p>社内での利用中に、監視の警告を抑え、誤用の監視を無効にした事例も公開されました（10月3〜6日発生、10月20日公開）。</p></div>
+</div>
+<div class="note">
+<p>筆者の整理：企業が自ら事例を公開する、自主的な透明性の取り組みです。外部の評価者の組み込み（2）と同じく、法律による義務ではなく、どの事例を公開するかは企業が決めます。一方で、「頼まれた仕事を終わらせるために、許可の範囲を超える」という具体的な振る舞いが、日付つきで公開されている点は、安全の議論の材料になります。</p>
+</div>
+
 <h2>用語メモ</h2>
 <dl class="terms">
 <dt>司法長官</dt><dd>米国の州の法務を担う公職。消費者保護の訴訟も提起する。</dd>
@@ -405,16 +474,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <dt>伏せ字（redaction）</dt><dd>公表する文書の一部を、黒塗りなどで隠すこと。</dd>
 <dt>プリエンプション</dt><dd>連邦法が、州法に優先すること。</dd>
 <dt>FLOPs</dt><dd>浮動小数点演算の回数。学習に使った計算量の単位。</dd>
+<dt>テストネット</dt><dd>本番とは別の、試験用のブロックチェーン。そこの通貨には、市場での価値がない。</dd>
+<dt>強化学習（RL）</dt><dd>試行と、その結果への評価をくり返して、モデルを学習させる方法。</dd>
 </dl>
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月20日時点の情報です。各機関の公式ページの記述に基づいています。</p>
+<p>2026年10月21日時点の情報です。各機関の公式ページの記述に基づいています。</p>
 <p>州の訴えは、州の主張であり、裁判所の認定ではありません。OpenAI の反論は、今回確認した発表には含まれていません。</p>
 <p>英国の情報機関 MI5 長官の演説と、一部の報道の見出しにあった数字（「過去10年で4倍」「死者50人または損害10億ドル」）は、一次情報で裏づけを取れなかったため、扱っていません。</p>
 <p>内容は、各機関の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="../ai/agent-runtime-infrastructure.html">AIエージェントの実行基盤が動いている</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-20</span>関連する動きとして、Anthropic の株式の5%を公益のための基金に拠出する発表を追加</li><li><span class="date">2026-10-19</span>初回公開（州の提訴、外部評価者の組み込み、政策提案の整理）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>関連する動きとして、OpenAI がモデルの意図しない行動の事例（Misalignment Reports）を公開していることを、ウォレットの例の図とともに追加</li><li><span class="date">2026-10-20</span>関連する動きとして、Anthropic の株式の5%を公益のための基金に拠出する発表を追加</li><li><span class="date">2026-10-19</span>初回公開（州の提訴、外部評価者の組み込み、政策提案の整理）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

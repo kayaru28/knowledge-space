@@ -190,11 +190,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-20</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは7製品・9件</strong>です。対応は、悪用が確認されているものから順に行います。</p>
 <p>注意したいのは、<strong>回避策が提供されていない製品がある</strong>ことです（NetScaler、Cisco Secure Email Gateway）。また、<strong>侵害の痕跡が消される可能性</strong>が示されている製品もあります（Cisco Secure Email Gateway、SiteGuard Server Edition）。更新するだけでなく、すでに侵害されていないかの調査も必要です。</p>
 <p>10月20日追記：悪用は確認されていないものの深刻度が高いものとして、Linux カーネルの <strong>PwnEscape</strong>（CVE-2026-99999）を加えました。仮想マシンの中から、ホスト側の Linux のメモリを読み出せるもので、仮想マシンを動かすホストの管理者は、カーネルの更新が必要です。</p>
+<p>10月21日追記：サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を加えました。修正は出ないため、使うのをやめて、ほかの製品に乗り換えるよう案内されています。</p>
 </section>
 
 <div class="stats">
@@ -349,6 +350,62 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </table>
 </div>
 
+<h2>サポートが終わった機器の脆弱性：楽天モバイルのスマートフォン4機種</h2>
+<p>10月21日の追記です。JVN（10月14日公開）と、楽天モバイルの Rakuten Mini のサポート情報をもとに整理しました。起動時にシステムが正規のものかを確かめる仕組み（Android Verified Boot）に、AOSP のテスト用の鍵が使われていた問題です。対象の製品はサポートが終わっていて、修正は出ません。</p>
+
+<figure class="viz">
+<p class="viz-title">サポートが終わった機器には、修正が届かない</p>
+<p class="viz-sub">JVN と楽天モバイルの案内をもとに筆者が作図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 230" role="img" aria-label="サポート中の機器では、脆弱性が見つかると修正版が出るので、更新して対応する。サポートが終わった機器、例えば楽天モバイルのRakuten Miniなど4機種では、修正版が出ないため、使うのをやめて、後継の製品に乗り換えるしかない。">
+<defs>
+<marker id="arrow-eol" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="8" y="24" width="220" height="72" rx="8"/>
+<text class="t-strong" x="22" y="54">サポート中の機器</text>
+<text class="t-small" x="22" y="78">脆弱性が見つかる</text>
+<line class="arrow" x1="228" y1="60" x2="276" y2="60" marker-end="url(#arrow-eol)"/>
+<rect class="box" x="278" y="24" width="250" height="72" rx="8"/>
+<text class="t-strong" x="292" y="54">修正版が出る</text>
+<text class="t-small" x="292" y="78">開発元が修正を配信する</text>
+<line class="arrow" x1="528" y1="60" x2="576" y2="60" marker-end="url(#arrow-eol)"/>
+<rect class="box" x="578" y="24" width="294" height="72" rx="8"/>
+<text class="t-strong" x="592" y="54">更新する</text>
+<text class="t-small" x="592" y="78">修正版を適用する</text>
+
+<rect class="box-key" x="8" y="128" width="220" height="88" rx="8"/>
+<text class="t-strong" x="22" y="156">サポートが終わった機器</text>
+<text class="t-small" x="22" y="180">例：Rakuten Mini、Hand、</text>
+<text class="t-small" x="22" y="200">Hand 5G、BIG s</text>
+<line class="arrow" x1="228" y1="172" x2="276" y2="172" marker-end="url(#arrow-eol)"/>
+<rect class="box-key" x="278" y="128" width="250" height="88" rx="8"/>
+<text class="t-strong" x="292" y="156">修正版は出ない</text>
+<text class="t-small" x="292" y="180">サポートの終了後に見つかった</text>
+<text class="t-small" x="292" y="200">脆弱性は直らない</text>
+<line class="arrow" x1="528" y1="172" x2="576" y2="172" marker-end="url(#arrow-eol)"/>
+<rect class="box-key" x="578" y="128" width="294" height="88" rx="8"/>
+<text class="t-strong" x="592" y="156">使うのをやめる</text>
+<text class="t-small" x="592" y="180">後継の製品への乗り換えを検討する</text>
+<text class="t-small" x="592" y="200">（JVN、楽天モバイルの案内）</text>
+</svg>
+</div>
+<figcaption>修正版が出る製品は「更新する」で対応できますが、サポートが終わった製品には修正が出ないため、「使うのをやめる」しか対策がありません。手元や組織の中に、サポートが終わった機器が残っていないかを確かめておきます。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>JVN（JVN#47427200）と楽天モバイルのサポート情報より</caption>
+<thead><tr><th>項目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>対象</td><td>Rakuten Mini、Rakuten Hand、Rakuten Hand 5G、Rakuten BIG s（いずれも全バージョン）</td></tr>
+<tr><td>識別番号と深刻度</td><td>CVE-2026-107153。CVSS v4.0 の基本値は 7.0（v3.0 では 6.6）</td></tr>
+<tr><td>影響</td><td>端末に物理的に触れられた場合、細工したシステムイメージを入れられるおそれがある。楽天モバイルは、端末の権限の取得、不正なプログラムの実行、設定の変更につながるおそれがあると説明している</td></tr>
+<tr><td>対策</td><td>修正は出ない。使うのをやめて、後継の製品への乗り換えを検討する（Rakuten Mini のサポートは2023年11月28日に終了）</td></tr>
+<tr><td>悪用</td><td>JVN には、悪用の報告の記載はない</td></tr>
+</tbody>
+</table>
+</div>
+
 <h2>対応の考え方</h2>
 <p>注意喚起の内容を並べて読んだ上での、対応の流れの整理です。各機関がそう述べているわけではありません。</p>
 
@@ -444,16 +501,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <dt>侵害調査</dt><dd>脆弱性を悪用されて、すでに侵入されていないかを調べること。</dd>
 <dt>DTLS</dt><dd>UDP 上で通信を暗号化するための仕組み。</dd>
 <dt>SSRF（サーバーサイドリクエストフォージェリ）</dt><dd>サーバーに、攻撃者が指定した宛先へ通信させる攻撃。</dd>
+<dt>Android Verified Boot</dt><dd>Android の端末が起動するときに、システムが正規のものかを、鍵を使って確かめる仕組み。</dd>
+<dt>サポート終了</dt><dd>開発元が、修正や修理の提供をやめること。それ以降に見つかった脆弱性は直らない。</dd>
 </dl>
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月20日時点の情報です。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
+<p>2026年10月21日時点の情報です。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
 <p>修正バージョンの番号など、注意喚起に明記されていない項目は、開発元の最新情報で確認する必要があります。</p>
-<p>ここで取り上げたのは、JPCERT/CC と IPA が10月中旬までに取り上げたもののうち、本文を直接確認できたものです。Linux の Copy Fail（IPA）や、報道で伝えられた別の脆弱性は、一次情報を確認できていないため、今回は扱っていません。</p>
+<p>ここで取り上げたのは、JPCERT/CC と IPA が10月中旬までに取り上げたもののうち、本文を直接確認できたものです。Linux の Copy Fail（IPA、CVE-2026-31431）は、5月の注意喚起で10月の更新がないため、今月の対象には入れていません。報道で伝えられた別の脆弱性は、一次情報を確認できていないため、扱っていません。</p>
 <p>内容は、JPCERT/CC と IPA の資料をもとに、独自に整理したものです。PwnEscape は、CVE の記録、発見者、Vercel の公表をもとにしています。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を図とともに追加</li><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

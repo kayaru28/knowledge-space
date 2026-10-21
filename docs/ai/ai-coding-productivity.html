@@ -190,7 +190,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>AIコーディングで生産性は上がったか：2本の研究から見える「増えた量」と「追いつかないレビュー」</h1><p class="summary">Microsoft の数万人を追った研究と、802人の開発者を追った研究の、2本の論文（arXiv）をもとに、AIコーディングツールの導入で何がどれだけ増え、何が追いつかなくなったのか、どこまで言えるのかを図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AIコーディングで生産性は上がったか：2本の研究から見える「増えた量」と「追いつかないレビュー」</h1><p class="summary">Microsoft の数万人を追った研究と、802人の開発者を追った研究の、2本の論文（arXiv）をもとに、AIコーディングツールの導入で何がどれだけ増え、何が追いつかなくなったのか、どこまで言えるのかを図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>AIコーディングツールを導入した開発者は、マージされるプルリクエスト（PR）の数が増えました。Microsoft の研究では約24%、802人の開発者を追ったもう1つの研究では、1人あたり2.09倍（保守的な推定では1.46倍）です。</p>
 <p>ただし、どちらも測ったのは「PRの数」で、価値や品質そのものではありません。さらに後者の研究では、<strong>提出量が増えたぶん、レビューが追いつかなくなっていました</strong>。1人あたりのレビュー負荷は約2倍になり、人間のレビューは薄くなっています。</p>
@@ -406,6 +406,56 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <ul><li>導入時期と利用量は開発者自身が選んでおり、ランダムに割り当てられていない。因果は厳密には特定されておらず、「強く示唆する」証拠として読む</li><li>若くAIに積極的な企業で、ツール予算に上限がない好条件。外的妥当性は限定的</li><li>PR数は活動量のみ。マージ率とリバート率は粗く短期的</li><li>論文は、約2倍の増加を「好条件では達成可能だが、即時でも典型的でも無償でもない」と位置づけている</li></ul></div>
 </div>
 
+<h2>関連する調査：State of Devs 2026</h2>
+<p>10月21日の追記です。Devographics の開発者調査「State of Devs 2026」（2026年7月5日〜9月5日、回答者5,463人）の結果ページに基づきます。2本の論文とは違い、<strong>開発者本人が答えた割合</strong>で、生産性や品質を測ったものではありません。</p>
+
+<figure class="viz">
+<p class="viz-title">AIが生成したコードの割合（本人の回答）</p>
+<p class="viz-sub">回答者4,846人。縦軸は回答者に占める割合（%）。選択肢は 12.5% 刻みの9段階</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 760 320" role="img" aria-label="AIが生成したコードの割合についての回答の分布。0%が9.4%、12.5%が11.1%、25%が10.4%、37.5%が4.7%、50%が8.1%、62.5%が7.6%、75%が18.1%、87.5%が20.8%、100%が9.7%。75%以上は合わせて48.6%。">
+<g class="grid">
+<line x1="64" y1="250" x2="740" y2="250"/><line x1="64" y1="210" x2="740" y2="210"/>
+<line x1="64" y1="170" x2="740" y2="170"/><line x1="64" y1="130" x2="740" y2="130"/>
+<line x1="64" y1="90" x2="740" y2="90"/><line x1="64" y1="50" x2="740" y2="50"/>
+</g>
+<g text-anchor="end">
+<text class="t-muted" x="56" y="254">0%</text><text class="t-muted" x="56" y="214">5%</text>
+<text class="t-muted" x="56" y="174">10%</text><text class="t-muted" x="56" y="134">15%</text>
+<text class="t-muted" x="56" y="94">20%</text><text class="t-muted" x="56" y="54">25%</text>
+</g>
+<rect class="bar-old" x="78" y="175" width="44" height="75" rx="4"><title>0%（AIを使わない）：455人、9.4%</title></rect>
+<rect class="bar-old" x="154" y="161" width="44" height="89" rx="4"><title>12.5%：538人、11.1%</title></rect>
+<rect class="bar-old" x="230" y="167" width="44" height="83" rx="4"><title>25%：504人、10.4%</title></rect>
+<rect class="bar-old" x="306" y="212" width="44" height="38" rx="4"><title>37.5%：229人、4.7%</title></rect>
+<rect class="bar-old" x="382" y="185" width="44" height="65" rx="4"><title>50%：394人、8.1%</title></rect>
+<rect class="bar-old" x="458" y="189" width="44" height="61" rx="4"><title>62.5%：368人、7.6%</title></rect>
+<rect class="bar" x="534" y="105" width="44" height="145" rx="4"><title>75%：879人、18.1%</title></rect>
+<rect class="bar" x="610" y="84" width="44" height="166" rx="4"><title>87.5%：1,009人、20.8%</title></rect>
+<rect class="bar" x="686" y="172" width="44" height="78" rx="4"><title>100%：470人、9.7%</title></rect>
+<g text-anchor="middle">
+<text class="t-ink" x="100" y="167">9.4%</text><text class="t-ink" x="176" y="153">11.1%</text>
+<text class="t-ink" x="252" y="159">10.4%</text><text class="t-ink" x="328" y="204">4.7%</text>
+<text class="t-ink" x="404" y="177">8.1%</text><text class="t-ink" x="480" y="181">7.6%</text>
+<text class="t-ink" x="556" y="97">18.1%</text><text class="t-ink" x="632" y="76">20.8%</text>
+<text class="t-ink" x="708" y="164">9.7%</text>
+<text class="t-muted" x="100" y="272">0%</text><text class="t-muted" x="176" y="272">12.5%</text>
+<text class="t-muted" x="252" y="272">25%</text><text class="t-muted" x="328" y="272">37.5%</text>
+<text class="t-muted" x="404" y="272">50%</text><text class="t-muted" x="480" y="272">62.5%</text>
+<text class="t-muted" x="556" y="272">75%</text><text class="t-muted" x="632" y="272">87.5%</text>
+<text class="t-muted" x="708" y="272">100%</text>
+<text class="t-strong" x="632" y="40">75%以上：計48.6%</text>
+<text class="t-small" x="404" y="302">AIが生成したコードの割合（回答の選択肢）</text>
+</g>
+</svg>
+</div>
+<figcaption>最も多い答えは「87.5%」（20.8%）で、75%以上と答えた人は合わせて48.6%です。一方、「0%」（AIを使わない）と答えた人も9.4%います。中央値は63%（結果ページの記載）。割合は、結果ページの人数から筆者が計算しました。</figcaption>
+</figure>
+
+<div class="note">
+<p>筆者の整理：「コードの多くをAIに書かせている」と答える開発者が約半数います。論文2が示した「提出量が増え、レビューが追いつかない」状況が、広く起きうることを示す材料になります。ただし、回答者は調査に答えた人に限られ、割合は本人の感覚で、国や職種の偏りもありえます。AIへの感情は、肯定的が49%、否定的が42%でした。</p>
+</div>
+
 <h2>実務に生かすなら</h2>
 <div class="note">
 <p>論文の内容を並べて読んだ上での、筆者の整理です。論文がそう述べているわけではありません。</p>
@@ -430,12 +480,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月19日時点の情報です。2本の論文は、査読を経ていない可能性がある arXiv の投稿（プレプリント）で、内容は更新される可能性があります。</p>
-<p>数字は、論文の本文にある値で、独自に検証したものではありません。</p>
-<p>Gartner の予測や、開発者の調査（State of Devs 2026 など）は、一次情報を確認できていないため、今回は扱っていません。</p>
+<p>2026年10月21日時点の情報です。2本の論文は、査読を経ていない可能性がある arXiv の投稿（プレプリント）で、内容は更新される可能性があります。</p>
+<p>数字は、論文の本文と、State of Devs 2026 の結果ページにある値で、独自に検証したものではありません。</p>
+<p>Gartner の予測は、一次情報を確認できていないため、扱っていません。</p>
 <p>内容は、2本の論文をもとに、独自に整理したものです。関連する話題として、<a href="agent-runtime-infrastructure.html">AIエージェントの実行基盤が動いている</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（2本の論文の整理、生産性の増加、レビュー負荷、広がり方、限界）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>関連する調査として、State of Devs 2026 の「AIが生成したコードの割合」の回答分布を図で追加</li><li><span class="date">2026-10-19</span>初回公開（2本の論文の整理、生産性の増加、レビュー負荷、広がり方、限界）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
