@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="ソフトバンクと Sceye が成層圏の HAPS で通話や緊急通報を確かめた試験と、大気の抵抗で高度が下がる NASA の Swift を民間の宇宙機で救う計画の経過を、公式の発表から図で整理する。">
+<title>空と宇宙のインフラをどう保つか：成層圏から届く携帯電話の電波と、落ちてくる宇宙望遠鏡 Swift を救う試み | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>空と宇宙のインフラをどう保つか：成層圏から届く携帯電話の電波と、落ちてくる宇宙望遠鏡 Swift を救う試み</h1><p class="summary">ソフトバンクと Sceye が成層圏の HAPS で通話や緊急通報を確かめた試験と、大気の抵抗で高度が下がる NASA の Swift を民間の宇宙機で救う計画の経過を、公式の発表から図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>地上の基地局や、宇宙を回る観測衛星。私たちの頭上の通信や観測の仕組みを、どう広げ、どう保つかの試みが続いています。</p>
+<p>ソフトバンクは米国の Sceye と組み、成層圏を飛ぶ<strong>「HAPS」</strong>に携帯電話の基地局を載せる試験をしました。空気より軽い機体が米国から約13日かけて太平洋を渡り、高知県の室戸岬沖の上空で、スマートフォンでの通話やデータ通信、118番への緊急通報、緊急速報メールを確かめました。一方、NASA の天文衛星 <strong>Swift</strong> は、太陽の活動で大気の抵抗が増え、予想より早く高度が下がっています。民間の宇宙機で軌道を押し上げる計画は、宇宙機自身の問題で断念されました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">約13<small>日</small></p><p class="stat-label">HAPS が米国から日本の上空まで飛んだ日数（1万5,000km以上）</p></div>
+<div class="stat"><p class="stat-value">68<small>ミリ秒</small></p><p class="stat-label">HAPS に載せたサーバーでの処理の往復の平均（クラウドより遅延を40%以上減らした）</p></div>
+<div class="stat"><p class="stat-value">3,000<small>万ドル</small></p><p class="stat-label">NASA が Swift の軌道を上げるために Katalyst Space と結んだ契約</p></div>
+<div class="stat"><p class="stat-value">約325<small>km</small></p><p class="stat-label">9月25日時点の Swift の高度（運用が難しくなる300km に近づいている）</p></div>
+</div>
+
+<h2>1. 成層圏から届く携帯電話の電波</h2>
+<p>HAPS（High Altitude Platform Station）は、成層圏を飛ぶ機体に通信設備を載せ、地上に通信を届ける仕組みです。ソフトバンクと Sceye は9月2日、日本で初めての HAPS による試験サービスを行ったと発表しました。使ったのは、空気より軽く浮力で飛ぶ（LTA 型）Sceye の機体です。</p>
+
+<figure class="viz">
+<p class="viz-title">米国から日本の上空へ、約13日の飛行</p>
+<p class="viz-sub">ソフトバンクのプレスリリース（9月2日）より。時刻は日本時間。模式図で、距離は正確な縮尺ではない</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 180" role="img" aria-label="HAPSの飛行。8月9日22時に米国ニューメキシコ州ロズウェルを出発し、太平洋の上空を約13日間、1万5,000キロ以上飛んで、8月23日7時11分に日本の上空に着いた。高知県の室戸岬沖で試験をした。">
+<path class="line-main" d="M 90 100 C 300 30, 580 30, 790 100" fill="none"/>
+<circle class="mk-announce" cx="90" cy="100" r="8"><title>8月9日 22時（日本時間）、米国ニューメキシコ州ロズウェルを出発</title></circle>
+<text class="t-strong" x="90" y="132" text-anchor="middle">ロズウェル（米国）</text>
+<text class="t-small t-muted" x="90" y="150" text-anchor="middle">8月9日 22時 出発</text>
+<text class="t-strong" x="440" y="36" text-anchor="middle">太平洋の上空</text>
+<text class="t-small" x="440" y="88" text-anchor="middle">約13日・1万5,000km以上</text>
+<circle class="mk-period" cx="790" cy="100" r="9"><title>8月23日 7時11分（日本時間）、日本の上空に到着。高知県の室戸岬沖で試験</title></circle>
+<text class="t-strong" x="790" y="132" text-anchor="middle">日本の上空</text>
+<text class="t-small t-muted" x="790" y="150" text-anchor="middle">8月23日 7時11分 到着</text>
+<text class="t-small t-muted" x="790" y="168" text-anchor="middle">高知県・室戸岬沖で試験</text>
+</svg>
+</div>
+<figcaption>試験では、指定のエリアの中で、半径最小5km以内に位置を保ちながら長時間とどまりました。試験のあと、機体は米国へ向けて飛行を続け、性能の確認を続けています（9月2日時点）。</figcaption>
+</figure>
+
+<figure class="viz">
+<p class="viz-title">HAPS の仕組みと、試験で確かめたこと</p>
+<p class="viz-sub">ソフトバンクのプレスリリースをもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="HAPSの仕組み。成層圏を飛ぶ機体に4G LTE相当の基地局を載せ、地上のゲートウェイを通じてソフトバンクのネットワークにつなぐ。スマートフォンでの通話やデータ通信、118番への緊急通報、緊急速報メール、ドローンの遠隔操作を確かめた。機体に載せたサーバーでの処理は往復平均68ミリ秒。">
+<defs><marker id="arrow-haps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="20" width="840" height="80" rx="8" stroke-dasharray="5 4"/>
+<text class="t-small t-muted" x="36" y="40">成層圏</text>
+<rect class="box-key" x="320" y="34" width="240" height="56" rx="28" stroke-width="2.5"/>
+<text class="t-strong" x="440" y="58" text-anchor="middle">HAPS（LTA 型の機体）</text>
+<text class="t-small" x="440" y="78" text-anchor="middle">4G LTE 相当の基地局＋サーバー</text>
+
+<line class="arrow" x1="360" y1="92" x2="150" y2="176" marker-end="url(#arrow-haps)"/>
+<line class="arrow" x1="420" y1="92" x2="380" y2="176" marker-end="url(#arrow-haps)"/>
+<line class="arrow" x1="500" y1="92" x2="600" y2="176" marker-end="url(#arrow-haps)"/>
+<line class="arrow" x1="540" y1="92" x2="790" y2="176" marker-end="url(#arrow-haps)"/>
+
+<rect class="box" x="40" y="180" width="200" height="100" rx="6"/>
+<text class="t-strong" x="140" y="206" text-anchor="middle">スマートフォン</text>
+<text class="t-small" x="140" y="228" text-anchor="middle">通話・テキスト・SNS</text>
+<text class="t-small" x="140" y="246" text-anchor="middle">ビデオ通話・動画</text>
+<text class="t-small" x="140" y="264" text-anchor="middle">118番への緊急通報</text>
+
+<rect class="box" x="270" y="180" width="200" height="100" rx="6"/>
+<text class="t-strong" x="370" y="206" text-anchor="middle">緊急速報メール</text>
+<text class="t-small" x="370" y="228" text-anchor="middle">緊急地震速報や</text>
+<text class="t-small" x="370" y="246" text-anchor="middle">津波警報を送る</text>
+<text class="t-small" x="370" y="264" text-anchor="middle">システムが動いた</text>
+
+<rect class="box" x="500" y="180" width="200" height="100" rx="6"/>
+<text class="t-strong" x="600" y="206" text-anchor="middle">ドローン</text>
+<text class="t-small" x="600" y="228" text-anchor="middle">遠隔操作で自動飛行</text>
+<text class="t-small" x="600" y="246" text-anchor="middle">位置情報と映像を送信</text>
+<text class="t-small" x="600" y="264" text-anchor="middle">機上の処理は往復68ms</text>
+
+<rect class="box" x="730" y="180" width="130" height="100" rx="6"/>
+<text class="t-strong" x="795" y="206" text-anchor="middle">地上の</text>
+<text class="t-strong" x="795" y="224" text-anchor="middle">ゲートウェイ</text>
+<text class="t-small" x="795" y="246" text-anchor="middle">ソフトバンクの</text>
+<text class="t-small" x="795" y="264" text-anchor="middle">ネットワークへ</text>
+</svg>
+</div>
+<figcaption>118番への緊急通報は、海上保安庁の協力で確かめました。地上の基地局との電波の干渉を抑えながら、地上のネットワークと同じくらいの通信性能が出たとしています。機体に載せたサーバーでの処理は、クラウドで処理する場合より遅延を40%以上減らしました。</figcaption>
+</figure>
+
+<p>ソフトバンクは、2027年以降に日本国内での商用化を目指すとしています。災害で地上の基地局が使えないときに通信を届けることや、ドローンなど空を飛ぶ乗り物向けの通信を想定しています。</p>
+
+<h2>2. 落ちてくる宇宙望遠鏡 Swift</h2>
+<p>Swift は、宇宙で最も強力な爆発であるガンマ線バーストなどを観測する NASA の天文衛星です。NASA の年ごとの予測で、太陽の活動が激しく大気の抵抗が増えたため、早ければ2026年夏に大気圏に再突入するおそれが出てきました。NASA は2025年9月、民間の Katalyst Space に3,000万ドルで、衛星をつかんで軌道を上げることを頼みました。</p>
+
+<figure class="viz">
+<p class="viz-title">Swift を救う試みの経過</p>
+<p class="viz-sub">NASA の Swift Boost ミッションの年表と、Swift のブログより</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="Swiftを救う試みの経過。2025年1月、早ければ2026年夏に再突入するおそれと予測。2025年9月、Katalyst Spaceと3,000万ドルの契約。2026年2月、大気の抵抗を減らす向きだけで運用し、2つの望遠鏡を止めた。7月3日、宇宙機LINKを打ち上げ。7月下旬、LINKの姿勢の制御に問題。8月19日、Swiftをつかんで押し上げることを断念。8月26日、観測を再開。9月21日、自動で向きを変える運用を再開。10月上旬から中旬に、運用が難しくなる高度300キロに達し、観測が止まる見込み。">
+<rect class="box" x="515" y="148" width="240" height="24" rx="4" stroke-dasharray="4 4"><title>2026年2月〜8月26日：大気の抵抗を減らす向きで運用し、望遠鏡の観測をほぼ止めた期間</title></rect>
+<line class="axis" x1="60" y1="160" x2="850" y2="160"/>
+<g class="t-muted t-small" text-anchor="middle">
+<text x="60" y="186">2025年1月</text><text x="480" y="186">2026年1月</text><text x="690" y="186">7月</text>
+</g>
+
+<g class="grid">
+<line x1="60" y1="124" x2="60" y2="160"/><line x1="340" y1="94" x2="340" y2="160"/>
+<line x1="693" y1="124" x2="693" y2="160"/><line x1="721" y1="94" x2="721" y2="160"/>
+<line x1="746" y1="64" x2="746" y2="160"/><line x1="755" y1="160" x2="755" y2="226"/>
+<line x1="784" y1="160" x2="784" y2="256"/><line x1="804" y1="34" x2="804" y2="160"/>
+</g>
+
+<circle class="mk-announce" cx="60" cy="160" r="6"><title>2025年1月：早ければ2026年夏に再突入するおそれ（NASA の予測）</title></circle>
+<text class="t-small" x="66" y="120">早ければ2026年夏に再突入のおそれ（予測）</text>
+<circle class="mk-period" cx="340" cy="160" r="6"><title>2025年9月：Katalyst Space に3,000万ドルで軌道の引き上げを依頼</title></circle>
+<text class="t-small" x="346" y="90">Katalyst と3,000万ドルの契約</text>
+<text class="t-small" x="520" y="214">抵抗を減らす向きで運用（2月〜）</text>
+<circle class="mk-period" cx="693" cy="160" r="6"><title>2026年7月3日：LINK をペガサス XL で打ち上げ</title></circle>
+<text class="t-small" x="687" y="120" text-anchor="end">7/3 LINK を打ち上げ</text>
+<circle class="mk-found" cx="721" cy="160" r="6"><title>2026年7月下旬：LINK の姿勢の制御に問題。回転を毎秒約9度から4度未満に減らした</title></circle>
+<text class="t-small" x="715" y="90" text-anchor="end">7月下旬 LINK の姿勢に問題</text>
+<circle class="mk-found" cx="746" cy="160" r="6"><title>2026年8月19日：姿勢の制御の問題が続くため、Swift をつかんで軌道を上げることは断念。接近の技術の実証は試みる</title></circle>
+<text class="t-small" x="740" y="60" text-anchor="end">8/19 つかんで押し上げるのを断念</text>
+<circle class="mk-period" cx="755" cy="160" r="6"><title>2026年8月26日：紫外線・可視光望遠鏡と X 線望遠鏡の観測を再開</title></circle>
+<text class="t-small" x="749" y="236" text-anchor="end">8/26 観測を再開</text>
+<circle class="mk-period" cx="784" cy="160" r="6"><title>2026年9月18日：BAT がガンマ線を捉えた。9月21日：新しい爆発に自動で向きを変える運用を再開</title></circle>
+<text class="t-small" x="778" y="266" text-anchor="end">9/21 自動で向きを変える運用を再開</text>
+<rect class="box-key" x="796" y="152" width="18" height="16" rx="3" stroke-width="2"><title>2026年10月上旬〜中旬：高度300km に達し、観測が止まる見込み（9月25日時点の見通し）</title></rect>
+<text class="t-small" x="860" y="30" text-anchor="end">10月上〜中旬 300km に達し観測停止の見込み</text>
+</svg>
+</div>
+<figcaption>9月25日時点で、Swift は高度約325km で再び下がっていました。運用が難しくなる高度300km には10月上旬から中旬に達し、その時点で観測は止まる見込みとされています。10月22日時点で、その後の NASA の発表は確認できていません。</figcaption>
+</figure>
+
+<p>Katalyst の宇宙機 LINK は7月3日、航空機から空中で発射されるペガサス XL ロケットで打ち上げられました。しかし7月下旬に姿勢の制御に問題が起き、回転を毎秒約9度から4度未満に減らすなどの対応が続きました。NASA と Katalyst は8月19日、問題が続いているため、LINK が Swift をつかんで軌道を上げることはしないと発表しました。LINK は、将来の宇宙探査のための技術の実証として、Swift への接近と近くでの運用を試みるとしています。</p>
+<p>Swift は、救出を待つ間、大気の抵抗を減らす向きで運用し、望遠鏡の観測をほぼ止めていました。救出の断念後、8月26日に紫外線・可視光望遠鏡と X 線望遠鏡を、9月にはガンマ線を捉えるバースト警報望遠鏡と、新しい爆発に自動で向きを変える運用を再開しました。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：どちらも、頭上のインフラを「代わりのもの」や「延命」でどう保つかの試みです。HAPS は地上の基地局が使えないときの代わりになりうる仕組みで、Swift の救出は、すでにある衛星を延命する仕組みです。軌道上で衛星をつかんで押し上げる作業は難しく、今回は宇宙機自身の問題で断念されました。また、太陽の活動による大気の抵抗の増加が、衛星の寿命を予想より縮めることがあります。</p>
+</div>
+
+<dl class="terms">
+<dt>成層圏</dt><dd>地上からおよそ10〜50kmの大気の層。</dd>
+<dt>HAPS</dt><dd>成層圏を飛ぶ機体に通信設備を載せ、地上に通信を届ける仕組み。</dd>
+<dt>LTA</dt><dd>空気より軽く、浮力で飛ぶ機体。</dd>
+<dt>基地局</dt><dd>携帯電話と電波をやりとりする設備。</dd>
+<dt>エッジコンピューティング</dt><dd>利用者に近い場所で処理して、遅れを減らす仕組み。</dd>
+<dt>ガンマ線バースト</dt><dd>宇宙で起きる、ごく短時間の強力な爆発。</dd>
+<dt>大気の抵抗</dt><dd>衛星が薄い大気にこすれて速度を失い、高度が下がる原因になる力。</dd>
+<dt>再突入</dt><dd>衛星が大気圏に入ること。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。Swift の10月以降の状況は、NASA の新しい発表を確認できていません。成層圏の高さは一般的な目安です。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（HAPS の飛行と試験、Swift を救う試みの経過）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

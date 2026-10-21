@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="生成 AI で調べる人が半数を超えたというサイバーエージェントの調査、ニュースサイトへの訪問の出どころの変化を示す Chartbeat のデータ、架空の統計が AI や論文に引用された Peec AI の実験から、AI に引用される時代の Web の変化と危うさを図で整理する。">
+<title>AI で調べる時代の Web：検索からの訪問の減少と、AI に引用される数字の危うさ | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI で調べる時代の Web：検索からの訪問の減少と、AI に引用される数字の危うさ</h1><p class="summary">生成 AI で調べる人が半数を超えたというサイバーエージェントの調査、ニュースサイトへの訪問の出どころの変化を示す Chartbeat のデータ、架空の統計が AI や論文に引用された Peec AI の実験から、AI に引用される時代の Web の変化と危うさを図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>調べものに生成 AI を使う人が増え、Web サイトへの訪問の流れが変わっています。サイバーエージェントの調査では、検索の手段として生成 AI を使う人が<strong>初めて半分を超えました</strong>。ニュースサイトの解析を手がける Chartbeat のデータでは、Google 検索から来た閲覧の割合が、2年で約9%から約5%に下がっています。</p>
+<p>一方で、AI に「引用される」ことの危うさを示す実験もあります。Peec AI の研究者は、<strong>すべて架空の統計</strong>を載せたサイトを作りました。Google からは外されましたが、ChatGPT からは7か月で1万回以上の訪問があり、架空の数字が論文や金融機関の投資レポートにまで引用されました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">50<small>%超</small></p><p class="stat-label">検索の手段として生成 AI を使う人（サイバーエージェントの調査、2026年8月期）</p></div>
+<div class="stat"><p class="stat-value">9→5<small>%</small></p><p class="stat-label">ニュースサイトなどの閲覧のうち、Google 検索から来た割合（2024年7月→2026年7月、Chartbeat）</p></div>
+<div class="stat"><p class="stat-value">5<small>万</small></p><p class="stat-label">実験で作った、すべて架空の統計のページ（Peec AI）</p></div>
+<div class="stat"><p class="stat-value">330<small>以上</small></p><p class="stat-label">その架空の統計サイトにリンクしたサイト（7か月後）</p></div>
+</div>
+
+<h2>1. 生成 AI で調べる人が増えた</h2>
+<p>サイバーエージェントの GEO ラボは、「生成AIのユーザー利用実態調査」（2026年8月期）の結果として、検索の手段として生成 AI を使う人の割合が初めて50%を超え、生成 AI が検索エンジンに次ぐ「第二の検索プラットフォーム」になったと発表しました。</p>
+<p>GEO（Generative Engine Optimization）は、AI の答えの中で自社の情報が取り上げられ、引用されるようにする取り組みです。検索エンジンで上位に出るための SEO に対する言葉として使われ始めています。</p>
+
+<h2>2. ニュースサイトへの訪問の出どころが変わった</h2>
+<p>Chartbeat は、ニュースなどのサイト向けの解析サービスの会社です。自社のネットワークの2年分のデータをまとめた報告書で、閲覧（ページビュー）がどこから来たかの割合の変化を示しています。</p>
+
+<figure class="viz">
+<p class="viz-title">閲覧の出どころの割合（2024年7月 → 2026年7月）</p>
+<p class="viz-sub">Chartbeat「The 2026 Publisher Playbook」の紹介ページより。ニュースやメディアのサイトが中心のネットワーク</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 280" role="img" aria-label="閲覧の出どころの割合の変化。Google検索は約9%から約5%に下がった。ダークソーシャルは7.1%から11.3%、直接の訪問は13.5%から15.9%、サイト内の移動は37.9%から40.4%に上がった。">
+<g class="grid">
+<line x1="260" y1="40" x2="260" y2="236"/><line x1="380" y1="40" x2="380" y2="236"/>
+<line x1="500" y1="40" x2="500" y2="236"/><line x1="620" y1="40" x2="620" y2="236"/>
+<line x1="740" y1="40" x2="740" y2="236"/>
+</g>
+<g class="t-muted t-small" text-anchor="middle">
+<text x="260" y="254">0%</text><text x="380" y="254">10%</text><text x="500" y="254">20%</text><text x="620" y="254">30%</text><text x="740" y="254">40%</text>
+</g>
+
+<text class="t-strong" x="20" y="74">Google 検索</text>
+<line class="axis" x1="320" y1="70" x2="368" y2="70"/>
+<circle class="dot-old" cx="368" cy="70" r="7"><title>2024年7月：約9%</title></circle>
+<circle class="mk-found" cx="320" cy="70" r="8"><title>2026年7月：約5%（2年で約46%の減少）</title></circle>
+<text class="t-small" x="320" y="56" text-anchor="middle">約5%</text>
+<text class="t-small t-muted" x="368" y="92" text-anchor="middle">約9%</text>
+
+<text class="t-strong" x="20" y="124">ダークソーシャル</text>
+<text class="t-small t-muted" x="20" y="140">出どころのわからない共有</text>
+<line class="axis" x1="345" y1="120" x2="396" y2="120"/>
+<circle class="dot-old" cx="345" cy="120" r="7"><title>2024年7月：7.1%</title></circle>
+<circle class="mk-found" cx="396" cy="120" r="8"><title>2026年7月：11.3%</title></circle>
+<text class="t-small" x="396" y="106" text-anchor="middle">11.3%</text>
+<text class="t-small t-muted" x="345" y="142" text-anchor="middle">7.1%</text>
+
+<text class="t-strong" x="20" y="174">直接の訪問</text>
+<line class="axis" x1="422" y1="170" x2="451" y2="170"/>
+<circle class="dot-old" cx="422" cy="170" r="7"><title>2024年7月：13.5%</title></circle>
+<circle class="mk-found" cx="451" cy="170" r="8"><title>2026年7月：15.9%</title></circle>
+<text class="t-small" x="451" y="156" text-anchor="middle">15.9%</text>
+<text class="t-small t-muted" x="422" y="192" text-anchor="middle">13.5%</text>
+
+<text class="t-strong" x="20" y="224">サイト内の移動</text>
+<line class="axis" x1="715" y1="220" x2="745" y2="220"/>
+<circle class="dot-old" cx="715" cy="220" r="7"><title>2024年7月：37.9%</title></circle>
+<circle class="mk-found" cx="745" cy="220" r="8"><title>2026年7月：40.4%</title></circle>
+<text class="t-small" x="745" y="206" text-anchor="middle">40.4%</text>
+<text class="t-small t-muted" x="715" y="242" text-anchor="middle">37.9%</text>
+
+<g transform="translate(560 276)">
+<circle class="dot-old" cx="6" cy="-4" r="6"/><text class="t-small" x="18" y="0">2024年7月</text>
+<circle class="mk-found" cx="126" cy="-4" r="6"/><text class="t-small" x="138" y="0">2026年7月</text>
+</g>
+</svg>
+</div>
+<figcaption>Google Discover（Google のおすすめ記事の欄）から来た閲覧の割合も、同じ2年で28.4%減りました。常連の読者の月平均の閲覧は149.8億から150.2億とほぼ横ばいで、たまに来る読者は8%、新しい読者は14%減っています。</figcaption>
+</figure>
+
+<p>Chartbeat の顧客はニュースやメディアのサイトが中心なので、Web 全体を表す数字ではありません。また、紹介ページは、検索の減少の原因を AI と特定してはいません。</p>
+
+<h2>3. AI に引用される数字の危うさ</h2>
+<p>GEO のツールを提供する Peec AI の研究者は、2026年3月に新しいドメインを取り、生成 AI（GPT-4.1）を使って、5万ページの統計のサイトを1日で作りました。SEO や SNS、EC などについて200か国の統計をうたうもので、数字はすべて架空、確かめてもいません。7か月後の結果をまとめた記事が、10月7日に公開されました。</p>
+
+<figure class="viz">
+<p class="viz-title">同じ架空の統計サイトの、Google と ChatGPT での扱い</p>
+<p class="viz-sub">Peec AI の研究者のブログより（本人のツールと、他社の SEO ツールでの集計）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="すべて架空の統計を載せた5万ページのサイトは、Googleではインデックスから外され、表示は1ページあたり5から20回だった。ChatGPTからは7か月で1万回以上の訪問があり、直近30日で約7万2千回、回答のためにページが開かれた。追跡している質問での見え方は、統計サイト大手に次ぐ2位だった。">
+<defs><marker id="arrow-fake-stats" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="76" width="270" height="100" rx="8" stroke-dasharray="5 4"/>
+<text class="t-strong" x="155" y="108" text-anchor="middle">すべて架空の統計</text>
+<text x="155" y="132" text-anchor="middle">5万ページ</text>
+<text class="t-small t-muted" x="155" y="154" text-anchor="middle">2026年3月、生成 AI で1日で作成</text>
+
+<line class="arrow" x1="292" y1="110" x2="456" y2="66" marker-end="url(#arrow-fake-stats)"/>
+<line class="arrow" x1="292" y1="146" x2="456" y2="176" marker-end="url(#arrow-fake-stats)"/>
+
+<rect class="box" x="460" y="20" width="400" height="88" rx="8"/>
+<text class="t-strong" x="480" y="48">Google 検索</text>
+<text x="480" y="72">インデックスから外された</text>
+<text class="t-small" x="480" y="94">残ったページの表示も、1ページあたり5〜20回</text>
+
+<rect class="box-key" x="460" y="128" width="400" height="108" rx="8" stroke-width="2.5"/>
+<text class="t-strong" x="480" y="156">ChatGPT</text>
+<text x="480" y="180">7か月で訪問1万回以上</text>
+<text class="t-small" x="480" y="202">直近30日で約7.2万回、回答のためにページを開いた</text>
+<text class="t-small" x="480" y="222">追跡した質問での見え方は、統計サイト大手に次ぐ2位</text>
+</svg>
+</div>
+<figcaption>研究者は、Google で上位に出ることと、AI に取ってこられることは別の問題だと書いています。ChatGPT は質問を自分で言い換えて検索し、候補を並べ替え、いくつかのページを開いて答えの根拠にします。約7.2万回は、利用者への回答中にその場でページを開くためのアクセスで、学習用の収集ではないとしています。</figcaption>
+</figure>
+
+<p>架空の数字は、学術論文、カタールの大手金融グループの投資レポート、インドの経済誌、カナダのインフルエンサー団体の調査レポートに引用されました。330以上のサイトからリンクされ、その中には有名な企業のサイトもあります。リンクのある引用だけが分かっているので、実際はもっと多いと研究者はみています。</p>
+
+<figure class="viz">
+<p class="viz-title">架空の数字が「出典のある数字」になるまで</p>
+<p class="viz-sub">研究者が「引用の洗浄（citation laundering）」と呼ぶ流れ。Peec AI のブログをもとに作成</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 280" role="img" aria-label="引用の洗浄の流れ。架空の統計を、AI検索が取ってきて答えに使う。AIで書いた記事や論文、投資レポートが引用する。すると出典のある数字に見え、次の人や次のAIが使い、AI検索がまた取ってくる。やがて学習データに入るおそれもある。">
+<defs><marker id="arrow-launder" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="40" width="220" height="60" rx="6" stroke-dasharray="5 4"/>
+<text class="t-strong" x="130" y="76" text-anchor="middle">架空の統計</text>
+<rect class="box" x="330" y="40" width="220" height="60" rx="6"/>
+<text class="t-strong" x="440" y="66" text-anchor="middle">AI 検索が取ってくる</text>
+<text class="t-small" x="440" y="86" text-anchor="middle">答えの根拠に使う</text>
+<rect class="box" x="640" y="40" width="220" height="60" rx="6"/>
+<text class="t-strong" x="750" y="66" text-anchor="middle">記事・論文・レポート</text>
+<text class="t-small" x="750" y="86" text-anchor="middle">AI で書いた記事などが引用</text>
+<rect class="box-key" x="640" y="190" width="220" height="60" rx="6" stroke-width="2.5"/>
+<text class="t-strong" x="750" y="216" text-anchor="middle">「出典のある数字」</text>
+<text class="t-small" x="750" y="236" text-anchor="middle">信頼できる組織が引用している</text>
+<rect class="box" x="330" y="190" width="220" height="60" rx="6"/>
+<text class="t-strong" x="440" y="216" text-anchor="middle">次の人・次の AI</text>
+<text class="t-small" x="440" y="236" text-anchor="middle">その数字を使う</text>
+<rect class="box" x="20" y="190" width="220" height="60" rx="6" stroke-dasharray="5 4"/>
+<text class="t-strong" x="130" y="216" text-anchor="middle">AI の学習データ</text>
+<text class="t-small" x="130" y="236" text-anchor="middle">入るおそれ（研究者の懸念）</text>
+
+<line class="arrow" x1="242" y1="70" x2="326" y2="70" marker-end="url(#arrow-launder)"/>
+<line class="arrow" x1="552" y1="70" x2="636" y2="70" marker-end="url(#arrow-launder)"/>
+<line class="arrow" x1="750" y1="102" x2="750" y2="186" marker-end="url(#arrow-launder)"/>
+<line class="arrow" x1="638" y1="220" x2="554" y2="220" marker-end="url(#arrow-launder)"/>
+<line class="arrow" x1="440" y1="188" x2="440" y2="104" marker-end="url(#arrow-launder)"/>
+<text class="t-small" x="448" y="150">また取ってくる</text>
+<line class="arrow" x1="328" y1="220" x2="244" y2="220" stroke-dasharray="5 4" marker-end="url(#arrow-launder)"/>
+</svg>
+</div>
+<figcaption>研究者は、この実験は研究として公開したもので、偽の内容を作るための手引きではないと断っています。出典を確かめることを、書き手と研究者の作業の欠かせない一部にするべきだとしています。実験のサイトには現在、注意書きが付いています。</figcaption>
+</figure>
+
+<p>研究者は、確かめて出典をつけた本物の統計のページでも、同じことを試しました。こちらもすぐに、AI で記事を書いているとみられるサイトからリンクされたといいます。AI で記事を書く人が増え、AI は知識のすき間を埋めるために数字を探します。統計のページは、まさに探されているものだというのが研究者の見立てです。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：AI の答えは、Google の検索順位とは別の仕組みで情報源を選んでいます。サイトを運営する側にとっては、検索からの訪問が減る一方で、AI に取ってこられるかどうかという新しい競争が始まっています。読む側にとっては、AI の答えや AI で書かれた記事に出てくる数字が、元の調査までたどれるかを確かめる必要があります。数字に出典が付いていても、その出典が元の調査とは限りません。</p>
+</div>
+
+<dl class="terms">
+<dt>SEO</dt><dd>検索エンジンで上位に表示されるようにする取り組み。</dd>
+<dt>GEO</dt><dd>生成 AI の答えの中で取り上げられ、引用されるようにする取り組み。</dd>
+<dt>生成 AI による検索</dt><dd>ChatGPT などに質問し、AI が Web を調べてまとめた答えを受け取る使い方。</dd>
+<dt>ダークソーシャル</dt><dd>メッセージアプリやメールなど、どこから来たかが解析ツールで分からない共有。</dd>
+<dt>インデックス</dt><dd>検索エンジンが、検索結果に出すために登録しているページの一覧。</dd>
+<dt>被リンク</dt><dd>ほかのサイトから張られたリンク。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。サイバーエージェントの調査は、公式サイトがメンテナンス中で本文を確かめられず、発表の見出しの範囲で扱いました。報道に出ている細かい数字や、Chartbeat の前年比の数字は、元の資料で確かめられなかったため載せていません。Peec AI の数字は、実験した本人が自分のツールや他社の SEO ツールで集計したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（生成 AI で調べる人の増加、訪問の出どころの変化、架空の統計の実験と引用の洗浄）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

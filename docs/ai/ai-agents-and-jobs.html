@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="AI エージェントの稼働時間が社員の6倍になり、技術系の新規採用に占める初級職が27%から9%に下がった Anthropic の社内報告書と、FDE で作ったエージェント型 AI を企業の70%が手放すとする Gartner の予測から、AI エージェントが仕事と雇用に与える変化を図で整理する。">
+<title>AI エージェントは働き方と雇用をどう変えるか：Anthropic の社内データと、Gartner の FDE 予測 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI エージェントは働き方と雇用をどう変えるか：Anthropic の社内データと、Gartner の FDE 予測</h1><p class="summary">AI エージェントの稼働時間が社員の6倍になり、技術系の新規採用に占める初級職が27%から9%に下がった Anthropic の社内報告書と、FDE で作ったエージェント型 AI を企業の70%が手放すとする Gartner の予測から、AI エージェントが仕事と雇用に与える変化を図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Anthropic は10月16日、自社の中で AI が仕事と雇用をどう変えたかをまとめた報告書を公開しました。2026年8月には、社員が対話しながら動かす AI エージェントの稼働時間が、その社員たちの労働時間の<strong>6倍</strong>になりました。会社が大きくなるなかで、技術系の新規採用に占める初級職の割合は<strong>27%から9%</strong>に下がっています。仕事の中身も、自分で手を動かすことから、AI の出力を読んで管理することへ移っています。</p>
+<p>一方、調査会社の Gartner は9月29日、ベンダーの技術者が顧客の現場に入って AI エージェントを作る「FDE」について、2028年までに企業の70%が、そうして作ったエージェント型 AI を手放すと予測しました。費用が膨らみ、自分たちでは育てられないためだとしています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">6<small>倍</small></p><p class="stat-label">社員が対話しながら動かす AI エージェントの稼働時間と、社員の労働時間の比（2026年8月、Anthropic）</p></div>
+<div class="stat"><p class="stat-value">27→9<small>%</small></p><p class="stat-label">技術系の新規採用に占める初級職の割合（2025年初め以降、Anthropic）</p></div>
+<div class="stat"><p class="stat-value">約80<small>%</small></p><p class="stat-label">対話型のセッションのうち、AI が人の入力を待っている時間（Anthropic）</p></div>
+<div class="stat"><p class="stat-value">70<small>%</small></p><p class="stat-label">2028年までに、ベンダーの FDE が作ったエージェント型 AI を手放す企業（Gartner の予測）</p></div>
+</div>
+
+<h2>1. Anthropic の社内で起きたこと</h2>
+<p>報告書は、雇用、AI の利用、成果の指標、社員アンケート、社内のやりとり、カレンダー、採用の判断の記録といった社内のデータを使い、17人へのインタビューで補っています。AI を最も深く使っている会社の1つとして、経済全体の変化の先行指標になりうる、という位置づけです。</p>
+
+<h3>採用と人員</h3>
+<figure class="viz">
+<p class="viz-title">初級職と技術部門の割合の変化</p>
+<p class="viz-sub">Anthropic の報告書より。初級職は2025年初め以降、技術部門の割合はこの1年の変化</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 230" role="img" aria-label="Anthropicの採用と人員の割合の変化。技術系の新規採用に占める初級職は27%から9%に、技術部門の社員に占める初級職は21%から14%に、社員に占める技術部門の割合は61%から56%に下がった。">
+<g class="grid">
+<line x1="260" y1="34" x2="260" y2="188"/><line x1="340" y1="34" x2="340" y2="188"/>
+<line x1="420" y1="34" x2="420" y2="188"/><line x1="500" y1="34" x2="500" y2="188"/>
+<line x1="580" y1="34" x2="580" y2="188"/><line x1="660" y1="34" x2="660" y2="188"/>
+<line x1="740" y1="34" x2="740" y2="188"/><line x1="820" y1="34" x2="820" y2="188"/>
+</g>
+<g class="t-muted t-small" text-anchor="middle">
+<text x="260" y="206">0%</text><text x="340" y="206">10%</text><text x="420" y="206">20%</text><text x="500" y="206">30%</text>
+<text x="580" y="206">40%</text><text x="660" y="206">50%</text><text x="740" y="206">60%</text><text x="820" y="206">70%</text>
+</g>
+
+<text class="t-strong" x="20" y="66">技術系の新規採用</text>
+<text class="t-small t-muted" x="20" y="82">に占める初級職</text>
+<line class="axis" x1="332" y1="66" x2="476" y2="66"/>
+<circle class="dot-old" cx="476" cy="66" r="7"><title>2025年初め：27%</title></circle>
+<circle class="mk-found" cx="332" cy="66" r="8"><title>現在：9%</title></circle>
+<text class="t-small" x="332" y="52" text-anchor="middle">9%</text>
+<text class="t-small t-muted" x="476" y="88" text-anchor="middle">27%</text>
+
+<text class="t-strong" x="20" y="116">技術部門の社員</text>
+<text class="t-small t-muted" x="20" y="132">に占める初級職</text>
+<line class="axis" x1="372" y1="116" x2="428" y2="116"/>
+<circle class="dot-old" cx="428" cy="116" r="7"><title>2025年初め：21%</title></circle>
+<circle class="mk-found" cx="372" cy="116" r="8"><title>現在：14%</title></circle>
+<text class="t-small" x="372" y="102" text-anchor="middle">14%</text>
+<text class="t-small t-muted" x="428" y="138" text-anchor="middle">21%</text>
+
+<text class="t-strong" x="20" y="166">社員に占める</text>
+<text class="t-small t-muted" x="20" y="182">技術部門の割合</text>
+<line class="axis" x1="708" y1="166" x2="748" y2="166"/>
+<circle class="dot-old" cx="748" cy="166" r="7"><title>1年前：61%</title></circle>
+<circle class="mk-found" cx="708" cy="166" r="8"><title>現在：56%</title></circle>
+<text class="t-small" x="708" y="152" text-anchor="middle">56%</text>
+<text class="t-small t-muted" x="748" y="188" text-anchor="middle">61%</text>
+
+<g transform="translate(600 226)">
+<circle class="dot-old" cx="6" cy="-4" r="6"/><text class="t-small" x="18" y="0">前</text>
+<circle class="mk-found" cx="76" cy="-4" r="8"/><text class="t-small" x="90" y="0">現在</text>
+</g>
+</svg>
+</div>
+<figcaption>技術系の採用は、人数としては増え続けています。営業、財務、採用担当などの採用がそれを上回ったため、技術部門の割合が下がりました。会社はこの1年で3倍の規模になっています。初級職の求人は、2025年12月以降に特に減りました。</figcaption>
+</figure>
+
+<p>報告書によると、2026年1月、技術系の中心のチームで、初級の技術者の需要が減っているという議論が始まりました。コードを書くことやバグを探すことを、AI に任せられるようになったためです。4月のアンケートでは、管理職の過半数が AI のために求めるスキルが変わったと答え、機械学習の管理職の約3分の1、ソフトウェア技術者の管理職の約5分の1が、AI のために採用を減らしたと答えました。事務の職も、会社が大きくなっても増えていません。</p>
+
+<h3>AI エージェントの稼働と成果</h3>
+<p>2026年3月、自律型と対話型を合わせたエージェントの稼働時間が、初めて人の労働時間を上回りました。社員が対話しながら動かすエージェントだけに絞っても、8月には社員の労働時間の6倍になっています。エージェントの稼働時間は、推論とツールの使用を含み、30分を超える待ち時間を除いたものです。人の労働時間は、社員数×週40時間と仮定しています。</p>
+<p>技術者1人あたりのコードのコミットは、6か月前の5倍になりました。法務の契約処理、経理の請求書の処理、営業の成約も増えています。エージェントを使い始めた技術者192人と、まだ使っていない74人を同じ月で比べると、使い始めたあとにコードの量が大きく増えました。また、同じ人が同じ月に、自分で書いたコードとエージェントに書かせたコードで、あとから消されたり取り消されたりする割合に差はありませんでした。</p>
+<div class="note">
+<p><strong>報告書自身が挙げる限界</strong>：同じ時期に会社の事業も急成長しました。ツールを使い始める人は偶然には選ばれていないため、推計が偏る可能性があります。コードが多いことは、よいコードや事業への効果を意味しません。</p>
+</div>
+
+<h3>人の注意が「詰まりどころ」に</h3>
+<p>AI が速く動くほど、人の注意が足りなくなります。対話型のセッションの約80%は、AI が人の入力を待っている時間でした。技術系でない部署でも、対話型のセッションで AI が出力する文章を全部読むと、週の労働時間の半分を超えます。社員は、AI を動かすための仕事（指示書づくり、別のエージェントによるレビュー、監視の仕組み）に時間を割くようになりました。</p>
+
+<figure class="viz">
+<p class="viz-title">仕事の中身の変化</p>
+<p class="viz-sub">Anthropic の報告書より。それぞれ測った時期が違うため、別々に示す</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 210" role="img" aria-label="仕事の中身の変化。技術系でない社員がコーディング用のエージェントを使うセッションは、2025年8月の月2回から2026年5月の月90回に増えた。AIを動かすための仕事の割合は、2025年秋の10%から2026年春の22%に増えた。エージェント向けの常設の指示書は、2025年7月の数百件から1年後に8,500件になった。">
+<defs><marker id="arrow-work-change" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="20" width="270" height="170" rx="8"/>
+<text class="t-strong" x="155" y="48" text-anchor="middle">技術系でない社員の</text>
+<text class="t-strong" x="155" y="66" text-anchor="middle">コーディング用セッション</text>
+<text class="t-muted" x="85" y="124" text-anchor="middle" style="font-size:26px">2</text>
+<text class="t-strong" x="225" y="124" text-anchor="middle" style="font-size:26px">90</text>
+<line class="arrow" x1="112" y1="116" x2="190" y2="116" marker-end="url(#arrow-work-change)"/>
+<text class="t-small t-muted" x="85" y="152" text-anchor="middle">月の回数</text>
+<text class="t-small t-muted" x="85" y="170" text-anchor="middle">2025年8月</text>
+<text class="t-small t-muted" x="225" y="152" text-anchor="middle">月の回数</text>
+<text class="t-small t-muted" x="225" y="170" text-anchor="middle">2026年5月</text>
+
+<rect class="box" x="305" y="20" width="270" height="170" rx="8"/>
+<text class="t-strong" x="440" y="48" text-anchor="middle">AI を動かすための仕事</text>
+<text class="t-small" x="440" y="66" text-anchor="middle">対話型セッションに占める割合</text>
+<text class="t-muted" x="370" y="124" text-anchor="middle" style="font-size:26px">10%</text>
+<text class="t-strong" x="510" y="124" text-anchor="middle" style="font-size:26px">22%</text>
+<line class="arrow" x1="404" y1="116" x2="466" y2="116" marker-end="url(#arrow-work-change)"/>
+<text class="t-small t-muted" x="370" y="152" text-anchor="middle">2025年秋</text>
+<text class="t-small t-muted" x="510" y="152" text-anchor="middle">2026年春</text>
+
+<rect class="box" x="590" y="20" width="270" height="170" rx="8"/>
+<text class="t-strong" x="725" y="48" text-anchor="middle">エージェント向けの</text>
+<text class="t-strong" x="725" y="66" text-anchor="middle">常設の指示書</text>
+<text class="t-muted" x="650" y="124" text-anchor="middle" style="font-size:22px">数百件</text>
+<text class="t-strong" x="796" y="124" text-anchor="middle" style="font-size:24px">8,500件</text>
+<line class="arrow" x1="686" y1="116" x2="726" y2="116" marker-end="url(#arrow-work-change)"/>
+<text class="t-small t-muted" x="650" y="152" text-anchor="middle">2025年7月</text>
+<text class="t-small t-muted" x="795" y="152" text-anchor="middle">1年後</text>
+</svg>
+</div>
+<figcaption>会議の時間も、中央値の社員で1年前より20%増えました。採用面接の評価では、技術職で「自律性」と「判断力」への言及が最も増え、専門知識への言及の比重は下がりました。AI ツールの活用への言及は、2024年から2026年に、技術職で3倍、非技術職で4倍になっています。</figcaption>
+</figure>
+
+<h3>会社としての対応</h3>
+<p>報告書は、Anthropic の対応として3つを挙げています。社員が広く株を持ち、会社の成功に利害を持つこと。AI による変化が起きそうな職を早めに見つける仕組みを作っていること。職が変わるとき、社内での配置換えを優先していること。1年以上いる社員がほかの部署へ移る割合は、2026年は2025年より50%高くなりました。</p>
+<p>ただし報告書は、これらは初級職の採用の減少には直接は対応しておらず、採用されなかった人は守られないとも書いています。企業の取り組みに加えて、再教育や所得の支援といった政府の政策が必要だとしています。</p>
+
+<h2>2. Gartner の FDE 予測</h2>
+<p>FDE（Forward-Deployed Engineering）は、ベンダーの技術者が顧客と直接働き、仕組みを作って導入するやり方です。AI エージェントの導入で広がっています。Gartner は、2028年までに企業の70%が、ベンダーの FDE が作ったエージェント型 AI を手放すと予測しました。費用が膨らみ、自分たちでは育てられないためです。また、2028年まで、FDE の案件のうち、顧客の繰り返しのニーズをベンダーの製品の機能にまで高めるのは20%未満で、コンサルティングを FDE と称して売る「FDE ウォッシング」の危険が高まるとしています。</p>
+
+<figure class="viz">
+<p class="viz-title">Gartner が勧める、FDE の3段階</p>
+<p class="viz-sub">Gartner のプレスリリース（2026年9月29日）より</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="Gartnerが勧めるFDEの3段階。契約の前には、FDEを使う問題を絞り、成果に責任を持つ役員を決め、知識の移転や出口の責任を契約に入れる。進めている間は、社内の専門家や利用者と一緒に働かせ、運用の仕方も繰り返し確かめる。出口では、延長せずに最初の計画どおりに抜け、自社で管理し育てられるかで成功を測る。">
+<defs><marker id="arrow-fde" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="20" width="250" height="150" rx="8"/>
+<text class="t-strong" x="145" y="48" text-anchor="middle">1. 契約の前</text>
+<text class="t-small" x="145" y="78" text-anchor="middle">深い製品知識や密な統合が</text>
+<text class="t-small" x="145" y="96" text-anchor="middle">必要な問題だけに使う</text>
+<text class="t-small" x="145" y="122" text-anchor="middle">知識の移転、知的財産、</text>
+<text class="t-small" x="145" y="140" text-anchor="middle">出口の責任を契約に入れる</text>
+
+<rect class="box" x="315" y="20" width="250" height="150" rx="8"/>
+<text class="t-strong" x="440" y="48" text-anchor="middle">2. 進めている間</text>
+<text class="t-small" x="440" y="78" text-anchor="middle">社内の専門家、技術者、</text>
+<text class="t-small" x="440" y="96" text-anchor="middle">利用者と一緒に働かせる</text>
+<text class="t-small" x="440" y="122" text-anchor="middle">技術だけでなく、運用の</text>
+<text class="t-small" x="440" y="140" text-anchor="middle">仕方も繰り返し確かめる</text>
+
+<rect class="box-key" x="610" y="20" width="250" height="150" rx="8" stroke-width="2.5"/>
+<text class="t-strong" x="735" y="48" text-anchor="middle">3. 出口</text>
+<text class="t-small" x="735" y="78" text-anchor="middle">準備不足を理由に延長せず、</text>
+<text class="t-small" x="735" y="96" text-anchor="middle">最初の計画どおりに抜ける</text>
+<text class="t-small" x="735" y="122" text-anchor="middle">成功は、自社で管理し</text>
+<text class="t-small" x="735" y="140" text-anchor="middle">育てられるかで測る</text>
+
+<line class="arrow" x1="272" y1="95" x2="311" y2="95" marker-end="url(#arrow-fde)"/>
+<line class="arrow" x1="567" y1="95" x2="606" y2="95" marker-end="url(#arrow-fde)"/>
+
+<rect class="box" x="20" y="190" width="840" height="44" rx="6" stroke-dasharray="5 4"/>
+<text class="t-small" x="440" y="217" text-anchor="middle">予測：2028年までに企業の70%が FDE で作ったエージェント型 AI を手放す ／ 製品の機能にまで高まる案件は20%未満</text>
+</svg>
+</div>
+<figcaption>Gartner は、FDE の失敗は技術より先に、範囲、動機づけ、統治、所有、出口といった契約の組み立てで起きることが多いとしています。</figcaption>
+</figure>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：Anthropic の報告書は、AI を最も深く使っている会社の1つの内部の記録で、ほかの会社や経済全体にそのまま当てはまるとは限りません。報告書自身もそう書いています。2つの資料に共通するのは、AI エージェントを入れたあと、それを管理し、育てる力が人と組織の側に必要になる、という点です。Anthropic では人の注意が詰まりどころになり、Gartner は自社で育てられないことを手放す理由に挙げています。</p>
+</div>
+
+<dl class="terms">
+<dt>AI エージェント</dt><dd>指示を受けて、自分で手順を考え、ツールを使いながら作業を進める AI。</dd>
+<dt>対話型のセッション</dt><dd>人がやりとりしながら AI に作業させる使い方。</dd>
+<dt>初級職</dt><dd>経験の浅い人向けの職位。</dd>
+<dt>コミット</dt><dd>プログラムの変更を、記録として登録すること。</dd>
+<dt>FDE</dt><dd>ベンダーの技術者が顧客の現場に入って開発するやり方。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。Anthropic の数字は、自社のデータによる自己報告で、外部の検証はありません。Gartner の予測は、同社の分析による見通しです。手がかりにした記事には「FDE で作られた AI エージェントの7割は使われない」とありましたが、Gartner の発表は「企業の70%が手放す」という予測なので、原文の表現で書きました。なお、この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（Anthropic の採用と人員、エージェントの稼働と成果、人の注意の詰まり、Gartner の FDE 予測）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

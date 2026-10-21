@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="量子コンピュータの詰まりどころとされる魔法状態づくりについて、Google が Willow で誤りを約40分の1に減らした「培養」の実験と、NVIDIA が 8,192 個の GPU で行った104量子ビットのシミュレーションを、仕組みから図で整理する。">
+<title>量子コンピュータの「魔法状態」をどう作るか：Google の実機での培養と、NVIDIA の104量子ビットのシミュレーション | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>量子コンピュータの「魔法状態」をどう作るか：Google の実機での培養と、NVIDIA の104量子ビットのシミュレーション</h1><p class="summary">量子コンピュータの詰まりどころとされる魔法状態づくりについて、Google が Willow で誤りを約40分の1に減らした「培養」の実験と、NVIDIA が 8,192 個の GPU で行った104量子ビットのシミュレーションを、仕組みから図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>量子コンピュータで役に立つ計算をするには、「魔法状態」と呼ばれる特別な状態を、誤りの少ない形で大量に用意する必要があります。これまでの作り方は資源を大きく使うため、量子コンピュータの最大の詰まりどころの1つとされてきました。</p>
+<p>Google は10月15日、魔法状態を少ない資源で作る<strong>「培養（cultivation）」</strong>という方法を、自社の量子チップ Willow で実際に動かした結果を Science 誌に発表しました。誤りを約40分の1に減らし、99.99%の忠実度の状態を作りました。その代わり、合格して残るのは試行の約8%です。NVIDIA は10月19日、この培養の手順の一部を、スーパーコンピュータの 8,192 個の GPU を使って104量子ビットの規模でシミュレーションしました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">約1/40</p><p class="stat-label">培養によって減った誤り（Google、Willow）</p></div>
+<div class="stat"><p class="stat-value">99.99<small>%</small></p><p class="stat-label">作った魔法状態の論理忠実度</p></div>
+<div class="stat"><p class="stat-value">約8<small>%</small></p><p class="stat-label">試行のうち、合格して残った割合（論文のプレプリント）</p></div>
+<div class="stat"><p class="stat-value">104<small>量子ビット</small></p><p class="stat-label">NVIDIA が 8,192 個の GPU でシミュレーションした規模</p></div>
+</div>
+
+<h2>魔法状態とは</h2>
+<p>量子コンピュータは誤りが起きやすいので、多くの物理的な量子ビットをまとめて1つの「論理量子ビット」を作り、誤りを直しながら計算します。これを量子誤り訂正といいます。ところが、誤り訂正をしたまま簡単に行える操作だけでは、普通のコンピュータを超える計算はできません。それを超えるには、特別な操作（T ゲートなど）が必要です。</p>
+<p>この特別な操作は、あらかじめ用意した「魔法状態」を使って行います。魔法状態は一度使うとなくなるので、計算の間ずっと作り続けなければなりません。Google のブログは、量子コンピュータの能力の<strong>最大95%</strong>を魔法状態づくりに充てる必要があるかもしれない、という見積もりを紹介しています。</p>
+
+<figure class="viz">
+<p class="viz-title">魔法状態が必要になる理由</p>
+<p class="viz-sub">Google のブログをもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="魔法状態が必要になる理由の模式図。誤り訂正をしたまま簡単にできる操作だけでは、普通のコンピュータを超えられない。超えるにはTゲートなどの特別な操作が必要で、その操作のたびに魔法状態を1つ使い切る。魔法状態を作る部分に、量子コンピュータの能力の最大95%が必要になるかもしれないという見積もりがある。">
+<defs><marker id="arrow-magic-need" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-small t-muted" x="20" y="28">計算の流れ（論理量子ビット）</text>
+<line class="axis" x1="20" y1="70" x2="860" y2="70"/>
+<rect class="box" x="60" y="46" width="170" height="48" rx="6"/>
+<text x="145" y="75" text-anchor="middle">簡単な操作</text>
+<rect class="box-key" x="290" y="46" width="170" height="48" rx="6" stroke-width="2.5"/>
+<text class="t-strong" x="375" y="75" text-anchor="middle">特別な操作（T）</text>
+<rect class="box" x="520" y="46" width="130" height="48" rx="6"/>
+<text x="585" y="75" text-anchor="middle">簡単な操作</text>
+<rect class="box-key" x="690" y="46" width="150" height="48" rx="6" stroke-width="2.5"/>
+<text class="t-strong" x="765" y="75" text-anchor="middle">特別な操作（T）</text>
+
+<rect class="box" x="230" y="160" width="470" height="70" rx="8" stroke-dasharray="5 4"/>
+<text class="t-strong" x="465" y="188" text-anchor="middle">魔法状態をつくる部分</text>
+<text class="t-small" x="465" y="210" text-anchor="middle">能力の最大95%が必要になるかもしれない（Google が紹介する見積もり）</text>
+<line class="arrow" x1="375" y1="158" x2="375" y2="98" marker-end="url(#arrow-magic-need)"/>
+<line class="arrow" x1="660" y1="158" x2="752" y2="98" marker-end="url(#arrow-magic-need)"/>
+<text class="t-small" x="386" y="134">魔法状態を1つ使い切る</text>
+</svg>
+</div>
+<figcaption>簡単な操作は誤り訂正をしたまま行えますが、それだけでは普通のコンピュータを超えられません。特別な操作のたびに魔法状態を1つ使うので、計算の間ずっと作り続ける必要があります。</figcaption>
+</figure>
+
+<h2>培養という作り方</h2>
+<p>これまでの代表的な方法は「蒸留」で、質の悪い魔法状態をたくさん作り、そこから質のよいものを取り出します。2024年に提案された「培養」は、1つの状態を確認しながら育てる方法です。</p>
+
+<figure class="viz">
+<p class="viz-title">培養の流れ</p>
+<p class="viz-sub">Google のブログと論文のプレプリントをもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="培養の流れ。1、小さな領域に雑音のある魔法状態を入れる。2、決まった測定を繰り返して誤りを探し、誤りが見つかった試行は捨てる。3、合格した状態を、カラーコードの距離3から表面符号の距離5へ移して育てる。">
+<defs><marker id="arrow-cultivate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="30" width="230" height="100" rx="8"/>
+<text class="t-strong" x="135" y="62" text-anchor="middle">1. 注入</text>
+<text class="t-small" x="135" y="88" text-anchor="middle">小さな領域に、雑音のある</text>
+<text class="t-small" x="135" y="106" text-anchor="middle">魔法状態を入れる</text>
+
+<rect class="box-key" x="325" y="30" width="230" height="100" rx="8" stroke-width="2.5"/>
+<text class="t-strong" x="440" y="62" text-anchor="middle">2. 確認</text>
+<text class="t-small" x="440" y="88" text-anchor="middle">決まった測定を繰り返して</text>
+<text class="t-small" x="440" y="106" text-anchor="middle">誤りを探す</text>
+
+<rect class="box" x="630" y="30" width="230" height="100" rx="8"/>
+<text class="t-strong" x="745" y="62" text-anchor="middle">3. 成長</text>
+<text class="t-small" x="745" y="88" text-anchor="middle">カラーコード（距離3）から</text>
+<text class="t-small" x="745" y="106" text-anchor="middle">表面符号（距離5）へ移す</text>
+
+<line class="arrow" x1="252" y1="80" x2="321" y2="80" marker-end="url(#arrow-cultivate)"/>
+<line class="arrow" x1="557" y1="80" x2="626" y2="80" marker-end="url(#arrow-cultivate)"/>
+<text class="t-small" x="566" y="70">合格</text>
+
+<line class="arrow" x1="440" y1="132" x2="440" y2="176" stroke-dasharray="5 4" marker-end="url(#arrow-cultivate)"/>
+<rect class="box" x="340" y="180" width="200" height="50" rx="6" stroke-dasharray="5 4"/>
+<text x="440" y="203" text-anchor="middle">誤りが見つかったら捨てる</text>
+<text class="t-small t-muted" x="440" y="221" text-anchor="middle">最初からやり直す</text>
+</svg>
+</div>
+<figcaption>誤りが見つかった試行を捨てることで、残った状態の質を上げます。Google の実験では、カラーコードの状態を表面符号に移すところまで実機で行いました。</figcaption>
+</figure>
+
+<h2>Google の実験の結果</h2>
+<p>Google は Willow プロセッサーで、培養の手順全体を、表面符号への移し替えも含めて実行しました。誤りは培養しない状態の約40分の1になり、論理忠実度は99.99%に達しました。ただし、合格して残ったのは試行の約8%で、多くの試行を捨てています。</p>
+
+<figure class="viz">
+<p class="viz-title">100回試すと、残るのは約8回</p>
+<p class="viz-sub">論文のプレプリント（arXiv、2025年12月）の値をもとにした模式図。点の配置は説明のためのもの</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 260" role="img" aria-label="100回の試行のうち、合格して残るのは約8回。残った状態の誤りは、培養しない状態の約40分の1で、論理忠実度は99.99%。">
+<circle class="dot-old" cx="60" cy="50" r="5"/>
+<circle class="dot-old" cx="86" cy="50" r="5"/>
+<circle class="dot-old" cx="112" cy="50" r="5"/>
+<circle class="mk-found" cx="138" cy="50" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="164" cy="50" r="5"/>
+<circle class="dot-old" cx="190" cy="50" r="5"/>
+<circle class="dot-old" cx="216" cy="50" r="5"/>
+<circle class="dot-old" cx="242" cy="50" r="5"/>
+<circle class="dot-old" cx="268" cy="50" r="5"/>
+<circle class="dot-old" cx="294" cy="50" r="5"/>
+<circle class="dot-old" cx="60" cy="70" r="5"/>
+<circle class="dot-old" cx="86" cy="70" r="5"/>
+<circle class="dot-old" cx="112" cy="70" r="5"/>
+<circle class="dot-old" cx="138" cy="70" r="5"/>
+<circle class="dot-old" cx="164" cy="70" r="5"/>
+<circle class="dot-old" cx="190" cy="70" r="5"/>
+<circle class="dot-old" cx="216" cy="70" r="5"/>
+<circle class="mk-found" cx="242" cy="70" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="268" cy="70" r="5"/>
+<circle class="dot-old" cx="294" cy="70" r="5"/>
+<circle class="dot-old" cx="60" cy="90" r="5"/>
+<circle class="dot-old" cx="86" cy="90" r="5"/>
+<circle class="dot-old" cx="112" cy="90" r="5"/>
+<circle class="dot-old" cx="138" cy="90" r="5"/>
+<circle class="dot-old" cx="164" cy="90" r="5"/>
+<circle class="dot-old" cx="190" cy="90" r="5"/>
+<circle class="dot-old" cx="216" cy="90" r="5"/>
+<circle class="dot-old" cx="242" cy="90" r="5"/>
+<circle class="dot-old" cx="268" cy="90" r="5"/>
+<circle class="mk-found" cx="294" cy="90" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="60" cy="110" r="5"/>
+<circle class="dot-old" cx="86" cy="110" r="5"/>
+<circle class="dot-old" cx="112" cy="110" r="5"/>
+<circle class="dot-old" cx="138" cy="110" r="5"/>
+<circle class="dot-old" cx="164" cy="110" r="5"/>
+<circle class="dot-old" cx="190" cy="110" r="5"/>
+<circle class="dot-old" cx="216" cy="110" r="5"/>
+<circle class="dot-old" cx="242" cy="110" r="5"/>
+<circle class="dot-old" cx="268" cy="110" r="5"/>
+<circle class="dot-old" cx="294" cy="110" r="5"/>
+<circle class="dot-old" cx="60" cy="130" r="5"/>
+<circle class="mk-found" cx="86" cy="130" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="112" cy="130" r="5"/>
+<circle class="dot-old" cx="138" cy="130" r="5"/>
+<circle class="dot-old" cx="164" cy="130" r="5"/>
+<circle class="dot-old" cx="190" cy="130" r="5"/>
+<circle class="dot-old" cx="216" cy="130" r="5"/>
+<circle class="dot-old" cx="242" cy="130" r="5"/>
+<circle class="dot-old" cx="268" cy="130" r="5"/>
+<circle class="dot-old" cx="294" cy="130" r="5"/>
+<circle class="dot-old" cx="60" cy="150" r="5"/>
+<circle class="dot-old" cx="86" cy="150" r="5"/>
+<circle class="dot-old" cx="112" cy="150" r="5"/>
+<circle class="dot-old" cx="138" cy="150" r="5"/>
+<circle class="dot-old" cx="164" cy="150" r="5"/>
+<circle class="dot-old" cx="190" cy="150" r="5"/>
+<circle class="dot-old" cx="216" cy="150" r="5"/>
+<circle class="dot-old" cx="242" cy="150" r="5"/>
+<circle class="mk-found" cx="268" cy="150" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="294" cy="150" r="5"/>
+<circle class="dot-old" cx="60" cy="170" r="5"/>
+<circle class="dot-old" cx="86" cy="170" r="5"/>
+<circle class="dot-old" cx="112" cy="170" r="5"/>
+<circle class="dot-old" cx="138" cy="170" r="5"/>
+<circle class="dot-old" cx="164" cy="170" r="5"/>
+<circle class="dot-old" cx="190" cy="170" r="5"/>
+<circle class="mk-found" cx="216" cy="170" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="242" cy="170" r="5"/>
+<circle class="dot-old" cx="268" cy="170" r="5"/>
+<circle class="dot-old" cx="294" cy="170" r="5"/>
+<circle class="dot-old" cx="60" cy="190" r="5"/>
+<circle class="dot-old" cx="86" cy="190" r="5"/>
+<circle class="dot-old" cx="112" cy="190" r="5"/>
+<circle class="dot-old" cx="138" cy="190" r="5"/>
+<circle class="dot-old" cx="164" cy="190" r="5"/>
+<circle class="dot-old" cx="190" cy="190" r="5"/>
+<circle class="dot-old" cx="216" cy="190" r="5"/>
+<circle class="dot-old" cx="242" cy="190" r="5"/>
+<circle class="dot-old" cx="268" cy="190" r="5"/>
+<circle class="dot-old" cx="294" cy="190" r="5"/>
+<circle class="dot-old" cx="60" cy="210" r="5"/>
+<circle class="dot-old" cx="86" cy="210" r="5"/>
+<circle class="mk-found" cx="112" cy="210" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="138" cy="210" r="5"/>
+<circle class="dot-old" cx="164" cy="210" r="5"/>
+<circle class="dot-old" cx="190" cy="210" r="5"/>
+<circle class="dot-old" cx="216" cy="210" r="5"/>
+<circle class="dot-old" cx="242" cy="210" r="5"/>
+<circle class="dot-old" cx="268" cy="210" r="5"/>
+<circle class="dot-old" cx="294" cy="210" r="5"/>
+<circle class="dot-old" cx="60" cy="230" r="5"/>
+<circle class="dot-old" cx="86" cy="230" r="5"/>
+<circle class="dot-old" cx="112" cy="230" r="5"/>
+<circle class="dot-old" cx="138" cy="230" r="5"/>
+<circle class="dot-old" cx="164" cy="230" r="5"/>
+<circle class="mk-found" cx="190" cy="230" r="8"><title>合格して残った試行</title></circle>
+<circle class="dot-old" cx="216" cy="230" r="5"/>
+<circle class="dot-old" cx="242" cy="230" r="5"/>
+<circle class="dot-old" cx="268" cy="230" r="5"/>
+<circle class="dot-old" cx="294" cy="230" r="5"/>
+<text class="t-small t-muted" x="47" y="252">100回の試行（1つの点が1回）</text>
+
+<circle class="mk-found" cx="400" cy="70" r="8"/>
+<text class="t-strong" x="418" y="75">合格して残る：約8%</text>
+<circle class="dot-old" cx="400" cy="104" r="5"/>
+<text x="418" y="109">誤りが見つかって捨てる：約92%</text>
+
+<rect class="box-key" x="390" y="140" width="460" height="98" rx="8" stroke-width="2.5"/>
+<text class="t-strong" x="410" y="170">残った魔法状態</text>
+<text x="410" y="196">誤りは培養しない状態の約40分の1</text>
+<text x="410" y="216">論理忠実度 99.99%</text>
+</svg>
+</div>
+<figcaption>Google は、資源の詰まりどころに対する実用的な解決策を初めて実証したとしています。一方で、より大きな規模での実証が必要で、技術的な課題も多く残っていると書いています。</figcaption>
+</figure>
+
+<h2>NVIDIA のシミュレーション</h2>
+<p>NVIDIA は10月19日、ドイツのユーリッヒ研究センターにあるヨーロッパ初のエクサスケールのスーパーコンピュータ JUPITER で、培養の手順の一部をシミュレーションしたと発表しました。距離3のカラーコードから始めて、有害な誤りを見つける測定を加え、距離7のカラーコードと表面符号の組み合わせに育てる、104量子ビットの手順です。</p>
+<p>雑音には、よく使われる単純なビット反転・位相反転だけでなく、積み重なって干渉する位相の誤りや、超伝導量子ビットが計算に使う2つの状態から外れてしまう「リーク」も含めました。量子状態をそのまま表すと、量子ビットの数に対して指数関数的に大きくなります。工夫して詰め込んでも約35.2兆個の複素数を扱い、最大の計算では 8,192 個の NVIDIA GH200 で、GPU のメモリを合わせて 512TiB（1個あたり 64GiB）使いました。小さな回路では、別の計算方法と測定の確率が約10<sup>−13</sup>の精度で一致することを確かめています。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：実機の実験（Google）とシミュレーション（NVIDIA）は、同じ培養の方法を違う側から確かめています。実機は「本当に動くか」を、シミュレーションは「大きくしたとき、細かい雑音の下でどう振る舞うか」を調べるものです。培養は不合格の試行を捨てて質を上げるので、約8%しか残らないことは、その分だけ試行を繰り返す必要があることを意味します。</p>
+</div>
+
+<dl class="terms">
+<dt>量子ビット</dt><dd>量子コンピュータの情報の単位。</dd>
+<dt>量子誤り訂正</dt><dd>多くの物理的な量子ビットで1つの論理量子ビットを作り、誤りを見つけて直す仕組み。</dd>
+<dt>論理量子ビット</dt><dd>誤り訂正で守られた、計算に使う量子ビット。</dd>
+<dt>符号の距離</dt><dd>誤り訂正の強さの目安。大きいほど多くの誤りに耐えられる。</dd>
+<dt>表面符号・カラーコード</dt><dd>量子誤り訂正の符号の種類。</dd>
+<dt>魔法状態</dt><dd>特別な操作（T ゲートなど）を行うために、あらかじめ用意して使い切る量子状態。</dd>
+<dt>忠実度</dt><dd>作った状態が、理想の状態にどれだけ近いか。</dd>
+<dt>蒸留・培養</dt><dd>質のよい魔法状態を作る方法。蒸留は多くの質の悪い状態から取り出し、培養は1つの状態を確認しながら育てる。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。数字は Google と NVIDIA の発表、論文のプレプリントによります。「蒸留」の説明は筆者の補足です。NVIDIA の「従来の方法より物理量子ビットを最大90%減らせる」という説明は、NVIDIA の資料で確かめられなかったため載せていません。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（魔法状態の役割、培養の流れ、Google の実験結果、NVIDIA のシミュレーション）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

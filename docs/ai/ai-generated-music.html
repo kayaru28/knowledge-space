@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Deezer に届く曲の半分が AI で作られたものになるなか、Spotify がおすすめから5,000万曲以上を外し、YouTube Music が AI の曲にラベルを付け始めた。3社の公式の発表から、AI の曲の見分け方、知らせ方、おすすめや報酬の扱いを図で比べる。">
+<title>AI が作った曲をどう扱うか：Spotify、YouTube Music、Deezer の「見分ける・知らせる・おすすめから外す」 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI が作った曲をどう扱うか：Spotify、YouTube Music、Deezer の「見分ける・知らせる・おすすめから外す」</h1><p class="summary">Deezer に届く曲の半分が AI で作られたものになるなか、Spotify がおすすめから5,000万曲以上を外し、YouTube Music が AI の曲にラベルを付け始めた。3社の公式の発表から、AI の曲の見分け方、知らせ方、おすすめや報酬の扱いを図で比べる。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>生成 AI で作られた曲が、音楽配信に大量に届いています。Deezer では2026年6月、<strong>新しく届く曲の半分以上</strong>が AI で作られたものになりました（1日約9万曲）。ただし再生に占める割合は1〜3%で、その再生の多くは不正なものでした。</p>
+<p>各社は対応を強めています。Spotify は10月20日、この1年で<strong>5,000万曲以上</strong>の「スロップ（AI で大量に作られた質の低い曲）」やスパムを、おすすめから外したと発表しました。YouTube Music は10月14日、主に生成 AI で作られた曲にラベルを付け始めました。Deezer は、2026年内に利用者が検索から AI の曲を外せる切り替えを用意します。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">5,000<small>万曲以上</small></p><p class="stat-label">Spotify がこの1年で、おすすめから外したスロップやスパムの曲</p></div>
+<div class="stat"><p class="stat-value">7,500<small>万曲以上</small></p><p class="stat-label">Spotify が、規則への重大な違反や繰り返しの違反で削除した曲</p></div>
+<div class="stat"><p class="stat-value">約9<small>万曲/日</small></p><p class="stat-label">Deezer に届く AI で作られた曲（2026年6月。新しく届く曲の半分超）</p></div>
+<div class="stat"><p class="stat-value">1〜3<small>%</small></p><p class="stat-label">Deezer の再生のうち、すべて AI で作られた曲の割合</p></div>
+</div>
+
+<h2>届く曲の半分が AI に</h2>
+<p>Deezer は2025年1月から自社の検出ツールで AI の曲を見分けていて、その数を定期的に公表しています。2026年に入ってからも増え続けました。</p>
+
+<figure class="viz">
+<p class="viz-title">Deezer に届く、AI で作られた曲（1日あたり）</p>
+<p class="viz-sub">Deezer のプレスリリース（2026年1月29日、4月20日、7月21日）より。カッコ内は、毎日届く曲に占める割合</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 270" role="img" aria-label="Deezerに届くAIで作られた曲は、2026年1月に1日約6万曲で約39%、4月に約7万5千曲で約44%、6月に約9万曲で、初めて半分を超えた。">
+<g class="grid">
+<line x1="120" y1="230" x2="840" y2="230"/><line x1="120" y1="150" x2="840" y2="150"/><line x1="120" y1="70" x2="840" y2="70"/>
+</g>
+<g class="t-muted t-small" text-anchor="end">
+<text x="110" y="234">0</text><text x="110" y="154">5万曲</text><text x="110" y="74">10万曲</text>
+</g>
+<rect class="bar" x="200" y="134" width="120" height="96" rx="4"><title>2026年1月：1日平均約6万曲、毎日届く曲の約39%</title></rect>
+<rect class="bar" x="420" y="110" width="120" height="120" rx="4"><title>2026年4月：1日約7.5万曲、毎日届く曲の約44%</title></rect>
+<rect class="bar" x="640" y="86" width="120" height="144" rx="4"><title>2026年6月：月平均で1日約9万曲。初めて、新しく届く曲の半分を超えた</title></rect>
+<text class="t-strong" x="260" y="124" text-anchor="middle">約6万曲（約39%）</text>
+<text class="t-strong" x="480" y="100" text-anchor="middle">約7.5万曲（約44%）</text>
+<text class="t-strong" x="700" y="76" text-anchor="middle">約9万曲（50%超）</text>
+<g class="t-small" text-anchor="middle">
+<text x="260" y="252">2026年1月</text><text x="480" y="252">2026年4月</text><text x="700" y="252">2026年6月</text>
+</g>
+</svg>
+</div>
+<figcaption>Deezer によると、4月までの1年あまりで、1日1万曲から7.5万曲に増えました。一方で、すべて AI で作られた曲の再生は全体の1〜3%にとどまり、2025年はその最大85%（月による）が不正な再生と判定されて、報酬の対象から外されました。カタログ全体では、不正な再生は8%です。</figcaption>
+</figure>
+
+<h2>各社の対応</h2>
+<p>3社とも、AI を使った曲を一律に禁止してはいません。問題にしているのは、大量の投稿や不正な再生、聞き手をだますことです。対応は「見分ける」「知らせる」「おすすめから外す」が中心で、報酬や削除の条件も組み合わせています。</p>
+
+<figure class="viz">
+<p class="viz-title">3社の対応の比較</p>
+<p class="viz-sub">各社の公式の発表より（Spotify 10月20日、YouTube 10月14日、Deezer 2026年の各発表）。緑の枠は、聞き手から見える対応</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 330" role="img" aria-label="3社の対応の比較。Spotifyは、聞き手の反応や外部の検出ツールを組み合わせて見分け、AI Creditsの申告とAIの人格のバッジで知らせ、5,000万曲以上をおすすめから外し、1,000再生未満の曲は報酬の対象外、7,500万曲以上を削除した。YouTube Musicは、自社の検出ツールと音楽の提携先で見分け、主にAIで作った曲にラベルを付ける。おすすめ、報酬、削除は発表に記載がない。Deezerは、自社の検出ツールで見分け、AIの曲にラベルを付け、AIと判定した曲をおすすめから自動で外し、不正な再生は報酬の対象外とし、不正に使われた曲や6か月再生のない曲を削除する。">
+<text class="t-strong" x="195" y="34" text-anchor="middle">見分ける</text>
+<text class="t-strong" x="345" y="34" text-anchor="middle">知らせる</text>
+<text class="t-strong" x="495" y="34" text-anchor="middle">おすすめ</text>
+<text class="t-strong" x="645" y="34" text-anchor="middle">報酬</text>
+<text class="t-strong" x="795" y="34" text-anchor="middle">削除</text>
+<text class="t-strong" x="12" y="96">Spotify</text>
+<rect class="box" x="125" y="50" width="140" height="80" rx="6"/>
+<text class="t-small" x="195" y="76" text-anchor="middle">反応・投稿の傾向・</text>
+<text class="t-small" x="195" y="94" text-anchor="middle">外部の検出ツールを</text>
+<text class="t-small" x="195" y="112" text-anchor="middle">組み合わせる</text>
+<rect class="box-key" x="275" y="50" width="140" height="80" rx="6"/>
+<text class="t-small" x="345" y="85" text-anchor="middle">AI Credits（申告）</text>
+<text class="t-small" x="345" y="103" text-anchor="middle">AI の人格にバッジ</text>
+<rect class="box-key" x="425" y="50" width="140" height="80" rx="6"/>
+<text class="t-small" x="495" y="85" text-anchor="middle">5,000万曲以上を</text>
+<text class="t-small" x="495" y="103" text-anchor="middle">おすすめから外した</text>
+<rect class="box" x="575" y="50" width="140" height="80" rx="6"/>
+<text class="t-small" x="645" y="85" text-anchor="middle">1,000再生未満の曲は</text>
+<text class="t-small" x="645" y="103" text-anchor="middle">報酬の対象外</text>
+<rect class="box" x="725" y="50" width="140" height="80" rx="6"/>
+<text class="t-small" x="795" y="85" text-anchor="middle">7,500万曲以上</text>
+<text class="t-small" x="795" y="103" text-anchor="middle">（重大な違反など）</text>
+<text class="t-strong" x="12" y="186">YouTube Music</text>
+<rect class="box" x="125" y="140" width="140" height="80" rx="6"/>
+<text class="t-small" x="195" y="175" text-anchor="middle">自社の検出ツールと</text>
+<text class="t-small" x="195" y="193" text-anchor="middle">音楽の提携先</text>
+<rect class="box-key" x="275" y="140" width="140" height="80" rx="6"/>
+<text class="t-small" x="345" y="175" text-anchor="middle">主に AI で作った曲に</text>
+<text class="t-small" x="345" y="193" text-anchor="middle">ラベル（10月〜）</text>
+<rect class="box" x="425" y="140" width="140" height="80" rx="6" stroke-dasharray="4 4"/>
+<text class="t-small t-muted" x="495" y="184" text-anchor="middle">発表に記載なし</text>
+<rect class="box" x="575" y="140" width="140" height="80" rx="6" stroke-dasharray="4 4"/>
+<text class="t-small t-muted" x="645" y="184" text-anchor="middle">発表に記載なし</text>
+<rect class="box" x="725" y="140" width="140" height="80" rx="6" stroke-dasharray="4 4"/>
+<text class="t-small t-muted" x="795" y="184" text-anchor="middle">発表に記載なし</text>
+<text class="t-strong" x="12" y="276">Deezer</text>
+<rect class="box" x="125" y="230" width="140" height="80" rx="6"/>
+<text class="t-small" x="195" y="265" text-anchor="middle">自社の検出ツール</text>
+<text class="t-small" x="195" y="283" text-anchor="middle">（2025年1月〜）</text>
+<rect class="box-key" x="275" y="230" width="140" height="80" rx="6"/>
+<text class="t-small" x="345" y="265" text-anchor="middle">AI の曲にラベル</text>
+<text class="t-small" x="345" y="283" text-anchor="middle">（2025年6月〜）</text>
+<rect class="box-key" x="425" y="230" width="140" height="80" rx="6"/>
+<text class="t-small" x="495" y="265" text-anchor="middle">AI と判定した曲を</text>
+<text class="t-small" x="495" y="283" text-anchor="middle">自動で外す</text>
+<rect class="box" x="575" y="230" width="140" height="80" rx="6"/>
+<text class="t-small" x="645" y="265" text-anchor="middle">不正な再生は</text>
+<text class="t-small" x="645" y="283" text-anchor="middle">報酬の対象外</text>
+<rect class="box" x="725" y="230" width="140" height="80" rx="6"/>
+<text class="t-small" x="795" y="265" text-anchor="middle">不正に使われた曲、</text>
+<text class="t-small" x="795" y="283" text-anchor="middle">6か月再生なしの曲</text>
+</svg>
+</div>
+<figcaption>「発表に記載なし」は、その発表に書かれていないという意味で、対応していないという意味ではありません。Deezer は2026年内に、すべて AI で作られた曲やアルバム、関連するアーティストを、検索の結果から外せる切り替えも用意します。</figcaption>
+</figure>
+
+<h3>Spotify：おすすめから外し、人に知らせる</h3>
+<p>Spotify は、聞き手が飛ばしたり、聞きたくないと伝えたりした曲を調べると、スロップやスパムと判定された曲が多かったといいます。この6か月でおすすめの仕組みを何度も直し、編集部のプレイリストにも入れていません。変更のあと、おすすめにこうした曲が出るという苦情ははっきり減ったとしています。</p>
+<p>見分けるときは、1つの手がかりでは見抜けないため、聞き手の反応や声、投稿の傾向、曲の情報（メタデータ）、複数の外部の AI 検出ツールの情報を組み合わせます。AI の検出技術には限界があり、生成 AI が進むほど難しくなるとも書いています。</p>
+<div class="table-wrap">
+<table>
+<caption>Spotify の発表（10月20日）より、この1年の取り組み</caption>
+<thead><tr><th>取り組み</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>AI Credits（4月〜）</td><td>どの役割や楽器を AI で作ったかを、アーティストが申告する。毎日数万件。スマホの再生画面の楽曲クレジットで見られる</td></tr>
+<tr><td>Verified by Spotify</td><td>30万人以上のアーティストを確認済みにした（聞き手が検索するものの99%以上）。7割以上はインディーズ</td></tr>
+<tr><td>AI Persona バッジ</td><td>アーティストの人格が AI で作られたとみられる場合に表示（数千件）。既定ではおすすめに入れない</td></tr>
+<tr><td>プロフィールの保護</td><td>自分の名前で届いた作品を、公開前にアーティストが確かめられる。年末までに全アーティストへ</td></tr>
+<tr><td>報酬の条件</td><td>1,000再生に届かない曲には報酬を払わない（2024年から）。AI で作られた可能性が高い曲は、下回る割合が10倍高い</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>YouTube Music：AI の曲にラベル</h3>
+<p>YouTube Music は、主に生成 AI で作られた曲に、ラベルを付け始めました。例として、生成モデルで作曲と歌声を作った曲を挙げています。再生画面にラベルが出て、タップすると詳しい説明が表示されます。音楽の提携先と協力し、自社の検出ツールも使って見分けます。このラベルは YouTube のアプリにも広げる予定ですが、時期は書かれていません。</p>
+
+<h3>Deezer：判定した曲をおすすめから外す</h3>
+<p>Deezer は、AI と判定した曲を、自動のおすすめと編集部のプレイリストから外しています。2025年1月から2026年8月までに、4,200万曲以上をおすすめから外しました。聞き手向けのラベルは2025年6月からで、初めて明示した配信サービスだとしています。不正な再生に使われた AI の曲と、6か月以上再生されていない AI の曲は削除します。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：「AI の曲」の範囲は各社で違います。YouTube は「主に生成 AI で作られた曲」、Deezer は「すべて AI で作られた曲」、Spotify は「スロップやスパム」の判定と、アーティストによる申告です。また、Spotify と Deezer はどちらも、検出ツールだけには頼れないとして、聞き手の反応や投稿の傾向などを組み合わせています。</p>
+</div>
+
+<dl class="terms">
+<dt>生成 AI</dt><dd>文章、画像、音楽などを作り出す AI。</dd>
+<dt>スロップ（slop）</dt><dd>AI で大量に作られた、質の低いコンテンツを指す言葉。</dd>
+<dt>スパム</dt><dd>大量の投稿や重複、検索を狙った操作など、規則に反する投稿。</dd>
+<dt>不正な再生</dt><dd>ボットなどで再生回数を水増しし、報酬を得ようとすること。</dd>
+<dt>メタデータ</dt><dd>曲名、アーティスト名、ジャンルなど、曲についての情報。</dd>
+<dt>クレジット</dt><dd>曲の作り手や演奏者などの一覧。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。数字はすべて各社の発表によるもので、外部の検証はしていません。各社の発表に書かれていない対応は「記載なし」としました。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（Deezer に届く AI の曲の推移、3社の対応の比較、各社の取り組み）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
