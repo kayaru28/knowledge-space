@@ -173,6 +173,8 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 .viz svg .dot-new { fill: var(--series-1); }
 .viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
 
 .theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
 .theme-nav li { max-width: none; margin: 0; }
@@ -190,16 +192,17 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>PHP の緊急の脆弱性「PHP2Shell」：Web の土台に10年以上ひそんだ欠陥と、公開前夜の混乱</h1><p class="summary">2026年10月21日に修正版が出た PHP の脆弱性2件（CVSS 9.2）について、壊れた状態が次のリクエストに引き継がれる仕組み、対象のバージョンと軽減策、AI の道具を使った発見から公開までの年表、情報の漏れで前倒しになった公開前夜と国内の緊急メンテナンスを、公式の発表から図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>PHP の緊急の脆弱性「PHP2Shell」：Web の土台に10年以上ひそんだ欠陥と、公開前夜の混乱</h1><p class="summary">2026年10月21日に修正版が出た PHP の脆弱性2件（CVSS 9.2）について、壊れた状態が次のリクエストに引き継がれる仕組み、対象のバージョンと軽減策、AI の道具を使った発見から公開までの年表、情報の漏れで前倒しになった公開前夜と国内の緊急メンテナンスを、公式の発表から図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-23</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年10月21日の日本時間23時、PHP の開発チームは、<strong>認証なしに外部からサーバー上でプログラムを動かされるおそれのある脆弱性2件</strong>（CVE-2026-109618、CVE-2026-109619）を直した PHP 8.5.12／8.4.27／8.3.36／8.2.35 を公開しました。どちらも CVSS v4.0 で 9.2（緊急）です。2つを合わせて「PHP2Shell」と呼ばれています。</p>
-<p>原因は、メモリ不足などで処理が途中で止まったときに壊れた状態が残り、同じワーカーが次のリクエストでそれを使ってしまうことです。PHP の中心の部分にあるため、アプリケーションの作りに関係なく影響します。修正の公開は、CVE 番号が漏れたため1日前倒しされました。国内では、修正の公開を待たずに緊急メンテナンスに入るサービスが相次ぎました。</p>
+<p>原因は、メモリ不足などで処理が途中で止まったときに壊れた状態が残り、同じワーカーが次のリクエストでそれを使ってしまうことです。PHP の中心の部分にあるため、アプリケーションの作りに関係なく影響します。修正の公開は、CVE 番号が漏れたため1日前倒しされました。国内では、修正の公開を待たずに緊急メンテナンスに入るサービスが相次ぎ、首相も X でパッチの適用やサイトの一時停止を呼びかけました。</p>
+<p>その後、Amazon が<strong>公開の4日前の10月17日に悪用の試みを観測していた</strong>と報告しました。Cloudflare では、公開のあと悪用の試みが数時間で桁ごとに増え、数百万件に達しています。</p>
 </section>
 
 <div class="stats">
 <div class="stat"><p class="stat-value">9.2</p><p class="stat-label">2件の CVSS v4.0 の値（緊急）。漏れた情報では誤って 10.0 とされていた</p></div>
-<div class="stat"><p class="stat-value">4<small>系列</small></p><p class="stat-label">修正版が出た系列（8.5／8.4／8.3／8.2）。8.1 以前は開発チームの更新の対象外</p></div>
-<div class="stat"><p class="stat-value">5.4<small>以降</small></p><p class="stat-label">少なくとも一方の影響を受けるバージョン（Wiz）</p></div>
+<div class="stat"><p class="stat-value">4<small>日前</small></p><p class="stat-label">Amazon が最初の悪用の試みを観測した日（10月17日。公開の4日前）</p></div>
+<div class="stat"><p class="stat-value">数百万<small>件</small></p><p class="stat-label">Cloudflare が観測した悪用の試み（10月22日の投稿の時点）</p></div>
 <div class="stat"><p class="stat-value">1<small>日</small></p><p class="stat-label">情報の漏えいを受けて前倒しした公開の日数</p></div>
 </div>
 
@@ -285,7 +288,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p class="viz-title">兆しから公開まで</p>
 <p class="viz-sub">PHP Foundation のブログと Wiz の公表の年表より</p>
 <div class="viz-scroll">
-<svg class="viz-wide" viewBox="0 0 880 210" role="img" aria-label="2024年、外部の監査の指摘を直す中で兆しが見つかったが、修正は止まった。2026年7月30日にCalifが監査を開始。8月11日にCalifとOpenAIが同じ原因を報告。8月19日にWizが発見し、8月24日に報告。9月18日にOpenAIが追加の攻撃の経路を報告。10月21日に修正版を公開。">
+<svg class="viz-wide" viewBox="0 0 880 210" role="img" aria-label="2024年、外部の監査の指摘を直す中で兆しが見つかったが、修正は止まった。2026年7月30日にCalifが監査を開始。8月11日にCalifとOpenAIが同じ原因を報告。8月19日にWizが発見し、8月24日に報告。9月18日にOpenAIが追加の攻撃の経路を報告。10月17日に、公開前の悪用の試みをAmazonが観測。10月21日に修正版を公開。">
 <rect class="bar-old" x="20" y="92" width="170" height="28" rx="4"><title>2024年：外部の監査の指摘を直す中で、OOM の問題の最初の兆しが見つかった。攻撃の経路が見つからず、直し方の案もそれぞれ問題を抱え、修正が何か月も止まった</title></rect>
 <text class="t-strong" x="105" y="70" text-anchor="middle">2024年</text>
 <text class="t-small" x="105" y="146" text-anchor="middle">監査で兆し</text>
@@ -312,12 +315,14 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <text class="t-small" x="613" y="80" text-anchor="middle">OpenAI が追加の経路</text>
 <text class="t-small t-muted" x="613" y="132" text-anchor="middle">9/18</text>
 
+<circle class="mk-advisory" cx="798.9" cy="106" r="7"><title>10月17日：Amazon のおとりのサーバーで、公開前の悪用の試みを観測（公開の4日前）</title></circle>
+<text class="t-small" x="806" y="160" text-anchor="end">公開前の悪用の試み（10/17）</text>
 <circle class="mk-announce" cx="824" cy="106" r="7"><title>10月21日：修正版の公開と公表</title></circle>
 <text class="t-small" x="818" y="80" text-anchor="middle">修正版を公開</text>
 <text class="t-small t-muted" x="824" y="132" text-anchor="middle">10/21</text>
 </svg>
 </div>
-<figcaption>PHP Foundation は、2024年に修正が止まったことを、セキュリティチームの決め方と人手の不足による「構造的な失敗」だったと認めています。8月11日以降は、財団のセキュリティの担当者全員がこの修正を最優先にしました。紫の点は報告、黒の点は公開を表します。</figcaption>
+<figcaption>PHP Foundation は、2024年に修正が止まったことを、セキュリティチームの決め方と人手の不足による「構造的な失敗」だったと認めています。8月11日以降は、財団のセキュリティの担当者全員がこの修正を最優先にしました。紫の点は報告、黄色の点は悪用の試み、黒の点は公開を表します。</figcaption>
 </figure>
 
 <h2>公開前夜の混乱</h2>
@@ -347,7 +352,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <circle class="mk-period" cx="228" cy="160" r="7"><title>10月21日4時30分：PHP が予告を前倒しして公表し、公開日を22日から21日に早めた</title></circle>
 <text class="t-small" x="236" y="186" text-anchor="middle">予告と公開日を前倒し</text>
 <line class="line-limit" x1="631" y1="40" x2="631" y2="256"/>
-<circle class="mk-announce" cx="631" cy="160" r="8"><title>10月21日23時：修正版の公開と、技術的な詳細の公表。公開の時点で、動く攻撃のコードは確認されていなかった</title></circle>
+<circle class="mk-announce" cx="631" cy="160" r="8"><title>10月21日23時：修正版の公開と、技術的な詳細の公表。PHP は、公開の時点で動く攻撃のコードは確認していなかったとしている</title></circle>
 <text class="t-small" x="620" y="140" text-anchor="end">修正版の公開 23:00</text>
 
 <rect class="bar" x="610" y="208" width="218" height="8" rx="4"><title>IDCフロンティア（Zenlogic ホスティング）：10月21日22時から Web サーバーを止めて更新。PHP 7.4〜8.5 は22日8時に再開。PHP 5.3 は最新版に上げる作業を続けた</title></rect>
@@ -366,25 +371,60 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <text class="t-small t-muted" x="784" y="276" text-anchor="middle">6時</text>
 </svg>
 </div>
-<figcaption>前倒しを1日にとどめたのは、すぐに公開すると、配布業者の準備が間に合わず、多くの利用者が簡単に更新できなくなるためでした。PHP は、公開の時点で、出回った実証コードの中に動く攻撃のコードは確認していなかったとしています。緑の帯は再開まで、灰色の帯は10月22日10時54分時点で復旧未定を表します。</figcaption>
+<figcaption>前倒しを1日にとどめたのは、すぐに公開すると、配布業者の準備が間に合わず、多くの利用者が簡単に更新できなくなるためでした。PHP は、公開の時点で、出回った実証コードの中に動く攻撃のコードは確認していなかったとしています（Amazon の観測は次の節）。緑の帯は再開まで、灰色の帯は10月22日10時54分時点で復旧未定を表します。</figcaption>
 </figure>
+
+<h2>公開の前から始まっていた悪用</h2>
+<p>Amazon は10月22日、おとりのサーバー網（MadPot）で、<strong>公開の4日前の10月17日</strong>に PHP2Shell の悪用の試みを観測していたと報告しました。匿名化の通信網からの試みで、攻撃者がどうやって公開前に情報を得たかはわかっていません。公開の日の10月21日も、日本時間11時ごろから実証コードがいくつも出回り、11時〜17時に複数の攻撃者とみられる試みがありました（実際のシステムで成功したかは分析中）。公開のあとは、広く悪用されています。</p>
+
+<figure class="viz">
+<p class="viz-title">公開の前に始まり、公開のあとは桁ごとに増えた</p>
+<p class="viz-sub">Amazon のブログと、Cloudflare の CEO の X への投稿より。帯の長さは桁（10倍ごと）を表す</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="10月17日にAmazonのおとりのサーバーで最初の悪用の試み。Cloudflareのネットワークでは、公表前の10時間に数千件、公表から45分で数万件、2時間以内に数十万件、10月22日10時25分の投稿の時点で数百万件の試みがあった。">
+<circle class="mk-advisory" cx="28" cy="30" r="7"><title>10月17日：Amazon のおとりのサーバーで、最初の悪用の試み（公開の4日前）</title></circle>
+<text class="t-small" x="44" y="34">10月17日：Amazon のおとりのサーバーで最初の試み（公開の4日前）</text>
+
+<text class="t-strong" x="20" y="84">公表前の10時間</text>
+<rect class="bar-2" x="250" y="70" width="130" height="20" rx="4"><title>数千件（Cloudflare のネットワーク）</title></rect>
+<text class="t-strong" x="390" y="85">数千件</text>
+<text class="t-strong" x="20" y="124">公表から45分</text>
+<rect class="bar-2" x="250" y="110" width="260" height="20" rx="4"><title>数万件</title></rect>
+<text class="t-strong" x="520" y="125">数万件</text>
+<text class="t-strong" x="20" y="164">公表から2時間以内</text>
+<rect class="bar-2" x="250" y="150" width="390" height="20" rx="4"><title>数十万件</title></rect>
+<text class="t-strong" x="650" y="165">数十万件</text>
+<text class="t-strong" x="20" y="204">22日 10時25分の時点</text>
+<rect class="bar-2" x="250" y="190" width="520" height="20" rx="4"><title>数百万件（10月22日 10時25分〈日本時間〉の投稿の時点）</title></rect>
+<text class="t-strong" x="780" y="205">数百万件</text>
+<text class="t-small t-muted" x="20" y="238">帯が1段長くなるごとに10倍（千 → 万 → 十万 → 百万）</text>
+</svg>
+</div>
+<figcaption>Cloudflare の数字は、同社のネットワークで観測した悪用の試みの件数で、成功した件数ではありません。PHP は公開の時点で動く攻撃のコードを確認していなかったとしていますが、Amazon と Cloudflare は、公開の前から試みがあったことを観測しています。</figcaption>
+</figure>
+
+<p>Amazon は、教訓として次の3つを挙げています。公開日を悪用の始まりとみなさないこと（PHP2Shell では少なくとも10月17日から調べる）。インターネットに面したシステムの重大な脆弱性は、修正や軽減の目安を「日」ではなく「時間」で考えること。特定の CVE に頼らない検知に投資すること。AI を使った分析で、修正の差分や注意喚起から攻撃のコードを作る手間が下がっているためです。</p>
+<p>JPCERT/CC は10月22日の注意喚起で、修正の適用に加え、侵害の有無を調べるよう求めました。調べる点は、不自然に長いか形の崩れた PHPSESSID の Cookie、不審な multipart/form-data のリクエストとその前後のメモリ上限のエラーや HTTP 500、ワーカーの予期しない終了や頻繁な再起動です。痕跡がなくても、攻撃を受けていないとは言い切れないとしています。</p>
 
 <h2>国内の対応</h2>
 <div class="table-wrap">
 <table>
-<caption>公式のお知らせで確認できた対応（10月22日時点）</caption>
+<caption>公式のお知らせや投稿で確認できた対応（10月22日時点）</caption>
 <thead><tr><th>組織</th><th>対応</th></tr></thead>
 <tbody>
 <tr><td>さくらインターネット</td><td>修正の公開の前の10月21日22時30分から、会員関連機能などで予防の緊急メンテナンス。22日8時15分時点で一部を除き解除。提供中のサポート切れの PHP にも修正を適用。22日14時時点で、悪用による被害は報告されていない</td></tr>
 <tr><td>IDCフロンティア（Zenlogic ホスティング）</td><td>21日22時から Web サーバーを止めて更新。PHP 7.4〜8.5 は22日8時に再開。PHP 5.3 のサーバーは最新版に上げる（元に戻せない）作業を続けた</td></tr>
 <tr><td>セガ（製品情報サイト）</td><td>21日22時55分から緊急メンテナンス。22日10時54分時点で復旧日時は未定</td></tr>
+<tr><td>ワールドクエスト（旅行ゲーム）</td><td>21日23時21分、運営の X で、古い仕組みのため十分な対策がとれず、利用者の情報を守るため、その日でサービスを終了すると告知</td></tr>
+<tr><td>首相</td><td>21日21時55分、X で、23時の修正をすぐ当てられるよう準備を求め、すぐに当てられない場合はサイトの一時停止も有効な策の一つとした。22日13時には、自身の公式サイトも止めて対応したと述べ、管理者に国家サイバー統括室の注意・警戒情報のアカウントのフォローを呼びかけた</td></tr>
 <tr><td>IPA</td><td>21日に事前準備のお願い、22日に注意喚起を公表</td></tr>
+<tr><td>JPCERT/CC</td><td>22日に注意喚起を公表。国内で広く使われていることを確認し、修正の適用と侵害の有無の調査を求めた</td></tr>
 </tbody>
 </table>
 </div>
 
 <div class="note">
-<p><strong>筆者の整理</strong>：欠陥は10年以上前からありました。PHP Foundation と Wiz はどちらも、攻撃に使える形にするには複雑な手順が必要だったが、AI の道具がその壁を下げたとしています。守る側では、公開の前に情報の一部が漏れ、準備の時間が縮みました。更新できない古い PHP を使い続けている仕組みは、IPA の言うとおり、廃止も含めた判断が必要になります。</p>
+<p><strong>筆者の整理</strong>：欠陥は10年以上前からありました。PHP Foundation と Wiz はどちらも、攻撃に使える形にするには複雑な手順が必要だったが、AI の道具がその壁を下げたとしています。守る側では、公開の前に情報の一部が漏れ、準備の時間が縮みました。さらに、悪用の試みは公開日より前に始まっていました。公開日を「悪用の始まり」とみなさず、それより前から侵害を調べる必要があります。更新できない古い PHP を使い続けている仕組みは、IPA の言うとおり、廃止も含めた判断が必要になります。</p>
 </div>
 
 <dl class="terms">
@@ -399,9 +439,9 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </dl>
 
 <div class="note">
-<p><strong>この記事について</strong>：2026年10月22日時点の情報です。時刻は、PHP Foundation の記載（UTC）を日本時間に直したものと、各社のお知らせによります。攻撃の手順は扱っていません。報道に出ているほかの国内サービスの停止は、公式のお知らせを確認できたものだけを載せています。発見と修正には AI の道具が使われ、PHP Foundation は OpenAI や Anthropic などから道具の提供や資金の支援を受けたとしています。なお、この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+<p><strong>この記事について</strong>：2026年10月23日時点の情報です（10月22日に初回公開、23日に公開前の悪用、悪用の広がり、国内の対応を追加）。時刻は、PHP Foundation の記載（UTC）を日本時間に直したものと、各社のお知らせによります。攻撃の手順は扱っていません。報道に出ているほかの国内サービスや海外の政府のサイトの停止は、公式のお知らせを確認できたものだけを載せています。侵害の痕跡（IP アドレスなど）の一覧は載せていません。発見と修正には AI の道具が使われ、PHP Foundation は OpenAI や Anthropic などから道具の提供や資金の支援を受けたとしています。なお、この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（仕組み、対策、見つかるまでの年表、公開前夜の時系列、国内の対応）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>公開の4日前に始まっていた悪用（Amazon）、悪用の試みの増え方（Cloudflare）、首相の呼びかけ、ワールドクエストのサービス終了、JPCERT/CC の注意喚起を追加</li><li><span class="date">2026-10-22</span>初回公開（仕組み、対策、見つかるまでの年表、公開前夜の時系列、国内の対応）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

@@ -173,6 +173,8 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 .viz svg .dot-new { fill: var(--series-1); }
 .viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
 
 .theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
 .theme-nav li { max-width: none; margin: 0; }
@@ -190,17 +192,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-23</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
-<p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは7製品・9件</strong>です。対応は、悪用が確認されているものから順に行います。</p>
+<p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは9製品・12件</strong>です（10月23日に3件を追加）。対応は、悪用が確認されているものから順に行います。</p>
 <p>注意したいのは、<strong>回避策が提供されていない製品がある</strong>ことです（NetScaler、Cisco Secure Email Gateway）。また、<strong>侵害の痕跡が消される可能性</strong>が示されている製品もあります（Cisco Secure Email Gateway、SiteGuard Server Edition）。更新するだけでなく、すでに侵害されていないかの調査も必要です。</p>
 <p>10月20日追記：悪用は確認されていないものの深刻度が高いものとして、Linux カーネルの <strong>PwnEscape</strong>（CVE-2026-99999）を加えました。仮想マシンの中から、ホスト側の Linux のメモリを読み出せるもので、仮想マシンを動かすホストの管理者は、カーネルの更新が必要です。</p>
 <p>10月21日追記：サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を加えました。修正は出ないため、使うのをやめて、ほかの製品に乗り換えるよう案内されています。</p>
+<p>10月23日追記：10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を加えました。</p>
 </section>
 
 <div class="stats">
-<div class="stat"><p class="stat-value">7<small>製品</small></p><p class="stat-label">悪用が報告・確認されている製品</p></div>
-<div class="stat"><p class="stat-value">9<small>件</small></p><p class="stat-label">その製品のCVE（脆弱性の識別番号）</p></div>
+<div class="stat"><p class="stat-value">9<small>製品</small></p><p class="stat-label">悪用が報告・確認されている製品（10月23日に2製品を追加）</p></div>
+<div class="stat"><p class="stat-value">12<small>件</small></p><p class="stat-label">その製品のCVE（脆弱性の識別番号。10月23日に3件を追加）</p></div>
 <div class="stat"><p class="stat-value">2<small>製品</small></p><p class="stat-label">回避策が提供されていない（NetScaler、Cisco Secure Email Gateway）</p></div>
 <div class="stat"><p class="stat-value">10/14</p><p class="stat-label">Microsoft の10月の更新プログラムが公開された日</p></div>
 </div>
@@ -283,6 +286,21 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </div>
 <figcaption>9月中旬から10月中旬まで、ほぼ毎週のように、悪用が確認された脆弱性の注意喚起が出ています。NetScaler については、注意喚起の公開（9月28日）の前の9月24日から、日本国内の NetScaler を対象にした攻撃試行が観測されています。ただし、この脆弱性の悪用を目的としたものかは明らかになっていません。</figcaption>
 </figure>
+
+<h2>10月21日の週次レポートで加わった3件（10月23日追記）</h2>
+<p>JPCERT/CC の10月21日の週次レポートで、開発元が悪用を確認しているとされた脆弱性が3件ありました。CVE の番号や深刻度、対象のバージョンは、各開発元の公式の情報（Ivanti は NVD の記録）で確かめました。</p>
+<div class="table-wrap">
+<table>
+<caption>JPCERT/CC の週次レポート（10月21日）と、各開発元の情報・NVD より。悪用の確認は JPCERT/CC の記載による</caption>
+<thead><tr><th>製品</th><th>CVE と深刻度</th><th>内容</th><th>対応</th></tr></thead>
+<tbody>
+<tr><td>Cisco Secure Email Gateway（上の表とは別の脆弱性）</td><td>CVE-2026-76519。Critical（CVSS 3.1 で 9.8）。10月14日公表</td><td>マルウェア対策の機能（AMP のファイルレピュテーション）を使っている場合に、細工した添付ファイルつきのメールを送るだけで、認証なしに任意のファイルを書き込まれるおそれ。成功すると root の権限でコマンドを実行され、痕跡を消されるおそれがある</td><td>修正版に更新。回避策はない。ファイルレピュテーションが有効でメールのポリシーに割り当てられていて、Content Scanner Tools が 25.3.0.5525 より前の場合が対象</td></tr>
+<tr><td>BeyondTrust Remote Support</td><td>CVE-2026-102764。Critical（CVSS 4.0 で 9.3）。10月15日公表</td><td>内部のメッセージの部品で送り元の確かめ方が不十分なため、遠隔の攻撃者が装置の上でファイルを操作できるおそれ</td><td>クラウド版は10月9日に修正済み。自社で運用している場合、自動更新を使っていなければ手動でパッチを当てる（24.3.1〜26.2.3 向け。24.3.1 より前は先に更新が必要）</td></tr>
+<tr><td>Ivanti Connect Secure</td><td>CVE-2026-104935。CVSS 3.1 で 8.6（Ivanti の評価）。10月13日公表</td><td>なりすましによる認証回避で、認証なしに任意のコマンドを実行されるおそれ。25.1.3.0 より前が対象で、22.7R2.14 以前は影響を受けない</td><td>修正パッチを適用。米国の CISA は、10月13日に悪用が確認された脆弱性の一覧（KEV）に加えた</td></tr>
+</tbody>
+</table>
+</div>
+<p>3件とも、インターネットに面した装置やサービスで、認証なしに攻撃できる種類のものです。Cisco Secure Email Gateway は、上の表の脆弱性と合わせて、9月と10月に続けて悪用が確認されたことになります。</p>
 
 <h2>悪用は確認されていないが、深刻度が高いもの：PwnEscape</h2>
 <p>10月20日の追記です。Linux カーネルの脆弱性 PwnEscape（CVE-2026-99999）を、CVE の記録、発見者（pwn.ai）の解説、Vercel の報告をもとに整理しました。CVE の記録は10月15日に公開され、CVSS 3.1 の基本値は 9.3（緊急）です。CISA の評価では、悪用は確認されていません。</p>
@@ -507,12 +525,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月21日時点の情報です。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
+<p>2026年10月23日時点の情報です（10月23日に、10月21日の週次レポートの3件を追加）。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
 <p>修正バージョンの番号など、注意喚起に明記されていない項目は、開発元の最新情報で確認する必要があります。</p>
 <p>ここで取り上げたのは、JPCERT/CC と IPA が10月中旬までに取り上げたもののうち、本文を直接確認できたものです。Linux の Copy Fail（IPA、CVE-2026-31431）は、5月の注意喚起で10月の更新がないため、今月の対象には入れていません。報道で伝えられた別の脆弱性は、一次情報を確認できていないため、扱っていません。</p>
 <p>内容は、JPCERT/CC と IPA の資料をもとに、独自に整理したものです。PwnEscape は、CVE の記録、発見者、Vercel の公表をもとにしています。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を図とともに追加</li><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を追加</li><li><span class="date">2026-10-21</span>サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を図とともに追加</li><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

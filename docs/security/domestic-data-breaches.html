@@ -173,6 +173,8 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 .viz svg .dot-new { fill: var(--series-1); }
 .viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
 
 .theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
 .theme-nav li { max-width: none; margin: 0; }
@@ -190,17 +192,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか</h1><p class="summary">2026年9月ごろから国内で続く漏えいについて、各組織の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例（19組織）、外部サービスからの波及、塞いだ後に残った裏口、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>国内で相次ぐ不正アクセスによる情報漏えい：何が起きていて、組織は何を点検すべきか</h1><p class="summary">2026年9月ごろから国内で続く漏えいについて、各組織の公式発表と、JPCERT/CC・IPA の注意喚起をもとに、具体的な事例（19組織）、外部サービスからの波及、塞いだ後に残った裏口、確認されている攻撃の入口、組織がすぐ行う点検を図で整理する。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-23</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月ごろから、国内の組織で、不正アクセスによる個人情報の漏えいの公表が相次いでいます。JPCERT/CC と IPA は、10月上旬に続けて注意喚起を出しました。</p>
 <p>特徴は、<strong>原因が1つの脆弱性に絞られていない</strong>ことです。外部に公開しているアプリやAPI、利用中の外部サービスのアカウントなど、入口が複数にまたがっています。</p>
 <p>10月16日から19日にかけても、百貨店、通信事業者、Web制作サービス、家電量販店、スポーツ団体などで、不正アクセスの公表が続きました（10月20日追記）。</p>
 <p>10月19日から20日にかけては、メール配信サービス、防災情報などの一斉配信サービス、通信事業者の会員サイト、システム開発の委託先、医療機関向けのサービス、電子書籍サイトなどで公表が続きました（10月21日追記）。</p>
+<p>10月20日から22日にかけては、ゲーム会社の会員 ID（約1,177万件）、中古車情報サイト（最大約371万件）、電子書籍ストア（最大約420万件）、放送局、大学などでも公表が続きました。JPCERT/CC は、攻撃者が<strong>アプリを解析して API を見つけ、AI も使って攻撃していた</strong>ことを確認しています（10月23日追記）。</p>
 </section>
 
 <div class="stats">
-<div class="stat"><p class="stat-value">19<small>組織</small></p><p class="stat-label">公式発表を直接確認できた事例（9月末〜10月20日に公表）</p></div>
-<div class="stat"><p class="stat-value">42万〜2,252万<small>件</small></p><p class="stat-label">件数を公表した10組織の範囲（発表時点。不正ログインのアカウント数は除く）</p></div>
+<div class="stat"><p class="stat-value">25<small>組織</small></p><p class="stat-label">公式発表を直接確認できた事例（9月末〜10月22日に公表）</p></div>
+<div class="stat"><p class="stat-value">730〜2,252万<small>件</small></p><p class="stat-label">件数を公表した15組織の範囲（発表時点。不正ログインのアカウント数は除く）</p></div>
 <div class="stat"><p class="stat-value">4<small>類型</small></p><p class="stat-label">JPCERT/CC が整理した攻撃の入口</p></div>
 <div class="stat"><p class="stat-value">3<small>点検</small></p><p class="stat-label">IPA が経営者に求める点検（公開アプリ・外部サービス・保有データ）</p></div>
 </div>
@@ -291,62 +294,80 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <figure class="viz">
 <p class="viz-title">公表された件数の比較</p>
-<p class="viz-sub">単位は万件。発表時点の数字で、人数とは一致しない。10月19〜20日の公表分を含む（件数の多い順）</p>
+<p class="viz-sub">単位は万件。発表時点の数字で、人数とは一致しない。10月22日までの公表分を含む（件数の多い順。紫は10月23日に追加した事例）</p>
 <div class="viz-scroll">
-<svg class="viz-mid" viewBox="0 0 760 584" role="img" aria-label="公表件数の横棒グラフ。ソースネクスト約2,252万件、バーガーキング約1,118万件、ユミルリンク延べ約900万件（試算）、ヤマト運輸のお客さま情報約526万件、トラストバンク（ふるさとチョイス）約445万件、アルカディアのメールアドレス約313万件、日本経済新聞社約183万件、阪急阪神百貨店約126万件、ニフティ最大約54万件、クリプトン・フューチャー・メディア（SONICWIRE）最大約42万件。">
+<svg class="viz-mid" viewBox="0 0 760 752" role="img" aria-label="公表件数の横棒グラフ。ソースネクスト約2,252万件、カプコン約1,177万件、バーガーキング約1,118万件、ユミルリンク延べ約900万件（試算）、ヤマト運輸のお客さま情報約526万件、トラストバンク（ふるさとチョイス）約445万件、NTTソルマーレ（コミックシーモア）最大約420万件、リクルート（カーセンサー）最大約371万件、アルカディアのメールアドレス約313万件、日本経済新聞社約183万件、阪急阪神百貨店約126万件、ニフティ最大約54万件、クリプトン・フューチャー・メディア（SONICWIRE）最大約42万件。">
 <g class="grid">
-<line x1="190" y1="16" x2="190" y2="550"/><line x1="286" y1="16" x2="286" y2="550"/>
-<line x1="382" y1="16" x2="382" y2="550"/><line x1="478" y1="16" x2="478" y2="550"/>
-<line x1="574" y1="16" x2="574" y2="550"/><line x1="670" y1="16" x2="670" y2="550"/>
+<line x1="190.0" y1="16" x2="190.0" y2="718"/>
+<line x1="286.0" y1="16" x2="286.0" y2="718"/>
+<line x1="382.0" y1="16" x2="382.0" y2="718"/>
+<line x1="478.0" y1="16" x2="478.0" y2="718"/>
+<line x1="574.0" y1="16" x2="574.0" y2="718"/>
+<line x1="670.0" y1="16" x2="670.0" y2="718"/>
 </g>
 <g class="t-muted" text-anchor="middle">
-<text class="t-muted" x="190" y="570">0</text><text class="t-muted" x="286" y="570">500万</text>
-<text class="t-muted" x="382" y="570">1,000万</text><text class="t-muted" x="478" y="570">1,500万</text>
-<text class="t-muted" x="574" y="570">2,000万</text><text class="t-muted" x="670" y="570">2,500万</text>
+<text class="t-muted" x="190.0" y="738">0</text>
+<text class="t-muted" x="286.0" y="738">500万</text>
+<text class="t-muted" x="382.0" y="738">1,000万</text>
+<text class="t-muted" x="478.0" y="738">1,500万</text>
+<text class="t-muted" x="574.0" y="738">2,000万</text>
+<text class="t-muted" x="670.0" y="738">2,500万</text>
 </g>
 
 <text class="t-strong" x="8" y="38">ソースネクスト</text><text class="t-small" x="8" y="55">会員情報システム</text>
-<path class="bar" d="M190,28 h428 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-428 z"><title>ソースネクスト 22,519,960件（約2,252万件）</title></path>
-<text class="t-ink" x="630" y="45">約2,252万件</text>
+<path class="bar" d="M190,28 h428.4 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-428.4 z"><title>ソースネクスト 22,519,960件（約2,252万件）</title></path>
+<text class="t-ink" x="634.4" y="45">約2,252万件</text>
 
-<text class="t-strong" x="8" y="92">バーガーキング</text><text class="t-small" x="8" y="109">公式アプリの会員情報</text>
-<path class="bar" d="M190,82 h211 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-211 z"><title>バーガーキング 約1,118万件</title></path>
-<text class="t-ink" x="413" y="99">約1,118万件</text>
+<text class="t-strong" x="8" y="92">カプコン</text><text class="t-small" x="8" y="109">CAPCOM ID（全世界）</text>
+<path class="bar-2" d="M190,82 h222.1 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-222.1 z"><title>カプコン CAPCOM ID 11,774,247件（全世界。メールアドレスなど）（10/23 追加）</title></path>
+<text class="t-ink" x="428.1" y="99">約1,177万件（10/23 追加）</text>
 
-<text class="t-strong" x="8" y="146">ユミルリンク</text><text class="t-small" x="8" y="163">メール配信サービス（5システム）</text>
-<path class="bar" d="M190,136 h169 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-169 z"><title>ユミルリンク 延べ約900万件（試算。メールアドレスを含む情報）</title></path>
-<text class="t-ink" x="375" y="153">延べ 約900万件（試算）</text>
+<text class="t-strong" x="8" y="146">バーガーキング</text><text class="t-small" x="8" y="163">公式アプリの会員情報</text>
+<path class="bar" d="M190,136 h210.7 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-210.7 z"><title>バーガーキング 約1,118万件</title></path>
+<text class="t-ink" x="416.7" y="153">約1,118万件</text>
 
-<text class="t-strong" x="8" y="200">ヤマト運輸</text><text class="t-small" x="8" y="217">クロネコ代金後払い（お客さま情報）</text>
-<path class="bar" d="M190,190 h97 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-97 z"><title>ヤマト運輸 お客さま情報 約526万件（ほかにお届け先情報 約5万件、加盟店情報 約4,100件）</title></path>
-<text class="t-ink" x="299" y="207">約526万件</text>
+<text class="t-strong" x="8" y="200">ユミルリンク</text><text class="t-small" x="8" y="217">メール配信サービス（5システム）</text>
+<path class="bar" d="M190,190 h168.8 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-168.8 z"><title>ユミルリンク 延べ約900万件（試算。メールアドレスを含む情報）</title></path>
+<text class="t-ink" x="374.8" y="207">延べ 約900万件（試算）</text>
 
-<text class="t-strong" x="8" y="254">トラストバンク</text><text class="t-small" x="8" y="271">ふるさとチョイスの会員情報</text>
-<path class="bar" d="M190,244 h82 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-82 z"><title>トラストバンク 4,454,097件（約445万件）</title></path>
-<text class="t-ink" x="288" y="261">約445万件</text>
+<text class="t-strong" x="8" y="254">ヤマト運輸</text><text class="t-small" x="8" y="271">クロネコ代金後払い（お客さま情報）</text>
+<path class="bar" d="M190,244 h97.0 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-97.0 z"><title>ヤマト運輸 お客さま情報 約526万件（ほかにお届け先情報 約5万件、加盟店情報 約4,100件）</title></path>
+<text class="t-ink" x="303.0" y="261">約526万件</text>
 
-<text class="t-strong" x="8" y="308">アルカディア</text><text class="t-small" x="8" y="325">一斉配信サービスのメールアドレス</text>
-<path class="bar" d="M190,298 h56 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-56 z"><title>アルカディア SpeeCAN RAIDEN のメールアドレス 約313万6000件（漏えいの可能性）</title></path>
-<text class="t-ink" x="262" y="315">約313万件（漏えいの可能性）</text>
+<text class="t-strong" x="8" y="308">トラストバンク</text><text class="t-small" x="8" y="325">ふるさとチョイスの会員情報</text>
+<path class="bar" d="M190,298 h81.5 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-81.5 z"><title>トラストバンク 4,454,097件（約445万件）</title></path>
+<text class="t-ink" x="287.5" y="315">約445万件</text>
 
-<text class="t-strong" x="8" y="362">日本経済新聞社</text><text class="t-small" x="8" y="379">開発用クラウドサービス</text>
-<path class="bar" d="M190,352 h31 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-31 z"><title>日本経済新聞社 約183万件（うち氏名などを含む個人情報は約15万件、残りは識別子のみ）</title></path>
-<text class="t-ink" x="233" y="369">約183万件（うち氏名などを含む個人情報は約15万件）</text>
+<text class="t-strong" x="8" y="362">NTTソルマーレ</text><text class="t-small" x="8" y="379">コミックシーモアのログなど</text>
+<path class="bar-2" d="M190,352 h76.6 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-76.6 z"><title>NTTソルマーレ コミックシーモア システムログ上の最大約420万件（重複を含む可能性）と会員データベースの319件（10/23 追加）</title></path>
+<text class="t-ink" x="282.6" y="369">最大 約420万件（重複を含む可能性。10/23 追加）</text>
 
-<text class="t-strong" x="8" y="416">阪急阪神百貨店</text><text class="t-small" x="8" y="433">共通の会員ID（H2O ID）</text>
-<path class="bar" d="M190,406 h20 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-20 z"><title>阪急阪神百貨店 約126万件（H2O ID のほぼ全会員）</title></path>
-<text class="t-ink" x="226" y="423">約126万件</text>
+<text class="t-strong" x="8" y="416">リクルート</text><text class="t-small" x="8" y="433">カーセンサーnet、C-MATCH</text>
+<path class="bar-2" d="M190,406 h67.2 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-67.2 z"><title>リクルート カーセンサーnet と C-MATCH 最大3,709,551件（10/23 追加）</title></path>
+<text class="t-ink" x="273.2" y="423">最大 約371万件（10/23 追加）</text>
 
-<text class="t-strong" x="8" y="470">ニフティ</text><text class="t-small" x="8" y="487">回線の申し込みの管理システム</text>
-<path class="bar" d="M190,460 h6 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-6 z"><title>ニフティ 最大542,513件（調査中）</title></path>
-<text class="t-ink" x="212" y="477">最大 約54万件（調査中）</text>
+<text class="t-strong" x="8" y="470">アルカディア</text><text class="t-small" x="8" y="487">一斉配信サービスのメールアドレス</text>
+<path class="bar" d="M190,460 h56.2 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-56.2 z"><title>アルカディア SpeeCAN RAIDEN のメールアドレス 約313万6000件（漏えいの可能性）</title></path>
+<text class="t-ink" x="262.2" y="477">約313万件（漏えいの可能性）</text>
 
-<text class="t-strong" x="8" y="524">SONICWIRE</text><text class="t-small" x="8" y="541">音源販売サイトの会員</text>
-<path class="bar" d="M190,514 h4 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-4 z"><title>クリプトン・フューチャー・メディア SONICWIRE の会員 最大約42万件</title></path>
-<text class="t-ink" x="210" y="531">最大 約42万件</text>
+<text class="t-strong" x="8" y="524">日本経済新聞社</text><text class="t-small" x="8" y="541">開発用クラウドサービス</text>
+<path class="bar" d="M190,514 h31.1 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-31.1 z"><title>日本経済新聞社 約183万件（うち氏名などを含む個人情報は約15万件、残りは識別子のみ）</title></path>
+<text class="t-ink" x="237.1" y="531">約183万件（うち氏名などを含む個人情報は約15万件）</text>
+
+<text class="t-strong" x="8" y="578">阪急阪神百貨店</text><text class="t-small" x="8" y="595">共通の会員ID（H2O ID）</text>
+<path class="bar" d="M190,568 h20.2 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-20.2 z"><title>阪急阪神百貨店 約126万件（H2O ID のほぼ全会員）</title></path>
+<text class="t-ink" x="226.2" y="585">約126万件</text>
+
+<text class="t-strong" x="8" y="632">ニフティ</text><text class="t-small" x="8" y="649">回線の申し込みの管理システム</text>
+<path class="bar" d="M190,622 h6.4 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-6.4 z"><title>ニフティ 最大542,513件（調査中）</title></path>
+<text class="t-ink" x="212.4" y="639">最大 約54万件（調査中）</text>
+
+<text class="t-strong" x="8" y="686">SONICWIRE</text><text class="t-small" x="8" y="703">音源販売サイトの会員</text>
+<path class="bar" d="M190,676 h4.1 a4,4 0 0 1 4,4 v16 a4,4 0 0 1 -4,4 h-4.1 z"><title>クリプトン・フューチャー・メディア SONICWIRE の会員 最大約42万件</title></path>
+<text class="t-ink" x="210.1" y="693">最大 約42万件</text>
 </svg>
 </div>
-<figcaption>件数の桁は、最大のソースネクストと最小のSONICWIREで約54倍違います。「件」は人数と一致するとは限りません。ユミルリンクの約900万件は延べの試算、アルカディアの約313万件は漏えいの可能性があるメールアドレスの数です。日本経済新聞社の約183万件は、大半が単体では個人を特定できない識別子です。ヤマト運輸は、お客さま情報のほかに、お届け先情報（約5万件）と加盟店情報（約4,100件）も対象です。</figcaption>
+<figcaption>件数の桁は、最大のソースネクストと最小のSONICWIREで約54倍違います。コミックシーモアの最大約420万件はシステムのログに残っていた情報で、重複を含む可能性があります。大阪大学（77,851人）とフジテレビ（最大730件）は、桁が小さいため棒に入れていません。「件」は人数と一致するとは限りません。ユミルリンクの約900万件は延べの試算、アルカディアの約313万件は漏えいの可能性があるメールアドレスの数です。日本経済新聞社の約183万件は、大半が単体では個人を特定できない識別子です。ヤマト運輸は、お客さま情報のほかに、お届け先情報（約5万件）と加盟店情報（約4,100件）も対象です。</figcaption>
 </figure>
 
 <div class="table-wrap">
@@ -544,6 +565,42 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li><strong>リスト型攻撃は、自社から漏れていなくても起きます。</strong>日本郵政は、自社システムからの漏えいは確認されていないものの、外部で漏えいしたIDとパスワードで、249アカウントにログインされました。</li>
 </ul>
 
+<h2>10月23日の追記：さらに公表された事例（6組織）</h2>
+<p>各組織の公式発表（10月17〜22日付）を読んで整理しました。調査中のものが多く、件数や原因は今後変わる可能性があります。各県警の職員の情報や、ソースネクストのパスワードが平文で漏れた理由のように、報道はあったものの公式発表を確認できなかったことは載せていません。</p>
+
+<div class="table-wrap">
+<table>
+<caption>各組織の公式発表（10月17〜22日付）より</caption>
+<thead><tr><th>組織</th><th>公表日</th><th>対象</th><th>経緯と情報</th></tr></thead>
+<tbody>
+<tr><td>カプコン</td><td>10/22（適時開示）</td><td>オンライン会員サービス「CAPCOM ID」</td><td>10月19日に不正アクセスの痕跡を見つけて遮断し、同日に不正アクセスを確認。全世界で 11,774,247件のメールアドレスと、作成日時や最終ログイン時の IP アドレスなどのシステムの情報が漏えい。うち43件は生年月日なども。196件はパスワードを不正に変えられていた（リセット済み）。利用者が設定したパスワードやクレジットカード情報の漏えいは確認されていない。21日に警察と個人情報保護委員会に報告。サービスは引き続き使える</td></tr>
+<tr><td>リクルート</td><td>10/21</td><td>中古車情報サイト「カーセンサーnet」と、販売店向けの「C-MATCH」</td><td>10月17日に不審なアクセスを検知し、17時ごろから関連のサービスをすべて停止。20日に、漏えいした可能性のある個人情報を最大3,709,551件と把握。問い合わせをした利用者の氏名と住所（原則として市区町村まで）が約321万件、販売店の担当者の情報などが約48万件。決済情報とログインのパスワードは含まれない。二次被害は確認されていない</td></tr>
+<tr><td>NTTソルマーレ</td><td>10/21（第4報）</td><td>電子書籍ストア「コミックシーモア」</td><td>会員データベースの319件（メールアドレス、ハッシュ化されたパスワードなど）と、システムのログに残っていた最大約420万件（メールアドレス、ニックネーム、生年月日、性別。重複を含む可能性）の流出を確認。侵入の経路と手口の特定と遮断は完了し、サービスの再開を準備中。クレジットカード情報は保有していない</td></tr>
+<tr><td>セカンドリテイリング</td><td>10/17</td><td>「セカンドストリート」「ゲオ」などのアプリと Web サービス</td><td>10月15日に社内システムへの不正アクセスを確認。二次被害を防ぐため、17日21時からアプリと Web サービスを停止。店舗の営業は続ける。原因と影響の範囲は調査中</td></tr>
+<tr><td>フジテレビジョン</td><td>10/20</td><td>番組宣伝システム（関係者向け）</td><td>10月19日の夜に不正アクセス。メディア関係者の氏名、会社名、メールアドレスなど、最大730件が漏えいした可能性。視聴者の情報は登録されていない。システムの利用を停止</td></tr>
+<tr><td>大阪大学</td><td>10/21</td><td>全学の教育用のシステム（NEC に運用を委託）</td><td>NEC の件（上の表）の被害を受けた組織の1つ。9月26日に、第三者が大学の個人情報を含むファイルをダウンロード。NEC が、大学に報告していない協力会社を業務に関わらせ、契約に基づかずにクラウドの保管場所でファイルを共有し、作業後も消さずに残していた。卒業生、在学生、教職員の計77,851人の氏名、ID、メールアドレスなどが漏えい。大学のシステムへの不正アクセスの痕跡は確認されていない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>アプリを解析して API を狙う（JPCERT/CC の調査）</h3>
+<p>JPCERT/CC は10月21日、攻撃に使われた可能性のあるサーバーの調査結果を公表しました。攻撃者は、<strong>Android のアプリの配布ファイルを解析して API を特定し</strong>、サーバー側から別の場所へ通信させる脆弱性（SSRF）がないかなどを調べていました。攻撃者が AI を使って、既知の脆弱性の探索や API を通じた攻撃をしていたことも確認したとしています。同じような攻撃元のサーバーは複数あり、日本以外の Web サービスも狙われていました。</p>
+<p>JPCERT/CC は、アプリの中のコードはコンパイルされていても、埋め込まれた秘密の鍵や API の認証の処理を取り出せる場合があるとして、次の対策を勧めています。</p>
+<div class="cards">
+<div class="card"><h3>秘密をアプリに入れない</h3><p>API の認証に使う秘密の鍵や、有効期間の長い認証情報を、アプリに埋め込みません。</p></div>
+<div class="card"><h3>サーバー側で確かめる</h3><p>アプリの中の署名や難読化だけに頼らず、サーバー側で利用者を認証し、操作の対象や内容に応じて許可します。</p></div>
+<div class="card"><h3>正規のアプリ以外も想定する</h3><p>回数の制限や異常なリクエストの監視で、正規のアプリ以外からのアクセスも想定して API を守ります。</p></div>
+<div class="card"><h3>SSRF を防ぐ</h3><p>外部の URL の内容を取りに行く API では、行き先を制限し、転送された後の行き先も確かめます。</p></div>
+</div>
+
+<h3>さらに見えること（10月23日追記）</h3>
+<ul>
+<li><strong>委託の管理が問われます。</strong>大阪大学の件では、報告されていない協力会社が関わり、契約にないファイルの共有と保管が漏えいにつながりました。</li>
+<li><strong>ログにも個人情報が残ります。</strong>コミックシーモアの件では、会員データベースより、システムのログに残っていた情報のほうがはるかに多く流出しました。</li>
+<li><strong>止めてから調べる対応が続いています。</strong>リクルート、セカンドリテイリングは、検知した日やその直後にサービスを止めてから調査を進めています。</li>
+</ul>
+<p>この節の整理は、各組織の発表を並べて読んだ上での筆者のものです。</p>
+
 <h2>確認されている攻撃の入口</h2>
 <p>JPCERT/CC は、寄せられた情報をもとに、攻撃の入口を4つの類型（A〜D）で整理しています。すべての事案が同じ手口というわけではありません。IPA は、このほかに、外部サービスのアカウントの侵害が起点になっていると見られるとしています（E）。</p>
 
@@ -706,12 +763,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月21日時点の情報です。状況は更新されていくため、最新の内容は各機関のページで確認してください。</p>
-<p>事例は、各組織が公式サイトで公表した内容（10月15〜21日付）に基づきます。調査は継続中で、数字や原因は更新される可能性があります。</p>
-<p>公表している組織はここに挙げた19組織だけではありません。ここでは、公式発表を直接確認できたものだけを取り上げています。</p>
+<p>2026年10月23日時点の情報です（10月23日に、10月22日までの公表分を追加）。状況は更新されていくため、最新の内容は各機関のページで確認してください。</p>
+<p>事例は、各組織が公式サイトで公表した内容（10月15〜22日付）に基づきます。調査は継続中で、数字や原因は更新される可能性があります。</p>
+<p>公表している組織はここに挙げた25組織だけではありません。ここでは、公式発表を直接確認できたものだけを取り上げています。</p>
 <p>内容は、各社の公式発表、JPCERT/CC、IPA の注意喚起、帝国データバンクの調査をもとに、独自に整理したものです。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>10月19〜20日に公表された8組織の事例、ふるさとチョイスの続報、アルカディアのタイムラインの図、帝国データバンクの企業アンケートを追加</li><li><span class="date">2026-10-20</span>10月16〜19日に公表された7組織の事例と、外部サービスからの波及の図を追加</li><li><span class="date">2026-10-19</span>初回公開（4社の事例、攻撃の入口、点検の流れ）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>10月22日までに公表された6組織（カプコン、リクルート、NTTソルマーレ、セカンドリテイリング、フジテレビジョン、大阪大学）と、アプリを解析して API を狙う手口（JPCERT/CC の調査）を追加</li><li><span class="date">2026-10-21</span>10月19〜20日に公表された8組織の事例、ふるさとチョイスの続報、アルカディアのタイムラインの図、帝国データバンクの企業アンケートを追加</li><li><span class="date">2026-10-20</span>10月16〜19日に公表された7組織の事例と、外部サービスからの波及の図を追加</li><li><span class="date">2026-10-19</span>初回公開（4社の事例、攻撃の入口、点検の流れ）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

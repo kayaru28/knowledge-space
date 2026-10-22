@@ -173,6 +173,8 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 .viz svg .dot-new { fill: var(--series-1); }
 .viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
 
 .theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
 .theme-nav li { max-width: none; margin: 0; }
@@ -190,10 +192,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">開発</p><h1>開発ツールの更新を整理する（2026年10月）：SvelteKit 3、bun check、dotnetup、HydraFusion、Aurora の DuckDB</h1><p class="summary">9月30日から10月15日までに公開された5つの開発ツールの更新を、公式の発表から整理し、提供状況の違い、移行が必要なもの、数字の読み方を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-19</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">開発</p><h1>開発ツールの更新を整理する（2026年10月）：SvelteKit 3、bun check、dotnetup、HydraFusion、Aurora の DuckDB</h1><p class="summary">9月30日から10月15日までに公開された5つの開発ツールの更新を、公式の発表から整理し、提供状況の違い、移行が必要なもの、数字の読み方を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-23</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>9月30日から10月15日までに、5つの開発ツールの更新が公開されました。<strong>提供状況はそれぞれ違います</strong>。Aurora の DuckDB 統合は一般提供、SvelteKit 3 は正式版、bun check はリリース済み、dotnetup はパブリックプレビュー、HydraFusion は研究プレビューです。</p>
 <p>自分のプロジェクトで手を動かす必要があるのは、<strong>SvelteKit 3</strong>（設定の場所、<code>$lib</code>、最低バージョンなど、破壊的変更が多い）です。ほかは、使うかどうかを選べる新機能です。数字（速度やコストの削減）は、いずれも開発元の自己申告です。</p>
+<p>10月21日には、DuckDB 2.0.0（長期サポート版）と、TypeScript のコンパイラを Rust に移した tsrs の実験版も公開されました（10月23日追記）。</p>
 </section>
 
 <div class="stats">
@@ -482,6 +485,19 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </div>
 <p>dotnet-install のスクリプトでも多くのことはできますが、dotnetup は、インストール済みの管理、署名と checksum の検証、複数の SDK／ランタイムの高速な導入、全プラットフォームで共通の CLI が利点だと、記事は説明しています。</p>
 
+<h2>10月21日の更新：DuckDB 2.0 と tsrs（10月23日追記）</h2>
+<div class="table-wrap">
+<table>
+<caption>DuckDB と Cloudflare の公式ブログ（10月21日付）より。数字は開発元の測定</caption>
+<thead><tr><th>ツール</th><th>提供状況</th><th>主な内容</th><th>気をつける点</th></tr></thead>
+<tbody>
+<tr><td>DuckDB 2.0.0「Cinnamon Teal」</td><td>正式版（長期サポート。少なくとも2027年10月まで）</td><td>クライアントとサーバーで使う方式（Quack）の改良と、リモートのデータベースにつなぐ CONNECT 文。Parquet・CSV などの非同期の読み込み（オブジェクトストレージで速くなる）。VARIANT 型、トリガー。PostgreSQL 由来だった SQL の構文解析の部品を、独自の新しいものに切り替え（既定）。AI のエージェントが CLI を動かしていると判断すると、出力を簡潔にする「エージェントモード」（TPC-H の実験で、モデルが読む出力が59%減）</td><td>互換性のない変更は少なく、いちばん影響しやすいのは保存の形式。多くのプロセスで DuckDB を使う環境は移行に注意（移行ガイドあり）。1.4 のサポートは2026年11月17日まで、1.5 は2027年3月まで延長。R や Rust のクライアントなどは数日遅れて出る</td></tr>
+<tr><td>tsrs（Cloudflare など）</td><td>実験版（npm で公開）</td><td>TypeScript のコンパイラを Rust に移したもの。同じ数の型チェックの処理で、TypeScript 7.0 より最大8倍速く、メモリは約70%少ない。WebAssembly で動かしやすく、ブラウザの中などでも開発環境を動かせるようにすることがねらい。JavaScript のツール群 Oxc の一部として育てる</td><td>TypeScript の分家（フォーク）ではなく、言語の設計は TypeScript のチームが決めるとしている。診断の表示順など、本家との違いが今もある。言語サーバー（LSP）などの対応は、別の移植と統合して進める。次の TypeScript 7.1 beta も 7.0 より最大2.5倍速くなっている（一部は tsrs から取り込まれた改良）</td></tr>
+</tbody>
+</table>
+</div>
+<p>Cloudflare は、AI のモデルが大規模な移植をほぼ自力で数日のうちにこなせるようになり、TypeScript の移植がいくつも現れていると書いています。tsrs は、本家の変更をエージェントで毎日追いかけ、違いが出ないようにする運用をとるとしています。</p>
+
 <h2>選ぶときの観点</h2>
 <div class="note">
 <p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
@@ -505,12 +521,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月19日時点の情報です。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
+<p>2026年10月23日時点の情報です（10月19日時点で作成し、23日に DuckDB 2.0 と tsrs を追加）。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
 <p>速度、メモリ、コストの数字は、開発元の自己申告で、独自に検証したものではありません。</p>
 <p>HydraFusion の評価は、GitHub 自身のオフライン評価の結果で、実際の開発での効果は未検証と、GitHub が述べています。</p>
 <p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="../ai/ai-coding-productivity.html">AIコーディングで生産性は上がったか</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-19</span>初回公開（5つの開発ツールの更新、提供状況、SvelteKit 3 の移行手順、bun check の速度）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>10月21日に公開された DuckDB 2.0.0（長期サポート版）と tsrs（TypeScript の Rust への移植の実験版）を追加</li><li><span class="date">2026-10-19</span>初回公開（5つの開発ツールの更新、提供状況、SvelteKit 3 の移行手順、bun check の速度）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

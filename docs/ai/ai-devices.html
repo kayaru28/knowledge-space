@@ -173,6 +173,8 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 .viz svg .dot-new { fill: var(--series-1); }
 .viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
 
 .theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
 .theme-nav li { max-width: none; margin: 0; }
@@ -190,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>AI端末の選択肢が広がった：ウェアラブル、タブレット、ホームディスプレイ、折りたたみiPhone、ノートPC</h1><p class="summary">2026年9月から10月にかけて発表・発売された6つのAI端末を、Amazon、Apple、Google、Microsoft の公式ページから整理し、価格、日程、AIの制約、日本での提供状況を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI端末の選択肢が広がった：ウェアラブル、タブレット、ホームディスプレイ、折りたたみiPhone、ノートPC</h1><p class="summary">2026年9月から10月にかけて発表・発売された6つのAI端末を、Amazon、Apple、Google、Microsoft の公式ページから整理し、価格、日程、AIの制約、日本での提供状況を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-23</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月から10月にかけて、AIアシスタントを前提にした端末が相次いで発表・発売されました。ウェアラブル（Amazon Bee）、タブレット（Amazon Alexa Tablet）、ホームディスプレイ（Apple HomeView）、折りたたみのiPhone（iPhone Duo）、ノートPC（Googlebook、Surface Laptop Ultra）です。価格は、$74.99 から $1,999 以上まで幅があります。</p>
 <p>実際に選ぶときは、<strong>AIアシスタントに制約がある</strong>ことと、<strong>日本での提供が端末によって違う</strong>ことに気をつけたいところです。Siri AI はベータで、当初は英語のみ（日本語は10月に対応予定と発表）、EU では当初提供されません。iPhone Duo は日本でも10月23日に発売されますが、Googlebook と HomeView は、発売地域に日本が挙がっていません。</p>
@@ -411,7 +413,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="card"><h3>Apple HomeView</h3>
 <ul><li>7インチ Liquid Retina、A18 チップ。顔認識で最大6人を識別し、個別のホーム画面を使える</li><li>FaceTime、インターコム、Apple Music、スマートホーム（カメラ、サーモスタット、照明、ドアの施錠）</li><li>HomeKit と Matter 対応のアクセサリーと連携。LG Electronics と Schneider Electric と共同開発の Apple Home Collection は12月に開始予定</li><li>壁掛け用マウントは $59.95〜$129.95</li></ul></div>
 <div class="card"><h3>iPhone Duo</h3>
-<ul><li>折りたたみ式。内側 7.58インチ、外側 5.36インチ（角丸を含む標準長方形として計測した値）</li><li>A20 Pro、デュアルバッテリー、IP68。48MP の Fusion Main と Ultra Wide、2x テレフォト</li><li>Siri AI を、内側の大きなディスプレイでアプリと並べて開き、画面の内容について質問できる</li><li>米国は $1,999 から、日本は 364,800円（税込）から。容量は 256GB〜2TB</li><li>下取りで $175〜$885 の即時クレジット</li></ul></div>
+<ul><li>折りたたみ式。内側 7.58インチ、外側 5.36インチ（角丸を含む標準長方形として計測した値）</li><li>A20 Pro、デュアルバッテリー、IP68。48MP の Fusion Main と Ultra Wide、2x テレフォト</li><li>Siri AI を、内側の大きなディスプレイでアプリと並べて開き、画面の内容について質問できる</li><li>米国は $1,999 から、日本は 364,800円（税込）から。容量は 256GB〜2TB</li><li>下取りで $175〜$885 の即時クレジット</li><li>iPhone Duo 向けに作ったアプリには、App Store で「Made for iPhone Duo」のバッジが付く（10月22日の Apple の発表。23日から特集も開始）</li></ul></div>
 <div class="card"><h3>Alexa Tablet</h3>
 <ul><li>12 Pro（12インチ、120Hz）、11（11インチ、2.5K）、8（8.7インチ、329g）</li><li>Android で動作し、Google Play ストアに完全アクセスできる</li><li>On-Screen Intelligence、ライブセッション（ウェイクワードなしで連続的に会話）</li><li>Pro Keyboard $149.99、Pro Pen $89.99（12 Pro 専用）</li></ul></div>
 <div class="card"><h3>Bee Frontier / Eclipse</h3>
@@ -443,13 +445,13 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月21日時点の情報です。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
+<p>2026年10月23日時点の情報です（23日に iPhone Duo のアプリのバッジを追加）。各社の公式ページの記述に基づいていて、状況は更新されます。</p>
 <p>価格は米国のもので、各社の発表にあるものです。日本での価格と発売は、iPhone Duo のほかは、各社の発表では確認できませんでした。</p>
 <p>Surface Laptop Ultra は、公式ページで価格と発売日を確認できなかったため、仕様のみ載せました。</p>
 <p><strong>訂正（10月21日）：</strong>初回公開時は、iPhone Duo について Apple の10月15日の紹介記事だけを確認し、「本体価格の記載なし」「日本での発売の記載なし」「10月15日発表」としていました。9月9日のプレスリリース（米国版と日本版）で、発表日は9月9日、米国の価格は $1,999 から、日本は10月23日発売で 364,800円（税込）からと確認したため、訂正しました。</p>
 <p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="latest-ai-models.html">10月の最新AIモデル3つを比べる</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>訂正：iPhone Duo の発表日（9月9日）、価格（米国 $1,999〜、日本 364,800円〜）、日本での発売（10月23日）を、Apple のプレスリリースに基づいて直した。価格・日程・提供地域の図も更新</li><li><span class="date">2026-10-19</span>初回公開（6つのAI端末の価格、日程、AIの制約、日本での提供状況）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>iPhone Duo 向けアプリのバッジ（Made for iPhone Duo）を追加</li><li><span class="date">2026-10-21</span>訂正：iPhone Duo の発表日（9月9日）、価格（米国 $1,999〜、日本 364,800円〜）、日本での発売（10月23日）を、Apple のプレスリリースに基づいて直した。価格・日程・提供地域の図も更新</li><li><span class="date">2026-10-19</span>初回公開（6つのAI端末の価格、日程、AIの制約、日本での提供状況）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

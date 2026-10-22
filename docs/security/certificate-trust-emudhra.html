@@ -173,6 +173,8 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 .viz svg .dot-new { fill: var(--series-1); }
 .viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
 
 .theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
 .theme-nav li { max-width: none; margin: 0; }
@@ -190,10 +192,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>証明書の信頼はどう守られているか：eMudhra の中間認証局の鍵の侵害と、各社の4日間の対応</h1><p class="summary">2026年10月17日に報告された eMudhra の中間認証局8つの秘密鍵の侵害について、信頼の鎖のどこが破られたか、Chrome・Mozilla・Go・認証局の対応の時系列、遮断が届く3つの道筋を、公式の記録をもとに図で整理する。Let&#x27;s Encrypt のドメイン確認の強化も扱う。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>証明書の信頼はどう守られているか：eMudhra の中間認証局の鍵の侵害と、各社の4日間の対応</h1><p class="summary">2026年10月17日に報告された eMudhra の中間認証局8つの秘密鍵の侵害について、信頼の鎖のどこが破られたか、Chrome・Mozilla・Go・認証局の対応の時系列、遮断が届く3つの道筋を、公式の記録をもとに図で整理する。Let&#x27;s Encrypt のドメイン確認の強化も扱う。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-23</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年10月17日、インドの認証局 eMudhra の中間認証局の証明書8つについて、<strong>秘密鍵が誰でも割り出せる状態だった</strong>ことが報告されました。Mozilla は、報告者の方法を知らないまま、自分たちでも鍵を割り出せたことを確認しています。原因は鍵の作り方の欠陥で、秘密鍵の値が極端に小さかったためです。</p>
 <p>この鍵があれば、どのドメイン名の証明書でも作れてしまいます。Chrome と Mozilla は報告の当日に、配信型の遮断リストでこれらを遮断しました。そのあと鍵を割り出す人が次々に現れたため、10月20日、Mozilla と Chrome は上位のルート証明書そのものの信頼を外す方針を決めました。Go も10月19日のセキュリティリリースで、8つの公開鍵を含む証明書チェーンを検証の結果から除外しています。</p>
+<p>10月22日、eMudhra は<strong>世界向けの SSL/TLS 証明書の事業から撤退する</strong>と発表しました。</p>
 </section>
 
 <div class="stats">
@@ -424,12 +427,27 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </ul>
 <p>eMudhra の件は「認証局の鍵そのもの」の問題で、Let's Encrypt の件は「証明書を出す前の確認」の強化です。どちらも、信頼の鎖のどこか1か所が破られたときに、被害を小さくするための仕組みです（筆者の整理）。</p>
 
+<h2>その後の動き：eMudhra は世界向けの TLS 証明書から撤退</h2>
+<div class="table-wrap">
+<table>
+<caption>10月21〜22日の動き（NVD、mitmproxy の変更履歴、eMudhra の発表より）</caption>
+<thead><tr><th>日付</th><th>動き</th></tr></thead>
+<tbody>
+<tr><td>10月21日</td><td>Go のセキュリティチームが、Go の修正（信頼できなくなった中間証明書を検証で拒否する一覧）を CVE-2026-111943 として登録</td></tr>
+<tr><td>10月21日</td><td>通信を途中で見るための道具 mitmproxy の開発中の版に、漏れた中間認証局の鍵で TLS 証明書に署名する設定が加わった。鍵が出回っていて、遮断が届かない環境では、なりすましの証明書が信頼されうることを示す</td></tr>
+<tr><td>10月22日</td><td>eMudhra の取締役会が、世界向けの SSL/TLS 証明書の事業から自ら撤退すると決定</td></tr>
+</tbody>
+</table>
+</div>
+<p>eMudhra は、この事業は売上の約1%で、コストの増加や無料で証明書を出す事業者の存在で採算が下がっていたうえ、SNS での拡散で事業の規模に見合わない注目を集めたと説明しています。問題の中間認証局は発見から14時間以内に失効し、そこから発行された利用者向けの証明書はなく、設備への侵入や情報の漏えいもないとしています（いずれも同社の説明）。</p>
+<p>移行の間は、RSA のルート（G1）を使い続け、利用者には提携先の証明書への無料の差し替えを案内します。失効と状態の確認のサービスは、発行済みの証明書がすべて期限切れか差し替えになるまで続け、ブラウザの側への原因の最終報告などの約束も果たすとしています。インド国内を含む電子署名の証明書やサービスは、影響を受けないとしています。</p>
+
 <h2>利用者が確かめること</h2>
 <div class="cards">
 <div class="card"><h3>Go で作ったプログラム</h3><p>Go 1.27.3 または 1.26.10 以降でビルドし直します。Go は、OS の検証を使う場合にも、8つの公開鍵を含むチェーンを除外します。</p></div>
 <div class="card"><h3>ブラウザ</h3><p>最新版に更新します。Android 版 Firefox は、一部で遮断リストが起動時に読み込まれない問題があり、158.0.2 で修正されました。</p></div>
 <div class="card"><h3>ルートの一覧を同梱するライブラリ</h3><p>certifi などを更新します。失効情報を確かめない環境では、ここが更新されるまで守られません。</p></div>
-<div class="card"><h3>eMudhra の証明書を使う Web サイト</h3><p>ECC のルート G3 の下の証明書は、別の経路に移す必要があります。eMudhra は RSA のルート G1 の下へ移すとしています。</p></div>
+<div class="card"><h3>eMudhra の証明書を使う Web サイト</h3><p>ECC のルート G3 の下の証明書は、別の経路に移す必要があります。eMudhra は世界向けの TLS 証明書から撤退するため、案内に従って、提携先の証明書への差し替え（無料）を進めます。移行の間は RSA のルート G1 が使われます。</p></div>
 </div>
 <p>このカードは、各社の対応からの筆者の整理です。</p>
 
@@ -449,11 +467,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月21日時点の情報です。調査や対応は続いていて、内容が変わる可能性があります。</p>
+<p>2026年10月23日時点の情報です（10月21日時点で作成し、23日にその後の動きを追加）。調査や対応は続いていて、内容が変わる可能性があります。eMudhra の撤退の理由や、被害がないことの説明は、同社の発表によります。</p>
 <p>Apple と Microsoft の対応は、公式の発表を確認できていないため扱っていません。悪用の有無は、確認した資料に記載がありませんでした。鍵を割り出す方法の詳細は載せていません。</p>
 <p>内容は、Mozilla、Chrome、Go、Let's Encrypt などの公開資料をもとに、独自に整理したものです。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（信頼の鎖と破られた場所、4日間の対応、原因、遮断が届く3つの道筋、Let&#x27;s Encrypt の確認拠点の追加）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>その後の動き（Go の修正の CVE 登録、mitmproxy への鍵の組み込み、eMudhra の世界向け TLS 証明書からの撤退）を追加</li><li><span class="date">2026-10-22</span>初回公開（信頼の鎖と破られた場所、4日間の対応、原因、遮断が届く3つの道筋、Let&#x27;s Encrypt の確認拠点の追加）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
