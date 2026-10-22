@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月21日、AI の中継ソフトウェア LiteLLM の 1.107.0 が、PyPI と Docker の正規の配布先からマルウェア入りで配布された。公開されていた時間、確かめ方と対処、開発者の認証情報を使ってリリースの守りが崩された流れを、開発元の公式の発表から図で整理する。">
+<title>正規の配布経路から届いたマルウェア：LiteLLM 1.107.0 の乗っ取りと、崩された何重もの守り | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>正規の配布経路から届いたマルウェア：LiteLLM 1.107.0 の乗っ取りと、崩された何重もの守り</h1><p class="summary">2026年10月21日、AI の中継ソフトウェア LiteLLM の 1.107.0 が、PyPI と Docker の正規の配布先からマルウェア入りで配布された。公開されていた時間、確かめ方と対処、開発者の認証情報を使ってリリースの守りが崩された流れを、開発元の公式の発表から図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>AI のモデルを呼び出す中継のソフトウェア「LiteLLM」の 1.107.0 が、2026年10月21日、PyPI と Docker の<strong>正規の配布先から、認証情報を盗むマルウェア入りで配布</strong>されました。PyPI では約1時間45分（日本時間20時39分〜22時23分）、Docker Hub では約2時間半公開されていました。GitHub の正式なソースの 1.107.0 には悪いコードは入っておらず、攻撃者は名前のよく似たリポジトリから配布物を作らせました。</p>
+<p>開発元は、3月の事件のあとリリースの手順を強めていました。しかし攻撃者は、3人の開発者の GitHub CLI の認証情報を手に入れ、そのうち組織の所有者の権限で保護を外して、リリースの仕組みそのものを書き換えました。開発元によると、認証情報は、インターネットに公開されていた社内の LiteLLM のログから取られたとみられます（確認中）。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">約1<small>時間</small>45<small>分</small></p><p class="stat-label">PyPI で 1.107.0 が公開されていた時間（11:39〜13:23 UTC）</p></div>
+<div class="stat"><p class="stat-value">7<small>つ</small></p><p class="stat-label">マルウェア入りだった PyPI の配布ファイル（wheel）</p></div>
+<div class="stat"><p class="stat-value">3<small>人分</small></p><p class="stat-label">攻撃者が持っていた開発者の GitHub CLI の認証情報</p></div>
+<div class="stat"><p class="stat-value">1.106.2</p><p class="stat-label">開発元が固定するよう求めるバージョン</p></div>
+</div>
+
+<h2>何が、いつ配布されたか</h2>
+<p>マルウェアは、認証情報を盗み、外部からのプログラムの実行を可能にする道具を読み込むものでした。1.107.0 より前のバージョンは安全で、法人向けの非公開の配布先も影響を受けていません。</p>
+
+<figure class="viz">
+<p class="viz-title">10月21日の流れ（UTC）</p>
+<p class="viz-sub">LiteLLM の公式の発表の時系列より。日本時間は9時間進めた時刻。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 280" role="img" aria-label="10月21日UTCの時系列。10時8分にブランチの保護が無許可の変更を拒否したが、5秒後に特権のある認証情報で上書きされた。10時46分に書き換えたワークフローが攻撃者のリポジトリで試験を開始。11時11分に2人目の認証情報で本番の承認を通過。PyPIでは11時39分から13時23分まで、Docker Hubでは11時46分から14時20分まで、GHCRでは11時46分から13時51分までにマルウェア入りの配布物が公開されていた。11時53分に3人目の認証情報でワークフローの記録が削除された。12時9分から24分に変更を取り除いた。">
+<g class="grid">
+<line x1="150" y1="30" x2="150" y2="240"/><line x1="306" y1="30" x2="306" y2="240"/><line x1="461" y1="30" x2="461" y2="240"/><line x1="617" y1="30" x2="617" y2="240"/><line x1="772" y1="30" x2="772" y2="240"/>
+</g>
+<text class="t-strong" x="20" y="76">リリースの仕組み</text>
+<text class="t-strong" x="20" y="146">PyPI</text>
+<text class="t-strong" x="20" y="181">Docker Hub</text>
+<text class="t-strong" x="20" y="216">GHCR</text>
+
+<circle class="mk-found" cx="171" cy="72" r="7"><title>10:08:29 ブランチの保護が、非公開のリリースのワークフローへの無許可の変更を拒否。10:08:34 特権のある開発者の認証情報で保護を上書きし、変更を適用</title></circle>
+<text class="t-small" x="171" y="50" text-anchor="middle">保護を上書きして書き換え</text>
+<circle class="mk-found" cx="269" cy="72" r="7"><title>10:46:39 書き換えたワークフローが、攻撃者のリポジトリ（Berri-AI/litellm）を使って試験の実行を開始。11:08:09 に完了</title></circle>
+<text class="t-small" x="269" y="100" text-anchor="middle">攻撃者のリポジトリで試験</text>
+<circle class="mk-found" cx="334" cy="72" r="7"><title>11:08:53 本番のリリースの流れが開始。11:11:18 2人目の開発者の認証情報で、本番の承認の関門を通過</title></circle>
+<text class="t-small" x="350" y="50" text-anchor="middle">2人目の権限で承認</text>
+<circle class="mk-found" cx="443" cy="72" r="7"><title>11:53:49〜11:54:01 3人目の開発者の認証情報で、本番と試験のワークフローの記録を削除。調査に使える記録が減った</title></circle>
+<text class="t-small" x="443" y="100" text-anchor="middle">3人目が記録を削除</text>
+<rect class="bar-old" x="484" y="66" width="39" height="12" rx="4"><title>12:09:38〜12:24:52 無許可の変更を取り除き、ワークフローを元に戻した</title></rect>
+<text class="t-small" x="530" y="50" text-anchor="middle">仕組みを元に戻す</text>
+
+<rect class="bar-2" x="407" y="136" width="269" height="14" rx="4"><title>PyPI：litellm==1.107.0 の7つの wheel。11:39:51 から公開、13:23 までに削除</title></rect>
+<text class="t-small" x="397" y="147" text-anchor="end">11:39〜13:23</text>
+<rect class="bar-2" x="425" y="171" width="399" height="14" rx="4"><title>Docker Hub：v1.107.0、latest、main-latest、main-stable が 11:46:56 から 14:20 まで、マルウェア入りのイメージを指していた</title></rect>
+<text class="t-small" x="415" y="182" text-anchor="end">11:46〜14:20</text>
+<rect class="bar-2" x="425" y="206" width="324" height="14" rx="4"><title>GHCR：同じタグが 11:46:56 から、13:51 までに使えなくなった</title></rect>
+<text class="t-small" x="415" y="217" text-anchor="end">11:46〜13:51 まで</text>
+
+<line class="axis" x1="150" y1="240" x2="850" y2="240"/>
+<text class="t-small t-muted" x="150" y="260" text-anchor="middle">10:00</text>
+<text class="t-small t-muted" x="306" y="260" text-anchor="middle">11:00</text>
+<text class="t-small t-muted" x="461" y="260" text-anchor="middle">12:00</text>
+<text class="t-small t-muted" x="617" y="260" text-anchor="middle">13:00</text>
+<text class="t-small t-muted" x="772" y="260" text-anchor="middle">14:00</text>
+</svg>
+</div>
+<figcaption>紫の点は攻撃者の操作、紫の帯はマルウェア入りの配布物が公開されていた時間です。最初の変更はブランチの保護に止められましたが、5秒後に、特権のある認証情報で上書きされました。</figcaption>
+</figure>
+
+<p>影響を受けるのは、バージョンを固定せずに、11:39〜13:23 UTC の間に pip で入れた人と、11:46〜14:20 UTC の間に、上のタグの Docker イメージを使った人です。</p>
+
+<h2>確かめ方と対処</h2>
+<p>開発元は、1.107.0 で Python を起動した環境を、侵害されたものとして扱うよう求めています。仕込まれたファイル（cook.pth、sitecustomize.py など）が見つかれば侵害の証拠ですが、見つからなくても安全の証明にはなりません。</p>
+
+<div class="table-wrap">
+<table>
+<caption>開発元が示す対処（10月21日時点の公式の発表より）</caption>
+<thead><tr><th>順番</th><th>やること</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>pip install から始めない。その環境で Python を起動すると、pip の実行も含めて、仕込まれたファイルがまた動く</td></tr>
+<tr><td>2</td><td>シェルから、仕込まれたファイルとそのキャッシュを消し、切り離されて動き続けるプロセスを止める</td></tr>
+<tr><td>3</td><td>1.106.2 に固定して入れ直す。環境やイメージを一から作り直すほうがよい</td></tr>
+<tr><td>4</td><td>インターネットにつながるホストに入れたことがあれば、情報は持ち出されたと考える</td></tr>
+<tr><td>5</td><td>そのホストから届くものをすべて変える：クラウドの権限（IAM ロール）、LiteLLM のプロキシの DB に保存したすべての AI 事業者の鍵、マスターキーと仮想キー、DATABASE_URL のパスワード、ホスト上のプロセスの環境変数にあった秘密</td></tr>
+<tr><td>6</td><td>クラウドの記録で、インストールのころの権限の確認の呼び出しと、その後の外部からの権限の利用を調べる</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>何重もの守りは、どう崩されたか</h2>
+<p>開発元は、3月の事件のあと、リリースを非公開のリポジトリに移し、決まったワークフローと GitHub の信頼できる公開者（Trusted Publishers）の仕組みで公開するようにしていました。Docker のタグは書き換え不可にし、イメージに署名もしていました。公開できるのは、事務所に常に置かれた特定のノートパソコンに結びついたアカウントだけでした。</p>
+
+<figure class="viz">
+<p class="viz-title">崩された守りの連鎖</p>
+<p class="viz-sub">LiteLLM の公式の発表より。調査は続いており、破線の枠は開発元も確認中の部分</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 280" role="img" aria-label="連鎖の図。インターネットに公開された社内のLiteLLMのログから、3人分のGitHub CLIのトークンが取られたとみられる（確認中）。組織の所有者の権限でブランチの保護を外し、リリースの仕組みをそっくりなリポジトリに向けて書き換えた。2人目の権限で本番の承認の関門を通過し、署名つきでPyPIとDockerに公開された。その後、3人目の権限でワークフローの記録が削除された。">
+<defs><marker id="arrow-litellm-chain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<rect class="box" x="20" y="30" width="260" height="76" rx="6" stroke-dasharray="4 4"><title>開発元は、公開されていた社内の LiteLLM に見覚えのないアカウントを見つけた。入り方は確認できておらず、最近修正された脆弱性を通じたと疑っている</title></rect>
+<text class="t-strong" x="150" y="60" text-anchor="middle">インターネットに公開された</text>
+<text class="t-strong" x="150" y="82" text-anchor="middle">社内の LiteLLM に侵入</text>
+<line class="arrow" x1="282" y1="68" x2="306" y2="68" marker-end="url(#arrow-litellm-chain)"/>
+
+<rect class="box" x="310" y="30" width="260" height="76" rx="6" stroke-dasharray="4 4"><title>開発元は、Claude Code が特定の状況で GitHub CLI の OAuth トークンを応答の本文に含めることがあり、応答の本文をログに残す設定では LiteLLM のログに載りうると観測したとしている</title></rect>
+<text class="t-strong" x="440" y="60" text-anchor="middle">ログから GitHub CLI の</text>
+<text class="t-strong" x="440" y="82" text-anchor="middle">トークンを入手（3人分）</text>
+<line class="arrow" x1="572" y1="68" x2="596" y2="68" marker-end="url(#arrow-litellm-chain)"/>
+
+<rect class="box" x="600" y="30" width="260" height="76" rx="6"><title>守り：ブランチの保護。無許可の変更はいったん拒否されたが、組織の所有者（2人のうちの1人）の権限で保護を外し、強制的に書き換えた</title></rect>
+<text class="t-strong" x="730" y="60" text-anchor="middle">所有者の権限で</text>
+<text class="t-strong" x="730" y="82" text-anchor="middle">ブランチの保護を外す</text>
+<line class="arrow" x1="730" y1="108" x2="730" y2="146" marker-end="url(#arrow-litellm-chain)"/>
+
+<rect class="box" x="600" y="150" width="260" height="76" rx="6"><title>守り：非公開のリポジトリと決まったワークフロー。ワークフローを、そっくりなリポジトリ Berri-AI/litellm（本物は BerriAI/litellm）に向けた</title></rect>
+<text class="t-strong" x="730" y="180" text-anchor="middle">リリースの仕組みを</text>
+<text class="t-strong" x="730" y="202" text-anchor="middle">そっくりなリポジトリへ</text>
+<line class="arrow" x1="598" y1="188" x2="574" y2="188" marker-end="url(#arrow-litellm-chain)"/>
+
+<rect class="box" x="310" y="150" width="260" height="76" rx="6"><title>守り：本番の承認の関門。月曜日に、毎日のバグ修正のため2人の技術者にリリースの権限を一時的に広げていた</title></rect>
+<text class="t-strong" x="440" y="180" text-anchor="middle">2人目の権限で</text>
+<text class="t-strong" x="440" y="202" text-anchor="middle">本番の承認を通過</text>
+<line class="arrow" x1="308" y1="188" x2="284" y2="188" marker-end="url(#arrow-litellm-chain)"/>
+
+<rect class="box-key" x="20" y="150" width="260" height="76" rx="6"><title>守り：信頼できる公開者の仕組みと署名。正規の仕組みが動いたため、署名つきで公開された</title></rect>
+<text class="t-strong" x="150" y="180" text-anchor="middle">署名つきで</text>
+<text class="t-strong" x="150" y="202" text-anchor="middle">PyPI と Docker に公開</text>
+
+<text class="t-small t-muted" x="20" y="258">そのあと、3人目の権限でワークフローの記録が削除され、調査に使える記録が減った</text>
+</svg>
+</div>
+<figcaption>どの守りも、それを開ける権限を持つ人の認証情報で開けられました。最初の2つの段階（破線の枠）は、開発元の見方で、開発元も確認中としています。</figcaption>
+</figure>
+
+<p>開発元は、Claude Code が特定の状況で、利用者の GitHub CLI の OAuth トークンを応答の本文に含めることがあり、応答の本文をログに残す設定では、そのトークンが LiteLLM のログに載りうることを観測したとしています。社内の LiteLLM への入り方は確認できておらず、最近修正された脆弱性を通じたと疑っている段階です。この点についての Anthropic の見解は、10月22日時点で確認できていません。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：利用者から見ると、マルウェアは正規の配布先から、正規の名前とバージョンで届きました。署名や信頼できる公開者の仕組みがあっても、その仕組みを動かす権限が取られれば、署名つきでマルウェアが出ます。守りは何重にもありましたが、それぞれを開ける人の認証情報が複数まとめて取られ、一時的に広げた権限も入口になりました。開発者の認証情報が、AI の道具とその中継のログという新しい場所に流れうることも示されました（開発元の見方）。利用者の側では、バージョンを固定することと、新しいバージョンをすぐに入れないことが、被害の範囲を分けました。</p>
+</div>
+
+<dl class="terms">
+<dt>LiteLLM</dt><dd>いろいろな AI のモデルを、同じ形で呼び出せるようにするオープンソースのソフトウェア。中継のサーバー（プロキシ）としても使われる。</dd>
+<dt>PyPI</dt><dd>Python のパッケージを配布する公式の置き場所。</dd>
+<dt>wheel</dt><dd>Python のパッケージを、すぐに入れられる形にした配布ファイル。</dd>
+<dt>Docker イメージ</dt><dd>ソフトウェアを動かす環境をまとめたもの。latest などのタグで呼び出す。</dd>
+<dt>ソフトウェアの供給網</dt><dd>ソフトウェアが作られ、配布され、利用者に届くまでの流れ。</dd>
+<dt>ワークフロー</dt><dd>GitHub Actions などで、決まった手順を自動で動かす仕組み。</dd>
+<dt>ブランチの保護</dt><dd>レビューや確認を通さない変更を拒む GitHub の設定。</dd>
+<dt>OAuth トークン</dt><dd>パスワードの代わりに、ほかの道具に権限を渡すための文字列。</dd>
+<dt>バージョンの固定</dt><dd>入れるバージョンを明示して、新しい版が自動で入らないようにすること。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。開発元は調査を続けており、内容は変わりえます。時刻は UTC です。マルウェアが集める情報の細かい一覧は、第三者の分析のため扱っていません。侵入の経路と Claude Code についての記述は開発元の見方で、開発元も確認中としています。Anthropic の見解は確認できていません。なお、この記事をまとめた筆者の道具には、Claude Code を含む Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（公開されていた時間、対処、崩された守りの連鎖）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月21日に修正版が出た PHP の脆弱性2件（CVSS 9.2）について、壊れた状態が次のリクエストに引き継がれる仕組み、対象のバージョンと軽減策、AI の道具を使った発見から公開までの年表、情報の漏れで前倒しになった公開前夜と国内の緊急メンテナンスを、公式の発表から図で整理する。">
+<title>PHP の緊急の脆弱性「PHP2Shell」：Web の土台に10年以上ひそんだ欠陥と、公開前夜の混乱 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>PHP の緊急の脆弱性「PHP2Shell」：Web の土台に10年以上ひそんだ欠陥と、公開前夜の混乱</h1><p class="summary">2026年10月21日に修正版が出た PHP の脆弱性2件（CVSS 9.2）について、壊れた状態が次のリクエストに引き継がれる仕組み、対象のバージョンと軽減策、AI の道具を使った発見から公開までの年表、情報の漏れで前倒しになった公開前夜と国内の緊急メンテナンスを、公式の発表から図で整理する。</p><p class="meta">初回公開 2026-10-22 ／ 更新日 2026-10-22</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月21日の日本時間23時、PHP の開発チームは、<strong>認証なしに外部からサーバー上でプログラムを動かされるおそれのある脆弱性2件</strong>（CVE-2026-109618、CVE-2026-109619）を直した PHP 8.5.12／8.4.27／8.3.36／8.2.35 を公開しました。どちらも CVSS v4.0 で 9.2（緊急）です。2つを合わせて「PHP2Shell」と呼ばれています。</p>
+<p>原因は、メモリ不足などで処理が途中で止まったときに壊れた状態が残り、同じワーカーが次のリクエストでそれを使ってしまうことです。PHP の中心の部分にあるため、アプリケーションの作りに関係なく影響します。修正の公開は、CVE 番号が漏れたため1日前倒しされました。国内では、修正の公開を待たずに緊急メンテナンスに入るサービスが相次ぎました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">9.2</p><p class="stat-label">2件の CVSS v4.0 の値（緊急）。漏れた情報では誤って 10.0 とされていた</p></div>
+<div class="stat"><p class="stat-value">4<small>系列</small></p><p class="stat-label">修正版が出た系列（8.5／8.4／8.3／8.2）。8.1 以前は開発チームの更新の対象外</p></div>
+<div class="stat"><p class="stat-value">5.4<small>以降</small></p><p class="stat-label">少なくとも一方の影響を受けるバージョン（Wiz）</p></div>
+<div class="stat"><p class="stat-value">1<small>日</small></p><p class="stat-label">情報の漏えいを受けて前倒しした公開の日数</p></div>
+</div>
+
+<h2>何が起きるのか</h2>
+<p>PHP では、1つのワーカー（PHP を動かすプロセス）が、多くのリクエストを順に処理します。今回の2件は、どちらも「前のリクエストの後片付けが不完全なまま、次のリクエストに進んでしまう」ことが原因です。</p>
+
+<figure class="viz">
+<p class="viz-title">壊れた状態が、次のリクエストに引き継がれる</p>
+<p class="viz-sub">PHP の告知、PHP Foundation と Wiz の説明をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="仕組みの模式図。攻撃者が送ったリクエスト1が、メモリ不足や致命的なエラーで途中で止まる。後片付けが不完全なため、解放済みのメモリを指す壊れた状態が残る。同じワーカーが処理するリクエスト2は、初期化の前に残った状態を使ってしまう。その結果、メモリの破損や読み出しが起き、認証なしのプログラム実行につながる。">
+<defs><marker id="arrow-php-mech" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<rect class="box" x="30" y="30" width="270" height="70" rx="6"/>
+<text class="t-strong" x="165" y="58" text-anchor="middle">リクエスト1（攻撃者が送る）</text>
+<text class="t-small" x="165" y="82" text-anchor="middle">メモリ不足や致命的なエラーで途中停止</text>
+
+<line class="arrow" x1="302" y1="65" x2="346" y2="65" marker-end="url(#arrow-php-mech)"/>
+
+<rect class="box-key" x="350" y="30" width="190" height="70" rx="6"><title>CVE-2026-109618：中途半端に作られた内部のデータが、後片付けで正しいものとして扱われる。CVE-2026-109619：内部の状態が、解放済みのメモリを指したまま残る</title></rect>
+<text class="t-strong" x="445" y="58" text-anchor="middle">壊れた状態が残る</text>
+<text class="t-small" x="445" y="82" text-anchor="middle">解放済みのメモリを指す</text>
+
+<line class="arrow" x1="542" y1="65" x2="586" y2="65" marker-end="url(#arrow-php-mech)"/>
+
+<rect class="box" x="590" y="30" width="260" height="70" rx="6"/>
+<text class="t-strong" x="720" y="58" text-anchor="middle">リクエスト2（同じワーカー）</text>
+<text class="t-small" x="720" y="82" text-anchor="middle">初期化の前に、残った状態を使う</text>
+
+<line class="axis" x1="30" y1="128" x2="850" y2="128"/>
+<text class="t-small t-muted" x="440" y="150" text-anchor="middle">同じワーカー（PHP のプロセス）が、リクエストを順に処理する</text>
+
+<line class="arrow" x1="720" y1="102" x2="720" y2="172" marker-end="url(#arrow-php-mech)"/>
+<rect class="box" x="560" y="176" width="290" height="58" rx="6" stroke-dasharray="4 4"/>
+<text class="t-strong" x="705" y="200" text-anchor="middle">メモリの破損・読み出し</text>
+<text class="t-small" x="705" y="222" text-anchor="middle">→ 認証なしのプログラム実行</text>
+
+<text class="t-small t-muted" x="30" y="196">アプリケーションのコードが動く前に起きる経路がある</text>
+<text class="t-small t-muted" x="30" y="216">（Apache の mod_php。既定の設定で実証）</text>
+</svg>
+</div>
+<figcaption>Wiz は、WordPress、Drupal、Joomla の最新のコンテナイメージで、認証なしのプログラム実行を実証しました。プログラムを動かさなくても、ほかのリクエストのパスワードやトークン、API キーを含みうるメモリを読み出せることも示しています。脆弱性は PHP 自体にあるので、簡単な「Hello World」のアプリでも影響しえます。</figcaption>
+</figure>
+
+<p>PHP の開発チームによると、影響を受けるのは、Web のリクエストを処理するすべての PHP です（PHP-FPM、Apache の mod_php、php-cgi、FrankenPHP、LiteSpeed）。危険が最も高いのは mod_php です。</p>
+
+<h2>対策</h2>
+<p>完全な対策は、修正版への更新だけです。Linux のディストリビューションと長期サポートの業者は、事前に修正を受け取っています。</p>
+
+<div class="table-wrap">
+<table>
+<caption>系列ごとの対応（PHP の告知と IPA の注意喚起より）</caption>
+<thead><tr><th>系列</th><th>対応</th></tr></thead>
+<tbody>
+<tr><td>8.5</td><td>8.5.12 に更新</td></tr>
+<tr><td>8.4</td><td>8.4.27 に更新</td></tr>
+<tr><td>8.3</td><td>8.3.36 に更新</td></tr>
+<tr><td>8.2</td><td>8.2.35 に更新。8.2 は2026年12月31日でサポートが終わる</td></tr>
+<tr><td>8.1 以前</td><td>開発チームの更新の対象外。今回は深刻さを考え、7.4、8.0、8.1 向けに最小限のソースの修正が用意された。業者が修正を提供している場合もある。サポートのある系列への移行を検討する</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>すぐに更新できないときに、特定の攻撃の経路を減らす設定も示されています。ただし、PHP の開発チームは、どれも「安全にするものではない」としています。</p>
+
+<div class="table-wrap">
+<table>
+<caption>すぐに更新できないときの軽減策（PHP の告知より。要点のみ）</caption>
+<thead><tr><th>脆弱性</th><th>軽減策</th></tr></thead>
+<tbody>
+<tr><td>CVE-2026-109618<br>（メモリ不足による破損）</td><td>memory_limit=-1 を、アプリが上書きできない方法で設定する／post_max_size を小さくする（アップロードがなければ 8M、あれば 32M）／Web サーバーやプロキシで、リクエストの大きさや項目の数を制限する／コンテナや cgroup でメモリの上限を設ける</td></tr>
+<tr><td>CVE-2026-109619<br>（古い状態の残り）</td><td>session.upload_progress.enabled=0 にして、すべてのワーカーを再起動する／PHP 8.5 では fatal_error_backtraces=0 にする／リクエストごとに当てている無効な設定を取り除く／攻撃者が起こせる致命的なエラーや時間切れを直す</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>IPA は、すぐに直せない場合の考え方として、サポート状況の確認、暫定対策とアクセス制限、必要なら外部からのアクセスの遮断やサービスの一時停止、経営層を含めた体制の検討、移行や廃止も含めた方針の決定を挙げています。製品や機器の内部で PHP が使われていて、利用者からは見えない場合があることにも注意を促しています。Wiz は、攻撃の兆しとして、メモリの上限のエラーや HTTP 500 が続く不審なリクエスト、異常に大きいか形の崩れた PHPSESSID の Cookie、説明のつかないワーカーの入れ替わりを挙げています。</p>
+
+<h2>見つかるまで</h2>
+<p>欠陥そのものは10年以上前からありました。2024年の外部の監査をきっかけに兆しは見つかっていましたが、修正は何か月も止まっていました。2026年夏、AI の道具を使った複数の調査が、同じ原因から攻撃できることを示しました。</p>
+
+<figure class="viz">
+<p class="viz-title">兆しから公開まで</p>
+<p class="viz-sub">PHP Foundation のブログと Wiz の公表の年表より</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 210" role="img" aria-label="2024年、外部の監査の指摘を直す中で兆しが見つかったが、修正は止まった。2026年7月30日にCalifが監査を開始。8月11日にCalifとOpenAIが同じ原因を報告。8月19日にWizが発見し、8月24日に報告。9月18日にOpenAIが追加の攻撃の経路を報告。10月21日に修正版を公開。">
+<rect class="bar-old" x="20" y="92" width="170" height="28" rx="4"><title>2024年：外部の監査の指摘を直す中で、OOM の問題の最初の兆しが見つかった。攻撃の経路が見つからず、直し方の案もそれぞれ問題を抱え、修正が何か月も止まった</title></rect>
+<text class="t-strong" x="105" y="70" text-anchor="middle">2024年</text>
+<text class="t-small" x="105" y="146" text-anchor="middle">監査で兆し</text>
+<text class="t-small" x="105" y="164" text-anchor="middle">修正が止まる</text>
+<text class="t-muted" x="212" y="112" text-anchor="middle">…</text>
+
+<line class="axis" x1="236" y1="106" x2="850" y2="106"/>
+<circle class="dot-old" cx="294" cy="106" r="7"><title>2026年7月30日：OpenAI の Patch the Planet の枠組みで、Calif が PHP の監査を開始</title></circle>
+<text class="t-small" x="280" y="160" text-anchor="middle">Calif が監査を開始</text>
+<text class="t-small t-muted" x="294" y="132" text-anchor="middle">7/30</text>
+
+<circle class="mk-found" cx="371" cy="106" r="7"><title>8月11日：Calif が条件なしのプログラム実行を報告。OpenAI も同じ日に、独立に同じ原因を報告</title></circle>
+<text class="t-small" x="371" y="56" text-anchor="middle">Calif と OpenAI が</text>
+<text class="t-small" x="371" y="72" text-anchor="middle">同じ原因を報告</text>
+<text class="t-small t-muted" x="371" y="132" text-anchor="middle">8/11</text>
+
+<circle class="mk-found" cx="422" cy="106" r="7"><title>8月19日：Wiz が最初の脆弱性を発見（AI の道具を使用）。20日に Drupal、21日に WordPress で実証</title></circle>
+<text class="t-small" x="476" y="160" text-anchor="middle">Wiz が発見（8/19）、報告（8/24）</text>
+<circle class="mk-found" cx="454" cy="106" r="7"><title>8月24日：Wiz が PHP に報告</title></circle>
+<text class="t-small t-muted" x="422" y="132" text-anchor="middle">8/19</text>
+<text class="t-small t-muted" x="458" y="132" text-anchor="middle">8/24</text>
+
+<circle class="mk-found" cx="613" cy="106" r="7"><title>9月18日：OpenAI がさらに攻撃の経路を報告</title></circle>
+<text class="t-small" x="613" y="80" text-anchor="middle">OpenAI が追加の経路</text>
+<text class="t-small t-muted" x="613" y="132" text-anchor="middle">9/18</text>
+
+<circle class="mk-announce" cx="824" cy="106" r="7"><title>10月21日：修正版の公開と公表</title></circle>
+<text class="t-small" x="818" y="80" text-anchor="middle">修正版を公開</text>
+<text class="t-small t-muted" x="824" y="132" text-anchor="middle">10/21</text>
+</svg>
+</div>
+<figcaption>PHP Foundation は、2024年に修正が止まったことを、セキュリティチームの決め方と人手の不足による「構造的な失敗」だったと認めています。8月11日以降は、財団のセキュリティの担当者全員がこの修正を最優先にしました。紫の点は報告、黒の点は公開を表します。</figcaption>
+</figure>
+
+<h2>公開前夜の混乱</h2>
+<p>PHP Foundation によると、協調した開示は、予定日の2日前まではうまくいっていました。そこから、情報の漏れや先行公開が重なりました。</p>
+
+<figure class="viz">
+<p class="viz-title">10月21日 0時から22日 9時まで（日本時間）</p>
+<p class="viz-sub">PHP Foundation の記載（UTC を日本時間に直した）と、各社のお知らせより。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="日本時間の時系列。10月21日0時ごろにCVE番号が漏れる。4時30分にPHPが予告と公開日を前倒し。5時ごろに実証の動画が誤って公開される。8時ごろに重要インフラ事業者への軽減策の案内が漏れた可能性。16時41分にChainguardが修正入りのイメージを先行公開。22時にIDCフロンティア、22時30分にさくらインターネット、22時55分にセガが緊急メンテナンスに入る。23時に修正版を公開。10月22日8時にIDCフロンティア、8時15分にさくらインターネットがおおむね再開。セガは10時54分時点で復旧未定。">
+<g class="grid">
+<line x1="130" y1="40" x2="130" y2="256"/><line x1="261" y1="40" x2="261" y2="256"/><line x1="392" y1="40" x2="392" y2="256"/><line x1="523" y1="40" x2="523" y2="256"/><line x1="653" y1="40" x2="653" y2="256"/><line x1="784" y1="40" x2="784" y2="256"/>
+</g>
+<text class="t-strong" x="20" y="96">漏れ・先行</text>
+<text class="t-strong" x="20" y="164">PHP</text>
+<text class="t-strong" x="20" y="226">国内の対応</text>
+
+<circle class="mk-advisory" cx="130" cy="92" r="7"><title>10月21日0時ごろ：2つの CVE 番号が、誤った公開時刻と誤った CVSS 10.0 とともに、掲示板や SNS に出回った。技術的な詳細は漏れていない</title></circle>
+<text class="t-small" x="136" y="70" text-anchor="middle">CVE 番号が漏れる</text>
+<circle class="mk-advisory" cx="239" cy="92" r="7"><title>10月21日5時ごろ：発見者の一社が、攻撃の実証の動画を誤って公開。削除されたが写しが出回り、実証コードづくりが加速した</title></circle>
+<text class="t-small" x="239" y="70" text-anchor="middle">動画の誤公開</text>
+<circle class="mk-advisory" cx="304" cy="92" r="7"><title>10月21日8時ごろ：一部の重要インフラ事業者に案内し始めた軽減策が、漏れた可能性がある</title></circle>
+<text class="t-small" x="318" y="120" text-anchor="middle">軽減策の案内が漏れた可能性</text>
+<circle class="mk-advisory" cx="494" cy="92" r="7"><title>10月21日16時41分：配布業者の Chainguard が、公開の6時間以上前に修正を含むイメージを単独で公開（財団は取り決めを破ったとしている）</title></circle>
+<text class="t-small" x="494" y="70" text-anchor="middle">修正入りのイメージが先行公開</text>
+
+<circle class="mk-period" cx="228" cy="160" r="7"><title>10月21日4時30分：PHP が予告を前倒しして公表し、公開日を22日から21日に早めた</title></circle>
+<text class="t-small" x="236" y="186" text-anchor="middle">予告と公開日を前倒し</text>
+<line class="line-limit" x1="631" y1="40" x2="631" y2="256"/>
+<circle class="mk-announce" cx="631" cy="160" r="8"><title>10月21日23時：修正版の公開と、技術的な詳細の公表。公開の時点で、動く攻撃のコードは確認されていなかった</title></circle>
+<text class="t-small" x="620" y="140" text-anchor="end">修正版の公開 23:00</text>
+
+<rect class="bar" x="610" y="208" width="218" height="8" rx="4"><title>IDCフロンティア（Zenlogic ホスティング）：10月21日22時から Web サーバーを止めて更新。PHP 7.4〜8.5 は22日8時に再開。PHP 5.3 は最新版に上げる作業を続けた</title></rect>
+<rect class="bar" x="621" y="222" width="212" height="8" rx="4"><title>さくらインターネット：10月21日22時30分から予防の緊急メンテナンス。22日8時15分時点で一部を除き解除</title></rect>
+<rect class="bar-old" x="630" y="236" width="219" height="8" rx="4"><title>セガ（製品情報サイト）：10月21日22時55分から緊急メンテナンス。22日10時54分時点で復旧日時は未定</title></rect>
+<text class="t-small" x="600" y="216" text-anchor="end">IDCフロンティア 22:00〜</text>
+<text class="t-small" x="600" y="230" text-anchor="end">さくらインターネット 22:30〜</text>
+<text class="t-small" x="600" y="244" text-anchor="end">セガ 22:55〜（復旧未定）</text>
+
+<line class="axis" x1="130" y1="256" x2="850" y2="256"/>
+<text class="t-small t-muted" x="130" y="276" text-anchor="middle">21日 0時</text>
+<text class="t-small t-muted" x="261" y="276" text-anchor="middle">6時</text>
+<text class="t-small t-muted" x="392" y="276" text-anchor="middle">12時</text>
+<text class="t-small t-muted" x="523" y="276" text-anchor="middle">18時</text>
+<text class="t-small t-muted" x="653" y="276" text-anchor="middle">22日 0時</text>
+<text class="t-small t-muted" x="784" y="276" text-anchor="middle">6時</text>
+</svg>
+</div>
+<figcaption>前倒しを1日にとどめたのは、すぐに公開すると、配布業者の準備が間に合わず、多くの利用者が簡単に更新できなくなるためでした。PHP は、公開の時点で、出回った実証コードの中に動く攻撃のコードは確認していなかったとしています。緑の帯は再開まで、灰色の帯は10月22日10時54分時点で復旧未定を表します。</figcaption>
+</figure>
+
+<h2>国内の対応</h2>
+<div class="table-wrap">
+<table>
+<caption>公式のお知らせで確認できた対応（10月22日時点）</caption>
+<thead><tr><th>組織</th><th>対応</th></tr></thead>
+<tbody>
+<tr><td>さくらインターネット</td><td>修正の公開の前の10月21日22時30分から、会員関連機能などで予防の緊急メンテナンス。22日8時15分時点で一部を除き解除。提供中のサポート切れの PHP にも修正を適用。22日14時時点で、悪用による被害は報告されていない</td></tr>
+<tr><td>IDCフロンティア（Zenlogic ホスティング）</td><td>21日22時から Web サーバーを止めて更新。PHP 7.4〜8.5 は22日8時に再開。PHP 5.3 のサーバーは最新版に上げる（元に戻せない）作業を続けた</td></tr>
+<tr><td>セガ（製品情報サイト）</td><td>21日22時55分から緊急メンテナンス。22日10時54分時点で復旧日時は未定</td></tr>
+<tr><td>IPA</td><td>21日に事前準備のお願い、22日に注意喚起を公表</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：欠陥は10年以上前からありました。PHP Foundation と Wiz はどちらも、攻撃に使える形にするには複雑な手順が必要だったが、AI の道具がその壁を下げたとしています。守る側では、公開の前に情報の一部が漏れ、準備の時間が縮みました。更新できない古い PHP を使い続けている仕組みは、IPA の言うとおり、廃止も含めた判断が必要になります。</p>
+</div>
+
+<dl class="terms">
+<dt>PHP</dt><dd>Web サイトや Web アプリケーションを作るためのプログラミング言語。WordPress などで使われる。</dd>
+<dt>リモートコード実行</dt><dd>外部から、相手のサーバー上で好きなプログラムを動かすこと。</dd>
+<dt>CVSS</dt><dd>脆弱性の深刻さを0〜10で表す共通の尺度。v4.0 はその新しい版。</dd>
+<dt>ワーカー</dt><dd>Web サーバーでリクエストを処理するプロセス。1つが多くのリクエストを順に処理する。</dd>
+<dt>memory_limit</dt><dd>PHP の1つのリクエストが使えるメモリの上限の設定。</dd>
+<dt>解放後のメモリの使用</dt><dd>すでに返したメモリを使い続ける誤り。中身を攻撃者に差し替えられるおそれがある。</dd>
+<dt>mod_php／PHP-FPM</dt><dd>PHP を Web サーバーで動かす方式。mod_php は Apache に組み込み、PHP-FPM は別のプロセスで動かす。</dd>
+<dt>協調した開示</dt><dd>脆弱性を見つけた人と開発者が公開の日を決め、修正の準備ができてから一斉に公表すること。それまで情報を伏せておく取り決めを「エンバーゴ」と呼ぶ。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月22日時点の情報です。時刻は、PHP Foundation の記載（UTC）を日本時間に直したものと、各社のお知らせによります。攻撃の手順は扱っていません。報道に出ているほかの国内サービスの停止は、公式のお知らせを確認できたものだけを載せています。発見と修正には AI の道具が使われ、PHP Foundation は OpenAI や Anthropic などから道具の提供や資金の支援を受けたとしています。なお、この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-22</span>初回公開（仕組み、対策、見つかるまでの年表、公開前夜の時系列、国内の対応）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
