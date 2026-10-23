@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月、フランスで店舗の冷蔵設備を遠隔から管理する装置への侵害が相次いだ。CERT-FR が求めた手順、メーカーのお知らせ、攻撃の前にインターネットから開けた管理画面の数と、その多くが弱点を抱えたまま半年以上開いていたことを、CERT-FR の注意喚起と IPinfo の走査から図で整理する。">
+<title>冷蔵設備の管理画面がインターネットに開いていた：フランスで相次いだ侵害と、CERT-FR の呼びかけ | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>冷蔵設備の管理画面がインターネットに開いていた：フランスで相次いだ侵害と、CERT-FR の呼びかけ</h1><p class="summary">2026年10月、フランスで店舗の冷蔵設備を遠隔から管理する装置への侵害が相次いだ。CERT-FR が求めた手順、メーカーのお知らせ、攻撃の前にインターネットから開けた管理画面の数と、その多くが弱点を抱えたまま半年以上開いていたことを、CERT-FR の注意喚起と IPinfo の走査から図で整理する。</p><p class="meta">初回公開 2026-10-23 ／ 更新日 2026-10-23</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>フランスで、<strong>店舗の冷蔵・冷凍設備を遠隔から管理する装置への侵害</strong>が相次ぎました。フランスの政府のセキュリティ機関 CERT-FR は、2026年10月12日に注意喚起を出し、Danfoss の AK-SM・AK-SC と、Copeland と Dixell の XWEB の侵害を「多数」把握しているとしました。管理の画面をインターネットに出すこと自体が良い慣行に反するとして、まずインターネットから外すよう求めています。</p>
+<p>IP アドレスのデータ会社 IPinfo の走査では、攻撃の5日前、Danfoss の管理画面がインターネットから開ける状態で世界に2,528台あり、その半分以上の1,331台がフランスにありました。その85%は、知られた弱点を抱えたままでした。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1,331<small>台</small></p><p class="stat-label">フランスで、インターネットから開けた Danfoss の管理画面（攻撃の5日前、IPinfo）</p></div>
+<div class="stat"><p class="stat-value">85<small>%</small></p><p class="stat-label">そのうち、知られた弱点を抱えていた割合（IPinfo の分類）</p></div>
+<div class="stat"><p class="stat-value">1,019<small>台</small></p><p class="stat-label">半年前の3月30日にも、同じアドレスで開いていた台数</p></div>
+<div class="stat"><p class="stat-value">76<small>%</small></p><p class="stat-label">攻撃の後（10月14日）に、インターネットから消えた割合</p></div>
+</div>
+
+<h2>CERT-FR が求めたこと</h2>
+<p>注意喚起（CERTFR-2026-ALE-012）は、10月12日に出され、13日に Copeland と Dixell の XWEB を対象に加え、16日に推奨を更新しました。攻撃の活動は「おそらく続いている」としています。侵入の方法や攻撃者は、明らかにしていません。</p>
+
+<figure class="viz">
+<p class="viz-title">侵害されているかで分かれる、CERT-FR の手順</p>
+<p class="viz-sub">CERTFR-2026-ALE-012（10月16日版）より</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="どちらの場合も、まずインターネットから外す。冷凍の業者へのデータの送信を止める前に、保険の契約の条件を確かめる。侵害されていなければ、設定、特に霜取りの時間帯を確かめる。侵害されていれば、Danfossの機器は再起動し、だめなら工場出荷時の状態に戻して設定し直す。どちらも、再開はVPNか保護されたネットワークだけで行い、ファームウェアの更新などメーカーの推奨を行う。">
+<defs><marker id="frg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="box-key" x="20" y="112" width="200" height="76" rx="8"/>
+<text class="t-strong" x="120" y="140" text-anchor="middle">1 インターネットから外す</text>
+<text class="t-small" x="120" y="160" text-anchor="middle">公開の IP アドレスにある装置すべて</text>
+<text class="t-small" x="120" y="176" text-anchor="middle">止める前に保険の条件を確認</text>
+
+<path class="arrow" d="M220,138 L250,138 L250,70 L276,70" marker-end="url(#frg-arrow)"/>
+<path class="arrow" d="M220,162 L250,162 L250,230 L276,230" marker-end="url(#frg-arrow)"/>
+<text class="t-small t-muted" x="405" y="30" text-anchor="middle">侵害されていない場合</text>
+<text class="t-small t-muted" x="405" y="280" text-anchor="middle">侵害された場合</text>
+
+<rect class="box" x="280" y="40" width="250" height="60" rx="8"/>
+<text class="t-strong" x="405" y="66" text-anchor="middle">2 設定を確かめる</text>
+<text class="t-small" x="405" y="86" text-anchor="middle">特に霜取りの時間帯</text>
+<rect class="box" x="280" y="200" width="250" height="60" rx="8"/>
+<text class="t-strong" x="405" y="226" text-anchor="middle">2 再起動か、工場出荷の状態に</text>
+<text class="t-small" x="405" y="246" text-anchor="middle">戻してから設定し直す</text>
+
+<path class="arrow" d="M530,70 L560,70 L560,138 L586,138" marker-end="url(#frg-arrow)"/>
+<path class="arrow" d="M530,230 L560,230 L560,162 L586,162" marker-end="url(#frg-arrow)"/>
+
+<rect class="box-key" x="590" y="100" width="270" height="100" rx="8"/>
+<text class="t-strong" x="725" y="128" text-anchor="middle">3 再開は VPN か保護された網で</text>
+<text class="t-small" x="725" y="150" text-anchor="middle">業者の IP だけを通すのは急場の策</text>
+<text class="t-small" x="725" y="170" text-anchor="middle">ファームウェアの更新、Strict の設定、</text>
+<text class="t-small" x="725" y="186" text-anchor="middle">初期のパスワードの変更（Danfoss）</text>
+</svg>
+</div>
+<figcaption>サポートが終わった機器について、CERT-FR は「工場出荷の状態に戻すだけでは足りない。機器は弱いままで、また侵害される」としています。インターネットに出し続けることは、侵害される可能性が非常に高い状態に置くことだ、とも書いています。</figcaption>
+</figure>
+
+<p>Copeland（Dixell のブランドを持つ会社）も10月14日にお知らせを出し、販売とサポートが終わった XWEB EVO の世代に脆弱性があることを認めました。すぐにインターネットから外し（ポートの転送や公開の IP アドレスへの直結をしない）、遠隔の操作は VPN で行うこと、後継の XWEB PRO へ移る計画を立てることを求めています。XWEB PRO も、インターネットに出さないよう書いています。</p>
+
+<h2>攻撃の前、管理画面はどれだけ開いていたか</h2>
+<p>IPinfo は、IPv4 のインターネットを毎週走査しています。攻撃の5日前の10月6〜7日の走査で、Danfoss の管理画面（StoreView）が開いたアドレスは、世界で2,528ありました。フランスは1,331で、ほかの72の国と地域を合わせた1,197より多い数です。</p>
+
+<figure class="viz">
+<p class="viz-title">Danfoss の管理画面が開いていたアドレスの数（国別）</p>
+<p class="viz-sub">IPinfo の走査（2026年10月6〜7日）より。棒にカーソルを合わせると値が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-mid" viewBox="0 0 820 250" role="img" aria-label="フランス1,331、ポーランド179、アメリカ101、ポルトガル92、ベルギー85、その他68の国と地域の合計740。">
+<text class="t-ink" x="190" y="38" text-anchor="end">フランス</text>
+<rect class="bar" x="200" y="24" width="532.4" height="22" rx="4"><title>フランス：1,331（世界の53%）</title></rect>
+<text class="t-strong" x="740" y="40">1,331</text>
+<text class="t-ink" x="190" y="76" text-anchor="end">ポーランド</text>
+<rect class="bar-old" x="200" y="62" width="71.6" height="22" rx="4"><title>ポーランド：179</title></rect>
+<text class="t-ink" x="280" y="78">179</text>
+<text class="t-ink" x="190" y="114" text-anchor="end">アメリカ</text>
+<rect class="bar-old" x="200" y="100" width="40.4" height="22" rx="4"><title>アメリカ：101</title></rect>
+<text class="t-ink" x="248" y="116">101</text>
+<text class="t-ink" x="190" y="152" text-anchor="end">ポルトガル</text>
+<rect class="bar-old" x="200" y="138" width="36.8" height="22" rx="4"><title>ポルトガル：92</title></rect>
+<text class="t-ink" x="245" y="154">92</text>
+<text class="t-ink" x="190" y="190" text-anchor="end">ベルギー</text>
+<rect class="bar-old" x="200" y="176" width="34" height="22" rx="4"><title>ベルギー：85</title></rect>
+<text class="t-ink" x="242" y="192">85</text>
+<text class="t-ink" x="190" y="228" text-anchor="end">その他68の国と地域</text>
+<rect class="bar-old" x="200" y="214" width="296" height="22" rx="4"><title>その他68の国と地域の合計：740</title></rect>
+<text class="t-ink" x="504" y="230">740</text>
+</svg>
+</div>
+<figcaption>フランス以外を合わせると1,197です。数は最小の見積もりで、IPv4 と走査したポートだけを数えています。1つのアドレスが1つの店舗とは限りません。</figcaption>
+</figure>
+
+<h3>多くが、知られた弱点を抱えたまま、半年以上開いていた</h3>
+<p>IPinfo は、管理画面に出るソフトウェアの作成日などから、どの修正が入っているかを分類しました。フランスの1,331のうち、Danfoss がサポートを終えた古い装置が527、新しい装置でも修正が足りないものが609（2023年の修正がないもの280、2025年の修正がないもの329）で、知られた修正がすべて入っていたのは195だけでした。ほかの国でも弱点のある割合は84%で、フランスだけが更新を怠っていたわけではありません。台数が多かったのです。</p>
+<p>開いていた期間も長く、1,331のうち1,019は、半年前の3月30日にも同じアドレスで開いていました。修正がすべて入った新しい装置の割合は、この半年で14%から24%に上がっただけでした。</p>
+
+<figure class="viz">
+<p class="viz-title">フランスで開いていた管理画面：攻撃の前と後</p>
+<p class="viz-sub">IPinfo の走査（10月6〜7日と10月14日）より。棒にカーソルを合わせると値が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 210" role="img" aria-label="攻撃の前の10月6日から7日は1,331で、サポートが終わった古い装置527、修正が足りない新しい装置609、修正がすべて入った装置195。攻撃の後の10月14日は316で、古い装置64、修正が足りない新しい装置198、修正がすべて入った装置54。">
+<text class="t-strong" x="190" y="58" text-anchor="end">攻撃の前</text>
+<text class="t-small t-muted" x="190" y="74" text-anchor="end">10月6〜7日</text>
+<rect class="bar-2" x="200" y="44" width="208.8" height="30" rx="4"><title>サポートが終わった古い装置：527</title></rect>
+<rect class="bar-old" x="410.8" y="44" width="241.6" height="30" rx="4"><title>修正が足りない新しい装置：609（2023年の修正なし280、2025年の修正なし329）</title></rect>
+<rect class="bar" x="654.4" y="44" width="78" height="30" rx="4"><title>知られた修正がすべて入った装置：195</title></rect>
+<text class="t-strong" x="740" y="65">1,331</text>
+<text class="t-small" x="304" y="96" text-anchor="middle">古い装置 527</text>
+<text class="t-small" x="531" y="96" text-anchor="middle">修正が足りない 609</text>
+<text class="t-small" x="693" y="96" text-anchor="middle">修正済み 195</text>
+
+<text class="t-strong" x="190" y="148" text-anchor="end">攻撃の後</text>
+<text class="t-small t-muted" x="190" y="164" text-anchor="end">10月14日</text>
+<rect class="bar-2" x="200" y="134" width="23.6" height="30" rx="4"><title>サポートが終わった古い装置：64</title></rect>
+<rect class="bar-old" x="225.6" y="134" width="77.2" height="30" rx="4"><title>修正が足りない新しい装置：198（316から古い装置と修正済みの装置を引いた数）</title></rect>
+<rect class="bar" x="304.8" y="134" width="21.6" height="30" rx="4"><title>知られた修正がすべて入った装置：54</title></rect>
+<text class="t-strong" x="334" y="155">316（76%減）</text>
+<text class="t-small" x="200" y="186">古い装置 64、修正が足りない 198、修正済み 54</text>
+</svg>
+</div>
+<figcaption>紫はサポートが終わった古い装置、灰色は修正が足りない新しい装置、緑は修正がすべて入った装置です。修正済みの装置も減っており、IPinfo は、更新したのではなく、インターネットから外したとみています。ふだんの1週間の減り方は3〜7%でした。</figcaption>
+</figure>
+
+<p>Copeland と Dixell の XWEB も、同じ走査で世界に1,611ありましたが、フランスは70でした（イタリアが467）。フランスでは攻撃の後に20まで減りました。</p>
+<p>なお、管理画面がインターネットから開けることは、そこから侵入できることを意味しません。どの弱点が使われたかは、誰も明らかにしていません（IPinfo）。</p>
+
+<h2>見方</h2>
+<div class="note">
+<p>冷蔵の管理装置は、業者が遠隔から見守るために、店舗の回線からインターネットに出されていました。IPinfo によると、フランスの管理画面の98%は、データセンターではなく通信会社の回線の上にありました。サポートが終わった機器が、そのまま開いていたことが、今回の土台になりました。CERT-FR の答えは「まず外す。遠隔の操作は VPN で」です。保険の契約の条件が、外すことの妨げになりうる点にも触れています。日本でも、ビルや店舗の設備の管理画面がインターネットに出ていないか、サポートが終わった機器が残っていないかを確かめる価値があります。</p>
+</div>
+
+<dl class="terms">
+<dt>CERT-FR</dt><dd>フランスの政府のセキュリティ機関で、注意喚起や事故への対応を担う。</dd>
+<dt>AK-SM・AK-SC</dt><dd>Danfoss の、店舗の冷蔵・冷凍設備をまとめて管理する装置のシリーズ。</dd>
+<dt>XWEB</dt><dd>Copeland と、その Dixell のブランドの、冷蔵設備の監視装置。</dd>
+<dt>サポートの終了（EOL）</dt><dd>メーカーが、修正や更新を出さなくなった状態。弱点が見つかっても直らない。</dd>
+<dt>霜取り</dt><dd>冷却の部品についた霜を、温めて溶かす運転。長く続くと庫内の温度が上がる。</dd>
+<dt>VPN</dt><dd>インターネットの上に、暗号化した専用の通り道を作る仕組み。</dd>
+<dt>走査（スキャン）</dt><dd>インターネットのアドレスに順に接続し、何が応答するかを調べること。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月23日時点の情報です。報道されている被害の規模（店舗の数、庫内の温度、損害の額）と小売各社の名前は、検察や各社の公式の発表で確かめられなかったため、載せていません。Danfoss の見解も、本人の発表を確かめられなかったため扱っていません。台数は IPinfo の走査の結果で、最小の見積もりです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>初回公開（CERT-FR の手順、メーカーのお知らせ、攻撃の前後に開いていた管理画面の数）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

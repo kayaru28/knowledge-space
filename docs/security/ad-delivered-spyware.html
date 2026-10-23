@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月15日、Citizen Lab は、ネット広告の入札で標的を選び、表示されただけでスパイウェアに感染させる攻撃を、実際の被害として初めて確かめたと発表した。広告1回の表示で起きること、アルジャジーラでの確認、4か月で約38億件の入札という規模、広告業界の対応、身を守る方法を、報告から図で整理する。">
+<title>広告が表示されただけで感染する：Citizen Lab が初めて確かめた「AdFection」と、広告の仕組みの弱点 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>広告が表示されただけで感染する：Citizen Lab が初めて確かめた「AdFection」と、広告の仕組みの弱点</h1><p class="summary">2026年10月15日、Citizen Lab は、ネット広告の入札で標的を選び、表示されただけでスパイウェアに感染させる攻撃を、実際の被害として初めて確かめたと発表した。広告1回の表示で起きること、アルジャジーラでの確認、4か月で約38億件の入札という規模、広告業界の対応、身を守る方法を、報告から図で整理する。</p><p class="meta">初回公開 2026-10-23 ／ 更新日 2026-10-23</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>研究機関の Citizen Lab は2026年10月15日、<strong>ネット広告が表示されただけでスパイウェアに感染させる攻撃</strong>を、実際の被害として初めて技術的に確かめたと発表しました。この攻撃を AdFection と呼んでいます。</p>
+<p>イスラエルの Discover-Tech という会社が、広告の会社を名乗りながら、傭兵型のスパイウェア（政府などに売られる監視用のマルウェア）の会社のために、広告の入札で標的を選んで感染させる仕組みを提供していました。国際報道機関のアルジャジーラでは、2024〜2025年に少なくとも45台が標的にされました。Google と広告の業界団体 IAB Europe は、この会社を「認定」の一覧から外しました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">45<small>台以上</small></p><p class="stat-label">アルジャジーラで標的にされた端末（2024〜2025年）</p></div>
+<div class="stat"><p class="stat-value">約38<small>億件</small></p><p class="stat-label">Discover-Tech の入札（2026年3〜6月の4か月）</p></div>
+<div class="stat"><p class="stat-value">約20<small>万</small></p><p class="stat-label">攻撃者のスクリプト入りの広告が表示されたアプリと Web サイト</p></div>
+<div class="stat"><p class="stat-value">0<small>回</small></p><p class="stat-label">感染に必要な、利用者のクリック</p></div>
+</div>
+
+<h2>広告1回の表示で何が起きるか</h2>
+<p>ネット広告の多くは、表示のたびに一瞬で行われる入札（リアルタイムビッディング）で決まります。入札の依頼には、端末の広告 ID や IP アドレスなどが含まれ、特定の1人に向けて広告を出せます。しかも広告は、画像だけでなく、プログラム（JavaScript）を動かせます。Discover-Tech は、この2つを組み合わせていました。</p>
+
+<figure class="viz">
+<p class="viz-title">標的にだけ、感染させるコードが返される</p>
+<p class="viz-sub">Citizen Lab の報告より。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 320" role="img" aria-label="Discover-Techが入札に勝つと、アプリやWebサイトに広告が表示される。広告に入った命令で、端末はDiscover-Techのサーバーに広告IDとIPアドレスを送る。サーバーは標的かどうかを判断する。標的でなければ中身のない応答を返すが、ブラウザの情報などは集められる。標的なら感染させるJavaScriptを返し、端末は脆弱性を突かれて、Candiruの確認用のサーバー、指令サーバーの順に接続する。">
+<defs><marker id="adf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="box" x="20" y="130" width="150" height="60" rx="8"><title>入札の依頼には、広告 ID、IP アドレス、位置などの情報が含まれる。Discover-Tech は Google、Yandex、Beeswax などの広告の取引の場を通じて入札していた</title></rect>
+<text class="t-strong" x="95" y="156" text-anchor="middle">1 広告の入札</text>
+<text class="t-small" x="95" y="176" text-anchor="middle">Discover-Tech が落札</text>
+<rect class="box" x="210" y="130" width="150" height="60" rx="8"><title>アプリや Web サイトに広告が表示される。利用者が気づかない背景で表示されることもある</title></rect>
+<text class="t-strong" x="285" y="156" text-anchor="middle">2 広告が表示</text>
+<text class="t-small" x="285" y="176" text-anchor="middle">見た目はふつうの広告</text>
+<rect class="box-key" x="400" y="130" width="170" height="60" rx="8"><title>広告に入った命令で、端末が Discover-Tech のサーバーに接続し、広告 ID と IP アドレスを送る。サーバーは、その組み合わせで標的かを判断する</title></rect>
+<text class="t-strong" x="485" y="156" text-anchor="middle">3 標的かを判断</text>
+<text class="t-small" x="485" y="176" text-anchor="middle">広告 ID と IP アドレス</text>
+<line class="arrow" x1="170" y1="160" x2="206" y2="160" marker-end="url(#adf-arrow)"/>
+<line class="arrow" x1="360" y1="160" x2="396" y2="160" marker-end="url(#adf-arrow)"/>
+
+<path class="arrow" d="M570,145 L600,145 L600,70 L626,70" marker-end="url(#adf-arrow)"/>
+<text class="t-small t-muted" x="594" y="112" text-anchor="end">ほとんどの人</text>
+<rect class="box" x="630" y="40" width="230" height="60" rx="8"><title>中身のない応答（0バイト）が返る。ただし、ページの cookie や端末の IPv6 アドレスなどは集められる</title></rect>
+<text class="t-strong" x="745" y="66" text-anchor="middle">空の応答</text>
+<text class="t-small" x="745" y="86" text-anchor="middle">ただし情報は集められる</text>
+
+<path class="arrow" d="M570,175 L600,175 L600,250 L626,250" marker-end="url(#adf-arrow)"/>
+<text class="t-small t-muted" x="594" y="218" text-anchor="end">標的</text>
+<rect class="box-key" x="630" y="210" width="230" height="80" rx="8"><title>感染させる JavaScript が返り、ブラウザやアプリの中で動いて脆弱性を突く。アルジャジーラの記録では、その後、Candiru の確認用のサーバー、指令サーバーの順に接続していた</title></rect>
+<text class="t-strong" x="745" y="236" text-anchor="middle">感染させるコード</text>
+<text class="t-small" x="745" y="256" text-anchor="middle">確認用のサーバー</text>
+<text class="t-small" x="745" y="274" text-anchor="middle">→ 指令サーバーへ</text>
+</svg>
+</div>
+<figcaption>緑の枠が、攻撃の要の部分です。広告そのものには悪いコードが入っていないので、広告を配信する会社からは隠れます。Discover-Tech は、この仕組みを Controlium という操作画面で、スパイウェアの会社に提供していました。</figcaption>
+</figure>
+
+<h3>アルジャジーラで確かめられたこと</h3>
+<p>アルジャジーラが提供した通信の記録では、感染した端末が、まず Discover-Tech のサーバー（広告の表示）、次に Candiru のスパイウェアの確認用のサーバー（端末を調べる）、最後に指令のサーバーへと、同じ順に接続していました。感染した端末の1台から見つかった Windows 向けのファイルは、2021年に Citizen Lab が報告した Candiru のスパイウェアと同じ特徴を持っていました。Citizen Lab は、攻撃を特定の政府には結びつけていません。</p>
+
+<h2>どれだけの広告が出ていたか</h2>
+<p>Citizen Lab は、Discover-Tech のサーバーが公開していた入札の記録を、2026年3〜6月の4か月分調べました。</p>
+
+<figure class="viz">
+<p class="viz-title">4か月の入札と、広告が表示された先</p>
+<p class="viz-sub">Citizen Lab の報告（入札の記録の分析）より。棒にカーソルを合わせると値が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="入札は37億7,028万件あまりで、そのうち落札は4億4,195万件あまり、11.7%だった。入札の76.7%はアプリ、23.3%はWebのブラウザだった。攻撃者のスクリプト入りの広告が表示された先は、Webサイトが120,768、アプリが75,373だった。">
+<text class="t-ink" x="190" y="44" text-anchor="end">入札</text>
+<rect class="bar-old" x="200" y="28" width="600" height="24" rx="4"><title>入札：3,770,286,576 件</title></rect>
+<text class="t-small" x="790" y="22" text-anchor="end">約37.7億件</text>
+<text class="t-ink" x="190" y="84" text-anchor="end">落札（表示）</text>
+<rect class="bar" x="200" y="68" width="70.3" height="24" rx="4"><title>落札：441,954,291 件（入札の11.7%）</title></rect>
+<text class="t-ink" x="278" y="85">約4.4億件（11.7%）</text>
+
+<text class="t-ink" x="190" y="134" text-anchor="end">入札の内訳</text>
+<rect class="bar-2" x="200" y="118" width="458.2" height="24" rx="4"><title>アプリ内の広告：76.7%</title></rect>
+<rect class="bar-old" x="660.2" y="118" width="139.8" height="24" rx="4"><title>Web のブラウザ：23.3%</title></rect>
+<text class="t-small" x="429" y="162" text-anchor="middle">アプリ 76.7%</text>
+<text class="t-small" x="730" y="162" text-anchor="middle">Web 23.3%</text>
+
+<line class="grid" x1="20" y1="184" x2="860" y2="184"/>
+<text class="t-strong" x="20" y="208">攻撃者のスクリプト入りの広告が表示された先</text>
+<text class="t-ink" x="190" y="240" text-anchor="end">Web サイト</text>
+<rect class="bar-2" x="200" y="224" width="464.5" height="20" rx="4"><title>Web サイト：120,768</title></rect>
+<text class="t-ink" x="672" y="239">120,768</text>
+<text class="t-ink" x="190" y="272" text-anchor="end">アプリ</text>
+<rect class="bar-2" x="200" y="256" width="289.9" height="20" rx="4"><title>Android と iOS のアプリ：75,373</title></rect>
+<text class="t-ink" x="498" y="271">75,373</text>
+</svg>
+</div>
+<figcaption>上の3本と下の2本は、目盛りが違います。表示された先は、実際に広告が表示された数（入札の数ではない）です。メッセージの Viber、Yahoo Mail のほか、天気、語学、出会い系、生理日管理のアプリ、大手の報道機関のサイトにも出ていました。</figcaption>
+</figure>
+
+<p>Discover-Tech の広告は、何百万台もの端末を Candiru のサーバーに接続させてもいました。Citizen Lab は、大規模な追跡と下調べのためとみています。</p>
+<p>表示の記録は、各国の国防や外交の機関、NATO、国連、EU の機関、送電網の会社、半導体の会社、報道機関などのネットワークにも見られました。ただし、表示されたことは、標的にされたことや感染したことを意味しません。少なくとも情報は集められたとみられ、感染がなかったか調べる必要がある、と Citizen Lab は書いています。政府のネットワークで表示が見つかった国（24の国と地域）に、日本は含まれていませんが、調査は続いています。</p>
+
+<h2>広告業界の対応</h2>
+<p>Discover-Tech は、2020〜2026年、Google と IAB Europe が管理する「認定」「承認」の広告会社の一覧に載っていました。Citizen Lab は、正規の広告の活動の証拠は見つからなかったとしています。業界の審査は、会社の自己申告に頼っていた、という指摘です。</p>
+<div class="table-wrap">
+<table>
+<caption>Citizen Lab の報告と、各社の回答（報告に全文を掲載）より</caption>
+<thead><tr><th>会社・団体</th><th>対応</th></tr></thead>
+<tbody>
+<tr><td>Google</td><td>2026年10月初めに一覧から外し、広告の取引の場への接続を止めた。Safe Browsing で、攻撃者のドメインに近づく利用者に警告を出す。調査に協力した</td></tr>
+<tr><td>IAB Europe</td><td>一覧から外した</td></tr>
+<tr><td>Beeswax（Comcast 傘下）</td><td>広告の購入の仕組みから外した</td></tr>
+<tr><td>Vungle（Liftoff）</td><td>確認の間、接続を止めた</td></tr>
+<tr><td>Eskimi</td><td>アカウントとドメインを止めた</td></tr>
+</tbody>
+</table>
+</div>
+<p>Citizen Lab は13社に意見を求め、期限までに答えなかった会社もありました。</p>
+
+<h2>身を守るためにできること</h2>
+<div class="cards">
+<div class="card"><h3>個人（Citizen Lab の推奨）</h3><ul><li>信頼できる広告ブロックの拡張機能を使う。</li><li>追跡を防ぐブラウザを使う。</li><li>端末の広告 ID を定期的にリセットし、広告の追跡を切る。</li><li>家のルーターなどで広告をブロックする。</li></ul></div>
+<div class="card"><h3>組織（Citizen Lab の推奨）</h3><ul><li>組織の出入口と、支給した端末で、広告と追跡をブロックする。</li><li>端末の管理の仕組み（MDM）で、支給した端末の広告 ID を切る。</li><li>追跡の少ないブラウザへ移る。</li></ul></div>
+<div class="card"><h3>狙われやすい立場の人</h3><ul><li>立場や仕事のために狙われるおそれがある人は、専門家の助けを求める（Citizen Lab）。</li></ul></div>
+</div>
+
+<h2>見方</h2>
+<div class="note">
+<p>ゼロクリックの攻撃は、これまでメッセージのアプリなどの弱点を使うものが知られていました。今回は、ほぼすべてのアプリと Web サイトにつながる広告の入札が、標的の選別と感染の入口になりました。広告 ID で1人を狙えること、広告がプログラムを動かせること、広告会社の審査が自己申告に頼っていたことが重なっています。広告をブロックすることは、プライバシーだけでなく、セキュリティの対策でもあります。</p>
+</div>
+
+<dl class="terms">
+<dt>ゼロクリックの攻撃</dt><dd>リンクを押すなどの操作をしなくても、感染させる攻撃。</dd>
+<dt>傭兵型のスパイウェア</dt><dd>民間の会社が作り、政府などに売る監視用のマルウェア。</dd>
+<dt>リアルタイムビッディング（RTB）</dt><dd>広告を表示するたびに、一瞬で入札して、どの広告を出すかを決める仕組み。</dd>
+<dt>広告 ID</dt><dd>スマートフォンの OS が端末に割り当てる、広告用の識別子。設定でリセットや無効化ができる。</dd>
+<dt>Candiru</dt><dd>イスラエルのスパイウェアの会社。Integrity Labs に名前を変えたとされる。米国の商務省が、輸出を規制する一覧に載せている。</dd>
+<dt>AdFection</dt><dd>Citizen Lab が名付けた、広告で標的を選び、感染させる攻撃。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月23日時点の情報です。Citizen Lab の報告にもとづきます。同時に公表された別の会社の調査と、その推計（影響を受けた人数など）は扱っていません。会社の関係者の個人名は載せていません。表示の記録は、Discover-Tech の入札の仕組みの一部の、限られた期間のものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>初回公開（仕組み、アルジャジーラでの確認、規模、業界の対応、対策）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

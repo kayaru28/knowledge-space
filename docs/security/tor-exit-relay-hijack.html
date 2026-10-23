@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月2日から、Tor の出口の中継点333台が SSH の接続を盗み見するように書き換えられた。接続が回される仕組み、8月の侵入から10月5日の停止までの流れ、出口の数の変化、分かっている侵入の経路、利用者と運営者がすることを、Tor Project の注意喚起と発見者・運営者の報告から図で整理する。">
+<title>Tor の出口の約1割が乗っ取られた：SSH の盗み見と、運営者のサーバーから始まった侵入 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>Tor の出口の約1割が乗っ取られた：SSH の盗み見と、運営者のサーバーから始まった侵入</h1><p class="summary">2026年10月2日から、Tor の出口の中継点333台が SSH の接続を盗み見するように書き換えられた。接続が回される仕組み、8月の侵入から10月5日の停止までの流れ、出口の数の変化、分かっている侵入の経路、利用者と運営者がすることを、Tor Project の注意喚起と発見者・運営者の報告から図で整理する。</p><p class="meta">初回公開 2026-10-23 ／ 更新日 2026-10-23</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>匿名で通信するための Tor のネットワークで、2026年10月2日から、<strong>出口の中継点（Tor の通信がふつうのインターネットに出ていく所）の一部が、SSH の接続を盗み見するように書き換えられました</strong>。発見者が全部の出口を調べたところ、約3,000台のうち333台、およそ1割が乗っ取られていました。</p>
+<p>Tor Project は10月4日に、該当の中継点を出口として使わせないようにし、10月5日までにすべてが止まりました。暗号そのものは破られていません。パスワードを盗まれたのは、SSH の「接続先の鍵が変わった」という警告を無視してログインした人です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">333<small>台</small></p><p class="stat-label">発見者が確かめた、乗っ取られた出口の中継点</p></div>
+<div class="stat"><p class="stat-value">約1<small>割</small></p><p class="stat-label">出口の中継点の全体（約3,000台）に占める割合</p></div>
+<div class="stat"><p class="stat-value">12<small>台</small></p><p class="stat-label">SSH の接続が回された、盗み見用のサーバー</p></div>
+<div class="stat"><p class="stat-value">4<small>日</small></p><p class="stat-label">動き始めてから、すべてが止まるまで（10月2日〜5日）</p></div>
+</div>
+
+<h2>乗っ取られた出口で何が起きたか</h2>
+<p>Tor は、通信を3つの中継点で包んで送ります。最後の出口から先は、ふつうのインターネットの通信です。乗っ取られた出口を通っても、暗号化された Web の通信はそのまま流れました。回されたのは、SSH（サーバーに遠隔でログインする仕組み、ポート22）の接続だけです。</p>
+
+<figure class="viz">
+<p class="viz-title">SSH の接続だけが、盗み見用のサーバーに回された</p>
+<p class="viz-sub">発見者のブログより。記号にカーソルを合わせると詳細が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="Tor の利用者の通信は、入口と中間の中継点を通って出口に着く。乗っ取られた出口は、暗号化されたWebの通信はそのまま目的のサイトに送るが、ポート22のSSHの接続は12台の盗み見用のサーバーに回す。盗み見用のサーバーは偽の鍵を返すので、利用者には鍵が変わったという警告が出る。警告を無視してログインすると、パスワードが盗まれ、本物のサーバーでの操作が見られ、本物のサーバーにEburyを入れられようとする。">
+<defs><marker id="tor-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="box" x="20" y="120" width="110" height="56" rx="8"/>
+<text class="t-strong" x="75" y="145" text-anchor="middle">利用者</text>
+<text class="t-small" x="75" y="164" text-anchor="middle">Tor で接続</text>
+<rect class="box" x="170" y="120" width="110" height="56" rx="8"/>
+<text class="t-strong" x="225" y="145" text-anchor="middle">入口・中間</text>
+<text class="t-small" x="225" y="164" text-anchor="middle">中身は包まれたまま</text>
+<rect class="box-key" x="320" y="120" width="130" height="56" rx="8"><title>攻撃者が設定ファイル（torrc）を書き換えた中継点。もとは出口でなかった中継点も、出口に変えられた（Tor Project の注意喚起）</title></rect>
+<text class="t-strong" x="385" y="145" text-anchor="middle">乗っ取られた出口</text>
+<text class="t-small" x="385" y="164" text-anchor="middle">約3,000台のうち333台</text>
+<line class="arrow" x1="130" y1="148" x2="166" y2="148" marker-end="url(#tor-arrow)"/>
+<line class="arrow" x1="280" y1="148" x2="316" y2="148" marker-end="url(#tor-arrow)"/>
+
+<path class="arrow" d="M450,134 L520,60 L596,60" marker-end="url(#tor-arrow)"/>
+<text class="t-small" x="530" y="92">暗号化された</text>
+<text class="t-small" x="530" y="108">Web の通信</text>
+<rect class="box" x="600" y="34" width="150" height="50" rx="8"/>
+<text class="t-strong" x="675" y="64" text-anchor="middle">目的のサイト</text>
+<text class="t-small t-muted" x="770" y="64">そのまま届く</text>
+
+<path class="arrow" d="M450,162 L520,236 L596,236" marker-end="url(#tor-arrow)"/>
+<text class="t-small" x="474" y="262">SSH（ポート22）</text>
+<rect class="box-key" x="600" y="206" width="150" height="60" rx="8"><title>偽の鍵を返すので、利用者の SSH は「接続先の鍵が変わった（REMOTE HOST IDENTIFICATION HAS CHANGED）」と警告する</title></rect>
+<text class="t-strong" x="675" y="232" text-anchor="middle">盗み見用のサーバー</text>
+<text class="t-small" x="675" y="252" text-anchor="middle">12台・偽の鍵を返す</text>
+
+<line class="arrow dashed" x1="750" y1="236" x2="790" y2="236"/>
+<text class="t-small" x="796" y="210">警告を無視して</text>
+<text class="t-small" x="796" y="226">ログインすると</text>
+<text class="t-small" x="796" y="248">1 パスワード</text>
+<text class="t-small" x="796" y="264">2 操作を見る</text>
+<text class="t-small" x="796" y="280">3 Ebury</text>
+</svg>
+</div>
+<figcaption>緑の枠が、攻撃者が手を入れた所です。警告を無視してログインすると、攻撃者は 1. パスワードを盗み、2. 本物のサーバーにつないで打ったコマンドを見て、3. 本物のサーバーに2本目の接続を開いて Ebury（SSH の裏口と、認証情報を盗む Linux 向けのマルウェア）を入れようとします。</figcaption>
+</figure>
+
+<p>メールについても、乗っ取られた中継点は、送受信に使うポートのうち25、465、587、993、995を閉じていました（被害を受けた運営者が、書き換えられた設定で確認）。発見者は、暗号化されていないメールだけを通して集める狙いとみています。ただし、メールが実際に盗まれたかは確認されていません。</p>
+
+<h2>対応の流れ</h2>
+<p>侵入は、動き始める1か月以上前から始まっていました。発見から止まるまでは、週末をはさんだ4日間です。</p>
+
+<figure class="viz">
+<p class="viz-title">8月の侵入から、10月5日の停止まで</p>
+<p class="viz-sub">被害を受けた運営者の報告（UTC）、発見者のブログ、Tor Project の注意喚起より。間隔は時間に比例していません</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="8月28日、被害を受けた運営者の管理用サーバーにパスワードで侵入され、Eburyを入れられた。10月2日、設定が書き換えられ、出口がSSHを盗み見し始めた。発見者は同じ日に警告に気づき、夕方にTor Projectに報告した。10月4日、運営者に知らされ、該当の中継点にBadExitの印が付いた。10月5日、すべてが止まり、Tor Projectが運営者向けの注意喚起を出した。10月20日に発見者が詳細を公開した。">
+<line class="axis" x1="40" y1="120" x2="840" y2="120"/>
+
+<circle class="mk-found" cx="80" cy="120" r="8"><title>8月28日：攻撃者が、運営者のパスワードで管理用サーバーに1回目でログインし、5分後に管理者の権限を得て Ebury を入れた。約1時間後、そこから出口のサーバーにも入り、Ebury を入れた（運営者の報告）</title></circle>
+<text class="t-strong" x="80" y="92" text-anchor="middle">8月28日</text>
+<text class="t-small" x="80" y="150" text-anchor="middle">運営者の</text>
+<text class="t-small" x="80" y="166" text-anchor="middle">サーバーに侵入</text>
+
+<circle class="mk-found" cx="250" cy="120" r="8"><title>10月2日 9時34分（UTC）：出口の方針が書き換えられて公開された（運営者の報告）。発見者によると、333台の出口がそろって SSH の盗み見を始めた</title></circle>
+<text class="t-strong" x="250" y="92" text-anchor="middle">10月2日 朝</text>
+<text class="t-small" x="250" y="150" text-anchor="middle">盗み見が始まる</text>
+
+<circle class="mk-announce" cx="390" cy="120" r="8"><title>10月2日：発見者が、SSH の警告で気づいた。夕方に Tor Project のネットワークの健全性チームに報告した</title></circle>
+<text class="t-strong" x="390" y="92" text-anchor="middle">10月2日 夕方</text>
+<text class="t-small" x="390" y="150" text-anchor="middle">発見者が報告</text>
+
+<circle class="mk-advisory" cx="530" cy="120" r="8"><title>10月4日：健全性チームが運営者に知らせ、運営者が出口を止め始めた。該当の中継点に BadExit の印が付き、出口として使われなくなった</title></circle>
+<text class="t-strong" x="530" y="92" text-anchor="middle">10月4日</text>
+<text class="t-small" x="530" y="150" text-anchor="middle">BadExit の印</text>
+<text class="t-small" x="530" y="166" text-anchor="middle">出口として使わせない</text>
+
+<circle class="mk-advisory" cx="670" cy="120" r="8"><title>10月5日：攻撃者が多くの中継点を再起動したが、印が付いていたため中間の中継点にしかなれなかった。感染したサーバーはすべて止まった。夜（23時20分 UTC）に Tor Project が運営者向けの注意喚起を出した</title></circle>
+<text class="t-strong" x="670" y="92" text-anchor="middle">10月5日</text>
+<text class="t-small" x="670" y="150" text-anchor="middle">すべて停止</text>
+<text class="t-small" x="670" y="166" text-anchor="middle">運営者へ注意喚起</text>
+
+<circle class="mk-announce" cx="800" cy="120" r="8"><title>10月20日：発見者がブログで詳細を公開した</title></circle>
+<text class="t-strong" x="800" y="92" text-anchor="middle">10月20日</text>
+<text class="t-small" x="800" y="150" text-anchor="middle">詳細を公開</text>
+
+<rect class="bar-2" x="250" y="196" width="420" height="10" rx="4"><title>盗み見が動いていた期間（10月2日〜5日）</title></rect>
+<text class="t-small" x="460" y="228" text-anchor="middle">盗み見が動いていた期間</text>
+</svg>
+</div>
+<figcaption>紫は攻撃者の動き、黒は発見者、黄は Tor Project の対応です。被害を受けた運営者の2台は、書き換えられた方針のまま約52時間動いていました。</figcaption>
+</figure>
+
+<h3>出口の数は戻っていない</h3>
+<p>Tor Project の統計では、出口のフラグを持つ中継点は、10月4日の3,013台から、10月5日には2,715台へ、1日で298台減りました。その後も2,700台前後で、9月の初めの水準には戻っていません。</p>
+
+<figure class="viz">
+<p class="viz-title">出口のフラグを持つ中継点の数（1日の平均）</p>
+<p class="viz-sub">Tor Metrics より、2026年9月2日〜10月20日。縦軸は2,500から始まります。点にカーソルを合わせると値が表示されます</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="出口のフラグを持つ中継点の数は、9月は3,000台から3,235台の間だった。10月4日の3,013台から、10月5日に2,715台へ298台減り、10月20日は2,652台だった。">
+<g class="grid">
+<line x1="70" y1="222.5" x2="850" y2="222.5"/><line x1="70" y1="167.5" x2="850" y2="167.5"/><line x1="70" y1="112.5" x2="850" y2="112.5"/><line x1="70" y1="57.5" x2="850" y2="57.5"/>
+</g>
+<text class="t-small t-muted" x="62" y="226" text-anchor="end">2,600</text>
+<text class="t-small t-muted" x="62" y="171" text-anchor="end">2,800</text>
+<text class="t-small t-muted" x="62" y="116" text-anchor="end">3,000</text>
+<text class="t-small t-muted" x="62" y="61" text-anchor="end">3,200</text>
+<rect class="bar-old" x="557.5" y="30" width="48.7" height="220" opacity="0.35"><title>盗み見が動いていた期間（10月2日〜5日）</title></rect>
+<text class="t-small" x="582" y="24" text-anchor="middle">10月2日〜5日</text>
+<polyline class="line-main" points="70.0,47.9 86.2,54.8 102.5,53.4 118.8,53.7 135.0,55.3 151.2,56.1 167.5,73.7 183.8,62.2 200.0,57.2 216.2,66.6 232.5,89.7 248.8,110.8 265.0,101.8 281.2,74.3 297.5,73.7 313.8,79.5 330.0,71.2 346.2,54.8 362.5,55.6 378.8,58.1 395.0,57.8 411.2,58.6 427.5,59.2 443.8,64.1 460.0,67.1 476.2,61.3 492.5,59.7 508.8,73.7 525.0,87.8 541.2,93.8 557.5,90.2 573.8,89.4 590.0,108.9 606.2,190.9 622.5,195.0 638.8,193.1 655.0,195.3 671.2,194.4 687.5,196.1 703.8,193.3 720.0,193.1 736.2,194.2 752.5,199.1 768.8,192.2 785.0,200.5 801.2,210.4 817.5,211.5 833.8,211.5 850.0,208.2"/>
+<circle class="dot-new" cx="590.0" cy="108.9" r="5"><title>10月4日：3,013台</title></circle>
+<circle class="dot-new" cx="606.2" cy="190.9" r="5"><title>10月5日：2,715台</title></circle>
+<circle class="dot-new" cx="850.0" cy="208.2" r="5"><title>10月20日：2,652台</title></circle>
+<text class="t-ink" x="584" y="134" text-anchor="end">3,013</text>
+<text class="t-ink" x="614" y="176">2,715（1日で298減）</text>
+<text class="t-ink" x="846" y="234" text-anchor="end">2,652</text>
+<line class="axis" x1="70" y1="250" x2="850" y2="250"/>
+<text class="t-small t-muted" x="70" y="270" text-anchor="middle">9月2日</text>
+<text class="t-small t-muted" x="281.2" y="270" text-anchor="middle">9月15日</text>
+<text class="t-small t-muted" x="541.2" y="270" text-anchor="middle">10月1日</text>
+<text class="t-small t-muted" x="768.8" y="270" text-anchor="middle">10月15日</text>
+</svg>
+</div>
+<figcaption>減った298台は、乗っ取られた333台とは一致しません。統計は1日の平均で、もとは出口でなかった中継点が出口にされた分や、ほかの理由で増減した分も含まれます。</figcaption>
+</figure>
+
+<h2>どうやって入られたか</h2>
+<p>侵入の経路が分かっているのは、被害を報告した1組の運営者の場合だけです。運営者自身が、「根本の原因は私たちにあった」として、次の点を挙げています。</p>
+<ul>
+<li>1つのパスワードを、SSH のログイン、管理者の権限への切り替え（sudo）、バックアップの暗号の3つに使い回し、両方のサーバーに暗号化せずに置いていた。</li>
+<li>インターネットに面した管理用のサーバーで、SSH のパスワードでのログインを許していた。攻撃者は、最初に接続したときすでにパスワードを知っていた。</li>
+<li>管理用のサーバーが、ほかのサーバーへの入口を兼ねていた。攻撃者はそこから、出口のサーバーに入った。</li>
+</ul>
+<p>この運営者の中継点は、10月6日の時点で、57の IP アドレスの168台が止まっていました。入れられた Ebury は、正規のパッケージを書き換えずに別のファイルとして置かれていたため、パッケージの検証では見つからなかったとしています。</p>
+<p>ほかの運営者のサーバーにどう入ったかは、分かっていません。ホスティング会社が侵入されたという説もありますが、発見者は推測の段階としています。Ebury を長く調べている研究者は、2009〜2023年に Ebury が入ったサーバーは40万台にのぼり、ほかにも感染した中継点がある可能性が高いと書いています。</p>
+
+<h2>利用者と運営者がすること</h2>
+<div class="cards">
+<div class="card"><h3>SSH を使う人</h3><ul><li>「接続先の鍵が変わった」という警告を無視しない。</li><li>パスワードでのログインをやめ、鍵でログインする（発見者のすすめ）。</li><li>10月2日〜5日に Tor 経由で SSH にパスワードでログインし、警告を無視した場合は、そのパスワードを替え、サーバーを点検する（筆者の整理）。</li></ul></div>
+<div class="card"><h3>中継点の運営者（Tor Project の注意喚起）</h3><ul><li>設定していない Exit のフラグや出口の方針がないか、Tor Metrics の Relay Search で確かめる。</li><li>torrc に、ExitRelay、ExitPolicy、MyFamily などの変更がないか確かめる。</li><li>ポート22を転送する規則、知らない通信、tor のプログラムとパッケージの一致、新しいユーザー・鍵・定期実行の設定を確かめる。</li></ul></div>
+<div class="card"><h3>侵入が疑われたら（Tor Project の注意喚起）</h3><ul><li>中継点を止め、ディスクと記録を残す。</li><li>掃除ではなく、入れ直す。</li><li>中継点の鍵は盗まれたものとみなして作り直し、置いてあった認証情報をすべて替える。</li></ul></div>
+</div>
+
+<h2>見方</h2>
+<div class="note">
+<p>Tor の出口から先は、ふつうのインターネットの通信です。出口が悪意を持てば、暗号化されていない通信は読めますし、暗号化されていても、利用者が鍵の確認を飛ばせば盗み見できます。今回の特徴は、悪意のある人が中継点を立てたのではなく、善意の運営者のサーバーが乗っ取られた点です。守りを最後に支えたのは、SSH の鍵の確認でした。中継点は、多くの人の通信が通る、狙われやすいサーバーとして守る必要があります。</p>
+</div>
+
+<dl class="terms">
+<dt>Tor</dt><dd>通信を3つの中継点で何重にも包んで送り、送り手を分かりにくくする仕組み。中継点は世界中の有志が運営している。</dd>
+<dt>出口の中継点（出口ノード）</dt><dd>Tor の通信が、ふつうのインターネットに出ていく所。出口から先の通信は、Tor の暗号で包まれていない。</dd>
+<dt>SSH</dt><dd>サーバーに遠隔でログインして操作する仕組み。通信は暗号化され、接続先の鍵で相手が本物かを確かめる。</dd>
+<dt>中間者攻撃</dt><dd>通信の間に割り込み、両方の相手になりすまして中身を見る攻撃。</dd>
+<dt>Ebury</dt><dd>Linux のサーバーに入れられる、SSH の裏口と認証情報を盗むマルウェア。2009年ごろから確認されている。</dd>
+<dt>BadExit</dt><dd>Tor のディレクトリ機関が、問題のある中継点に付ける印。付いた中継点は出口として使われない。</dd>
+<dt>torrc</dt><dd>Tor の中継点の設定ファイル。出口にするか、どの通信を通すか（出口の方針）を書く。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月23日時点の情報です。乗っ取られた台数（333台）は、発見者が出口を1台ずつ調べた結果です。侵入の経路は、報告した1組の運営者の場合だけ分かっており、全体の経路と攻撃者は分かっていません。報道にある別の数え方の台数は、一次情報で確かめられないため載せていません。時刻は UTC です。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>初回公開（盗み見の仕組み、対応の流れ、出口の数の変化、侵入の経路、すること）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
