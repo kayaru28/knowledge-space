@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月20日にKDDIが発表した、「au PAYの使えるお店」で、包括代理加盟店を経由した個人事業主の最大458,508名の店舗情報を、掲載を明確に認識していないまま載せていた可能性について、対象、影響の数、今後の対応を、KDDIの発表から整理する。">
+<title>「掲載されていると知らなかった」個人事業主の店舗情報：au PAY の「使えるお店」で、最大458,508名の情報が掲載されていた | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>「掲載されていると知らなかった」個人事業主の店舗情報：au PAY の「使えるお店」で、最大458,508名の情報が掲載されていた</h1><p class="summary">2026年10月20日にKDDIが発表した、「au PAYの使えるお店」で、包括代理加盟店を経由した個人事業主の最大458,508名の店舗情報を、掲載を明確に認識していないまま載せていた可能性について、対象、影響の数、今後の対応を、KDDIの発表から整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-25</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月20日、KDDI は、決済サービス「au PAY」の、利用できる店舗を探せるウェブサイト「au PAYの使えるお店」に、<strong>店舗の情報を載せていることを、加盟店が明確に認識していないまま、掲載していた可能性がある</strong>と発表しました。</p>
+<p>対象は、包括代理加盟店（複数の決済手段をまとめて契約できるサービスを提供する事業者）を経由して加盟した、個人事業主の一部です。影響は最大458,508名で、そのうち、店舗名に個人の氏名と推測される名称が載っていたのは、最大4,417名です。掲載されていたのは、店舗名、連絡先、所在地などです。</p>
+<p>KDDI は、規約を直し、サイトへの掲載を明記する方向です。個人事業主の店舗は、掲載を明確に認識してもらった場合だけ載せる予定です。サイトは、2026年8月下旬からメンテナンス中で、再開の時期は未定です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">458,508<small>名</small></p><p class="stat-label">影響を受けた個人事業主（最大）</p></div>
+<div class="stat"><p class="stat-value">4,417<small>名</small></p><p class="stat-label">うち、個人の氏名と推測される名称が、店舗名に載っていた人（最大。全体の約1%）</p></div>
+<div class="stat"><p class="stat-value">8月下旬</p><p class="stat-label">サイトのメンテナンスの開始（発表の約2か月前）</p></div>
+<div class="stat"><p class="stat-value">10/20</p><p class="stat-label">KDDI の発表（2026年）</p></div>
+</div>
+
+<h2>何が起きたのか</h2>
+<ul>
+<li>「au PAYの使えるお店」は、au PAY が使える店舗を、表示・検索できるウェブサイトです。KDDI は、加盟店の店舗名、連絡先、所在地など（店舗情報）を載せています。</li>
+<li>加盟店は、au PAY の加盟店規約に同意しています。しかし、規約への同意だけでは、加盟店が、サイトへの掲載を、必ずしも明確に認識していない可能性があることが判明しました。</li>
+<li>KDDI が直接契約する加盟店や、一部の包括代理加盟店を経由して契約した加盟店には、契約のときなどに、サイトへの掲載の意向を確認し、認識してもらっていました。</li>
+<li>対象は、包括代理加盟店を経由して加盟した、個人事業主の一部です。</li>
+</ul>
+
+<h2>影響の数</h2>
+
+<figure class="viz">
+<p class="viz-title">影響を受けた個人事業主の数</p>
+<p class="viz-sub">KDDI の発表より（どちらも「最大」の数）。棒の長さは人数に比例</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 170" role="img" aria-label="影響を受けた個人事業主は最大458,508名。そのうち、個人の氏名と推測される名称が店舗名に載っていたのは最大4,417名。">
+<text class="t-strong" x="20" y="44">影響を受けた個人事業主</text>
+<rect class="bar-old" x="20" y="54" width="600" height="28" rx="4"><title>最大458,508名</title></rect>
+<text class="t-strong" x="630" y="74">最大458,508名</text>
+
+<text class="t-strong" x="20" y="118">うち、個人の氏名と推測される名称が店舗名に載っていた人</text>
+<rect class="bar-2" x="20" y="128" width="5.8" height="28" rx="2"><title>最大4,417名</title></rect>
+<text class="t-strong" x="35.8" y="148">最大4,417名</text>
+</svg>
+</div>
+<figcaption>どちらも、掲載を認識していなかった人数ではなく、可能性のある範囲の上限です。個人の氏名と推測される名称が載っていた人は、全体の約1%です。</figcaption>
+</figure>
+
+<h2>KDDI の今後の対応</h2>
+<div class="cards">
+<div class="card"><h3>規約を直す</h3><p>au PAY 加盟店規約を、サイトへ店舗情報を載せることを、明確に書く方向で直します。</p></div>
+<div class="card"><h3>認識を得てから載せる</h3><p>個人事業主の加盟店は、サイトへの掲載を明確に認識した場合だけ、店舗情報を載せる予定です。</p></div>
+<div class="card"><h3>サイトは停止中</h3><p>この件に伴い、2026年8月下旬から、サイトをメンテナンスしています。再開の時期は、現時点で未定です。</p></div>
+</div>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：加盟店は規約には同意していましたが、規約の同意だけでは、掲載を明確に認識していなかった可能性がありました。KDDI は、規約の書き方と、掲載の意向の確認の両方を直します。直接契約や、一部の包括代理加盟店を経由した場合は、意向を確認していて、違いが出たのは、包括代理加盟店を経由した、個人事業主の一部でした。個人事業主では、店舗名が個人の氏名と重なることがあり、事業所の情報でも、個人の情報に近くなる場合があります。また、サイトのメンテナンスは8月下旬から始まっていて、発表は10月20日でした。この間の経緯は、KDDI の発表に書かれていません。</p>
+</div>
+
+<dl class="terms">
+<dt>個人事業主</dt><dd>会社を作らず、個人で事業をしている人。</dd>
+<dt>加盟店</dt><dd>決済サービスを、店で使えるようにしている店舗。</dd>
+<dt>包括代理加盟店</dt><dd>複数の決済手段を、加盟店がまとめて契約できるサービスを提供する事業者。</dd>
+<dt>加盟店規約</dt><dd>決済サービスの事業者と、加盟店との間の契約の条件を定めた規約。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月25日時点の情報です。数字は、KDDI の発表時点のものです。個人情報保護委員会への報告の有無や、対象者への個別の連絡は、KDDI の発表に書かれていません。内容は、KDDI の発表をもとに、独自に整理したものです。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-25</span>初回公開（掲載の経緯、対象と影響の数、KDDIの今後の対応）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

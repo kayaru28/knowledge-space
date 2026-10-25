@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月21日にニューメキシコ州の裁判所がMetaに命じた250億ドルの民事制裁金について、陪審が認定した43,899,725件の違反、1件5,000ドルの上限で計算した額からの減額、裁判所が認めた説明の中身、同じ州の別の事件との違いを、命令の原本と州司法省の発表から整理する。">
+<title>Meta に250億ドルの支払い命令：ニューメキシコ州の裁判所が、陪審の認定した約4,390万件の違反に科した民事制裁金 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>Meta に250億ドルの支払い命令：ニューメキシコ州の裁判所が、陪審の認定した約4,390万件の違反に科した民事制裁金</h1><p class="summary">2026年10月21日にニューメキシコ州の裁判所がMetaに命じた250億ドルの民事制裁金について、陪審が認定した43,899,725件の違反、1件5,000ドルの上限で計算した額からの減額、裁判所が認めた説明の中身、同じ州の別の事件との違いを、命令の原本と州司法省の発表から整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-25</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月21日、米国ニューメキシコ州の裁判所は、Meta（旧 Facebook）に対し、<strong>250億ドルの民事制裁金</strong>を支払うよう命じました。</p>
+<p>事件は、ケンブリッジ・アナリティカの問題をめぐって、Facebook が、利用者のデータの扱いなどについて、利用者に偽りの説明をしたと、州が訴えたものです。陪審は、州の「不公正取引慣行法」について、Facebook が<strong>43,899,725件の故意の違反</strong>をしたと認定しました。</p>
+<p>法律が定める1件あたりの上限（5,000ドル）で計算した制裁金は、2,194億9,860万ドルでした。命令は、これを250億ドルに減額しています。年利15%の利息が付きます。州司法省は、米国の歴史で、企業に科された最大級の制裁金の一つだと述べています。差止め（業務の変更の命令）は、追加の審理まで、裁判所が判断を留保しています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">250<small>億ドル</small></p><p class="stat-label">裁判所が命じた民事制裁金（上限で計算した額から減額）</p></div>
+<div class="stat"><p class="stat-value">43,899,725<small>件</small></p><p class="stat-label">陪審が認定した、故意の違反の件数</p></div>
+<div class="stat"><p class="stat-value">5,000<small>ドル</small></p><p class="stat-label">不公正取引慣行法が定める、違反1件あたりの制裁金の上限</p></div>
+<div class="stat"><p class="stat-value">26<small>件</small></p><p class="stat-label">陪審が、違法かつ故意と認めた説明の数（2010年5月〜2021年8月）</p></div>
+</div>
+
+<h2>制裁金の計算</h2>
+
+<figure class="viz">
+<p class="viz-title">制裁金の大きさの比較（単位：億ドル）</p>
+<p class="viz-sub">裁判所の命令（2026年10月21日）より。棒の長さは金額に比例</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 240" role="img" aria-label="制裁金の比較。FTCとの和解の制裁金は50億ドル、今回の命令は250億ドル、1件5,000ドルで計算した上限額は2,194.986億ドル。">
+<text class="t-strong" x="20" y="44">FTC との和解の制裁金（命令が言及）</text>
+<rect class="bar-old" x="20" y="54" width="13.6" height="28" rx="4"><title>50億ドル</title></rect>
+<text class="t-strong" x="43.6" y="74">50億ドル</text>
+
+<text class="t-strong" x="20" y="118">今回の命令（減額後）</text>
+<rect class="bar" x="20" y="128" width="68.2" height="28" rx="4"><title>250億ドル</title></rect>
+<text class="t-strong" x="98.2" y="148">250億ドル</text>
+
+<text class="t-strong" x="20" y="192">1件5,000ドルで計算した上限額</text>
+<rect class="bar-2" x="20" y="202" width="598.6" height="28" rx="4"><title>2,194.986億ドル（5,000ドル × 43,899,720件）</title></rect>
+<text class="t-strong" x="628.6" y="222">約2,195億ドル</text>
+</svg>
+</div>
+<figcaption>命令は、上限で計算した額の、約11%に減額しました。減額後でも、命令が引き合いに出した FTC との和解の制裁金の、5倍にあたります。</figcaption>
+</figure>
+
+<ul>
+<li><strong>違反の件数：</strong>陪審は、不公正・欺瞞的な取引慣行による故意の違反を43,899,720件、非良心的な取引慣行による故意の違反を5件、合計43,899,725件と認定しました。</li>
+<li><strong>上限の水準：</strong>制裁金は、5,000ドルに43,899,720件をかけた2,194億9,860万ドル。裁判所は、違反の多さ、期間の長さと繰り返し、説明の範囲の広さ、上級幹部の関与、故意で組織的な性質などから、法が許す最高の水準（1件5,000ドル）が支えられると述べました。</li>
+<li><strong>主文：</strong>制裁金を250億ドルに減額する。利息は年15%。差止めは、追加の審理を待つ間、判断を留保する。</li>
+<li>命令は、Meta が比例性の検討のために引き合いに出した、FTC（米連邦取引委員会）との和解の制裁金（50億ドル）にも触れ、罰金や同意の合意、命令が、Meta が欺瞞的な取引慣行をやめることにつながらなかったと認めました。</li>
+</ul>
+
+<h2>裁判所が認めたこと</h2>
+<div class="cards">
+<div class="card"><h3>26件の説明、11年以上</h3><p>陪審が違法かつ故意と認めた説明は26件で、2010年5月24日から2021年8月18日までに及びます。プラットフォームやニュースルーム、決算説明会、テレビや新聞のインタビュー、会議などで広められ、最高経営責任者と、当時の最高執行責任者の発言も含まれます。</p></div>
+<div class="card"><h3>「友達の情報の共有」</h3><p>2014年に共有を終了すると述べたが、実際は、公表の1年以上前から、優遇するビジネスパートナーには、利用者に知らせずに、アクセスを続ける計画だったと、命令は認めています。</p></div>
+<div class="card"><h3>ケンブリッジ・アナリティカのあと</h3><p>2018年3月の件のあとに、第三者のアプリを調べ、悪用された利用者に知らせると約束しました。しかし、悪用の範囲を狭める形に内部の定義を変え、知らせたのは2つのアプリだけで、悪用が疑われるアプリは数千件特定していたと、命令は認めています。</p></div>
+<div class="card"><h3>州の規模</h3><p>ニューメキシコ州の月間利用者は1,386,648人（2020年6月30日時点）で、州の人口は約210万人です。命令は、これを説明が届く見込みの範囲としました。</p></div>
+</div>
+
+<h2>州司法省の説明</h2>
+<ul>
+<li><strong>日付：</strong>2026年10月21日。</li>
+<li><strong>位置づけ：</strong>州は、多州の和解に加わらず、独自に裁判に進み、事実が法廷で検証されるようにしました。</li>
+<li><strong>争点：</strong>ケンブリッジ・アナリティカの問題そのものを超えて、Facebook が、利用者に対して、データの扱いや、偽情報とヘイトスピーチへの対策について、どう説明してきたかを問いました。</li>
+</ul>
+
+<h3>背景：同じ州の、別の事件</h3>
+<p>ニューメキシコ州は、Meta を相手に、別の事件（子どもの安全。Facebook と Instagram）でも裁判をしています。2026年3月に、陪審が3億7,500万ドルの民事制裁金を認定し、州司法省の2026年8月7日の発表によると、裁判所は、子どもの保護の仕組みを改めるよう命じ、基金5億6,700万ドルの支払いを命じました。この件の金額の合計は9億4,200万ドルです。今回の250億ドルの命令は、この事件とは別の、ケンブリッジ・アナリティカの事件（事件番号が異なる）のものです。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：250億ドルは、法律の上限で計算した額の約11%に減額した金額ですが、減額後でも、命令が引き合いに出した FTC との和解の制裁金の5倍です。違反の件数は、利用者の被害の件数ではなく、陪審が認定した、説明ごと、聴衆ごとの数で、ニューメキシコ州の人口（約210万人）を大きく上回ります。一つの州が、多州の和解に加わらず、独自に裁判を進め、州の消費者保護法で大きな制裁金に至りました。まだ終わっていません。差止めの判断が留保されていて、控訴や金額の確定の手続きが、今後ある可能性があります（確認した公式の資料には、書かれていません）。</p>
+</div>
+
+<dl class="terms">
+<dt>民事制裁金</dt><dd>法律に違反した者に、国や州が科す金銭の制裁。刑罰の罰金とは別。</dd>
+<dt>不公正取引慣行法</dt><dd>ニューメキシコ州の、消費者保護の法律（Unfair Practices Act）。欺瞞的な取引慣行や、非良心的な取引慣行を禁じる。</dd>
+<dt>陪審</dt><dd>一般の市民が、事実の認定をする仕組み。この事件では、陪審が、責任の有無と違反の件数を認定し、裁判所が、制裁金を決めた。</dd>
+<dt>非良心的な取引慣行</dt><dd>消費者の知識や立場の弱さを、著しく不公正な程度で利用する取引慣行。</dd>
+<dt>ケンブリッジ・アナリティカ</dt><dd>2018年に発覚した、Facebook の利用者のデータが、第三者のアプリを通じて、政治の目的に利用された問題。</dd>
+<dt>FTC</dt><dd>米連邦取引委員会。消費者保護と競争の政策を担当する連邦政府の機関。</dd>
+<dt>差止め</dt><dd>裁判所が、ある行為をやめさせる、または、ある対策を命じること。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月25日時点の情報です。内容は、ニューメキシコ州司法省の発表と、裁判所の命令（原本）をもとに、独自に整理したものです。命令は、文字が埋め込まれていない画像の PDF で、ページを画像にして読みました。Meta の反応や、控訴の有無は、確認した公式の資料に書かれていません。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-25</span>初回公開（命令の中身、制裁金の計算と減額、裁判所が認めたこと、同じ州の別の事件との違い）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="スタンフォード大学らが2026年に発表した論文「Keys on Doormats」から、1,000万の公開Webサイトで見つかった有効なAPIキー1,748件、見落とされる理由（ビルドで作られたバンドルの中）、露出が残る期間、通知の効果、勧められる対策を、棒グラフと表で整理する。">
+<title>公開のWebサイトに、使える状態の API キーが残っていた：1,000万サイトの調査「Keys on Doormats」 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>公開のWebサイトに、使える状態の API キーが残っていた：1,000万サイトの調査「Keys on Doormats」</h1><p class="summary">スタンフォード大学らが2026年に発表した論文「Keys on Doormats」から、1,000万の公開Webサイトで見つかった有効なAPIキー1,748件、見落とされる理由（ビルドで作られたバンドルの中）、露出が残る期間、通知の効果、勧められる対策を、棒グラフと表で整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-25</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年の論文「Keys on Doormats」は、1,000万の公開 Web サイトを調べ、<strong>使える状態の API キー（外部のサービスを使うための認証情報）が、サイトの上にそのまま露出していた</strong>ことを示しました。</p>
+<p>14のサービス（クラウド、決済、メッセージなど）について、有効な認証情報1,748件が、9,804のサイト、5,693のドメインで見つかりました。露出した先には、世界の大手銀行、重要インフラの事業者、公共の安全に関わるシステムが含まれています。</p>
+<p>露出の多くは JavaScript のファイルにあり、うち62%は、ビルドで作られたまとめ済みのファイル（バンドル）の中にだけあって、<strong>ソースコードの検査では見つかりません</strong>。露出は平均で12か月残り、研究者が通知すると、2週間で約半分が取り除かれました。調べたのは14のサービスだけなので、実際の露出は、これより多いと論文は述べています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1,000万</p><p class="stat-label">調べた、公開の Web サイトの数</p></div>
+<div class="stat"><p class="stat-value">1,748<small>件</small></p><p class="stat-label">確認できた、有効な認証情報（14のサービス）</p></div>
+<div class="stat"><p class="stat-value">84<small>%</small></p><p class="stat-label">露出が、JavaScript のファイルにあった割合</p></div>
+<div class="stat"><p class="stat-value">約12<small>か月</small></p><p class="stat-label">露出が残る期間の平均</p></div>
+</div>
+
+<h2>どう調べたか</h2>
+<ul>
+<li><strong>対象：</strong>HTTP Archive（Chrome の利用者が多く訪れる Web サイトを集めたデータをもとに、ページの読み込みを記録したもの）の、約1,000万の描画済みの Web サイト。ネットワークの要求や応答、JavaScript などが含まれます。</li>
+<li><strong>検出：</strong>秘密の情報を探すツール（TruffleHog）で、認証情報らしい文字列（候補）を探します。</li>
+<li><strong>確認：</strong>候補は、そのサービスの、利用者のデータを変えない窓口に問い合わせて、有効かどうかを確かめます。確認の方法は、事前に手作業で見直して、安全にしたとしています。</li>
+<li><strong>結果：</strong>約200万の候補のうち、有効と確認できたのは1,748件（0.09%）でした。形が正しい候補の多くは、すでに取り消されたり、更新されたりしていました。</li>
+</ul>
+<p>調べたのは、有効かどうかを確かめられる14のサービス（AWS、Azure、Alibaba、Bitly、Cloudflare、GitHub、Mailchimp、OpenAI、RazorPay、SendGrid、Slack、Stripe、Telegram、Twilio）です。調査の時点で有効だったものだけを数えるため、論文は、結果を実際の露出の<strong>下限</strong>としています。</p>
+
+<h2>何が見つかったか</h2>
+<ul>
+<li>有効な認証情報1,748件が、9,804のサイト、5,693のドメインにありました。AWS の認証情報は、有効な露出全体の16%超で、4,693のサイトにありました。</li>
+<li>人気の高いサイトにもありました。Tranco の上位500のサイトにも、有効な認証情報が見つかっています。</li>
+<li>組織の種類は、世界の大手銀行（国際的に重要な銀行）、重要インフラの事業者、公共の安全に関わるシステム、医療機関に関わる事例などです（論文は、組織名を伏せています）。</li>
+<li>国別では、露出したドメインのうち、アメリカが20%（世界のドメイン全体では9%）、インドが16%（同5%）でした。</li>
+</ul>
+
+<h2>なぜ見落とされるのか</h2>
+
+<figure class="viz">
+<p class="viz-title">露出が見つかったファイルの種類（1,748件の内訳）</p>
+<p class="viz-sub">論文の第5章より。棒の長さは割合に比例（四捨五入のため、合計は99%）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 130" role="img" aria-label="露出が見つかったファイルの種類は、JavaScriptが84%、HTMLが8%、JSONが7%。">
+<text class="t-strong" x="20" y="30">露出が見つかった場所</text>
+<rect class="bar" x="20" y="42" width="604.8" height="28" rx="4"><title>JavaScript：84%（うち、ビルドで作られたバンドルの中が62%、第三者の資源が16%）</title></rect>
+<rect class="bar-2" x="626.8" y="42" width="57.6" height="28" rx="4"><title>HTML：8%</title></rect>
+<rect class="bar-old" x="686.4" y="42" width="50.4" height="28" rx="4"><title>JSON：7%</title></rect>
+<text class="t-small" x="20" y="92">JavaScript 84%</text>
+<text class="t-small" x="626.8" y="92">HTML 8%</text>
+<text class="t-small" x="686.4" y="112">JSON 7%</text>
+</svg>
+</div>
+<figcaption>露出の大半は、JavaScript のファイルにあります。JavaScript の露出のうち62%は、ビルドの道具で作られたバンドルの中にあり、ソースコードの検査では見つかりません。</figcaption>
+</figure>
+
+<ul>
+<li>ソースコードの中には鍵がなく、<strong>ビルドの結果にだけ現れる</strong>ことがあります。そのため、ソースの検査（静的な解析）では見つからず、本番の Web サイトを動かして調べる検査（動的な解析）が必要になります。</li>
+<li>16%は、外部から読み込む、第三者の資源（外部のスクリプトなど）を通じて広がります。OpenAI の認証情報は、24%が外部の資源にありました。</li>
+<li>5%（478件）は、最初の HTML の応答に、そのまま含まれていました。</li>
+</ul>
+
+<h2>露出はどれくらい残り、通知で変わったか</h2>
+<p>HTTP Archive の9回分の記録で調べたところ、露出が残る期間は平均12か月で、サービスによって差がありました（Slack と Bitly は長く、AWS と Azure は短い）。研究者は、メールで運営者に通知し、取り除くこと（削除）と、無効にすること（取り消し）の両方を勧めました。</p>
+
+<figure class="viz">
+<p class="viz-title">通知のあとの、公開されたままの露出の件数</p>
+<p class="viz-sub">論文の第6章より。棒の長さは件数に比例</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 240" role="img" aria-label="通知の日に1,405件あった公開の露出は、14日後に706件に減り、172日後に1,019件に増えた。">
+<text class="t-strong" x="20" y="44">通知の日</text>
+<rect class="bar-old" x="20" y="54" width="524.5" height="28" rx="4"><title>1,405件</title></rect>
+<text class="t-strong" x="554.5" y="74">1,405件</text>
+
+<text class="t-strong" x="20" y="118">14日後</text>
+<rect class="bar" x="20" y="128" width="263.6" height="28" rx="4"><title>706件（約50%減）</title></rect>
+<text class="t-strong" x="293.6" y="148">706件</text>
+
+<text class="t-strong" x="20" y="192">172日後（約6か月）</text>
+<rect class="bar-2" x="20" y="202" width="380.4" height="28" rx="4"><title>1,019件（再び露出した可能性）</title></rect>
+<text class="t-strong" x="410.4" y="222">1,019件</text>
+</svg>
+</div>
+<figcaption>通知の2週間後に、公開されたままの露出は約半分になりました。何もしない場合の、1か月に約10%という減り方を、大きく上回っています。ただし、6か月後には増えていて、論文は、再び露出した可能性が高いとみています。</figcaption>
+</figure>
+
+<ul>
+<li><strong>削除だけでは足りません。</strong>削除しても、キャッシュや保存されたページに残り、取り消していない認証情報は取り出せます。削除は取り消しの約2倍の割合で行われ（50%と26%）、取り消しが後回しになっていました。</li>
+<li>サービス別の平均では、47%が取り除かれました。OpenAI は、153件から44件に減りました（71%減）。</li>
+<li>6か月後には、取り消されていない露出は865件から660件に減り、取り消しが進んだとしています。一方、削除されていない露出は706件から1,019件に増えました。</li>
+</ul>
+
+<h2>論文が勧める対策</h2>
+<div class="cards">
+<div class="card"><h3>開発者：公開前に検査する</h3><p>ビルドで作られたファイル（バンドル）も含めて、認証情報を検査し、見つかったらビルドを失敗させます。環境変数は、公開してよいものだけを明示して含め、認証情報らしいパターンは、コミットの前の検査で止めます。</p></div>
+<div class="card"><h3>開発者：鍵をクライアントに置かない</h3><p>重要な API は、バックエンドを通して呼びます。本番ではない環境では、別のテスト用の認証情報を使います。</p></div>
+<div class="card"><h3>ツールの開発者：初期設定を安全側にする</h3><p>設定を、クライアントに見せるものと見せないものに分け、宣言のないものは秘密とみなします。ビルドの段階で、バンドルから認証情報を検出します。</p></div>
+<div class="card"><h3>サービスの提供者：権限を絞る</h3><p>権限を最小から始め、短い有効期間と自動の更新を勧めます。クライアント用の鍵は、権限が狭く、回数に制限があり、送信元に縛られ、バックエンドを止めずに取り消せるようにします。</p></div>
+</div>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：論文は、運営者が、公開用と思い込んだ認証情報を、安全だと扱っている例があるとしています。見えないのは、ソースではなく、ビルドの結果です。また、削除しただけでは直らず、取り消して初めて直ります。別のまとめ（国内の情報漏えい）では、JPCERT/CC が、アプリに秘密の鍵や、有効期間の長い認証情報を埋め込まないよう勧めています。この論文は、Web サイトの側で、同じ種類の問題が起きていることを示しています。</p>
+</div>
+
+<dl class="terms">
+<dt>API キー（認証情報）</dt><dd>アプリが、外部のサービスを使うときに、自分が正当な利用者だと示すための文字列。</dd>
+<dt>バンドル</dt><dd>ビルドの道具が、たくさんの JavaScript のファイルを、まとめて1つ（または少数）にしたもの。</dd>
+<dt>静的解析</dt><dd>プログラムを動かさずに、ソースコードを調べる検査。</dd>
+<dt>動的解析</dt><dd>実際にプログラムや Web サイトを動かして、調べる検査。</dd>
+<dt>取り消し（失効）</dt><dd>認証情報を無効にして、使えなくすること。</dd>
+<dt>security.txt</dt><dd>Web サイトが、脆弱性の報告の連絡先を、決まった場所に置く仕組み。</dd>
+<dt>責任ある開示</dt><dd>見つけた問題を、公表する前に、関係者へ知らせる進め方。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月25日時点の情報です。論文は、2026年9月14日の第3版によります。数字は論文の本文によるもので、論文は、結果を実際の露出の下限としています。内容は、論文をもとに、独自に整理したものです。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-25</span>初回公開（調査の方法、見つかった認証情報、見落とされる理由、露出が残る期間と通知の効果、勧められる対策）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月21日にMicrosoftが公表した、中国の国家と連携した攻撃者Storm-0940によるAIエージェント（ARTEX）を使った攻撃の自動化と、ConnectWiseのCloud Backupへの侵害について、時系列、攻撃の流れ、Microsoftの対策の案内を、MicrosoftとConnectWiseの公式の資料から整理する。">
+<title>AIエージェントが、攻撃を機械の速さで進めた：Microsoft が確認した、ConnectWise の Cloud Backup のサプライチェーン攻撃と、3時間未満で特権に届いた例 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>AIエージェントが、攻撃を機械の速さで進めた：Microsoft が確認した、ConnectWise の Cloud Backup のサプライチェーン攻撃と、3時間未満で特権に届いた例</h1><p class="summary">2026年10月21日にMicrosoftが公表した、中国の国家と連携した攻撃者Storm-0940によるAIエージェント（ARTEX）を使った攻撃の自動化と、ConnectWiseのCloud Backupへの侵害について、時系列、攻撃の流れ、Microsoftの対策の案内を、MicrosoftとConnectWiseの公式の資料から整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-25</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Microsoft は2026年10月21日、<strong>中国の国家と連携した攻撃者「Storm-0940」が、AI エージェントの攻撃用の道具「ARTEX」で、攻撃を自動化していた</strong>と公表しました。</p>
+<p>2026年9月ごろから、世界の数百の組織を、さまざまな業種にわたって狙い、複数の例で、狙ってからクラウドの特権のアクセスを得るまでが<strong>3時間未満</strong>でした。Microsoft は、10月に公表された ConnectWise の Cloud Backup（旧 SkyKick）への侵害も、この攻撃者によるものと評価しています。侵害のあと、攻撃者は、ARTEX で、2,250を超えるテナントにサインインを試みました。</p>
+<p>Microsoft は、これは、Microsoft 自身の製品やシステムの脆弱性によるものではないと述べています。大半の標的は失敗しましたが、短い時間で、特権を持つクラウドへの永続的なアクセスを得た組織が、多くあったとしています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>時間未満</small></p><p class="stat-label">狙ってから、特権のアクセスまでの時間（複数の例）</p></div>
+<div class="stat"><p class="stat-value">2,250<small>超</small></p><p class="stat-label">侵害のあと、ARTEX がサインインを試みたテナントの数</p></div>
+<div class="stat"><p class="stat-value">数百</p><p class="stat-label">ARTEX で自動化された攻撃が狙った組織の数（2026年9月ごろから）</p></div>
+<div class="stat"><p class="stat-value">151,000<small>回超</small></p><p class="stat-label">10月10〜14日のパスワードスプレーで、Microsoft が確認した失敗したサインイン</p></div>
+</div>
+
+<h2>何が起きたのか</h2>
+<ul>
+<li><strong>攻撃者：</strong>Storm-0940。Microsoft は「中国の国家と連携した攻撃者」とし、2021年から活動していると述べます。以前から、パスワードスプレー（多数のアカウントに、よくあるパスワードを試す攻撃）と、インターネットに公開されたアプリケーションの悪用で侵入し、既存の OAuth アプリケーションに認証情報を追加して、Microsoft 365 への継続的なアクセスを確保してきました。</li>
+<li><strong>道具：</strong>ARTEX は、オープンソースの、ペネトレーションテスト（模擬の攻撃で弱点を調べる試験）のための枠組みで、どの AI モデルでも使えます。複数の AI エージェントが、偵察からデータの持ち出しまでの模擬の攻撃を、ほとんど人の手を介さずに進めます。画面と出力は英語が既定ですが、韓国語、中国語、スペイン語、日本語に切り替えられます。</li>
+<li><strong>狙われた業種：</strong>航空宇宙・防衛、自動車、化学、エネルギー、金融、政府、法務、製造、メディア、軍事、半導体、ソフトウェア、技術、シンクタンクと非営利団体など。</li>
+<li><strong>速さ：</strong>AI で自動化すると、大量の通信とログが出て、警報が鳴りえます。しかし、速さのために、守る側が、警報に対応して、調整して侵入を除くための時間は、ほとんどないと、Microsoft は述べています。</li>
+</ul>
+
+<h2>ConnectWise の件の時系列</h2>
+
+<figure class="viz">
+<p class="viz-title">パスワードスプレーから、復旧の開始まで（10月10日〜26日）</p>
+<p class="viz-sub">Microsoft と ConnectWise の公式の資料より。点と帯の位置は日付に比例</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 230" role="img" aria-label="時系列。10月10日から14日に、組織をまたぐパスワードスプレー（327アカウント、8組織）。10月15日にConnectWiseのアプリの侵害の公の報告。10月16日にConnectWiseが最初の勧告を公開。10月21日にMicrosoftがブログを公開。10月24日にConnectWiseが復旧の状況を更新。10月26日に段階的なパートナーの受け入れを始める目標。">
+<line class="axis" x1="60" y1="110" x2="820" y2="110"/>
+<rect class="bar-2" x="100" y="96" width="160" height="28" rx="4"><title>10月10〜14日：Storm-0940 のインフラから、8つの組織の327アカウントを狙った、組織をまたぐ自動のパスワードスプレー。151,000回超の失敗したサインイン。成功したサインインやトークンの発行は確認されていない</title></rect>
+<text class="t-small" x="100" y="60" text-anchor="start">10/10〜14</text>
+<text class="t-small" x="100" y="76" text-anchor="start">パスワードスプレー</text>
+<circle class="mk-found" cx="300" cy="110" r="7"><title>10月15日：ConnectWise のクラウドバックアップのアプリの侵害について、公の報告が出始めた。示された侵害の痕跡が、先のパスワードスプレーと同じ範囲のインフラと一致した（Microsoft）</title></circle>
+<text class="t-small" x="300" y="152" text-anchor="end">侵害の報告</text>
+<text class="t-small t-muted" x="300" y="136" text-anchor="end">10/15</text>
+<circle class="mk-announce" cx="340" cy="110" r="7"><title>10月16日：ConnectWise が、最初の勧告を公開（17:47 UTC）。Cloud Backup（旧 SkyKick）に関連するアプリケーションの認証情報への、不正なアクセスを確認した</title></circle>
+<text class="t-small" x="340" y="76" text-anchor="start">ConnectWise の勧告</text>
+<text class="t-small t-muted" x="340" y="136" text-anchor="start">10/16</text>
+<circle class="mk-announce" cx="540" cy="110" r="7"><title>10月21日：Microsoft が、Storm-0940 と ARTEX についてのブログを公開</title></circle>
+<text class="t-small" x="540" y="76" text-anchor="middle">Microsoft のブログ</text>
+<text class="t-small t-muted" x="540" y="136" text-anchor="middle">10/21</text>
+<circle class="mk-advisory" cx="660" cy="110" r="7"><title>10月24日：ConnectWise が、独立した専門家とともに、管理された順序でサービスを復旧していると更新。バックアップのアーカイブに侵害の兆候はない</title></circle>
+<text class="t-small" x="660" y="76" text-anchor="middle">復旧の状況を更新</text>
+<text class="t-small t-muted" x="660" y="136" text-anchor="middle">10/24</text>
+<circle class="dot-old" cx="740" cy="110" r="7"><title>10月26日：段階的なパートナーの受け入れを始める目標（ConnectWise。検証の完了が条件）</title></circle>
+<text class="t-small" x="740" y="156" text-anchor="middle">受け入れの開始（目標）</text>
+<text class="t-small t-muted" x="740" y="136" text-anchor="middle">10/26</text>
+</svg>
+</div>
+<figcaption>紫の帯と点は攻撃の動き、黒の点は公表、黄色の点は復旧の状況、灰色の点は目標を表します。10月26日は、ConnectWise が目標として示した日で、検証の完了が条件です。</figcaption>
+</figure>
+
+<ul>
+<li><strong>10月10〜14日：</strong>8つの組織の327アカウントを狙った、組織をまたぐ自動のパスワードスプレー。151,000回を超える失敗したサインインがあり、10月11日に1分あたり2,900回でピークになり、1日に111,000回以上が集中しました。48のアカウントは1,000回を超える失敗を受け、応答の約98%はロックアウトでした。この攻撃では、成功したサインイン、トークンの発行、Graph の呼び出し、ディレクトリの変更は確認されていません。</li>
+<li><strong>10月15日：</strong>人気のクラウドバックアップのアプリケーション（ConnectWise）が侵害されたという公の報告が出始めました。示された侵害の痕跡が、先のパスワードスプレーと同じ範囲のインフラと一致したと、Microsoft は述べています。</li>
+<li><strong>10月16日：</strong>ConnectWise が最初の勧告を公開しました。Cloud Backup（旧 SkyKick）に関連するアプリケーションの認証情報への、不正なアクセスを確認したとしています。</li>
+<li><strong>10月24日：</strong>ConnectWise は、独立した専門家とともに、サービスを管理された順序で復旧していると更新しました（インフラ全体の証明書の更新を含む）。既存のバックアップのアーカイブは、暗号化され、隔離され、保全されていて、侵害の兆候はなく、ほかの ConnectWise の製品やサービスに影響の兆候はないとしています。</li>
+</ul>
+
+<h2>攻撃の流れ</h2>
+
+<figure class="viz">
+<p class="viz-title">盗んだアプリの認証情報から、特権のアクセスまで</p>
+<p class="viz-sub">Microsoft のブログをもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="模式図。ConnectWiseのCloud Backupのアプリの認証情報が盗まれる。ARTEXのAIエージェントが、2,250を超えるテナントにサインインを試みる。成功した環境で、Microsoft Graphによる偵察、認証情報の追加、権限の変更が行われる。複数の例で、3時間未満で特権のクラウドアクセスと永続化に至る。">
+<defs><marker id="arrow-ai-attack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+
+<rect class="box" x="20" y="60" width="170" height="90" rx="6"/>
+<text class="t-strong" x="105" y="92" text-anchor="middle">アプリの認証情報が</text>
+<text class="t-strong" x="105" y="112" text-anchor="middle">盗まれる</text>
+<text class="t-small" x="105" y="134" text-anchor="middle">Cloud Backup のアプリ</text>
+<line class="arrow" x1="192" y1="105" x2="226" y2="105" marker-end="url(#arrow-ai-attack)"/>
+
+<rect class="box-key" x="230" y="40" width="200" height="130" rx="6"><title>ARTEX：どの AI モデルでも動く、オープンソースの、複数エージェントの枠組み</title></rect>
+<text class="t-strong" x="330" y="70" text-anchor="middle">AI エージェント（ARTEX）</text>
+<text class="t-small" x="330" y="98" text-anchor="middle">2,250超のテナントに</text>
+<text class="t-small" x="330" y="116" text-anchor="middle">サインインを試みる</text>
+<text class="t-small" x="330" y="140" text-anchor="middle">昼夜を問わず、同時に</text>
+<line class="arrow" x1="432" y1="105" x2="466" y2="105" marker-end="url(#arrow-ai-attack)"/>
+
+<rect class="box" x="470" y="60" width="180" height="90" rx="6"/>
+<text class="t-strong" x="560" y="90" text-anchor="middle">成功した環境で</text>
+<text class="t-small" x="560" y="112" text-anchor="middle">Graph で偵察</text>
+<text class="t-small" x="560" y="130" text-anchor="middle">認証情報の追加・権限の変更</text>
+<line class="arrow" x1="652" y1="105" x2="686" y2="105" marker-end="url(#arrow-ai-attack)"/>
+
+<rect class="box" x="690" y="60" width="170" height="90" rx="6"/>
+<text class="t-strong" x="775" y="92" text-anchor="middle">特権のアクセス</text>
+<text class="t-strong" x="775" y="112" text-anchor="middle">と永続化</text>
+<text class="t-small" x="775" y="134" text-anchor="middle">複数の例で3時間未満</text>
+
+<text class="t-small t-muted" x="20" y="200">利用者のサインインは不要：アプリがテナントですでに得ている信頼を使って、認証する</text>
+<text class="t-small t-muted" x="20" y="222">認証情報の変更は、元のアプリを無効にしたあとも、裏口として残りうる</text>
+</svg>
+</div>
+<figcaption>攻撃の手口そのものは、以前からのものです。変わったのは、AI エージェントで、複数の経路を同時に、昼夜を問わず、機械の速さで進められることです。</figcaption>
+</figure>
+
+<h2>Microsoft の対策の案内</h2>
+<div class="cards">
+<div class="card"><h3>接続は無効のまま</h3><p>影響を受けた ConnectWise のアプリケーションの接続は、ConnectWise から復旧の案内があるまで、無効のままにします。</p></div>
+<div class="card"><h3>削除の前に保全する</h3><p>企業のアプリケーションを、最初の対応として削除しません。取り返しのつかない変更の前に、設定と証拠を保全します。</p></div>
+<div class="card"><h3>10月15日以降を確認する</h3><p>少なくとも10月15日以降のサービスプリンシパルのサインインを確認します（記録があれば10月1日まで）。成功と失敗を分けて、公表された IP アドレスだけに限らず確認します。</p></div>
+<div class="card"><h3>変更を調べる</h3><p>アプリへの認証情報の追加、新しいアプリや所有者、同意、特権ロールの割り当て、認証方法や条件付きアクセスの変更を調べます。疑わしい活動は、権限を取り消し、認証情報を更新します。</p></div>
+</div>
+<p>影響を受けるアプリケーションが存在することや、認証が成功したことは、必ずしも、顧客のデータにアクセスされたことを意味しないと、Microsoft は述べています。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：攻撃者は、パスワードスプレーや、OAuth アプリの悪用という、以前からの手口を使っています。変わったのは、AI エージェントで、偵察から、認証、持続まで、複数の経路を、同時に、昼夜を問わず進められることです。ConnectWise のアプリが、顧客のテナントですでに信頼されていたことで、利用者のサインインなしに、環境へ入れました。連携しているアプリの権限を、最小にしておく意味が大きくなります。アプリケーションの認証情報の変更は、元のアプリを無効にしても残る裏口になりえます。別のまとめ（国内の情報漏えい）のアルカディアの件と同じく、侵入の入口を塞ぐだけでは足りません。</p>
+</div>
+
+<dl class="terms">
+<dt>ペネトレーションテスト</dt><dd>許可を得て、模擬の攻撃で、システムの弱点を調べる試験。</dd>
+<dt>AI エージェント</dt><dd>目標に向けて、自分で手順を考えて、道具を使いながら作業を進める AI。</dd>
+<dt>パスワードスプレー</dt><dd>多数のアカウントに、よくあるパスワードを少しずつ試して、侵入を狙う攻撃。ロックアウトを避けやすい。</dd>
+<dt>OAuth アプリケーション</dt><dd>ほかのサービスのデータを、利用者に代わって使うことを許された、連携のアプリ。</dd>
+<dt>Microsoft Graph</dt><dd>Microsoft 365 のデータを、プログラムから扱うための窓口。</dd>
+<dt>サービスプリンシパル</dt><dd>クラウドで、アプリケーションが持つ、人ではない ID。</dd>
+<dt>テナント</dt><dd>Microsoft 365 などで、組織ごとに分かれた、利用の単位。</dd>
+<dt>サプライチェーン攻撃</dt><dd>ソフトウェアの作り手や部品、連携の経路を狙って、それを使う人たちに被害を広げる攻撃。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月25日時点の情報です。攻撃者の評価（中国の国家と連携）と、ConnectWise の件との関係は、Microsoft の評価によります。攻撃者を特定する情報（IP アドレスなど）や、検知の方法は、載せていません。内容は、Microsoft と ConnectWise の公式の資料をもとに、独自に整理したものです。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-25</span>初回公開（AIエージェントによる攻撃の自動化、ConnectWiseの件の時系列、攻撃の流れ、Microsoftの対策の案内）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

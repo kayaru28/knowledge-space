@@ -192,13 +192,14 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-23</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている7製品・9件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-25</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは9製品・12件</strong>です（10月23日に3件を追加）。対応は、悪用が確認されているものから順に行います。</p>
 <p>注意したいのは、<strong>回避策が提供されていない製品がある</strong>ことです（NetScaler、Cisco Secure Email Gateway）。また、<strong>侵害の痕跡が消される可能性</strong>が示されている製品もあります（Cisco Secure Email Gateway、SiteGuard Server Edition）。更新するだけでなく、すでに侵害されていないかの調査も必要です。</p>
 <p>10月20日追記：悪用は確認されていないものの深刻度が高いものとして、Linux カーネルの <strong>PwnEscape</strong>（CVE-2026-99999）を加えました。仮想マシンの中から、ホスト側の Linux のメモリを読み出せるもので、仮想マシンを動かすホストの管理者は、カーネルの更新が必要です。</p>
 <p>10月21日追記：サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を加えました。修正は出ないため、使うのをやめて、ほかの製品に乗り換えるよう案内されています。</p>
 <p>10月23日追記：10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を加えました。</p>
+<p>10月25日追記：悪用は確認されていないものの深刻度が最大のものとして、<strong>GitLab の CVE-2026-110264</strong>（CVSS 10.0。認証なしで、サーバー上でコードを実行されるおそれ）を加えました。自分で運用している GitLab は、10月21日の緊急パッチ（19.5.1、19.4.3 など）への更新が必要です。</p>
 </section>
 
 <div class="stats">
@@ -424,6 +425,39 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </table>
 </div>
 
+<h2>悪用は確認されていないが、深刻度が最大のもの：GitLab</h2>
+<p>10月25日の追記です。GitLab の公式の発表（10月21日の緊急パッチ）と、JPCERT/CC の週次レポート（10/21）をもとに整理しました。GitLab Community Edition（CE）と Enterprise Edition（EE）の 19.5.1、19.4.3、19.3.6、19.2.9、19.1.9、19.0.10、18.11.13 が公開されました。GitLab は、自分で運用している（セルフマネージドの）すべての GitLab を、<strong>すぐに更新する</strong>よう強く勧めています。GitLab.com は更新済みです。</p>
+
+<div class="table-wrap">
+<table>
+<caption>GitLab の公式の発表より（2026年10月21日）</caption>
+<thead><tr><th>深刻度</th><th>件数</th><th>代表的な内容</th></tr></thead>
+<tbody>
+<tr><td>Critical</td><td>1件</td><td>CVE-2026-110264：正規表現のコンパイルの整数オーバーフロー。認証をしていない利用者が、サーバー上で任意のコードを実行できる可能性。CVSS 10.0</td></tr>
+<tr><td>High</td><td>2件</td><td>CVE-2026-15723（CVSS 8.2）：SAML と LDAP の自動リンクを両方有効にしている場合の、アカウントの乗っ取り（認証済みの利用者）。CVE-2026-112212（CVSS 7.5）：OAuth/OIDC のディスカバリー文書のキャッシュ汚染（認証なし）</td></tr>
+<tr><td>Medium</td><td>5件</td><td>GraphQL のスコープの回避、SAML/LDAP のメンバーシップのロックの不完全な適用、内部のレスポンスヘッダーによる内部の認証情報の取得（認証なし）など</td></tr>
+<tr><td>Low</td><td>4件</td><td>マージリクエストのタイトルの描画に関するキャッシュ、承認ポリシーのアクセス制御など</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li><strong>最大の脆弱性：</strong>CVE-2026-110264 は、細工した正規表現の処理で、整数があふれ、認証をしていない利用者が、GitLab のサーバー上で任意のコードを実行できる可能性があります。CVSS 3.1 の基本値は 10.0（ネットワークから攻撃でき、複雑さが低く、権限も操作も不要）です。</li>
+<li><strong>影響を受ける版：</strong>7.0 以降のすべての版のうち、18.11.13、19.0.10、19.1.9、19.2.9、19.3.6、19.4.3、19.5.1 より前のものです。標準の修正に加えて、18.11.13、19.0.10、19.1.9、19.2.9 へバックポートされています。</li>
+<li><strong>検知：</strong>GitLab は、悪用の試みを検知するための2つのルール（Onigmo のネイティブワーカーのクラッシュ、Org モードの描画エラーの多発）を、セルフマネージドの利用者向けに公開しました。</li>
+<li><strong>悪用の有無：</strong>GitLab の発表には、悪用が確認されたという記述はありません。検知の方法を公開した、とだけ書かれています。</li>
+</ul>
+
+<div class="cards">
+<div class="card"><h3>すぐに更新する</h3><p>自分で運用している GitLab は、使っている系統に合わせて、19.5.1、19.4.3、19.3.6、19.2.9、19.1.9、19.0.10、18.11.13 のいずれかに更新します。</p></div>
+<div class="card"><h3>検知ルールで見張る</h3><p>更新できるまでの間は、GitLab が公開した2つの検知ルールで、悪用の試みを監視します。</p></div>
+<div class="card"><h3>GitLab.com は対応不要</h3><p>GitLab.com は更新済みです。GitLab Dedicated も、19.3.5-internal0 と 19.4.2-internal0 以降なら、対応の必要はありません。</p></div>
+</div>
+
+<div class="note">
+<p><strong>JPCERT/CC の週次レポートとの関係</strong>：JPCERT/CC の10月21日の週次レポートも、「GitLab に複数の脆弱性」を取り上げました。GitLab 19.4.2 の修正のうち、整数オーバーフローの脆弱性（CVE-2026-97229）について、JPCERT/CC は、概念実証コードが公開されていることを確認しています。10月21日の緊急パッチの CVE-2026-110264 とは、CVE の番号が別です。</p>
+</div>
+
 <h2>対応の考え方</h2>
 <p>注意喚起の内容を並べて読んだ上での、対応の流れの整理です。各機関がそう述べているわけではありません。</p>
 
@@ -525,12 +559,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月23日時点の情報です（10月23日に、10月21日の週次レポートの3件を追加）。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
+<p>2026年10月25日時点の情報です（10月23日に、10月21日の週次レポートの3件を、10月25日に GitLab の件を追加）。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
 <p>修正バージョンの番号など、注意喚起に明記されていない項目は、開発元の最新情報で確認する必要があります。</p>
 <p>ここで取り上げたのは、JPCERT/CC と IPA が10月中旬までに取り上げたもののうち、本文を直接確認できたものです。Linux の Copy Fail（IPA、CVE-2026-31431）は、5月の注意喚起で10月の更新がないため、今月の対象には入れていません。報道で伝えられた別の脆弱性は、一次情報を確認できていないため、扱っていません。</p>
 <p>内容は、JPCERT/CC と IPA の資料をもとに、独自に整理したものです。PwnEscape は、CVE の記録、発見者、Vercel の公表をもとにしています。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を追加</li><li><span class="date">2026-10-21</span>サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を図とともに追加</li><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-25</span>悪用は確認されていないが深刻度が最大のものとして、GitLab の CVE-2026-110264（CVSS 10.0）と、10月21日の緊急パッチ（12件）を追加</li><li><span class="date">2026-10-23</span>10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を追加</li><li><span class="date">2026-10-21</span>サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を図とともに追加</li><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

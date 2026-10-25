@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Googleが進めるAndroidの「開発者認証」（開発者の身元の確認とアプリの登録）について、2026年9月30日に4か国・7ストアで始まる計画、2027年の世界展開、高度なフローと限定配信アカウントなどの例外、反対する側の主張を、Googleの公式の資料から年表と表で整理する。">
+<title>Android のアプリは、開発者が登録しないと入れられなくなる：2026年9月30日に4か国で始まる「開発者認証」と、2027年の世界展開 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Android のアプリは、開発者が登録しないと入れられなくなる：2026年9月30日に4か国で始まる「開発者認証」と、2027年の世界展開</h1><p class="summary">Googleが進めるAndroidの「開発者認証」（開発者の身元の確認とアプリの登録）について、2026年9月30日に4か国・7ストアで始まる計画、2027年の世界展開、高度なフローと限定配信アカウントなどの例外、反対する側の主張を、Googleの公式の資料から年表と表で整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-25</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Google は、Android で、<strong>アプリの開発者に、Google への身元の確認とアプリの登録を求める「開発者認証」</strong>を始めます。登録されていないアプリは、対象のストアから、認定済みの Android 端末に入れられなくなります。</p>
+<p>最初の開始日は2026年9月30日で、ブラジル、インドネシア、シンガポール、タイの利用者が対象です。7つのストア（Google Play、HONOR、OPPO、Samsung Galaxy Store、Transsion の Palm Store、vivo、Xiaomi）で、登録が必須になります。2027年には、全世界の、認定済みの端末（Android 7 以降）の、すべてのアプリに広げる予定です。</p>
+<p>例外もあります。開発者が ADB で入れる場合や、利用者が「高度なフロー」を設定した場合は、未登録のアプリも入れられます。学生や趣味の開発者向けに、政府の身分証明書と登録料が不要の「限定配信アカウント」もあります。一方で、反対する側は、開発者の自由が失われ、F-Droid のような配布の仕組みが成り立たなくなると主張しています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">2026/9/30</p><p class="stat-label">最初の開始日（4か国、7つのストア）</p></div>
+<div class="stat"><p class="stat-value">2027<small>年</small></p><p class="stat-label">全世界への展開の予定</p></div>
+<div class="stat"><p class="stat-value">99<small>%</small></p><p class="stat-label">Google Play のアプリのうち、自動で登録されたと Google が述べる割合</p></div>
+<div class="stat"><p class="stat-value">20<small>台</small></p><p class="stat-label">限定配信アカウントで、アプリを共有できる端末の数</p></div>
+</div>
+
+<h2>いつ、どこで始まるのか</h2>
+
+<figure class="viz">
+<p class="viz-title">開発者認証の発表から、2027年の世界展開まで</p>
+<p class="viz-sub">Google の公式の資料より。点と帯の位置は日付に比例。8月は6月18日時点の計画</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 220" role="img" aria-label="時系列。2026年3月19日に高度なフローと限定配信アカウントを発表。6月18日に、9月30日に4か国・7ストアで始めると発表。7月15日にPlayの開発者に9月30日までの登録を案内。8月に限定配信アカウントと高度なフローが世界で提供される計画。9月30日に4か国で登録が必須に。2027年に全世界へ広げる予定。">
+<line class="axis" x1="60" y1="110" x2="820" y2="110"/>
+<circle class="mk-announce" cx="100.6" cy="110" r="7"><title>3月19日：Google が、高度なフローと、無料の限定配信アカウントを発表</title></circle>
+<text class="t-small" x="100.6" y="60" text-anchor="start">高度なフローと</text>
+<text class="t-small" x="100.6" y="76" text-anchor="start">限定配信アカウントを発表</text>
+<text class="t-small t-muted" x="100.6" y="136" text-anchor="middle">3/19</text>
+
+<circle class="mk-announce" cx="305.8" cy="110" r="7"><title>6月18日：2026年9月30日に、ブラジル、インドネシア、シンガポール、タイで始めること、最初のストア7つを発表</title></circle>
+<text class="t-small" x="305.8" y="152" text-anchor="end">4か国・7ストアでの</text>
+<text class="t-small" x="305.8" y="168" text-anchor="end">開始を発表</text>
+<text class="t-small t-muted" x="305.8" y="136" text-anchor="middle">6/18</text>
+
+<circle class="mk-advisory" cx="366.7" cy="110" r="7"><title>7月15日：Play の開発者は、残りのアプリを、9月30日までに Play Console で登録しないと、Google Play から世界で取り除かれると案内</title></circle>
+<text class="t-small" x="366.7" y="60" text-anchor="end">Play の登録を案内</text>
+<text class="t-small" x="366.7" y="76" text-anchor="end">（9/30 まで）</text>
+<text class="t-small t-muted" x="366.7" y="136" text-anchor="middle">7/15</text>
+
+<rect class="bar-2" x="405" y="96" width="67.7" height="28" rx="4"><title>8月（6月18日時点の計画）：限定配信アカウントと Android Developer Console の API が世界で提供され、高度なフローが始まる</title></rect>
+<text class="t-small" x="405" y="152" text-anchor="start">8月（計画）</text>
+<text class="t-small" x="405" y="168" text-anchor="start">高度なフロー、限定配信アカウント</text>
+
+<circle class="mk-found" cx="540.4" cy="110" r="7"><title>9月30日：ブラジル、インドネシア、シンガポール、タイで、対象のストアのアプリの登録が必須になる</title></circle>
+<text class="t-small" x="540.4" y="60" text-anchor="middle">4か国で登録が必須に</text>
+<text class="t-small t-muted" x="540.4" y="136" text-anchor="middle">9/30</text>
+
+<circle class="dot-old" cx="750.1" cy="110" r="7"><title>2027年：全世界の、認定済みの Android 端末の、すべてのアプリに広げる予定（時期は、Google が今後示す）</title></circle>
+<text class="t-small" x="750.1" y="60" text-anchor="middle">2027年：世界へ</text>
+<text class="t-small" x="750.1" y="76" text-anchor="middle">（予定）</text>
+</svg>
+</div>
+<figcaption>黒の点は Google の発表、黄色の点は開発者への案内、紫の帯と点は計画された提供と開始、灰色の点は予定を表します。8月の提供と9月30日の開始は、6月18日と7月15日の時点の計画で、開始後の続報は確認していません。2027年の点は、時期を示すものではありません。</figcaption>
+</figure>
+
+<h2>何が変わるのか</h2>
+<ul>
+<li><strong>目的（Google）：</strong>悪意のある者が、匿名のまま、有害なアプリを繰り返し出すのを防ぎます。Google は、身元の確認が、責任の所在を明らかにすると説明しています。</li>
+<li><strong>仕組み：</strong>開発者は、身元を確認し、アプリを登録します。Google Play のアプリの99%は自動で登録されます。残りのアプリや、Google Play 以外で配るアプリは、Google Play Console か、Android Developer Console で、手動で登録します。</li>
+<li><strong>対象の端末：</strong>認定済みの Android 端末で、Android 7 以降。6月から、登録を確認するための新しいシステムサービスが、ほとんどの端末に自動で入り始めています。</li>
+<li><strong>従わなかった場合：</strong>9月30日までに身元を確認してアプリを登録しないと、アプリは、対象の地域の、対象のストアから、認定済みの端末にインストールできません。</li>
+</ul>
+
+<h2>誰に、何が起きるのか</h2>
+<div class="table-wrap">
+<table>
+<caption>Google の FAQ と概要のページより</caption>
+<thead><tr><th>立場</th><th>2026年9月30日の段階</th></tr></thead>
+<tbody>
+<tr><td>Google Play で配る開発者</td><td>Play Console で登録を確認する。残りのアプリは9月30日までに登録しないと、Google Play から世界で取り除かれる。Play 以外でも配るアプリは、Play Console で登録できる</td></tr>
+<tr><td>Google Play 以外だけで配る開発者</td><td>Android Developer Console に登録する</td></tr>
+<tr><td>リストにないストア、直接のサイドロード</td><td>この段階では、新しい確認の要件は適用されない。2027年の世界展開に向けて、確認を終えておくよう、Google は勧めている</td></tr>
+<tr><td>学生・趣味の開発者</td><td>限定配信アカウント（登録料と政府の身分証明書が不要）で、最大20台の端末とアプリを共有できる</td></tr>
+<tr><td>利用者</td><td>登録された開発者のアプリなら、体験は変わらない（Google）。未確認のアプリは、高度なフローで入れられる</td></tr>
+<tr><td>開発者自身のテスト</td><td>ADB で、確認なしにアプリを入れられる</td></tr>
+</tbody>
+</table>
+</div>
+<p>9月30日の段階で強制されるのは、スマートフォンとタブレットだけで、選ばれた地域に限られます。</p>
+
+<h2>例外の道</h2>
+<h3>高度なフロー（利用者向け。一度だけの設定）</h3>
+<div class="cards">
+<div class="card"><h3>1. 開発者モードを有効にする</h3><p>うっかりのタップや、詐欺で誘導される「1回のタップ」の回避を防ぎます。</p></div>
+<div class="card"><h3>2. 誘導されていないか確認する</h3><p>誰かに、セキュリティを切るよう誘導されていないことを確かめます。</p></div>
+<div class="card"><h3>3. 再起動して再認証する</h3><p>電話での遠隔操作や、通話を断ちます。</p></div>
+<div class="card"><h3>4. 1日待って、本人確認する</h3><p>一度だけの1日の待機のあと、生体認証（指紋や顔）か、端末の PIN で、本人であることを確認します。</p></div>
+<div class="card"><h3>5. 期間を選んで入れる</h3><p>「7日間」か「無期限」を選びます。インストールのときには、未確認の開発者のアプリだという警告が出ますが、「それでもインストール」できます。</p></div>
+</div>
+<p>Google は、この仕組みの狙いを、詐欺で脅されたり、急かされたりして、有害なソフトを入れさせられるのを防ぐこと、と説明しています（Global Anti-Scam Alliance の2025年の報告：調査した成人の57%が、過去1年に詐欺を経験し、世界の消費者の損失は4,420億ドル）。</p>
+
+<h2>批判する側の主張</h2>
+<p>以下は、反対する側（「Keep Android Open」のページ）の主張であって、Google の説明ではありません。</p>
+<ul>
+<li>2027年から、登録していない開発者のアプリは、世界中の Android 端末で受け入れられなくなる。F-Droid など、Google Play を通さない配布も含む、と主張しています。</li>
+<li>登録には、Google への料金の支払い、規約への同意、政府発行の身分証明書の提出、署名鍵の証明、現在と将来のアプリの識別子の一覧が必要だと主張しています。</li>
+<li>高度なフローは、9つの手順と、24時間の待機があり、端末を所有する利用者にとって過大だと主張しています。このフローは、Android OS ではなく、Google Play サービスを通じて動くので、Google が、OS の更新なしに、変えたり、やめたりできるとしています。</li>
+<li>F-Droid は、この計画を「存在を脅かすもの」と述べ、EFF は、アプリの門番が、インターネット検閲への道を広げると述べた、としています。</li>
+</ul>
+<p>Google は、FAQ で、「Android は開かれたままで、登録されたアプリなら、利用者のインストールの体験は変わらない」と述べ、高度なフローで未確認のアプリを入れられると説明しています。この記事では、どちらが正しいかは判断しません。2027年の世界展開の詳細は、Google が今後示すとしています。</p>
+
+<div class="note">
+<p><strong>筆者の整理</strong>：2026年9月30日の開始は、4か国と7つのストアに限られていて、日本を含むほかの国々は、2027年の世界展開が決まるまで、この段階の対象ではありません。ほかのストアの配布やサイドロードにも、この段階では適用されません。Google が求めるのは、開発者の身元の確認と、アプリの登録です。未確認のアプリを入れる道は残りますが、開発者モード、再起動、1日の待機、本人確認という条件があります。論点は、詐欺やマルウェアから利用者を守る狙いと、独立した開発者や、Google を通さない配布の自由との、両立です。</p>
+</div>
+
+<dl class="terms">
+<dt>サイドロード</dt><dd>公式のストア以外から、アプリを端末に入れること。</dd>
+<dt>認定済みの Android 端末</dt><dd>Google の互換性などの要件を満たした、Google のサービスが使える Android 端末。</dd>
+<dt>ADB（Android Debug Bridge）</dt><dd>開発者が、パソコンから Android 端末を操作・デバッグするための道具。</dd>
+<dt>高度なフロー</dt><dd>未確認の開発者のアプリを入れるための、一度だけの設定の手続き。</dd>
+<dt>限定配信アカウント</dt><dd>学生や趣味の開発者向けの、無料のアカウント。最大20台の端末と共有できる。</dd>
+<dt>F-Droid</dt><dd>自由なソフトウェアの Android アプリを配る、Google Play 以外のアプリストア。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月25日時点の情報です。Google の資料は、2026年6月18日（7月15日の追記を含む）の時点のもので、9月30日の開始後の続報は確認していません。登録の料金の額は、公式の資料で確認できなかったため載せていません。「批判する側の主張」は、Keep Android Open のページの記述で、Google の説明ではありません。内容は、Google の公式の資料をもとに、独自に整理したものです。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-25</span>初回公開（開始日と対象、2027年の世界展開、例外の道、反対する側の主張）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
