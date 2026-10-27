@@ -192,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>圧縮データを開くだけで、メモリが壊される：Brotli のデコーダーの欠陥（CVE-2026-111497）が、Node.js・Bun・Python に広がった</h1><p class="summary">2026年10月21日に Node.js が修正した、圧縮の部品 Brotli のデコーダーの欠陥（CVE-2026-111497）について、何が壊れるのか、影響を受ける版と直った版、Bun と Python への広がり、備え方を、Node.js・Bun・Google の公式の発表から、年表と模式図で整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-25</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>圧縮データを開くだけで、メモリが壊される：Brotli のデコーダーの欠陥（CVE-2026-111497）が、Node.js・Bun・Python に広がった</h1><p class="summary">2026年10月21日に Node.js が修正した、圧縮の部品 Brotli のデコーダーの欠陥（CVE-2026-111497）について、何が壊れるのか、影響を受ける版と直った版、Bun と Python への広がり、備え方を、Node.js・Bun・Google の公式の発表から、年表と模式図で整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-27</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年10月21日、Node.js は、同梱している圧縮の部品「Brotli」のデコーダー（圧縮データを元に戻す部分）に、<strong>細工されたデータを読み込ませると、メモリを壊され、最悪の場合は遠隔からコードを実行されるおそれがある欠陥</strong>（CVE-2026-111497）があるとして、修正版を出しました。</p>
 <p>欠陥は、Node.js 自身ではなく、Google の Brotli のデコーダーにあります。影響を受けるのは Brotli 1.0.3〜1.2.0 で、同じ部品を同梱するソフトウェアは、それぞれ更新が必要です。Node.js のあとに、Bun（10月23日）や、Python のパッケージ（10月22日）も新しい版を出しました。</p>
@@ -285,21 +285,34 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <h2>影響を受けるものと、直った版</h2>
 <div class="table-wrap">
 <table>
-<caption>各提供元の発表より（2026年10月21〜23日）</caption>
+<caption>各提供元の発表より（2026年10月21〜26日）</caption>
 <thead><tr><th>対象</th><th>影響を受ける範囲</th><th>直った版</th></tr></thead>
 <tbody>
 <tr><td>Google の Brotli</td><td>1.0.3〜1.2.0（1.0.10 と 1.1.1 を除く）</td><td>1.0.10、1.1.1、1.2.1</td></tr>
 <tr><td>Node.js</td><td>22.x、24.x、26.x</td><td>22.23.4、24.22.1、26.12.1</td></tr>
 <tr><td>Bun</td><td>1.0.21 以上 1.4.4 未満</td><td>1.4.4（Brotli 1.2.1 を同梱）</td></tr>
 <tr><td>Python のパッケージ（Brotli、brotlicffi）</td><td>公式の発表では、影響を受ける範囲を確認できていません</td><td>Brotli 1.2.1、brotlicffi 1.2.1.0（10月22日に公開）</td></tr>
+<tr><td>Microsoft .NET</td><td>.NET 8、9、10、11（RC2 以前は RC3 へ）。.NET Framework は影響なし</td><td>8.0.33、9.0.22、10.0.14、11 RC3</td></tr>
+<tr><td>PHP（Windows 版）</td><td>cURL 拡張で HTTP の応答の自動展開を有効にした場合</td><td>8.5.12-1、8.4.27-1、8.3.36-1、8.2.35-1（Brotli 1.2.1 を含む）</td></tr>
 </tbody>
 </table>
 </div>
 <p>Node.js の発表は、修正した系統を 26.x、24.x、22.x としていて、それより古い系統には触れていません。Python のパッケージは、新しい版が公開されたことだけを確認しています。どの版が影響を受けるかは、各パッケージの公式の案内で確かめてください。</p>
 
+<h2>10月25〜26日に広がった対応：JPCERT/CC、Microsoft の .NET、PHP の Windows 版（10月27日に追加）</h2>
+<div class="cards">
+<div class="card"><h3>JPCERT/CC の注意喚起（10月26日）</h3><p>影響を受けるアプリが、細工された Brotli 形式のデータを展開すると、メモリの破損により、異常終了、メモリ上の情報の漏えい、任意のコード実行につながる可能性があるとして、速やかな対策の適用と侵害の有無の調査を求めた。対象の Brotli は、v1.2.0 から v1.2.1 より前、v1.1.0 から v1.1.1 より前、v1.0.3 から v1.0.10 より前。Google は緩和策を提供していないので、Brotli を組み込んだ製品の緩和策は、各開発者の情報を確認するよう案内している。この欠陥は、Node.js の公表に関連して「Node2Shell」と呼ばれていたが、原因は Brotli の C 言語実装にあり、HTTP 通信で使われるため複数の製品が影響を受けるとして、「HTTP2Shell」とも呼ばれている、と説明している。</p></div>
+<div class="card"><h3>Microsoft の .NET（10月25日〔世界標準時〕の定例外の更新）</h3><p>.NET 8（8.0.33）、.NET 9（9.0.22）、.NET 10（10.0.14）と、.NET 11 の RC3 を公開。.NET の Brotli の使い方にバッファオーバーフローがあり、認証なしの攻撃者がプロセスのメモリを読み取ったり壊したりでき、情報漏えい、サービス拒否、権限昇格につながるおそれがある。影響を受けうるのは、ASP.NET Core のリクエストの展開、HttpClient の応答の自動展開、System.IO.Compression の Brotli の API を通して Brotli のデータを処理するアプリケーション。リクエストの展開と応答の自動展開は、既定では有効になっていない。.NET Framework は影響を受けない。自己完結型のアプリケーションは、更新したランタイムで作り直して公開し直す必要があり、コンテナは新しいイメージで作り直す。同じ更新に、Linux の .NET の配布物の所有者の問題（CVE-2026-114148）の修正と、10月13日の更新で十分に直っていなかった2件（CVE-2026-70197、CVE-2026-102870）の修正が含まれる。</p></div>
+<div class="card"><h3>PHP の Windows 版（10月26日）</h3><p>PHP 8.5.12-1、8.4.27-1、8.3.36-1、8.2.35-1 を公開。Brotli 1.2.1 を含み、この欠陥を直している。Windows 版の PHP では、cURL 拡張で HTTP の応答の自動展開を有効にしたときに、問題のデコーダーに届く。既定では無効だが、アプリケーションや HTTP クライアントのライブラリが有効にすることがある。末尾の「-1」は、PHP のバージョンは変えず、依存ライブラリだけを更新して作り直した Windows 版であることを示す。</p></div>
+</div>
+<div class="note">
+<p>筆者の整理：同じ欠陥の修正が、Node.js、Bun、Python のパッケージに続いて、.NET と PHP の Windows 版にも広がった。展開の機能が「既定で有効か」は製品で違う。Bun の fetch は既定で Brotli を受け入れるが、.NET のリクエストの展開と応答の自動展開、PHP の cURL の自動展開は既定では無効。影響を受けるかは、設定やライブラリの使い方で決まる。公式の発表（JPCERT/CC、Microsoft、PHP）には、実際の悪用や被害の報告は書かれていない。</p>
+</div>
+
 <h2>どう備えるか</h2>
 <div class="cards">
 <div class="card"><h3>更新する</h3><p>Node.js は 22.23.4、24.22.1、26.12.1 に、Bun は 1.4.4 に更新します。Python のパッケージ Brotli と brotlicffi は、新しい版が出ているので、使っている環境に入っていないかを調べます。</p></div>
+<div class="card"><h3>.NET と PHP の Windows 版</h3><p>.NET は 8.0.33、9.0.22、10.0.14（11 は RC3）に更新します。自己完結型のアプリケーションは、更新したランタイムで作り直して公開し直し、コンテナは新しいイメージで作り直します。Windows 版の PHP は、末尾が「-1」の新しいビルドに入れ替え、cURL 拡張で応答の自動展開を有効にしているかを確かめます。</p></div>
 <div class="card"><h3>作り直す</h3><p>コンテナのイメージと、bun build --compile で作った実行ファイルは、中に部品を含んでいるため、作り直すまで影響が残ります。</p></div>
 <div class="card"><h3>同梱を調べる</h3><p>自分のソフトウェアが、Brotli を直接の依存でも、間接の依存でも、含んでいないかを調べます。同梱する製品は、提供元の更新が必要です。</p></div>
 <div class="card"><h3>更新できない間（Bun）</h3><p>fetch に decompress: false を渡すと、その要求では Brotli を受け入れず、応答を展開しません。信頼できないデータを、Brotli の機能に渡さないようにします。プロセス全体に効く回避策はありません。</p></div>
@@ -320,9 +333,9 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </dl>
 
 <div class="note">
-<p><strong>この記事について</strong>：2026年10月25日時点の情報です。内容は、Node.js、Google の Brotli、Bun の公式の発表と、PyPI の公開情報をもとに、独自に整理したものです。実際の悪用や被害の報告は、公式の発表に書かれていません。深刻度の数値（CVSS）や、一部のソフトウェアの修正状況は、公式の発表で確認できていないため載せていません。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です（10月27日に、10月26日までの JPCERT/CC、Microsoft、PHP の発表を追加）。内容は、Node.js、Google の Brotli、Bun、JPCERT/CC、Microsoft、PHP の公式の発表と、PyPI の公開情報をもとに、独自に整理したものです。実際の悪用や被害の報告は、公式の発表に書かれていません。深刻度の数値（CVSS）や、一部のソフトウェアの修正状況は、公式の発表で確認できていないため載せていません。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-25</span>初回公開（欠陥の中身、影響を受ける版と直った版、Node.js・Bun・Python への広がり、備え方）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>JPCERT/CC の注意喚起（10月26日）、Microsoft の .NET の定例外更新（10月25日）、PHP の Windows 版の再ビルド（10月26日）を追加</li><li><span class="date">2026-10-25</span>初回公開（欠陥の中身、影響を受ける版と直った版、Node.js・Bun・Python への広がり、備え方）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
