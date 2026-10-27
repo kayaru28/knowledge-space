@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月下旬に公表された、Railway（環境変数への不正アクセスの可能性）、Dreamhost（メールと FTP/SFTP のパスワードの予防的な初期化）、Cloudflare（Workers AI で他の顧客の要求のデータが応答に混ざった問題）を、各社の公式の発表から整理し、原因と利用者への案内の違いを比べる。">
+<title>預ける基盤で相次いだ事案：Railway の環境変数、Dreamhost のパスワード初期化、Cloudflare Workers AI の他の顧客のデータの混入 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>預ける基盤で相次いだ事案：Railway の環境変数、Dreamhost のパスワード初期化、Cloudflare Workers AI の他の顧客のデータの混入</h1><p class="summary">2026年10月下旬に公表された、Railway（環境変数への不正アクセスの可能性）、Dreamhost（メールと FTP/SFTP のパスワードの予防的な初期化）、Cloudflare（Workers AI で他の顧客の要求のデータが応答に混ざった問題）を、各社の公式の発表から整理し、原因と利用者への案内の違いを比べる。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月下旬、開発者やサイト運営者が預けるサービスを提供する<strong>プラットフォーム事業者</strong>で、利用者の情報や認証情報に関わる事案が公表されました。Railway は、顧客の環境変数に第三者がアクセスした可能性を公表し（10月21日）、Dreamhost は、メールと FTP/SFTP の利用者のパスワードを予防として初期化しました（10月23日から）。Cloudflare は、AI モデルの基盤で、他の顧客の要求のデータが応答に混ざった問題の報告を公表しました（10月26日）。</p>
+<p>3件は、原因も性質も違います。<strong>Railway は不正アクセス、Cloudflare はソフトウェアの不具合と設定のミス、Dreamhost は原因が公表されていません</strong>。この記事は、各社の公式の発表を並べて、何が分かっていて、何が分かっていないかを整理します。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">155<small>件</small></p><p class="stat-label">他の顧客の要求のデータが混ざった応答の数（Cloudflare Workers AI の GLM-5.3、8月27日〜9月9日）</p></div>
+<div class="stat"><p class="stat-value">681,280<small>トークン超</small></p><p class="stat-label">問題の起きたプロンプトの長さ（トークン）の下限。これを超える長さの要求が対象</p></div>
+<div class="stat"><p class="stat-value">全員<small>に推奨</small></p><p class="stat-label">Railway が、環境変数と認証情報のすべての更新を勧めている利用者の範囲</p></div>
+<div class="stat"><p class="stat-value">原因<small>は未公表</small></p><p class="stat-label">Dreamhost の事案（パスワードの初期化の理由）</p></div>
+</div>
+
+<h2>3件の概要</h2>
+
+<div class="table-wrap">
+<table>
+<caption>3つの事案（各社の公式の発表より）</caption>
+<thead><tr><th>事業者</th><th>公表</th><th>何が起きたか</th><th>原因</th><th>利用者への案内</th></tr></thead>
+<tbody>
+<tr><td>Railway（アプリの展開基盤）</td><td>10月21日</td><td>顧客の環境変数を保管するシステムで異常な活動を検知。暗号化された環境変数に第三者がアクセスした可能性があり、一部は復号された内容を取得された可能性がある（環境変数には API キーやデータベース、レジストリの認証情報が含まれうる）</td><td>不正アクセス。同社は、AI の推論事業者の侵害を狙う、プラットフォーム企業への一連の攻撃の一部と考えている</td><td>保管している環境変数（API キーを含む）と、非公開のレジストリの認証情報を、すぐに更新する。該当するサービスのログに異常がないかを調べる。展開は停止中</td></tr>
+<tr><td>Dreamhost（ホスティング）</td><td>10月23日から。10月26日にも更新</td><td>メールと FTP/SFTP の一部の利用者のパスワードを、予防として初期化。パネルのファイルマネージャー（files.dreamhost.com）を停止、一部のウェブメールの利用者がサインアウトされた</td><td>公表されていない（「いくつかのシステムに影響する問題」と書かれている）</td><td>影響を受けるアカウントの所有者に、手順をメールで案内。メールを待たずに、パネルで新しいパスワードを設定してもよい。同社はパスワードをメールで尋ねない</td></tr>
+<tr><td>Cloudflare（Workers AI）</td><td>10月26日（9月8日に報告を受け、9月9日に対処）</td><td>GLM-5.3 のモデルで、非常に長いプロンプトに対し、直前の他の顧客の要求のデータを含む応答が返った。8月27日から9月9日まで、155件</td><td>AI モデルを動かす推論エンジン（SGLang）の設定のミスと、エンジンの不具合の2つが重なった</td><td>個別の連絡については書かれていない。他のモデルは影響を受けていない。故意の悪用の証拠は見つかっていない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Railway：環境変数への不正アクセスの可能性</h2>
+
+<ul>
+<li>10月21日の朝に、顧客の環境変数を保管するシステムで異常な活動を検知した。調査の結果、暗号化された環境変数に第三者がアクセスした可能性があり、一部は復号された内容を取得された可能性がある、としている。</li>
+<li>影響の範囲：初期の分析では、一部の利用者に限られる可能性があるとしつつ、完了するまでの予防として、すべての利用者に、環境変数（API キーを含む）と、非公開のレジストリの認証情報をすぐに更新し、ログで不審な活動がないかを調べるよう強く勧めている。影響を受けたアカウントは、確認でき次第、個別にメールで連絡する。</li>
+<li>上流への通知：同社は、一連の攻撃の目的が AI の推論事業者の侵害にあると考えていて、上流の事業者に、すべてのキーを先回りして無効にするよう連絡した、と書いている。</li>
+<li>展開の停止：調査中は、すべての展開を停止した。10月23日の同社の別のブログ記事は、10月21日に展開を止めている間に push したコミットは展開されていないとして、最新のコミットを再展開し、GitHub を再接続し、CLI と CI の認証情報を作り直すよう案内している。</li>
+<li>公開されていないこと：影響を受けた利用者の数、侵入の経路、取得された情報の具体的な範囲は、発表に書かれていない。</li>
+</ul>
+
+<h2>Dreamhost：予防としてのパスワードの初期化</h2>
+
+<ul>
+<li>10月23日 14:20（太平洋時間）に、ファイルマネージャーの接続の問題として調査を始めた。17:20に、複数のサービスに影響する事案として、ファイルマネージャーが停止し、一部のウェブメールの利用者がサインアウトされていると更新した。</li>
+<li>予防として、一部のメール利用者のパスワードを初期化した。のちに、メールと FTP/SFTP の一部の利用者の初期化が完了したと更新した。10月25日の夜（太平洋時間）に、影響を受けたすべてのアカウントの所有者に、手順をメールで送り終えた。</li>
+<li>10月26日：ファイルマネージャーの修正を公開し、復旧した（監視中）。メールと FTP/SFTP の一部の利用者には、パスワードの再設定が引き続き必要。</li>
+<li>利用者向けの注意：同社はパスワードをメールで尋ねない。パスワードの変更は、パネル（panel.dreamhost.com）から直接行う。心当たりのない再設定のメールは無視する。</li>
+<li>公開されていないこと：事案の原因、影響を受けた利用者の数、情報が外部に取得されたかどうかは、ステータスページには書かれていない。</li>
+</ul>
+
+<h2>Cloudflare：他の顧客の要求のデータが応答に混ざった</h2>
+
+<ul>
+<li>経緯：9月8日に、セキュリティ研究者から HackerOne の窓口を通じて報告を受けた。翌9日に再現を確認し、事案を宣言した。宣言から40分以内にモデルを停止し、同日に設定の修正とエンジンのパッチを適用して、19:40に復旧した。公開は10月26日で、研究者とエンジンの開発元との共同の公開。</li>
+<li>影響：2026年8月27日に GLM-5.3 を Workers AI で開始してから9月9日までのあいだに、少数の顧客が、同じモデルへの直前の他の顧客の要求のデータを含む応答を受け取った。合計155件で、すべて681,280トークンを超えるプロンプトへの応答。同社は、研究者と自社のテストを除くと、通常の長い文脈の使い方と一致しており、故意の悪用の証拠は見つからなかった、としている。他のモデルは影響を受けていない。</li>
+<li>原因1（設定のミス）：モデルの文脈の長さは1,048,576トークンだが、事前計算（prefill）用の GPU の KV キャッシュの領域は681,280トークンぶんしかなかった。同社は開始前にこの不一致を認識していたが、長い文脈の試験が成功の応答を返したので、問題ないと考えた。試験は、応答の状態コードと性能だけを見て、出力の中身や一貫性は検証していなかった。</li>
+<li>原因2（エンジンの不具合）：領域に入らない長さの要求は、エンジンが拒否として扱い、1トークンの代わりの文面に差し替える。1台で動かす構成ではエラーが返るが、事前計算と生成を別のノードに分ける構成では、拒否された要求が通常の要求と同じく進み、生成側が、以前の要求が残した領域（他の顧客のプロンプトや途中の生成）を読んで応答を作り、HTTP 200で返していた。</li>
+<li>対処：KV キャッシュの領域を文脈の長さの約2倍（約204万トークン）にして、拒否の経路に入らないようにした。さらに、エンジンのパッチで、拒否された要求を早い段階で、元のエラーとともに終了させる。上流の SGLang も、v0.5.20〜v0.5.22 で修正し、同社はすべての運用者に v0.5.22 以降への更新を強く勧めている。</li>
+<li>今後の取り組み：KV キャッシュの領域の解放と共有の不具合は、同社が数か月前から取り組んでいる種類の問題として、ほかの修正も上流に提案している。新しい展開では、領域の大きさと文脈の長さの照合などを、チェック項目に加えた。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>3件に共通する原因はない：Railway の侵害について、同社は一連の攻撃との関連を述べているが、Dreamhost と Cloudflare の事案との関連は、各社の発表に書かれていない。この記事も、関連を主張しない。</li>
+<li>各社の自己申告：影響の範囲や原因は、各社の説明。Railway の「一連の攻撃」という見方も、同社の推測で、攻撃者や手口の裏づけは示されていない。</li>
+<li>進行中の事案：Railway と Dreamhost は、公表の時点で調査や復旧が続いている。影響の範囲や原因は、続報で変わる可能性がある。</li>
+<li>Cloudflare の公表は、対処の約7週間後：問題の発生から対処までは短い（40分以内に停止）が、公開は10月26日で、上流のエンジンの修正との共同の公開にそろえている。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>預ける側の利用者にとっての共通点は、事業者の側の事案で、自分の側からは防げず、通知を待って更新や再設定を行うしかないことだ。環境変数の更新、パスワードの再設定は、手順が決まっている。更新が必要なものを、普段から一覧で把握しておくと速い。</li>
+<li>Cloudflare の事案は、AI の推論基盤特有の問題の例になっている。KV キャッシュの領域は、速さのために、使い回しのあいだにゼロで消されない。そのため、所有の追跡を誤ると、他の利用者の内容が見える。同社は、領域の大きさと文脈の長さの照合のような、基本的な検査の欠けも認めている。</li>
+<li>原因が公表されないことも多い。Dreamhost の事案のように、原因が書かれていない間は、利用者はパスワードの再設定という最低限の対応にとどまる。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>環境変数</dt><dd>アプリが実行時に読む設定値。API キーやデータベースの接続情報が入ることが多い。</dd>
+<dt>KV キャッシュ</dt><dd>AI モデルが文章を生成するとき、入力の途中結果を GPU のメモリに保存しておく領域。再計算を省いて速くするために使う。</dd>
+<dt>推論エンジン（SGLang）</dt><dd>AI モデルを動かして応答を作る、オープンソースの基盤ソフトウェア。</dd>
+<dt>テナントの分離</dt><dd>複数の顧客が同じ基盤を使うとき、顧客ごとのデータが混ざらないようにする仕組み。</dd>
+<dt>FTP/SFTP</dt><dd>ファイルをサーバーに転送する方式。ホスティングでサイトのファイルを置くのに使う。</dd>
+<dt>協調した公開</dt><dd>脆弱性などを、報告者、事業者、開発元が足並みをそろえて公表すること。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、Railway の「Security Disclosure: Wednesday October 21st」（10月21日）と、同社の別のブログ記事（10月23日）、Dreamhost のステータスページ（10月23日〜26日）、Cloudflare のブログ「Cross-request KV cache exposure in the GLM-5.3 Workers AI model, and our remediation with SGLang」（10月26日）をもとに、独自に整理したものです。</p>
+<p>数字は各社が示したもので、再現していません。進行中の事案は、続報で変わる可能性があります。個人名は載せていません。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（3事案の概要、各社の経緯と対応、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
