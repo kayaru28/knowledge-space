@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月22日に文部科学省の検討会議（第6回）に示された、デジタルな形態を含む教科書の発行・採択等に関する指針の素案について、形態の考え方（ハイブリッドが基本、全部がデジタルの範囲）、根拠にした意向調査、発行者・採択する側・学校への留意点を、会議の配布資料から整理する。">
+<title>2030年度の教科書は、紙とデジタルの「ハイブリッド」が基本に：文部科学省の指針の素案、全部がデジタルは小学校高学年以上の一部の教科だけ | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">教育</p><h1>2030年度の教科書は、紙とデジタルの「ハイブリッド」が基本に：文部科学省の指針の素案、全部がデジタルは小学校高学年以上の一部の教科だけ</h1><p class="summary">2026年10月22日に文部科学省の検討会議（第6回）に示された、デジタルな形態を含む教科書の発行・採択等に関する指針の素案について、形態の考え方（ハイブリッドが基本、全部がデジタルの範囲）、根拠にした意向調査、発行者・採択する側・学校への留意点を、会議の配布資料から整理する。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月22日、文部科学省の「デジタルな形態を含む教科書の発行・採択等の指針に関する検討会議」（第6回）に、指針の<strong>素案</strong>が示されました。2030年度（令和12年度）から使えるようになる、紙とデジタルを組み合わせた教科書について、発行者、採択する側、学校が、どう判断するかの考え方をまとめたものです。</p>
+<p>素案の柱は、<strong>すべての学年・教科で、紙とデジタルを組み合わせた「ハイブリッド」な形態が中心になる</strong>ことです。<strong>全部がデジタルの教科書は、小学校の低学年・中学年では認めず</strong>、小学校の高学年以上の、外国語と、音楽・美術などの実技系の教科の一部に限って、認め得るとしています。日付の欄は「令和8年○月○日」と空欄で、確定した指針ではありません。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">2030<small>年度</small></p><p class="stat-label">デジタルな形態を含む教科書が使えるようになる年度（令和12年度）</p></div>
+<div class="stat"><p class="stat-value">3<small>つ</small></p><p class="stat-label">教科書の形態（紙のみ、紙とデジタルのハイブリッド、全部がデジタル）</p></div>
+<div class="stat"><p class="stat-value">88.3<small>%</small></p><p class="stat-label">望ましい形態として「ハイブリッド」を選んだ、小学校段階の回答の割合</p></div>
+<div class="stat"><p class="stat-value">小学校<small>高学年〜</small></p><p class="stat-label">全部がデジタルの教科書を認め得る、最も低い学年</p></div>
+</div>
+
+<h2>会議と、示された文書</h2>
+
+<ul>
+<li>会議：デジタルな形態を含む教科書の発行・採択等の指針に関する検討会議の第6回（2026年10月22日 15時30分〜17時30分）。第1回は4月10日で、今回が6回目。</li>
+<li>議題は4つ：教科書のデジタル活用に関する令和9年度の概算要求、学習指導要領の改訂を見据えた情報活用能力、教科書検定の改善（第一次論点整理）、そして指針の素案。</li>
+<li>素案の題：「デジタルな形態を含む教科書の発行・採択等に関する指針の策定に向けて ～紙とデジタルをスマートに使い分け、学びの可能性を広げる～（素案）」。目次は、1. 教科書の在り方（形態を含む）、2. 発行者の留意点、3. 採択権者の留意点、4. 学校の留意点。</li>
+<li>素案の日付は「令和8年○月○日」と空欄で、確定していない。最終の指針は、今後の検討を経て示される。</li>
+</ul>
+
+<h2>背景：制度が変わった</h2>
+
+<ul>
+<li>これまでの「デジタル教科書」は、紙の教科書の内容を全部そのままデジタルにした教材（教科用図書代替教材）で、法律上の「教科用図書」ではない。2018年の法改正で制度化され、2019年度から導入された。</li>
+<li>2026年（第221回国会）に成立した学校教育法等の一部改正法（令和8年法律第37号）で、デジタルな形態を含む教科書の発行・使用ができるようになった。次期の学習指導要領が全面実施される2030年度から、動画や音声など、デジタルの特性を生かしたコンテンツも、教科書の内容にできる。</li>
+<li>指針は、この制度のもとで、発行者や教育委員会・学校が判断するための、国の考え方を整理するもの。検定の仕組みや、教科書を読むための Web アプリ（ビューア）の標準仕様書は、別に検討されている。</li>
+</ul>
+
+<h2>素案が示した形態の考え方</h2>
+
+<p>教科書の形態は、紙のみ、紙とデジタルを組み合わせた「ハイブリッド」、全部がデジタル、の3つです。素案は、2030年度以降の「当面の取り扱い」として、次のとおり示しました。</p>
+
+<div class="table-wrap">
+<table>
+<caption>素案の「形態の在り方」より（筆者が表に整理）</caption>
+<thead><tr><th>学年・教科</th><th>全部がデジタルの教科書</th><th>ハイブリッドな形態の場合の構成</th></tr></thead>
+<tbody>
+<tr><td>小学校の低学年・中学年（すべての教科）</td><td>認めない</td><td>概ね紙で構成し、デジタル部分はより限定的に</td></tr>
+<tr><td>小学校の高学年以上のうち、外国語と、実技系の一部（小学校高学年の音楽・図画工作、中学校の音楽・美術・技術・家庭の技術分野、高等学校の芸術〔書道を除く〕・情報・専門学科の各教科）</td><td>認め得る</td><td>主にデジタルで構成することもあり得る</td></tr>
+<tr><td>上記以外の教科・学年</td><td>認めない</td><td>主に紙で構成し、デジタルは学習内容の理解を助ける補助的・補完的なものとして組み込む</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>根拠として、素案は、発達段階（低学年・中学年は、認知機能が発達の途中で、実体験や具体物を使った理解や、読解の力を身につける時期であること）と、教科の特性（外国語では、本文に合わせて音声や動画を再生すると理解が深まりやすいこと）、採択する側の意向を挙げている。</li>
+<li>ハイブリッドの具体的な姿は、紙の本文に二次元コードを載せて、デジタルの部分に移る形に限らない。例として、国語の説明文の単元を、本文も含めてデジタルで作り、端末への書き込みやマーカーで、文章の構成をつかみやすくする形を挙げている。</li>
+<li>素案は、デジタル技術の進歩、学校での使われ方、発達心理学や認知科学などの研究、国の実証研究の結果を踏まえて、随時見直すとしている。生成や評価を行う AI の教科書への搭載は、実証研究や教育向けの AI の性能を見ながら、今後検討するとしている。</li>
+</ul>
+
+<h2>根拠にした調査：教育委員会・学校の意向</h2>
+
+<p>素案は、2025年10月〜12月に行った「教科書の形態に関する意向調査」（回答率は、小学校・中学校の段階で71%、高等学校の段階で81%）の結果を挙げています。</p>
+
+<div class="table-wrap">
+<table>
+<caption>望ましい教科書の形態（素案の注記より）</caption>
+<thead><tr><th>学校の段階</th><th>ハイブリッド</th><th>全部が紙</th><th>全部がデジタル</th></tr></thead>
+<tbody>
+<tr><td>小学校</td><td>88.3%</td><td>6.1%</td><td>5.5%</td></tr>
+<tr><td>中学校</td><td>86.3%</td><td>6.5%</td><td>7.1%</td></tr>
+<tr><td>高等学校</td><td>78.4%</td><td>16.8%</td><td>4.7%</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>小学校の低学年・中学年は、ほぼ全教科で、全部がデジタルを望む回答が10%未満。紙か、紙が多いものを望む回答が多い。</li>
+<li>小学校の高学年と中学校では、デジタルの割合が半分程度以上のものを望む回答が多い教科もある。小学校高学年の図画工作、中学校の地図・美術・保健体育、高等学校の情報・理数・看護などでは、全部がデジタルを望む回答が10%以上あった。</li>
+</ul>
+
+<h2>発行者、採択する側、学校への留意点</h2>
+
+<div class="cards">
+<div class="card"><h3>発行者</h3><p>同じ内容の教科書を、紙のみ・ハイブリッド・全部がデジタルの複数の形態で発行することは、求めない。教科ごとに、効果的な形態で作ることが望ましい。デジタルコンテンツの要件などは、教科用図書検定調査審議会の検討を経て、検定基準として別に示される。</p></div>
+<div class="card"><h3>標準仕様書</h3><p>文部科学省が、教科書のデジタル部分とビューアの標準仕様書を作る。アクセシビリティの機能に加え、デジタル部分の印刷・ダウンロードの機能、拡散を防ぐ機能などを含む予定。発行者と配信事業者は、これを踏まえて、ビューアの開発と、教科書の執筆・編集を行う。</p></div>
+<div class="card"><h3>障害等による学習上の困難の軽減</h3><p>検定教科書のデジタル版を、法律上の「教科用特定図書等」として位置づけ、無償で給与する予定（素案の注記）。特別支援学校・学級では、デジタルな形態の教材も使える。</p></div>
+<div class="card"><h3>学校</h3><p>ハイブリッドな教科書で、学校の ICT 環境や教師の力量を理由に、紙の部分だけを使い、デジタル部分を使った指導をしない状況は、あってはならない。デジタル部分も含めて、教科書「で」教えることが望ましい。一方で、手書きの重要性も一節で取り上げ、考えをまとめるときに紙のノートを使う例を挙げている。</p></div>
+</div>
+
+<h2>諸外国の状況について、素案が整理したこと</h2>
+
+<p>素案は、スウェーデンについて、学力の低下などを理由に、教科書をデジタルから紙に戻す動きがあるという指摘があることに触れ、次のように整理しています。国際学力調査の TIMSS では、過去3回とも得点が上がっている。PISA では、2015年と2018年に上がったあと、2022年と2025年に下がった。2022年の結果についてのスウェーデン教育庁の報告は、成績と、学習以外での ICT 機器の使用との間に負の相関があり、学校での学習のための使用との相関は明確ではない、と分析している。OECD の調査は、直近の政策を、教育の質と、年齢に応じたデジタル活用のバランスを追求した改革だと分析している。フィンランドなど、ほかの国の整理も載っています（本記事では扱いません）。</p>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>「全部がデジタル」は、少なくとも小学校の低学年・中学年では認められない。国が、学年と教科で線を引く形になっている。線の根拠に、発達段階の指摘と、採択する側の意向調査が使われている。</li>
+<li>ハイブリッドの中身は、発行者の判断に任されている部分が大きい。二次元コードで移る形に限らず、本文ごとデジタルで作ることもできる。教科書の見た目や使い方は、教科書ごとに大きく違ってくる可能性がある。</li>
+<li>素案は、検定基準、標準仕様書、概算要求といった、ほかの検討と並行している。最終の指針、検定基準、仕様書がそろうまで、現場への影響の全体は見えない。</li>
+</ul>
+
+<dl class="terms">
+<dt>デジタルな形態を含む教科書</dt><dd>法律の改正で可能になった、デジタルのコンテンツ（動画、音声、二次元コードの先など）を教科書の内容に含められる新しい教科書。</dd>
+<dt>現行のデジタル教科書</dt><dd>紙の教科書の内容を全部そのままデジタルにした教材。法律上は、紙の教科書に代えて使える教材（教科用図書代替教材）。</dd>
+<dt>ハイブリッドな形態</dt><dd>紙とデジタルを組み合わせて、1つの教科書として構成する形態。</dd>
+<dt>採択権者</dt><dd>学校で使う教科書を決める人（公立の義務教育の学校では、市町村などの教育委員会）。</dd>
+<dt>教科書検定</dt><dd>国が、教科書として適切かどうかを審査する制度。</dd>
+<dt>ビューア</dt><dd>デジタルの教科書を、端末で読むための Web アプリ。</dd>
+<dt>標準仕様書</dt><dd>ビューアやデジタル部分が満たす、共通の仕様をまとめた文書。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、文部科学省の検討会議の第6回の配布資料（資料4：指針の素案）と、会議のページをもとに、独自に整理したものです。素案は確定した指針ではなく、今後変わる可能性があります。</p>
+<p>素案の内容のうち、検定、標準仕様書、概算要求、情報活用能力に関する議題は、題名のみ確認し、中身は扱っていません。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（会議と素案、制度の背景、形態の考え方、意向調査、留意点、諸外国の整理）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

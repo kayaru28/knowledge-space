@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月21〜22日に OpenAI と Google Cloud が発表した、OpenAI の最新モデルと Codex を Google Cloud の Model Garden で提供する取り組みについて、3つのモデル、購入とデータの扱い、これからの予定、発表に書かれていないことを、両社の公式の発表から整理する。">
+<title>OpenAI のモデルが、Google Cloud でも使えるように：競合のクラウドの Model Garden で、GPT-6 Astra など3モデルの限定プレビューが始まった | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>OpenAI のモデルが、Google Cloud でも使えるように：競合のクラウドの Model Garden で、GPT-6 Astra など3モデルの限定プレビューが始まった</h1><p class="summary">2026年10月21〜22日に OpenAI と Google Cloud が発表した、OpenAI の最新モデルと Codex を Google Cloud の Model Garden で提供する取り組みについて、3つのモデル、購入とデータの扱い、これからの予定、発表に書かれていないことを、両社の公式の発表から整理する。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月21日、OpenAI は、自社の最新モデルと、コーディングの道具「Codex」を、Google Cloud の「Model Garden」（AIモデルを選んで使うための場）で提供すると発表しました。Google Cloud も、10月22日付のブログで、<strong>GPT-6 Astra、GPT-6.1 Sol、GPT-6 Luna の3モデル</strong>の提供を始めたと説明しています。</p>
+<p>いまは、一部の企業の顧客に向けた限定プレビュー（private preview）です。OpenAI は、一般提供を「数週間のうちに」としています。購入は Google Cloud Marketplace を通じて行い、Google Cloud の契約の枠から支払えます。一方で、OpenAI は、<strong>Microsoft が引き続き主要なクラウドのパートナー</strong>だと書いています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>モデル</small></p><p class="stat-label">Google Cloud が挙げた OpenAI のモデルの数（GPT-6 Astra、GPT-6.1 Sol、GPT-6 Luna）</p></div>
+<div class="stat"><p class="stat-value">限定<small>プレビュー</small></p><p class="stat-label">いまの提供の形（一部の企業の顧客に向けて）</p></div>
+<div class="stat"><p class="stat-value">数<small>週間</small></p><p class="stat-label">OpenAI が示した、一般提供までの目安（「coming weeks」）</p></div>
+<div class="stat"><p class="stat-value">1<small>つ</small></p><p class="stat-label">Google Cloud の説明で、OpenAI のモデルの利用が載る請求書の数</p></div>
+</div>
+
+<h2>発表の中身</h2>
+
+<div class="cards">
+<div class="card"><h3>OpenAI の発表（10月21日）</h3><p>OpenAI の最新モデルと、Codex のエージェント的な作業の流れを、Google Cloud の Model Garden に組み込む。利用者は、Google Cloud のデータ管理と高性能な基盤のもとで、これらのモデルを使える。OpenAI のモデルは、まもなく Google Antigravity と Gemini Agent でも使えるようになる、としている。</p></div>
+<div class="card"><h3>Google Cloud の発表（10月22日付）</h3><p>Model Garden で OpenAI のモデルの提供を始めた。限定プレビューとして、一部の企業の顧客に順次提供していて、ほかにも「まもなく」追加する。いまから、API を通して使えるほか、手元の Codex の CLI やデスクトップの作業を、Google Cloud の Gemini プラットフォームにつないで推論させることもできる。</p></div>
+<div class="card"><h3>3つのモデル（Google Cloud の説明）</h3><p>GPT-6 Astra：コーディング、コンピューターの操作、専門的な仕事、科学研究のような難しい作業向け。GPT-6.1 Sol：Astra に近い知能を、より低いコストで、エージェントによるコーディングやコンピューターの操作、専門的な仕事に。GPT-6 Luna：日常の仕事を大量にこなす、速くて費用を抑えたモデル。</p></div>
+<div class="card"><h3>買い方（両社の説明）</h3><p>OpenAI のモデルは、Google Cloud Marketplace を通じて購入する。Google Cloud との契約で、利用額の約束（コミット）がある企業は、その枠から支払える。Google Cloud は、利用がすべて1つの請求書に載り、モデルの提供元をまたいだ「柔軟な節約プラン」の対象にもなると説明している。</p></div>
+</div>
+
+<h2>データの扱い（Google Cloud の説明）</h2>
+
+<ul>
+<li>顧客の入力、文脈、出力は、指定したデータの境界の中にとどまり、基盤となるモデルの学習には使われない。データを残さない設定（Zero Data Retention）は「まもなく」提供される。</li>
+<li>OpenAI のモデルは、専用の Google Cloud の基盤で動く。機密情報を保護したまま計算する Confidential Compute は「まもなく」。通信は、強化された隔離したゲートウェイを通り、外部のモデル提供元が、顧客のクラウド環境に不正に入れないようにする。</li>
+<li>モデルとのやり取りは、認証された ID のもとで行われ、管理者は、VPC Service Controls と、統一された監査ログで、全体を見られる。</li>
+</ul>
+
+<h2>両社の発表の比べ方</h2>
+
+<div class="table-wrap">
+<table>
+<caption>OpenAI と Google Cloud の発表より</caption>
+<thead><tr><th>項目</th><th>OpenAI（10月21日）</th><th>Google Cloud（10月22日付）</th></tr></thead>
+<tbody>
+<tr><td>提供の形</td><td>Model Garden に組み込む。一般提供は数週間のうちに予定</td><td>いまは限定プレビュー。一部の企業の顧客に提供中</td></tr>
+<tr><td>対象のモデル</td><td>「最新のモデル」と Codex（モデル名は発表に書かれていない）</td><td>GPT-6 Astra、GPT-6.1 Sol、GPT-6 Luna</td></tr>
+<tr><td>購入と支払い</td><td>Google Cloud Marketplace。Google Cloud の契約の枠から支払える</td><td>Marketplace で購入し、1つの請求書。既存のコミットを消化でき、節約プランの対象</td></tr>
+<tr><td>ほかの提供先</td><td>まもなく Google Antigravity と Gemini Agent でも使える</td><td>まもなく Gemini for business と Google Antigravity でも使える</td></tr>
+<tr><td>Microsoft との関係</td><td>「Microsoft は、引き続き OpenAI の主要なクラウドのパートナー」と明記</td><td>触れていない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>発表に書かれていないこと</h2>
+
+<ul>
+<li>利用料金。OpenAI は、購入の仕組みを説明しているが、料金は示していない。</li>
+<li>一般提供の日付。OpenAI は「数週間のうちに」としているだけで、日付は決まっていない。</li>
+<li>提供する地域と、使える顧客の条件。限定プレビューの対象の選び方は、Google Cloud も書いていない。</li>
+<li>両社の契約の条件（期間、独占性、収益の分け方など）。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>選ぶ場所が増えた：企業は、すでに契約しているクラウドの枠の中で、OpenAI のモデルを選べるようになる（一般提供になれば）。モデルの提供元ごとに契約を分けなくてよい、と Google Cloud は説明している。</li>
+<li>OpenAI は、提供の窓口を広げている：OpenAI の発表ページの関連記事には、6月10日付の「Oracle のクラウドの契約の枠で、OpenAI のモデルと Codex を使う」という題の記事も並んでいる（中身は読んでいない）。Microsoft を主要なパートナーとしたまま、複数のクラウドで提供する流れに見える。</li>
+<li>Google Cloud は、「主要なクローズドソースの LLM を3つとも提供する、唯一のハイパースケールのクラウド」だと主張している。これは同社の説明で、ほかの会社の提供状況は確認していない。</li>
+</ul>
+
+<dl class="terms">
+<dt>Model Garden</dt><dd>Google Cloud で、いろいろな AI モデルを選んで使うための仕組み。</dd>
+<dt>Codex</dt><dd>OpenAI のコーディングの道具。ソフトウェアの開発作業を、エージェントとして進める。</dd>
+<dt>限定プレビュー</dt><dd>一部の顧客だけに、試験的に提供すること。</dd>
+<dt>Google Cloud Marketplace</dt><dd>Google Cloud の契約のもとで、ほかの会社のソフトウェアやサービスを購入できる場。</dd>
+<dt>コミット（利用額の約束）</dt><dd>クラウドを一定額まで使うと約束する契約。その枠の中から、購入の支払いができる。</dd>
+<dt>Zero Data Retention</dt><dd>顧客の入力や出力を、提供側に残さない設定。</dd>
+<dt>Confidential Compute</dt><dd>データを暗号化したまま、安全な領域で計算する技術。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、OpenAI と Google Cloud の公式の発表をもとに、独自に整理したものです。一般提供の時期や料金は、両社の今後の発表で確認する必要があります。</p>
+<p>「3つの主要なクローズドソースの LLM を提供する唯一のクラウド」は Google Cloud の主張で、確認していません。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（発表の中身、3つのモデル、購入とデータの扱い、両社の発表の比較、書かれていないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

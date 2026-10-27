@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Anthropic が2026年10月22日に公表した、AI（Claude）に機械語（RISC-V）の上の証明を書かせて、123のライブラリを検証した取り組みについて、しくみ、結果、見つかったバグの例、費用、限界を、公表された記事の原本から整理する。">
+<title>AI が書いた証明で、100以上のオープンソースのライブラリを形式検証：「テストを証明に変える」方法と、その限界 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>AI が書いた証明で、100以上のオープンソースのライブラリを形式検証：「テストを証明に変える」方法と、その限界</h1><p class="summary">Anthropic が2026年10月22日に公表した、AI（Claude）に機械語（RISC-V）の上の証明を書かせて、123のライブラリを検証した取り組みについて、しくみ、結果、見つかったバグの例、費用、限界を、公表された記事の原本から整理する。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Anthropic は2026年10月22日、AI（Claude）に<strong>プログラムの正しさの証明</strong>を書かせて、100以上のオープンソースのライブラリを形式検証した、と公表しました。形式検証は、コードが決めた規則を必ず守ることを数学的に証明する方法で、これまでは専門家が何年もかける作業でした。</p>
+<p>今回の対象は、コンパイル後の機械語（RISC-V）です。<strong>123のライブラリの239か所の入口</strong>について、64MB未満のどんな入力でも異常終了しないことを、証明検査器で確かめたとしています。一方で、「検証した」ことは「バグがない」ことではなく、成り立つ前提もはっきり書かれています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">123<small>ライブラリ</small> / 239<small>入口</small></p><p class="stat-label">異常終了しないことを証明した範囲（Google の OSS-Fuzz の対象）</p></div>
+<div class="stat"><p class="stat-value">1.8<small>億行</small></p><p class="stat-label">証明（Rocq）の総量。1件の証明は約60万行が目安</p></div>
+<div class="stat"><p class="stat-value">64<small>MB未満</small></p><p class="stat-label">異常終了しないと証明した入力の大きさ（単一スレッド、静的リンクの RISC-V、Linux が前提）</p></div>
+<div class="stat"><p class="stat-value">約40<small>%減</small></p><p class="stat-label">小さな36課題で、Opus 5.5 が半数を証明するのに使うトークンの減り方（Opus 5 との比較）</p></div>
+</div>
+
+<h2>何をしたのか</h2>
+
+<ul>
+<li>背景：Anthropic は、十分に試験されたソフトウェアにもバグは残り、AI がそれを見つけて悪用する力も上がっている、と述べている。例として、Linux カーネルで最近1,000件を超える脆弱性が公開されたことを挙げている。</li>
+<li>目的：バグを探して直すだけでなく、「規則を破るバグはもうない」ことを証明する。これが形式検証で、これまでは専門的な技能と長い時間が必要だった（例：seL4 というカーネルは、作るのに2人年、検証に20人年かかった、と同社は紹介している）。</li>
+<li>共同：Theorem という会社と共同で行った。機械語（RISC-V）と Linux のプロセスの動きを数学で書いた「意味づけ（セマンティクス）」は Theorem のもの。</li>
+<li>成果の公開：証明の一部と、RISC-V と OS の意味づけを公開して、誰でも検証・再利用できるようにする。Theorem は、同じ手順を他のオープンソースにも実行する提案と、始めるための Claude 用のスキルの公開をしている。</li>
+</ul>
+
+<h2>しくみ：テストを証明に変える</h2>
+
+<ul>
+<li>証明するには、「正しい」とは何かを決める仕様が要る。多くのプログラムでは、これが難しい。そこで、すでにあるテストを仕様に変えた。</li>
+<li>使ったテスト：ファジング。開発者が書いた「入口（エントリポイント）」に、膨大な量の半ランダムな入力を流して、異常終了する入力を探す。力任せの方法で、すべての経路を試せる保証はない。</li>
+<li>変換：ライブラリと既存のファジングのテストを RISC-V の実行ファイルにコンパイルし、「64MB未満のどの入力でも異常終了しない」という仕様を、機械語の上で作る。証明できれば、その入口をファジングしても、もうバグは見つからない。</li>
+<li>分担：Claude が証明を書き、Rocq という証明検査器が、仕様を満たすかを機械的に確かめる。人が証明を一行ずつ読む必要は、ほとんどない。</li>
+<li>対象：Google の OSS-Fuzz。C と C++ のプログラムには、メモリの不正な操作を検出する AddressSanitizer（ASan）が入り、不正な操作があると異常終了する。つまり、メモリの安全性（脆弱性の主な原因）が仕様に含まれる。</li>
+<li>バグが見つかったとき：Claude がコードを直し、仕様を作り直して、もう一度証明する。証明を簡単にするためだけにプログラムを書き換える（報酬ハッキング）のを防ぐため、修正には減点を付け、修正で変わる入力が何で、どれだけ少ないかを証明すれば加点した。修正は記録して、報酬ハッキングの兆候がないかを監査した、と説明している。</li>
+</ul>
+
+<h2>結果</h2>
+
+<div class="cards">
+<div class="card"><h3>証明した範囲</h3><p>数週間で、123のライブラリの239か所の入口について、64MB未満のどんな入力でも異常終了しないことを証明した。機械語の中央値は約1万8,000命令。</p></div>
+<div class="card"><h3>証明の量</h3><p>証明は約1.8億行の Rocq。1件の証明は約60万行が目安。同社は、この量でも、信頼する必要があるのは、意味づけ、証明した主張の文面、証明検査器の3つだけだと説明している。</p></div>
+<div class="card"><h3>見つかったバグ</h3><p>証明を試みる過程で、数百のバグが見つかった、と同社は述べている。ファジングでは見つかりにくいものも含む（下の「見つかったバグの例」）。</p></div>
+<div class="card"><h3>効率</h3><p>小さな36課題で、Opus 5.5 は、半数を Opus 5 より約40%少ないトークンで証明した。複数のエージェントが証明を共有すると、トークンは17%減った。</p></div>
+</div>
+
+<h2>見つかったバグの例</h2>
+
+<ul>
+<li>あるライブラリが持つ、展開（解凍）処理の自前のコピーで、カウンタの桁あふれ（アンダーフロー）から範囲外への書き込みが起きる。約20MBの入力で、まれな並びのときだけ起きる。</li>
+<li>画像のデコーダで、範囲外の読み出し。64MBの入力と2GB超のメモリが必要。</li>
+<li>別のライブラリで、同じファイルへの2つのハンドルに対して、特定の順番で呼び出したときの範囲外の読み出し。</li>
+<li>libexpat の CVE-2026-56132 を再発見した。深く入れ子になった入力が必要。</li>
+<li>クラッシュしない論理的なバグ。メモリの安全性を証明する途中で、アプリが読み込めるファイルを制限する機能が、いつも効くわけではないことに気づいた。</li>
+<li>同社は、ファジングは入力が小さく（多くは1MB以下）、コードの網羅率を手がかりに探すため、こうしたバグは見つかりにくい、と説明している。</li>
+</ul>
+
+<h2>ほかの試み</h2>
+
+<div class="table-wrap">
+<table>
+<caption>同じ記事で紹介された、形式検証のほかの事例</caption>
+<thead><tr><th>事例</th><th>内容</th><th>結果</th></tr></thead>
+<tbody>
+<tr><td>zlib</td><td>Linux カーネルの zlib の実装が、仕様書（RFC 1950）どおりかを、x86 の機械語の上で証明した。ほかに6つほどの広く使われるライブラリでも実施</td><td>目立たない（悪用できない）バグが見つかり、報告の手続き中。同社は、十分に試験された実装は、ほぼ正しいと読む</td></tr>
+<tr><td>Rust で書いた Python の処理系</td><td>Python の大部分を Rust で作らせ、CPython の動きに従うことを Verus（Rust の検証ツール）で証明</td><td>ランダムに作った170万本のプログラムで、CPython と同じ動きが99.95%</td></tr>
+<tr><td>PDF リーダー</td><td>広く使われる PDF リーダーで、単純な安全性の性質を検証</td><td>1週間で、通常は1年かけて報告されるほどのセキュリティ上のバグを見つけた。別の重要なアプリでは、10年以上潜んでいた論理バグも見つけた</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>費用と今後</h2>
+
+<ul>
+<li>費用：証明には、数億トークンが必要になることがある。同社は、これを大きな障壁と認めている。</li>
+<li>新しいモデルほど少ない：36課題の比較で、Opus 5.5 は、Opus 5 より約40%少ないトークンで半数を証明した。同社は、この傾向が続くと見ている。</li>
+<li>証明は再利用できる：エージェントが互いの証明を写せるようにすると、トークンは17%減り、単独では失敗した課題に成功した例もあった。今回の大規模な作業でも、C ランタイムの初期化や ASan など、どのプログラムにも共通する部分が多く、別のチームの完成した証明を写して、自分のプログラムに合わせて直す形になった。</li>
+<li>Theorem は、Nix という仕組みの全体を検証する計画を公開している。対象には、glibc、OpenSSL、cURL といった重要な基盤が含まれる。</li>
+</ul>
+
+<h2>限界と読むときの注意</h2>
+
+<ul>
+<li>「形式検証済み」は「バグなし」ではない。証明検査器が確かめるのは、仕様を満たすことまでで、仕様が現実に合っているかは確かめられない。CPU や OS の意味づけが現実と違えば、検証済みでもバグは起きうる。</li>
+<li>現実の機械との差：証明は、単一スレッドで静的リンクの RISC-V の実行ファイル（musl という C ライブラリ）についてのもの。多くの人は x86 や ARM で、glibc に動的にリンクして使う。</li>
+<li>主張の範囲：異常終了しないこと（ASan の検出を含む）を証明したもので、ASan はすべてのメモリの不具合を検出するわけではない。すべての入口を検証したわけではなく、入口をすべて検証しても、ライブラリ全体（使われないコードなど）が対象になるとは限らない。呼び出す側の誤用で、メモリが壊れることもある。</li>
+<li>信頼の対象：Rocq、RISC-V と Linux の意味づけ、証明した文面は、信頼する必要がある。同社は、これを堅くするのは、すべてのコードをデバッグするより扱いやすい、としている。</li>
+<li>出どころ：Anthropic 自身が、自社のモデル（Claude）について公表した内容。数字は同社が示したもので、ここでは再現していない。同社は、独立した検証を歓迎するとして、証明の一部を公開している。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>形式検証の主な壁は、証明を書く人手だった。この記事は、その壁を AI が下げうることを、大規模な事例で示した、という位置づけになる。</li>
+<li>ただし、検証の価値は、前提の置き方で変わる。今回は、実際の利用環境（x86、ARM、動的リンク、複数スレッド）より狭い前提での証明で、同社自身もその差を限界として挙げている。</li>
+<li>見つかったバグの多くは、証明の途中で見つかった。証明が完成しなくても、証明を試みること自体がバグ探しになる、と同社は述べている。</li>
+</ul>
+
+<dl class="terms">
+<dt>形式検証</dt><dd>プログラムを数学的な模型にして、決めた規則を必ず守ることを証明する方法。</dd>
+<dt>ファジング</dt><dd>プログラムの入口に、大量の半ランダムな入力を流して、異常終了する入力を探すテスト。</dd>
+<dt>エントリポイント（入口）</dt><dd>開発者がテストのために用意した、プログラムの入り口。ここで異常終了する入力は、作者が気にするバグ。</dd>
+<dt>Rocq</dt><dd>証明を機械的に検査する道具（証明支援系）。</dd>
+<dt>RISC-V</dt><dd>x86 や ARM と同じ、プロセッサの設計の一つ。ソフトウェアは、その命令に変換されて動く。</dd>
+<dt>AddressSanitizer（ASan）</dt><dd>メモリの不正な操作を、起きた瞬間に検出する、コンパイラの道具。</dd>
+<dt>OSS-Fuzz</dt><dd>Google が、オープンソースに対して続けているファジングの取り組み。</dd>
+<dt>報酬ハッキング</dt><dd>AI が、意図とは違う近道で、目標を形だけ満たすこと。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、Anthropic が2026年10月22日に公表した記事「LLMs are making formal software verification feasible at a much larger scale」をもとに、独自に整理したものです。</p>
+<p>数字は記事が示したもので、再現していません。この記事をまとめた筆者の道具には、記事の対象と同じ会社（Anthropic）の AI が含まれます。記事は、自社の研究についての自社の公表である点も、あわせて読んでください。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（しくみ、結果、見つかったバグの例、ほかの試み、費用、限界）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

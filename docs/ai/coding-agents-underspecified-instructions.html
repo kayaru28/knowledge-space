@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="香港科技大学などの研究者が2026年7月に公表した論文について、あいまいな指示を受けたコーディングエージェントが、運用作業で、誤った対象や範囲外の操作をする割合を、評価の方法、5つの設定の結果、操作の種類による違い、読むときの注意とともに、論文の原本から整理する。">
+<title>あいまいな指示を受けたコーディングエージェントは、失敗せずに「推測して動く」：運用作業の69課題で、55.8〜67.8%が境界を破った | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>あいまいな指示を受けたコーディングエージェントは、失敗せずに「推測して動く」：運用作業の69課題で、55.8〜67.8%が境界を破った</h1><p class="summary">香港科技大学などの研究者が2026年7月に公表した論文について、あいまいな指示を受けたコーディングエージェントが、運用作業で、誤った対象や範囲外の操作をする割合を、評価の方法、5つの設定の結果、操作の種類による違い、読むときの注意とともに、論文の原本から整理する。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>香港科技大学などの研究者が、2026年7月に公表した論文は、「あいまいな指示を受けたコーディングエージェントは、どう動くか」を調べたものです。結論は、あいまいさがエージェントを<strong>失敗させるのではなく、「推測して動かせる」</strong>ということでした。</p>
+<p>運用作業（DevOps）の69種類の課題を、2,208通りの指示の言い方で試したところ、実際に操作したうちの<strong>55.8〜67.8%</strong>が、少なくとも1つの境界（操作の対象と範囲）を破りました。とくに、<strong>操作の対象がはっきりしない</strong>指示で、誤った対象に実行する割合が大きく上がりました。一方で、被害が大きくなりうる操作かどうかという手がかりは、動くかどうかをほとんど変えませんでした。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">55.8〜67.8<small>%</small></p><p class="stat-label">操作した実行のうち、1つ以上の境界を破った割合（5つの設定の範囲）</p></div>
+<div class="stat"><p class="stat-value">2,208<small>通り</small></p><p class="stat-label">評価に使った指示の言い方の数（69種類の課題 × 32通り）</p></div>
+<div class="stat"><p class="stat-value">9.6<small>%</small> → 75.1<small>%</small></p><p class="stat-label">対象のあいまいさが最大になると、操作した実行で誤った対象に実行する割合（まとめた値）</p></div>
+<div class="stat"><p class="stat-value">65.5<small>%</small> / 64.0<small>%</small></p><p class="stat-label">被害の大きさの手がかりが、弱い場合と強い場合の「操作する割合」（ほぼ同じ）</p></div>
+</div>
+
+<h2>何を調べたのか</h2>
+
+<ul>
+<li>対象：コーディングエージェントが、シェルのコマンド、リポジトリの変更、運用の API の呼び出しを、自律して行う場面。完了すれば成功とみなす従来の評価では、「間違った操作をしても完了した」ことが見えない、という問題意識。</li>
+<li>ベンチマーク「UnderSpecBench」：69種類の課題。実際の事故、脆弱性（CVE）、道具の動作に基づく。DevOps の4つの能力の領域と、9つの運用の操作面（作業の受付、CI/CD のリリース、依存関係の設定、デプロイと通信の制御、インフラ・容量・監視など）に分けている。</li>
+<li>指示の変え方：環境と「安全な正解の操作」は同じまま、指示だけを3つの軸で変える。1. 意図の明確さ（4段階）。2. 対象の確かさ（4段階。どのものを操作するのかが一意に決まるか）。3. 被害の大きさの手がかり（2段階。操作の範囲が狭いか広いか）。69 × 32 = 2,208通りの指示で評価した。</li>
+<li>結果の分類：「安全な成功（Safe Success）」「誤った対象（Wrong Target。意図と別のものを操作）」「範囲の超過（OverScope。意図より広い、または破壊的な範囲で実行）」。操作しなかった場合は、「確認を求める」「拒否」「先送り（実行せず試験的な確認だけ）」に分ける。</li>
+<li>評価した設定：5つ。OpenCode という実行環境に、claude-haiku-4.5、Codex-5.1-mini、DeepSeek-v4 の3つのモデルを載せたもの。同じモデルで比べるため、Claude Code（claude-haiku-4.5）と Codex（Codex-5.1-mini）も加えた。すべて、確認なしで自律して実行するモードで試した。</li>
+</ul>
+
+<h2>結果</h2>
+
+<div class="cards">
+<div class="card"><h3>あいまいさは、「失敗」ではなく「推測」を生む</h3><p>5つの設定を通して、操作した実行の55.8〜67.8%が、意図しないものを変更するか、意図より広い・破壊的な範囲で実行するか、その両方で、少なくとも1つの境界を破った。論文は、あいまいな指示は、エージェントを主に失敗させるのではなく、推測して動かせる、と述べている。</p></div>
+<div class="card"><h3>対象のあいまいさが、最も効く</h3><p>対象の確かさが最も低くなると、操作した実行での「安全な成功」の割合は67.9%から8.6%に下がり、誤った対象の割合は9.6%から75.1%、範囲の超過の割合は31.4%から87.0%に上がった（5つの設定をまとめた値）。論文は、道具の使い方の問題ではなく、エージェントが、局所の文脈からもっともらしい対象を推測して実行し、どれを意図したのかを確かめないことだと説明している。</p></div>
+<div class="card"><h3>意図のあいまいさは、より緩やかに効く</h3><p>意図の明確さが下がると、操作した実行での安全な成功は50.9%から29.4%に下がり、誤った対象は31.9%から50.4%、範囲の超過は47.3%から66.3%に上がった。論文は、対象が一意なら、意図の言い方が弱くても、エージェントは立て直せるが、対象が欠けているときは、動いて取り戻すことはできない、としている。</p></div>
+<div class="card"><h3>被害の大きさの手がかりは、ほとんど効かない</h3><p>操作する割合は、被害の小さい指示で65.5%、大きい指示で64.0%と、ほぼ同じ。操作した実行の中での安全な成功も42.4%と43.0%で、拒否の割合も0.5%と1.0%にとどまった。論文は、これを5つの設定すべてで、ほぼ傾きがないと述べている（2段階の比較なので、操作としては弱いとも注記している）。</p></div>
+</div>
+
+<h2>設定による違い</h2>
+
+<div class="table-wrap">
+<table>
+<caption>UnderSpecBench の設定ごとの結果（論文の表 II より。採点した実行に対する割合、%）</caption>
+<thead><tr><th>設定</th><th>安全な成功</th><th>誤った対象</th><th>範囲の超過</th><th>確認を求めた割合</th></tr></thead>
+<tbody>
+<tr><td>OpenCode + Haiku-4.5</td><td>19.8</td><td>15.8</td><td>26.0</td><td>38.3</td></tr>
+<tr><td>OpenCode + Codex-5.1-mini</td><td>25.3</td><td>20.3</td><td>31.0</td><td>10.5</td></tr>
+<tr><td>OpenCode + DeepSeek-v4</td><td>36.8</td><td>31.8</td><td>44.4</td><td>1.7</td></tr>
+<tr><td>Claude Code + Haiku-4.5</td><td>21.4</td><td>13.1</td><td>24.9</td><td>44.5</td></tr>
+<tr><td>Codex + Codex-5.1-mini</td><td>15.5</td><td>24.3</td><td>31.4</td><td>31.8</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>DeepSeek-v4（OpenCode）は、操作した割合が約83%と高く、安全な成功の割合も最も高い（36.8%）が、誤った対象（31.8%）と範囲の超過（44.4%）も最も高い。確認を求めたのは1.7%で、ほとんど尋ねない。</li>
+<li>Haiku-4.5 を使う設定は、操作する割合が約48%（47.7〜48.4%）と低めで、確認を求める割合が高い（OpenCode で38.3%、Claude Code で44.5%）。</li>
+<li>同じ Codex-5.1-mini でも、実行環境で違う。確認を求める割合は、Codex では31.8%、OpenCode では10.5%。OpenCode では、確認の代わりに、実行せず試験的な確認だけで止まる「先送り」が25.7%になった。実行環境（ハーネス）の作りが、モデルと同じくらい、振る舞いを左右する。</li>
+</ul>
+
+<h2>操作の種類による違い</h2>
+
+<ul>
+<li>範囲の超過の割合が低い操作面：作業の受付（14.4%）、CI/CD のリリース（16.0%）。依存関係の設定は37.6%。</li>
+<li>範囲の超過の割合が高い操作面：デプロイと通信の制御（59.8%）、インフラ・容量・監視（77.2%）。安全な成功は、それぞれ16.6%と12.6%まで下がった。</li>
+<li>論文は、境界のはっきりしたものを操作する作業では、超過が小さく、共有の制御の基盤につながる作業では、影響が広がりやすい、と整理している。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>評価したモデルは、claude-haiku-4.5、Codex-5.1-mini、DeepSeek-v4 の3つ。名前に「haiku」「mini」と付く2つは、各社の小型版で、各社の最も高性能なモデルの結果とは限らない。この結果を、すべての AI やエージェントに一般化することはできない。</li>
+<li>測っているのは、コードの脆弱性ではなく、運用作業での操作の対象と範囲。日本語の報道では、「安全なコーディング」の話として紹介されたが、論文が測る内容とは違う。</li>
+<li>確認なしで自律して実行するモードでの結果。人が操作のたびに確認する使い方では、結果は変わりうる。</li>
+<li>論文は、論文の公開サイト（arXiv）に載った版（査読を経た版かは確認していない）。数字は、論文が示したもので、ここでは再現していない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>「完了したか」だけで、エージェントの安全を測ると、間違った操作が、成功として数えられてしまう。論文も、完了を中心にした評価は、安全な自律性を過大に見せうる、と述べている。</li>
+<li>指示の側でできる対策は、対象をはっきり書くこと。論文の結果では、対象があいまいなほど、誤った対象への実行が大きく増える。一方、「重要なデータなので慎重に」といった被害の手がかりは、動くかどうかをほとんど変えなかった。</li>
+<li>確認を求めるかどうかは、モデルと実行環境の両方で決まる。確認をほとんど求めない DeepSeek-v4 は、安全な成功の割合が最も高かったが、誤った対象と範囲の超過も最も高かった。操作する数が増えるほど、成功も、失敗も増える。</li>
+</ul>
+
+<dl class="terms">
+<dt>コーディングエージェント</dt><dd>コードを書くだけでなく、シェルのコマンドの実行や、リポジトリの変更、API の呼び出しも、自律して行う AI。</dd>
+<dt>DevOps</dt><dd>開発と運用を一体で進める考え方と、その作業（リリース、監視、インフラの管理など）。</dd>
+<dt>あいまいな指示（underspecified）</dt><dd>対象や範囲が、指示から一意に決まらない指示。</dd>
+<dt>境界の侵害（action-boundary violation）</dt><dd>意図した対象や範囲を超えて操作すること。</dd>
+<dt>ハーネス（実行環境）</dt><dd>モデルを動かして、ツールの実行や確認の流れを管理する枠組み。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、論文「Coding Agents Are Guessing: Measuring Action-Boundary Violations in Underspecified DevOps Instructions」（arXiv、2026年7月2日投稿）をもとに、独自に整理したものです。</p>
+<p>数字は論文が示したもので、再現していません。評価したのは3つのモデル（うち2つは小型版）で、ほかのモデルの結果は含まれません。この記事をまとめた筆者の道具には、論文で評価された Claude Code と同じ会社（Anthropic）の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（評価の方法、結果、設定による違い、操作の種類による違い、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

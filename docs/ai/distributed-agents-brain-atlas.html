@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="OpenAI、PerturbAI、スクリプス研究所が2026年10月に公表した、1,946体の AI エージェントを並列に動かしてマウスの脳全体の遺伝子実験を解釈した研究について、しくみ、結果、手がかりの例、検証の工夫、限界を、公表記事と論文の原本から整理する。">
+<title>数千の AI エージェントで、マウスの脳の遺伝子実験のデータを32分で解釈：OpenAI らの研究と、読むときの注意 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>数千の AI エージェントで、マウスの脳の遺伝子実験のデータを32分で解釈：OpenAI らの研究と、読むときの注意</h1><p class="summary">OpenAI、PerturbAI、スクリプス研究所が2026年10月に公表した、1,946体の AI エージェントを並列に動かしてマウスの脳全体の遺伝子実験を解釈した研究について、しくみ、結果、手がかりの例、検証の工夫、限界を、公表記事と論文の原本から整理する。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>OpenAI、PerturbAI、スクリプス研究所は2026年10月21日、<strong>1,946体の AI エージェントを並列に動かして</strong>、マウスの脳全体の遺伝子実験のデータを32分で解釈した、と公表しました。1体のエージェントが、遺伝子を1つ壊した実験の結果1件を担当し、文献を調べて、解釈と次の実験の案をまとめます。</p>
+<p>結果は、実験を行った研究チームの既存の論文の知見を、<strong>直接検証できる55件のうち48件で再現または洗練</strong>し、専門家の盲検の比較でも1体のエージェントより好まれた、としています。ただし、プレプリント（査読前）で、1つのデータでの評価です。見つかった手がかりは、実験で確かめる前の仮説です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1,946<small>体</small></p><p class="stat-label">並列に動かしたエージェント数（遺伝子の操作1,946件に1体ずつ）</p></div>
+<div class="stat"><p class="stat-value">32<small>分</small></p><p class="stat-label">並列で動かした実行時間。人が行うと月〜年の規模と、論文は例示的に見積もる</p></div>
+<div class="stat"><p class="stat-value">48 / 55<small>件</small></p><p class="stat-label">既存の論文の知見のうち、データから直接検証できる55件で、再現または洗練できた数（87.3%）</p></div>
+<div class="stat"><p class="stat-value">45 / 60<small>回</small></p><p class="stat-label">専門家の比較で、分散したエージェントの解釈が、1体のエージェントより好まれた回数（75%）</p></div>
+</div>
+
+<h2>何をしたのか</h2>
+
+<ul>
+<li>データ：マウスの脳全体で、約2,000（1,946）の遺伝子を1つずつ壊し（CRISPR）、細胞ごとの遺伝子の働き方を測った実験（in vivo Perturb-seq）。この研究チームが2026年3月に論文として出した実験で、解析に専門家のチームが必要だった。</li>
+<li>しくみ：「分散した生物学的推論」と呼ぶ方法。遺伝子の操作ごとに1体のエージェントを割り当てる。各エージェントは、細胞の種類ごとの遺伝子の変化、実験の背景、解析の道具と文献検索を使って、データを調べ、他の操作と比べ、文献を探し、解釈を書く。</li>
+<li>出力：各エージェントが、知見、定量的な根拠、生物学的な解釈、参考文献、注意点、次の実験の案を載せた報告を作る。報告は、検索できるデータベースと、遺伝子・細胞・経路などをつなぐ知識グラフにまとめられる。その上で、別のエージェントが操作をまたぐ関係（収束、対立など）を整理し、優先順位をつける。</li>
+<li>公平にするための工夫：元の論文と結論は渡していない。使ったのは GPT-Rosalind-5.5 で、知識の期限は2025年12月。元の論文の公開（2026年3月）より前。</li>
+<li>公開：結果の「推論アトラス」を公開している。分析の手順と GPT-Rosalind 用のスキルも、公開リポジトリに置かれている、と論文は述べている。</li>
+</ul>
+
+<h2>結果</h2>
+
+<div class="cards">
+<div class="card"><h3>既存の論文の知見を再現</h3><p>元の論文の71件の知見のうち、データだけで直接導けるのは55件。そのうち、同じ内容または洗練された形で見つけたのが48件（87.3%）、一部だけ見つけたのが4件で、少なくとも一部を再現できたのは52件（94.5%）。データ以外が必要な知見は、見つけられなかった（71件全体では、一致35、洗練13、一部9、カバーせず14）。</p></div>
+<div class="card"><h3>文献を広く使う</h3><p>並列の実行全体で、論文の読み込み39,185回、引用として残したのが16,445件。信頼度の高い知見1,519件のうち、文献と一致27.6%、文献から推論41.9%、文献と食い違い6.6%、参考にできる文献が見つからない23.8%。</p></div>
+<div class="card"><h3>1体と比べて</h3><p>同じモデルと道具で、893件の操作を1体に担当させると、引用は11件。分散した場合は711倍の引用を残した。専門家の盲検の比較（20組、各3人で計60回の判断）では、分散が45回（75%）、1体が10回（16.7%）、引き分けが5回（8.3%）。</p></div>
+<div class="card"><h3>予測</h3><p>結果を伏せた272件の操作（全体の14%）について、残りの操作の結果と背景知識から、視床の神経細胞での遺伝子の変化の数を予測させた。バランス精度は0.705で、反応のなかった172件のうち142件（82%）、反応のあった100件のうち59件（59%）を正しく当てた。神経細胞が減る操作を上位50位に入れた割合（中央値）は、分散0.36、1体0.18、DepMap（比較の基準）0.26、遺伝子の変化の大きさ0.14。</p></div>
+<div class="card"><h3>専門家の評価</h3><p>博士レベルの専門家30人が、60件の報告を、新しさ、根拠、追試の優先度、確信度で5段階評価した（盲検。生成 AI の使用は不可）。優先度の高い報告ほど、人の総合点も高かった（高3.14、中2.75、低2.63）。AI の点と人の点の相関は、新しさ0.61、優先度0.56、根拠0.49。</p></div>
+</div>
+
+<h2>見つかった手がかりの例</h2>
+
+<div class="table-wrap">
+<table>
+<caption>AI が挙げた手がかりの例（いずれも仮説で、実験での確認はこれから）</caption>
+<thead><tr><th>遺伝子</th><th>データで見えたこと</th><th>示された問い</th></tr></thead>
+<tbody>
+<tr><td>Tsc1 と Tsc2</td><td>mTOR（細胞の成長・代謝・老化を調べる主要な仕組み）を共同で調節する2つ。多くの神経細胞では、どちらを壊しても似た影響。小脳の GABA 作動性の神経細胞では、Tsc2 を壊すと有意な遺伝子の変化が83、Tsc1 では0</td><td>結節性硬化症では、小脳の異常が TSC2 の変異と強く関係する。どの変化が既存の薬で戻せるのか、実験で調べる</td></tr>
+<tr><td>DCTN1</td><td>ペリー症候群（パーキンソン病に似た症状の神経変性疾患）の原因遺伝子。壊すと、コレステロールを作る遺伝子が増えた</td><td>コレステロールの輸送の不調が、神経細胞での作り過ぎを招くのでは。神経細胞の中の分布が変わり、神経変性につながるのか。専門家の追試の優先度は4.3/5</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>論文は、AI が挙げた「食い違い」の印にも注意を促している。Wdr26 の例では、線維芽細胞の研究から外挿した予想が、神経細胞の観察と食い違うとされたが、人が確認すると、サブユニットごとに働きが違うことが分かった。印は、確かめる場所を教えるもので、結論ではない。</li>
+</ul>
+
+<h2>検証の工夫</h2>
+
+<ul>
+<li>遺伝子の名前の入れ替え：遺伝子の変化のデータはそのままで、どの遺伝子を壊したかの名前だけを入れ替えると、「文献と一致」の割合は29.3%から、データ内で入れ替えると13.2%、別の遺伝子に入れ替えると6.1%に下がった。「文献が見つからない」は29.9%から43.5%、61.0%に上がった。</li>
+<li>それでも一致が残った：論文は、共通の生物学と、文献の照合の限界の両方が理由だと説明している。個々の判断は、人の確認に開いたまま、としている。</li>
+<li>元の論文を見せない：結論を知っていて書いたのではないことを示すため、元の論文の公開より前の知識しか持たないモデルを使った。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>査読前：論文は bioRxiv に2026年10月16日に載ったプレプリント。査読を経た版かは確認していない。</li>
+<li>関係者による研究：著者には OpenAI と PerturbAI の社員が含まれ、著者のうち2人は PerturbAI の共同創業者と、論文は開示している。OpenAI の公表記事も、自社の成果についてのもの。</li>
+<li>1つのデータ、マウスの細胞：評価は、1つの実験のデータに対してのもの。論文自身が、別のデータでの評価と、実際の実験による検証が、一般化の程度を決める、と述べている。ヒトの病気への効果を示したものではない。</li>
+<li>32分の意味：エージェントを並列に動かした実行時間。人が行った場合の「月〜年」は、時給22ドル、1操作の解釈に15分、論文1本に10分といった仮定の見積もりで、実測ではない。</li>
+<li>予測の限界：外れた例もある。NatB の部品である Naa20 は、反応なしと予測されたが、実際には1,327件の遺伝子が変化した。</li>
+<li>「文献が見つからない」は、見つけられなかったという意味で、研究が存在しないことの証明ではない、と論文は注記している。</li>
+<li>見出しの表現：公表記事は「数分でアルツハイマー病とパーキンソン病の手がかりを」という問いかけで始まる。論文が示したのは、マウスの脳の実験データの解釈と、追試に回す候補の整理までで、病気の治療につながる成果ではない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>測定の量が増え、ボトルネックが「測ること」から「読み解くこと」に移った、という問題意識。担当を細かく分けて並列に動かすと、1体に全部を任せるより、文献を調べる幅が保てる、というのが今回の主な結果。</li>
+<li>価値は、答えを出すことより、人が追試する候補の優先順位をつけること。論文も、仮説の検証は実験で行い、文献を読み、説明を比べ、決定的な実験を選ぶことは、人の役割として残る、と述べている。</li>
+<li>これが他の分野やデータにも通じるかは、今回の結果からは分からない。</li>
+</ul>
+
+<dl class="terms">
+<dt>Perturb-seq</dt><dd>遺伝子を1つずつ操作し、細胞ごとの遺伝子の働き方（転写）を測る実験の手法。</dd>
+<dt>CRISPR</dt><dd>遺伝子を狙って壊す（編集する）技術。</dd>
+<dt>摂動（perturbation）</dt><dd>ここでは、遺伝子を1つ操作すること。</dd>
+<dt>エージェント</dt><dd>道具（解析、文献検索）を使いながら、自分で作業を進める AI。</dd>
+<dt>GPT-Rosalind</dt><dd>この研究で使われた OpenAI のモデル（論文では GPT-Rosalind-5.5）。</dd>
+<dt>プレプリント</dt><dd>査読を受ける前に、公開された論文の原稿。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、OpenAI が2026年10月21日に公表した記事「Using thousands of AI agents to uncover new leads in biological data」と、その記事が示す論文（bioRxiv、2026年10月16日掲載のプレプリント「Distributed AI agents enable comprehensive discovery of biological insights at scale」）をもとに、独自に整理したものです。</p>
+<p>数字は記事と論文が示したもので、再現していません。論文の細部（補足資料、各図の詳細）は扱っていません。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（しくみ、結果、手がかりの例、検証の工夫、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
