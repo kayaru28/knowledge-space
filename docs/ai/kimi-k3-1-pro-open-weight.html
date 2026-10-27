@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Moonshot AI が2026年10月に発表した Kimi K3.1 Pro について、公式ブログから、性能の報告、サイバー攻撃の能力を抑えるために学習データから関連の内容を除いた取り組み（正答率90.5%が81.0%に）、重みの公開が11月4日までの予定でまだ公開されていない点を整理する。">
+<title>Moonshot AI の Kimi K3.1 Pro：3兆パラメータ級のオープンウェイトモデルが、攻撃関連のデータを学習から除いた方法と、重みはまだ未公開という状況 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Moonshot AI の Kimi K3.1 Pro：3兆パラメータ級のオープンウェイトモデルが、攻撃関連のデータを学習から除いた方法と、重みはまだ未公開という状況</h1><p class="summary">Moonshot AI が2026年10月に発表した Kimi K3.1 Pro について、公式ブログから、性能の報告、サイバー攻撃の能力を抑えるために学習データから関連の内容を除いた取り組み（正答率90.5%が81.0%に）、重みの公開が11月4日までの予定でまだ公開されていない点を整理する。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>中国の Moonshot AI は、3兆パラメータ級のオープンウェイトモデル「Kimi K3.1 Pro」を、2026年10月下旬に発表しました。100万トークンの文脈に対応し、コーディングや金融の調査などの作業を得意とする、と公式のブログは述べています。</p>
+<p>注目点は2つあります。1つは、<strong>モデルの重みの公開は、まだ</strong>だということです。公式ブログは「11月4日までに公開する」と書いていて、今はサービスとAPIで使える段階です。もう1つは、<strong>サイバー攻撃に関する能力を抑えるため、学習データから攻撃関連の内容を取り除いた</strong>と、数字つきで説明していることです。ただし、すべて自社の評価です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>兆</small></p><p class="stat-label">パラメータ級（K3.1 シリーズの最初のモデル）</p></div>
+<div class="stat"><p class="stat-value">100<small>万</small></p><p class="stat-label">対応する文脈の長さ（トークン）</p></div>
+<div class="stat"><p class="stat-value">90.5<small>%</small> → 81.0<small>%</small></p><p class="stat-label">攻撃（脆弱性の悪用）の課題の正答率（pass@3）。攻撃関連のデータを除かない場合 → 除いた最終版</p></div>
+<div class="stat"><p class="stat-value">11<small>月</small>4<small>日まで</small></p><p class="stat-label">モデルの重みの公開の予定（まだ公開されていない）</p></div>
+</div>
+
+<h2>何が発表されたのか</h2>
+
+<ul>
+<li>モデル：Kimi K3.1 Pro。K3 に、より多い計算量でポストトレーニング（強化学習など）を施したもの。あわせて、2〜3倍の速さをうたう「K3.1 Pro Highspeed」も出した。</li>
+<li>使える場所：発表の時点で、Kimi.ai、モバイルアプリ、Kimi Work、Kimi Code、Kimi API。企業向けでは、管理者が有効にするまで使えない設定が初期値。</li>
+<li>重み：「11月4日までに公開する」と書かれている。つまり、重みを手元で動かせるオープンウェイトの状態には、まだなっていない。</li>
+<li>訓練：数百の分野をまたぐ強化学習を安定して行うため、強化学習の枠組み、長い文脈の推論、サンドボックス、環境の品質確認などを作り込んだ、と説明している。</li>
+</ul>
+
+<h2>性能（自社の報告）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Moonshot AI が示した評価の例（すべて自社の報告。Claude Code の実行環境で評価したものが多い）</caption>
+<thead><tr><th>評価</th><th>Kimi K3.1 Pro</th><th>比較（公式ブログが示した値）</th></tr></thead>
+<tbody>
+<tr><td>Terminal-Bench 4.0（端末での課題を解くコーディングエージェント）</td><td>65.7%</td><td>Claude Opus 5.5 が66.4%、GPT-6 Astra が58.2%</td></tr>
+<tr><td>BenchCAD（複数方向の画像から CAD のコードで3D形状を再現。道具あり）</td><td>92.7%</td><td>Claude Opus 5.5 が96.2%、GPT-6 Astra が95.9%</td></tr>
+<tr><td>OfficeQA Pro v2（金融の資料の分析）</td><td>64.4</td><td>「最高水準」と説明</td></tr>
+<tr><td>Kimi Code Bench 3.0 Long-horizon（社内のコーディング評価）</td><td>61.2%</td><td>K3 は55.95%</td></tr>
+<tr><td>Kimi Hallu Bench Hard（社内。事実の誤りを引き出す問題）</td><td>主張単位の誤り率 8.3%</td><td>K3 は23.4%（日常の誤り率を表すものではない、と注記）</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>公式ブログの総括は「コーディング、エージェント、知識の評価で、最も強い非公開モデルに並ぶか近づく」。数字の上では、Opus 5.5 にわずかに届かない項目もある。</li>
+<li>評価の条件：推論の強さは最大、温度1.0などの設定。比較の値は、各社のブログや公式の順位表から最大の値を取った、と脚注にある。一部の評価では、答えをネットで引いた実行を0点にするなどの条件を、同社が加えている。</li>
+</ul>
+
+<h2>サイバー攻撃の能力をどう扱ったか</h2>
+
+<ul>
+<li>観察：ポストトレーニングを増やすほど、脆弱性を見つける能力が着実に上がった。原因をたどると、サイバー関連の内容が、一般の中間学習のデータに混ざり、強化学習の課題にも含まれていた。</li>
+<li>対策：オープンウェイトの公開版では、中間学習と強化学習の両方の段階から、サイバー関連のデータを特定して取り除いた。一般的なコーディングの課題は残した。</li>
+<li>評価：専門家が作った、ソースコードにもとづく脆弱性の発見と悪用の課題（xdev-bench-hard。Linux カーネル、Node.js、JavaScriptCore、Exim、VirGL などの最近公表された脆弱性を、保護機能を有効にして再現）で、攻撃を成功させる課題の割合（pass@3）を測った。</li>
+<li>結果：データを除かないチェックポイントは90.5%、最終版は81.0%。同社は、データの除去が、能力を意味のある量だけ下げた、と説明している。一方で、前のモデルからは大きく伸びており、コーディングや長い作業での強さは、攻撃の課題にも波及する、とも認めている。</li>
+<li>位置づけ：K3.1 Pro の攻撃能力は、少なくとも3か月前から公開されている最先端の非公開モデルより低い、と説明している。</li>
+<li>方針（オープンウェイトの原則）：1. 攻撃能力の最先端を押し上げる重みは公開しない。2. 一方で、オープンウェイトで使える攻撃能力は、段階的に引き上げていく。防御に使える、二重用途の能力を、差別なく使えるようにするほうが、自社で保守するコード（古いシステムを含む）を点検するチームが増え、ソフトウェア全体が安全になる、という考え方。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>重みは未公開：日本語の報道には「公開」と書かれたものがあるが、公式ブログでは、サービスとAPIは今日から、重みは11月4日までに、と書かれている。重みが出るまで、第三者が手元で動かして確かめることはできない。</li>
+<li>すべて自社の評価：ベンチマークの多くは、自社が実行して集めた値や、社内用の評価。サイバーの評価も、自社が作った課題で、結果は自社の報告。独立した再現は、重みの公開後に出てくる。</li>
+<li>除去の効果：データの除去で正答率が90.5%から81.0%に下がったが、81.0%は低い値ではない。同社も、前のモデルより大きく伸びたと述べている。オープンウェイトは公開後に追加の学習が可能で、公開版の制約が後からどこまで保たれるかは、この資料からは分からない（筆者の整理）。</li>
+<li>比較の相手：Claude Opus 5.5 などとの比較は、Moonshot AI が選び、条件をそろえて測った値。各社の公式の評価の条件とは違う場合がある。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>オープンウェイトのモデルが、攻撃能力を理由に、学習データの段階から調整されている、という具体的な数字つきの事例。モデルを公開する側が、能力の上限をどう決めるか、という議論の材料になる。</li>
+<li>手元で動かせるモデルの攻撃能力は、防御にも攻撃にも使える。Moonshot AI は、防御側の利益を理由に、段階的な引き上げを方針にしている。この判断が妥当かは、公開後の評価で分かる。</li>
+<li>重みの公開と、第三者の評価がそろってから、この記事の数字を見直すのがよい。</li>
+</ul>
+
+<dl class="terms">
+<dt>オープンウェイト</dt><dd>モデルの重み（学習の結果の数値）を公開して、誰でも手元で動かせるようにすること。ソースコードを全部公開する「オープンソース」とは別。</dd>
+<dt>パラメータ</dt><dd>モデルの大きさを表す数。3兆は、パラメータの数が3兆個のこと。</dd>
+<dt>ポストトレーニング</dt><dd>基本の学習のあとに、強化学習などでモデルを調整する段階。</dd>
+<dt>pass@3</dt><dd>同じ課題を3回試して、1回でも成功すれば成功とみなす割合。</dd>
+<dt>Terminal-Bench</dt><dd>端末（コマンド）の操作で課題を解く、コーディングエージェントの評価。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、Moonshot AI の公式ブログ「Kimi K3.1 Pro Tech Blog」をもとに、独自に整理したものです。</p>
+<p>数字は公式ブログが示したもので、再現していません。重みが公開される前の情報なので、公開後に見直します。この記事をまとめた筆者の道具には、比較対象に挙がる Claude と同じ会社（Anthropic）の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（発表内容、性能の報告、サイバー攻撃の能力の扱い、重みが未公開である点、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

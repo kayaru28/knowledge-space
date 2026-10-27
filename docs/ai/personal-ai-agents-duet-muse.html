@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月に出た、Anthropic の Claude Duet、Meta の Muse、OpenAI の GPT-6.1 Terra について、各社の公式資料から、できること、人が承認する場面、認証情報と情報の扱い、提供の範囲を整理し、読むときの注意をまとめる。">
+<title>利用者に代わって動く AI エージェントのアプリが相次ぐ：Claude Duet と Meta の Muse、そして GPT-6.1 Terra | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>利用者に代わって動く AI エージェントのアプリが相次ぐ：Claude Duet と Meta の Muse、そして GPT-6.1 Terra</h1><p class="summary">2026年10月に出た、Anthropic の Claude Duet、Meta の Muse、OpenAI の GPT-6.1 Terra について、各社の公式資料から、できること、人が承認する場面、認証情報と情報の扱い、提供の範囲を整理し、読むときの注意をまとめる。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-27</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月、利用者に代わって<strong>自分で作業を進める AI エージェントのアプリ</strong>が続けて出ました。Anthropic の「Claude Duet」（10月21日、米国で研究プレビュー）と、Meta の「Muse」（9月に北米で開始、10月23日に日本で提供開始）です。OpenAI は10月26日に、画面操作が得意で安い「GPT-6.1 Terra」を出しました。</p>
+<p>どれも、メールの送信や買い物のような<strong>重要な操作の前に、本人の承認を求める</strong>と説明し、パスワードや支払い情報をモデルに見せない設計を挙げています。この記事は、各社の公式資料から、何ができて、どこで人が判断するのかを並べます。評価はすべて各社自身のもので、独立した検証は確認していません。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">6,000<small>以上</small></p><p class="stat-label">Claude Duet が使えるコネクタとプラグインの数（Claude Marketplace）</p></div>
+<div class="stat"><p class="stat-value">10<small>月</small>23<small>日</small></p><p class="stat-label">Muse の日本での提供開始日（北米では9月に先行）</p></div>
+<div class="stat"><p class="stat-value">50<small>%安</small></p><p class="stat-label">GPT-6.1 Terra の API 標準価格が、GPT-5.6 Terra や GPT-6.1 Sol より安い割合</p></div>
+<div class="stat"><p class="stat-value">米国<small>のみ</small></p><p class="stat-label">Claude Duet の対象（Pro・Max 契約者。順番待ち登録）</p></div>
+</div>
+
+<h2>2つのアプリを並べる</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Claude Duet と Muse の公式資料から（2026年10月27日時点。各社の説明）</caption>
+<thead><tr><th>項目</th><th>Claude Duet（Anthropic）</th><th>Muse（Meta）</th></tr></thead>
+<tbody>
+<tr><td>状況</td><td>研究プレビュー。10月21日に公開。米国の Pro・Max 契約者向けで、順番待ちの登録。iOS・Android・claude.ai</td><td>9月に北米で開始。10月23日に日本で提供開始（北米以外では初）。iOS・Android・muse.ai。多くの基本機能は無料で、サブスクリプションもある</td></tr>
+<tr><td>何をするか</td><td>毎朝、接続したアプリの重要事項を短くまとめる。日中は見守り、注意が要るときだけ知らせる。会議の設定からダッシュボード作成、予測資料まで、頼まれた作業を進める。接続したアカウントは数時間おきに確認する（常時ではない）</td><td>メールの送信や旅行の予約のほか、より大きな目標の計画づくりと実行。ブラウザを開き、フォームに入力するなどの操作も行う。アプリを閉じても作業を続け、変化があったときや承認が必要なときに通知する。過去の会話を記憶する</td></tr>
+<tr><td>動く場所</td><td>クラウド上の専用コンピューター（仮想マシン）。独自のブラウザは、さらに別の専用の仮想マシン</td><td>利用者ごとの専用の仮想マシン「Muse Secure VM」。接続したサービスのデータや認証情報を保管</td></tr>
+<tr><td>人の承認</td><td>メッセージの送信、支払い、署名、削除の前に、操作・宛先・内容（全宛先）を示して承認を待つ。証券の売買や口座間の送金など、承認があっても許さない操作もある。支払いなどは「今後は聞かない」の設定が使えない</td><td>メールの送信や商品の購入など、重要な操作の前に本人に確認する。操作の履歴（実行したもの、今後予定のもの）を見られる</td></tr>
+<tr><td>認証情報</td><td>パスワード、Cookie、サインインのトークンをモデルが見ない設計。パスワードは、利用者がアプリ内の入力欄に打ち、一度きりの鍵で暗号化して、ブラウザの機械にだけ渡す</td><td>パスワードや支払い方法を確認できない、と説明</td></tr>
+<tr><td>別の目での確認</td><td>操作が意図に沿うかを調べる自動の確認（Claude Code の自動モードの分類器を拡張）を、モデルの外で動かす。送る前の文面には、機微な情報を調べる別の分類器をかける</td><td>Muse とは独立した「Sentinel」エージェントが、インターネットへのアクセスを管理する</td></tr>
+<tr><td>情報の扱い</td><td>クレジットカードや銀行の口座番号、公的な身分証の番号などは、利用者が頼んでも共有しない。健康や家計などは、利用者の明示的な同意がある場合だけ共有</td><td>会話を Meta の AI モデルの学習に使わせないオプトアウトがある。会話や仮想マシン内のデータは、Meta の広告システムと共有しない</td></tr>
+<tr><td>つながるサービス</td><td>6,000以上のコネクタとプラグイン。Gmail、Slack、QuickBooks、Stripe、Gusto、Docusign、HubSpot、Canva、Shopify など。購入には Stripe の Link（使い切りのカード）や Shop Pay を使う</td><td>Gmail、Google カレンダー、Instagram、Stripe、Shopify、Trip.com、Agoda、Klook など。日本では、メルカリ、マネーフォワード ME、チケットぴあと連携を進める</td></tr>
+<tr><td>得意と限界</td><td>仕事の用事を想定して作られている。旅行チケットの手配のような個人の用事は弱く、ブラウザの画面はまだ見せられない。状況を読み違えたり、緊急度を誤ることがある、と書いている</td><td>日常の買い物、旅行、予定管理を想定。高度な音声モードや、独自のメールアドレスなどの新機能は、日本での提供状況を別途案内する、としている</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Claude Duet：先回りして知らせる</h2>
+
+<ul>
+<li>Anthropic は、Claude Duet を「先回りするエージェント」と呼ぶ。Claude のアプリは、利用者が開いてから一緒に作業するのに対し、Duet は、利用者のところに来て、何が注意を要するかを知らせる。</li>
+<li>対象は、手が回らない専門職や、小さな事業の経営者。Claude Opus 5.5 を土台に、何が自分の判断を要し、何が後でよく、いつ先に確認するかを決めることを重視している。</li>
+<li>承認の頻度の設計：承認が多すぎると、利用者が内容を見ずに押す「承認疲れ」が起きる、と同社自身が課題に挙げている。頻度は調整を続ける。</li>
+<li>検証：社内の評価、赤チーム（攻撃側の試験）、外部会社による侵入試験（ソースコードにもとづく。クラウドのブラウザとサインイン画面を対象にした追加の試験が進行中）を行い、同社の公開のバグ報奨金の対象にも入れた。</li>
+<li>ブラウザの識別：Duet のブラウザは、固有の User-Agent を付けて、公開の IP アドレスを公表し、サイト側が識別して扱えるようにしている。公開前に、大きなサイトにも連絡して、訪問を拒否できるようにし、拒否したサイトもあった。</li>
+</ul>
+
+<h2>Muse：Meta の説明</h2>
+
+<ul>
+<li>Meta は、Muse を「誰もが簡単に使えるように設計された、世界初のパーソナル AI エージェント」と説明している。日本の発表は、安全性とプライバシーを重視している点を強調した。</li>
+<li>Meta の決算発表（10月21日）で、最高経営責任者は「Muse と、最初の最先端モデルである Muse Wonder を出した」と述べている。利用者数などの数字は、決算のリリース本文には載っていない。</li>
+<li>今回読んだのは、日本での提供開始の発表と決算のリリース。安全性の詳細は、9月の発表記事に載っているとして、日本の発表は参照しているが、この記事ではその記事を読んでいない。</li>
+</ul>
+
+<h2>エージェントを動かす側のモデル：GPT-6.1 Terra</h2>
+
+<ul>
+<li>OpenAI は10月26日に、速くて効率のよいモデル「GPT-6.1 Terra」を出した。画面を読む力と、精密な画面操作（コンピューター利用）、自然な文章を組み合わせ、提案書の作成、技術図面の解釈、フォームの入力、動画の編集のような仕事を想定している。</li>
+<li>価格：API の標準価格は、100万トークンあたり、入力1ドル、キャッシュされた入力0.05ドル、出力5ドル。GPT-5.6 Terra や GPT-6.1 Sol より50%安い、と説明している。</li>
+<li>OpenAI の評価（自社の報告）：専門的な課題の集まり Agents' Last Exam で、中程度の推論の強さで、GPT-5.6 Terra より15ポイント高く、費用は約3分の1。トークン単価が10分の1で、GPT-6 Astra と同等。最大の推論の強さでは、Claude Opus 5.5 より、トークン効率が3倍超で、トークン単価が4分の1、1課題あたりの費用が約9分の1、と比較している。</li>
+<li>事実の誤り（社内の評価）：誤りを引き出す問題での誤り率は、低い推論の強さで53.6%から16.7%に、最大の強さでは4.3%に下がった。Terminal-Bench 4.0 は50.3%で、GPT-5.6 Terra の公表値21.5%の2倍超。複雑なコーディングには、GPT-6.1 Sol と GPT-6 Astra のほうがよい、と案内している。</li>
+<li>安全：OpenAI の備えの枠組みで、サイバーセキュリティが「Critical」の水準に達している、と明記している。プロンプトインジェクションへの耐性も、社内の試験で強かったと述べている。</li>
+<li>提供：ChatGPT Work と Codex で、Plus、Pro、Enterprise、Edu 向けに今日から。API では gpt-6.1-terra。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>各社の自己申告：安全性の設計も、性能の比較も、各社自身の公表。承認や分類器が、実際にどの程度、誤りや悪用を防げるかは、独立した評価が必要で、ここでは確認していない。</li>
+<li>提供の範囲が違う：Duet は米国の Pro・Max の順番待ち、Muse は日本を含む提供、Terra は ChatGPT とAPI。同じ条件では比べられない。</li>
+<li>表の比較の限界：各社が書いた項目を並べたもの。書かれていないことは「ない」ではなく「この資料では分からない」。例えば、Duet の広告への利用、Muse の承認の頻度の設計は、読んだ資料に書かれていない。</li>
+<li>Muse の安全性の詳細（9月の発表）は、この記事では未確認。Meta の日本向けの発表に書かれた範囲だけを載せている。</li>
+<li>筆者の道具との関係：この記事をまとめた筆者の道具には、Claude Duet の提供元と同じ会社（Anthropic）の AI が含まれる。Duet の記述は、同社の公開資料にもとづく。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>3つとも、「何を任せ、どこで人が止めるか」の設計が中心にある。Duet と Muse は、重要な操作の前に承認を求め、認証情報をモデルから隔てる。違いは、細部（どの操作を承認の対象にするか、別の確認を誰が行うか、情報の共有の規則）にある。</li>
+<li>承認の頻度は、安全と使いやすさの綱引きになる。Duet の資料は、承認疲れを認めている。承認を細かくするほど安全になるわけではない。</li>
+<li>エージェントが認証情報を持たない設計は、フィッシングへの強さを生む一方で、サインイン画面そのものが、なりすましの標的になる。Duet の資料は、サインインの入力欄は、アプリ内にだけ現れ、リンクやメールでは来ない、と利用者向けの注意を書いている。</li>
+</ul>
+
+<dl class="terms">
+<dt>AI エージェント</dt><dd>質問に答えるだけでなく、道具やアプリを使って、自分で作業を進める AI。</dd>
+<dt>研究プレビュー</dt><dd>正式な提供の前に、利用者の反応を見ながら改善する、限定的な公開。</dd>
+<dt>プロンプトインジェクション</dt><dd>AI が読む文章に隠した指示で、AI の動きを乗っ取ろうとする攻撃。</dd>
+<dt>コネクタ</dt><dd>AI が外部のアプリやサービスにつながるための仕組み。</dd>
+<dt>承認疲れ</dt><dd>承認の依頼が多すぎて、内容を見ずに押してしまう状態。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月27日時点の情報です。内容は、Anthropic の Claude Duet の製品ページと発表記事（10月21日）、安全性・プライバシー・セキュリティの記事（10月23日）、Meta の Muse の日本での提供開始の発表（10月23日）と第3四半期決算のリリース（10月21日）、OpenAI の GPT-6.1 Terra の記事（10月26日）をもとに、独自に整理したものです。</p>
+<p>数字や評価は各社が示したもので、再現していません。Muse の利用者数などの、決算の電話会見で語られたとされる内容は、原本の資料で確認できなかったため載せていません。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>初回公開（Claude Duet と Muse の比較、GPT-6.1 Terra、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
