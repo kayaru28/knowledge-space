@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月26日に米国証券取引委員会へ提出された Anthropic の S-1 から、売上と費用、赤字の内訳、顧客数の推移、公益法人と長期利益信託による議決権の仕組み、リスク要因での AI の危険性の書き方、IPO価格や契約総額など空欄のままの項目を、原本をもとに整理する。">
+<title>Anthropic の株式公開の目論見書（S-1）を読む：半年で163億ドルの売上、巨額の赤字の中身、創業者と信託が握る議決権、そして空欄のままの項目 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Anthropic の株式公開の目論見書（S-1）を読む：半年で163億ドルの売上、巨額の赤字の中身、創業者と信託が握る議決権、そして空欄のままの項目</h1><p class="summary">2026年10月26日に米国証券取引委員会へ提出された Anthropic の S-1 から、売上と費用、赤字の内訳、顧客数の推移、公益法人と長期利益信託による議決権の仕組み、リスク要因での AI の危険性の書き方、IPO価格や契約総額など空欄のままの項目を、原本をもとに整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Anthropic は2026年10月26日、株式公開（IPO）の登録届出書「S-1」を、米国証券取引委員会（SEC）に提出しました。Nasdaq に「ANT」の記号で上場する計画で、書類の本体が公開されたことで、売上や費用、株式の仕組みが原本で読めるようになりました。</p>
+<p>数字で目立つのは、<strong>2026年上半期の売上が163億ドル</strong>（前年同期は11.6億ドル）と、急に伸びたことです。一方で、<strong>最終損益は上半期で807億ドルの赤字</strong>です。ただし、そのほとんどは事業の損失ではなく、転換社債などの評価額の増加という会計上の項目です。なお、IPOの価格、株数、計算資源の契約の総額などは、この版では<strong>空欄のまま</strong>です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">163<small>億ドル</small></p><p class="stat-label">2026年上半期の売上（前年同期は11.6億ドル）</p></div>
+<div class="stat"><p class="stat-value">11,900<small>社超</small></p><p class="stat-label">年間の売上が10万ドル以上の顧客（1年前は950社超）</p></div>
+<div class="stat"><p class="stat-value">90<small>%超</small></p><p class="stat-label">2026年9月の自社のコードへの貢献のうち、Claude が書いた割合</p></div>
+<div class="stat"><p class="stat-value">50.1<small>%</small></p><p class="stat-label">創業者の有限責任会社が持つ1株（Class F）の議決権の割合</p></div>
+</div>
+
+<h2>提出の経緯</h2>
+
+<ul>
+<li>2026年6月1日：Anthropic が、登録届出書の草案を非公開で SEC に提出したと発表した。IPO は、市場の状況などに左右され、株数と価格はまだ決まっていない、と述べている。</li>
+<li>2026年10月26日：公開の版（S-1）が提出された。表紙には「この目論見書は未完成で、変更されることがある」と書かれ、株数と価格帯は空欄になっている。</li>
+<li>上場の計画：Class A 普通株を、Nasdaq Global Select Market に「ANT」の記号で上場する。会社が新たに売る株と、既存の株主が売る株の両方がある。株主が売る分の代金は、会社には入らない。</li>
+</ul>
+
+<h2>売上と費用</h2>
+
+<div class="table-wrap">
+<table>
+<caption>S-1 の要約の損益（単位：百万ドル。2026年上半期までは監査前の数字を含む）</caption>
+<thead><tr><th>項目</th><th>2023年</th><th>2024年</th><th>2025年</th><th>2025年上半期</th><th>2026年上半期</th></tr></thead>
+<tbody>
+<tr><td>売上</td><td>41</td><td>386</td><td>4,585</td><td>1,163</td><td>16,286</td></tr>
+<tr><td>計算資源とインフラの費用</td><td>433</td><td>2,522</td><td>7,326</td><td>2,334</td><td>8,945</td></tr>
+<tr><td>人件費</td><td>95</td><td>454</td><td>1,839</td><td>538</td><td>3,152</td></tr>
+<tr><td>営業損失</td><td>551</td><td>2,980</td><td>8,060</td><td>2,135</td><td>693</td></tr>
+<tr><td>最終損失</td><td>1,531</td><td>8,309</td><td>41,965</td><td>12,969</td><td>80,748</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>売上の伸び：2025年は前年の約12倍。2026年上半期だけで、2025年の通年の3倍を超えた。2026年4〜6月は前年同期より1,368%の増加で、同じ期間の計算資源とインフラの費用の増加（300%）を大きく上回った、と書いている。</li>
+<li>営業損失：2025年の80.6億ドルから、2026年上半期は6.9億ドルに縮んだ。会社が自社で定義した「調整後の営業利益」（営業損失から、株式報酬、現金を伴わない寄付、Bartz の和解金を除いた非GAAP指標）は、上半期で16億ドルの黒字。前年同期は18億ドルの赤字だった。</li>
+<li>2025年の費用には、著作権侵害の集団訴訟（Bartz）の和解金15億ドルが含まれる。裁判所が2026年7月に承認した。ほかに音楽出版社などからの訴訟が係属している、と書かれている。</li>
+</ul>
+
+<h2>最終損失807億ドルの中身</h2>
+
+<ul>
+<li>最終損失の大半は、「転換社債・デリバティブ負債・SAFE（将来株式の合意）の公正価値の変動」で、2026年上半期は724億ドル。注記は、企業価値が上がったため、これらの評価額が増えたことが主な理由だと説明している。</li>
+<li>つまり、評価額の増加が、費用として計上された形。現金が出ていくものではない。営業損失（6.9億ドル）とは、性質が違う。</li>
+<li>貸借対照表（2026年6月30日）：現金と短期の投資は合わせて1,317億ドル。これまでに調達した資金は累計1,411億ドル。優先株式は1,575億ドルで、株主資本の外に置かれているため、株主資本は1,276億ドルのマイナスになっている。上場時に優先株式は普通株に転換される予定。</li>
+</ul>
+
+<h2>顧客と事業の数字</h2>
+
+<div class="table-wrap">
+<table>
+<caption>年間の売上（直近12か月）が10万ドル以上の顧客の数</caption>
+<thead><tr><th>時点</th><th>顧客の数</th></tr></thead>
+<tbody>
+<tr><td>2023年12月末</td><td>約20社</td></tr>
+<tr><td>2024年12月末</td><td>約200社</td></tr>
+<tr><td>2025年12月末</td><td>約1,500社</td></tr>
+<tr><td>2026年9月末</td><td>11,900社超（うち100万ドル以上が1,900社超、1,000万ドル以上が約250社）</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>既存顧客の拡大：「純収益維持率」は2026年9月30日時点で約900%と書いている。同じ顧客が、1年前の約9倍を使っている計算になる。</li>
+<li>顧客の集中：2026年1〜9月に、売上の10%を超える顧客は1社もない。2025年には、12%を占める顧客が1社あった。直近の四半期では、上位5社を除く顧客からの売上が約79%。</li>
+<li>従業員あたりの売上：直近12か月で660万ドル超（1年前は140万ドル）。売上が約1,200%増えた間に、従業員は約170%の増加だった。</li>
+<li>自社のコード：2026年9月の自社のコードへの貢献の90%超を Claude が書いた。エンジニア1人あたりの1日のコード量は、2024年の通年の45倍超。</li>
+<li>計算資源：AWS の Trainium、Google の TPU、NVIDIA の GPU、AMD の GPU を、独自の仕組みで使い分けている。Claude は AWS、Google Cloud、Azure の3つで使える。</li>
+</ul>
+
+<h2>議決権の仕組み</h2>
+
+<div class="table-wrap">
+<table>
+<caption>S-1 が示した普通株の種類（上場の完了後）</caption>
+<thead><tr><th>種類</th><th>持つ主体</th><th>議決権</th></tr></thead>
+<tbody>
+<tr><td>Class A</td><td>一般の株主（今回の上場の対象）</td><td>1株につき1票</td></tr>
+<tr><td>Class N</td><td>公益のための基金など</td><td>なし（法律で必要な場合のみ1票）</td></tr>
+<tr><td>Class T</td><td>長期利益信託（LTBT）</td><td>取締役の過半数を選ぶ・解任する権限</td></tr>
+<tr><td>Class F</td><td>共同創業者7人の有限責任会社（1株）</td><td>議決権全体の50.1%</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>公益法人：Anthropic はデラウェア州の公益法人（PBC）。取締役は、株主の利益、事業の影響を受ける人々の利益、「高度な AI を責任をもって開発し維持して、人類の長期の利益に資する」という目的を、両立させる義務を負う。</li>
+<li>長期利益信託：利害のない5人の受託者が、AI の安全、国家安全保障、公共政策、社会的事業の専門性をもつ。日々の経営や戦略は決めないが、取締役の過半数を選び、解任できる。</li>
+<li>創業者：上場の直前に Class F の1株を、共同創業者7人の有限責任会社に発行する。この1株が、議決権全体の50.1%を持つ。信託と創業者の有限責任会社は、株主間契約で、取締役の構成と指名について合意する。</li>
+<li>支配会社の扱い：信託が取締役の過半数を選べるため、Nasdaq の規則上の「支配会社」にあたる。ただし、指名とガバナンスの委員会を除いて、この例外は使わない見込みと書いている。</li>
+<li>公益の基金：2026年6月30日の完全希薄化後の株式の5%（8億4,684万960株）の Class N を、100%子会社の基金に渡した。さらに、株価が前のマイルストーンから50%上がるたびに、最大2%の追加を、取締役会の裁量で渡せる枠組みを承認した。共同創業者は、個人の持ち株の80%を慈善に使うと誓約している。</li>
+</ul>
+
+<h2>リスク要因での AI の危険性の書き方</h2>
+
+<ul>
+<li>書類には、「十分に高度な AI は、適切な安全策や監督がなければ、人類にとって壊滅的または存亡にかかわるリスクをもたらしうる、という懸念が、社内からも、ほかの研究者、規制当局、政策担当者、業界の関係者からも示されている」という趣旨の記述がある。</li>
+<li>続けて、「自社のモデルが、自社の研究のペースを上げていることを観察している。AI の研究開発が大きく自動化されるほど、これらのリスクは高まる」と書いている。</li>
+<li>別のリスク要因として、報道や世間の議論で「AI が仕事を奪う」「悪用される」「存亡のリスクがある」という見方が繰り返されていて、同社がその焦点のひとつだと述べる。「その懸念が正しいか、自社のモデルに当てはまるかにかかわらず」評判に影響しうる、という書き方をしている。</li>
+<li>エージェント型の AI については、ユーザーに代わって、外部のシステムとやり取りし、コードを実行し、取引を完了するなど、限られた人の監督で自律的に動くことで、害を及ぼすリスクが増えうると説明している。</li>
+<li>米国の複数の州の司法長官が、業界の別の会社の AI の安全性について調査を発表したことにも触れている。</li>
+</ul>
+
+<h2>まだ空欄の項目</h2>
+
+<ul>
+<li>IPO の価格帯、売り出す株数（会社分と株主分）、上場後の資本の見込み</li>
+<li>計算資源などの購入契約と、リースの総額。大半が2031年から2045年に発生する見込みと書いているが、金額は空欄</li>
+<li>2026年10月31日時点の年換算の売上（Run-Rate Revenue）</li>
+<li>直近12か月の顧客別の売上の割合、一部の追加の数字</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>未完成の書類：「予備目論見書」で、SEC の審査の途中。株数や価格など、空欄が埋まる前に内容が変わる可能性がある。この記事は、2026年10月29日時点で読める版にもとづく。</li>
+<li>最終損益は読み方に注意：807億ドルの赤字は、評価額の増加による会計上の項目が大半。営業損失は6.9億ドルで、これは別の数字。</li>
+<li>「調整後」は自社の定義：調整後の営業利益は、会社が定義した非GAAP指標。株式報酬（上半期で22億ドル）などを除くため、通常の会計基準の営業損失（6.9億ドル）とは違う。</li>
+<li>「9割」の範囲：Claude が書いたのは「自社のコードへの貢献」の割合で、2026年9月のもの。業界全体の話でも、人間の確認がないという意味でもない。</li>
+<li>危険性の書き方：リスク要因は、投資家への開示として書く部分。「懸念が示されている」という書き方で、会社自身が断定しているわけではない。</li>
+<li>本稿は筆者の整理であり、投資の助言ではない。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>S-1</dt><dd>米国で株式を新規に公開するときに、SEC に提出する登録届出書。会社の事業、財務、リスク、株式の仕組みなどを載せる。</dd>
+<dt>公益法人（PBC）</dt><dd>株主の利益だけでなく、定款で定めた公益の目的も考えて経営することを、法律で求められる会社の形。</dd>
+<dt>長期利益信託（LTBT）</dt><dd>株主としての利害をもたない受託者が、取締役の過半数を選ぶ権限をもつ仕組み。</dd>
+<dt>転換社債・SAFE</dt><dd>将来、株式に換えられる資金調達の方法。会社の評価が上がると、それらの評価額も増え、会計上の費用になる。</dd>
+<dt>純収益維持率</dt><dd>同じ顧客の売上が、基準の時点と比べて、どれだけ増減したかを表す割合。900%は約9倍。</dd>
+<dt>調整後の営業利益</dt><dd>会社が定義した、通常の会計基準にない指標。営業損失から、株式報酬、現金を伴わない寄付、和解金を除いて計算する。</dd>
+<dt>支配会社</dt><dd>取締役を選ぶ議決権の過半数を、特定の主体が握る会社。Nasdaq の統治の規則の一部を免れる。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Anthropic が SEC に提出した S-1（2026年10月26日付）と、Anthropic の公式発表をもとに、独自に整理したものです。</p>
+<p>数字は書類に記載されたもので、再計算や検証はしていません。未完成の書類なので、修正版が出たときに見直します。この記事をまとめた筆者の道具には、題材の会社（Anthropic）の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（提出の経緯、売上と費用、赤字の内訳、顧客数、ガバナンス、リスク要因の書き方、空欄の項目、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

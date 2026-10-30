@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Palo Alto Networks の Unit 42 が2026年8月3日に公表した研究から、Chrome（Windows）と Google のクラウド認証機構を使う同期パスキーに対する3つの攻撃（Pass-ta-key、Silver、Golden）の仕組み、成立する条件、確認された事業者の不備、Google の対応、提案された対策を整理する。">
+<title>Googleの同期パスキーを狙う3つの攻撃「Pass-ta-key」：暗号は破られていないが、端末がマルウェアに侵されると本人確認の前提が崩れる | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>Googleの同期パスキーを狙う3つの攻撃「Pass-ta-key」：暗号は破られていないが、端末がマルウェアに侵されると本人確認の前提が崩れる</h1><p class="summary">Palo Alto Networks の Unit 42 が2026年8月3日に公表した研究から、Chrome（Windows）と Google のクラウド認証機構を使う同期パスキーに対する3つの攻撃（Pass-ta-key、Silver、Golden）の仕組み、成立する条件、確認された事業者の不備、Google の対応、提案された対策を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Palo Alto Networks の研究部門 Unit 42 は2026年8月3日、<strong>Google の同期パスキーを狙う3つの攻撃</strong>（Pass-ta-key、Silver、Golden）を公表しました。いずれも、<strong>利用者の Windows 端末にマルウェアがすでに入っていること</strong>が前提です。</p>
+<p>パスキーの暗号を破るものではなく、端末の登録・復旧・信頼確認の仕組みを悪用して、<strong>利用者の操作なしに認証を成立させたり、同期パスキーを守る鍵を取り出したり</strong>します。パスキー自体の価値を否定する研究ではない、と原文も述べています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>種類</small></p><p class="stat-label">公表された攻撃（Pass-ta-key／Silver／Golden）</p></div>
+<div class="stat"><p class="stat-value">32<small>バイト</small></p><p class="stat-label">同期パスキーをまとめて守るマスター鍵（SDS）の大きさ</p></div>
+<div class="stat"><p class="stat-value">1<small>ビット</small></p><p class="stat-label">利用者検証の有無を示す UV フラグ。事業者の検証の甘さが突かれた</p></div>
+</div>
+
+<h2>対象と前提</h2>
+
+<ul>
+<li>対象：Windows の Chrome に入った Google Password Manager、TPM のある端末。Google のクラウド認証機構（Cloud Authenticator）を使う方式です。</li>
+<li>前提：マルウェアが端末にすでにあります。昇格した権限は要らず、通常のユーザー権限で足ります。</li>
+<li>iOS と Android の Google Password Manager は、クラウド認証機構を使わず、別の仕組みだと原文は説明しています。</li>
+<li>Unit 42 は、責任ある開示をしたと述べています。</li>
+</ul>
+
+<h2>3つの攻撃</h2>
+
+<div class="cards">
+<div class="card">
+<h3>Pass-ta-key：端末のなりすまし</h3>
+<p>Chrome が TPM に結びつけて保存している端末識別鍵を、マルウェアが取り出し、Windows の標準の暗号 API で署名に使います。クラウド認証機構には「信頼できる端末からの要求」に見え、正当な認証結果が返ります。利用者の同意、端末のロック解除、生体認証なしでログインできます。</p>
+</div>
+<div class="card">
+<h3>Silver Pass-ta-key：本人確認の鍵のすり替え</h3>
+<p>端末の登録を無効にして、Chrome に再登録させます。再登録では、利用者検証の鍵が2回目の利用まで作られない「保留」の状態があり、その間に攻撃者が自分の公開鍵を登録します。クラウド認証機構は、新しい鍵が安全なハードウェアで作られたかを検証しません。以降は、被害端末が手元になくても、利用者検証つきの認証を作れます。</p>
+</div>
+<div class="card">
+<h3>Golden Pass-ta-key：マスター鍵の取得</h3>
+<p>同期パスキーを暗号化するマスター鍵（SDS）を狙います。端末の登録のときにクライアントへ渡され、研究では、Chrome の画面のログに平文で出ていました。Google は報告後にログへの出力を取り除きましたが、SDS はなお Chrome のメモリに平文で存在しました。取り出して同期データを復号すると、パスキーの秘密鍵を復元できます。</p>
+</div>
+</div>
+
+<h2>「UV フラグ」1ビットの扱い</h2>
+
+<ul>
+<li>認証結果の中の UV フラグが、利用者検証（生体認証や PIN）をしたかどうかを示します。</li>
+<li>事業者（ログインを受け付けるサイト）が利用者検証を必須にして、フラグを検証すれば、Pass-ta-key は通常失敗します。GitHub のパスキー認証では失敗しました。</li>
+<li>ただし、利用者検証を「必須」にしていても、フラグを十分に検証せず認証を受け入れる事業者が見つかりました。その場合は端末識別鍵だけでアカウントを乗っ取れます。原文の例は eBay で、報告のあとに修正し、いまはフラグを検証しています。ほかの事業者にも報告したと述べています。</li>
+<li>Silver は UV フラグがついた認証を作れるため、事業者がフラグを検証していても突破できます。</li>
+</ul>
+
+<h2>影響の違い</h2>
+
+<div class="table-wrap">
+<table>
+<caption>原文の説明より</caption>
+<thead><tr><th>攻撃</th><th>攻撃に必要なもの</th><th>回復</th></tr></thead>
+<tbody>
+<tr><td>Pass-ta-key</td><td>認証のたびに、被害端末上のマルウェア</td><td>原文に個別の記載なし（事業者がフラグを検証すれば通常は失敗する）</td></tr>
+<tr><td>Silver</td><td>鍵のすり替えのあとは、被害端末が手元になくてもよい</td><td>端末の登録解除や再登録で止められる</td></tr>
+<tr><td>Golden</td><td>SDS を一度取り出せば、将来のパスキーも復号できる</td><td>現状の実装では SDS の更新・失効の仕組みがなく、回復が限られる</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>提案された対策</h2>
+
+<ul>
+<li><strong>事業者</strong>：userVerification を required にするだけでなく、UV フラグをすべての認証結果で検証する。</li>
+<li><strong>認証情報の管理側</strong>：新しく登録される端末の鍵のアテステーションを検証する。再登録と復旧の流れを強化し、状態ファイルの削除後の再登録の繰り返しを検知・制限する。</li>
+<li><strong>鍵の扱い</strong>：マスター鍵をクライアントに渡さない（ログやメモリに出さない）。暗号の処理を隔離環境の中で完結させる。パスキー関連のローカルデータへのアクセスを、ブラウザのプロセスに限る。</li>
+<li><strong>異常の検知</strong>：署名カウンタは、同期パスキーでは一定の値のことが多く、不正利用の手がかりになりにくい。Google は、同期の仕組みで全体で一貫したカウンタは作りにくいと述べています。</li>
+<li><strong>日常の使い方での手がかり</strong>：通常のパスキーの利用では出ない、回復用 PIN の要求が繰り返されたら、登録の流れが再実行された可能性がある、と原文は述べています。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>2026年8月3日の時点の研究です。その後の Google の対応は確認していません。原文が書く Google の対応は、SDS のログ出力を取り除いたところまでです。</li>
+<li>対象は Windows の Chrome と Google Password Manager に限られます。他のパスキーの提供者に同じ攻撃が当てはまるかは、この研究の範囲外です。</li>
+<li>前提は端末の侵害です。マルウェアが端末にない状態で、これらの攻撃が成立するとは書かれていません。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>原文の結論は、パスキーはパスワード由来の攻撃を大きく減らす一方、端末の侵害は脅威の想定から外せない、という整理です。端末が出す「信頼できる端末」の合図を、侵害された端末が操作できる、という点がこの研究の核心です。</li>
+<li>事業者側のフラグの検証の甘さは、設定で必須にしているだけでは足りない、という実装の例です。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>パスキー</dt><dd>パスワードの代わりに、公開鍵暗号で本人確認する方式。</dd>
+<dt>同期パスキー</dt><dd>複数の端末で使えるよう、クラウドで同期されるパスキー。</dd>
+<dt>TPM</dt><dd>端末に組み込まれた、鍵を安全に保管する部品。</dd>
+<dt>アテステーション</dt><dd>鍵が安全なハードウェアで作られたことの証明。</dd>
+<dt>事業者（リライングパーティ）</dt><dd>パスキーでログインを受け付けるサイトやサービス。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Palo Alto Networks の Unit 42 の記事「Pass the Passkey: A Novel Attack Surface in Passwordless Authentication」（2026年8月3日）をもとに、独自に整理したものです。</p>
+<p>研究者が示した結果の再現はしていません。原文にある同社の製品の紹介は扱っていません。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（3つの攻撃、成立の条件、事業者の不備、Googleの対応、対策、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Liquid AI が2026年10月27日に発表した LFM3 について、公式ブログから、1.7Bの土台から作った6つの2B級モデル、畳み込みと注意機構を混ぜた新しい構造、旧世代との比較、判断専用モデルの使い方、風力タービンの欠陥検出とロボットでの実験、提供の方法を整理する。">
+<title>Liquid AI の LFM3：2B級の小さなモデルが、文字・画像・音声・判断の6種類に分かれて手元の機器で動く、自社評価の数字と比較の読み方 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Liquid AI の LFM3：2B級の小さなモデルが、文字・画像・音声・判断の6種類に分かれて手元の機器で動く、自社評価の数字と比較の読み方</h1><p class="summary">Liquid AI が2026年10月27日に発表した LFM3 について、公式ブログから、1.7Bの土台から作った6つの2B級モデル、畳み込みと注意機構を混ぜた新しい構造、旧世代との比較、判断専用モデルの使い方、風力タービンの欠陥検出とロボットでの実験、提供の方法を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Liquid AI は2026年10月27日、小さなAIモデルの新世代「LFM3」を発表しました。最初の公開は、<strong>約20億パラメータ（2B級）の6つのモデル</strong>です。文字、画像、音声、それらを合わせたもの、そして「判断」専用の2つで、すべて同じ土台のモデルから作られています。重みは公開されていて、手元の機器で動かし、1枚のGPUで追加の学習ができる、とうたっています。</p>
+<p>公式ブログの主張は「大きな万能モデルより、小さなモデルを自分の用途に合わせて鍛える」ことです。示された数字は<strong>すべて自社の評価</strong>で、ベンチマークによっては、他社の大きなモデルに劣る項目も表に載っています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">22<small>兆</small></p><p class="stat-label">事前学習のトークン数（土台の LFM3-1.7B-Base）</p></div>
+<div class="stat"><p class="stat-value">35<small>%</small></p><p class="stat-label">旧世代の LFM2.5-2.6B より少ないパラメータで、上回ると説明（LFM3-1.7B）</p></div>
+<div class="stat"><p class="stat-value">約1<small>GB</small></p><p class="stat-label">文字のモデルが4ビットの精度で収まる大きさ</p></div>
+<div class="stat"><p class="stat-value">6<small>つ</small></p><p class="stat-label">最初に公開された約2B級のモデルの数</p></div>
+</div>
+
+<h2>6つのモデル</h2>
+
+<div class="table-wrap">
+<table>
+<caption>最初に公開された LFM3 の6つのモデル（すべて LFM3-1.7B-Base から派生）</caption>
+<thead><tr><th>モデル</th><th>入力と出力</th><th>特徴（公式ブログの説明）</th></tr></thead>
+<tbody>
+<tr><td>LFM3-1.7B（文字）</td><td>文字</td><td>256Kトークンの文脈。ローカルのエージェント向けに調整し、道具の検索や、予定の管理などを想定</td></tr>
+<tr><td>LFM3-VL-2B（画像）</td><td>画像・動画 → 文字</td><td>LFM の画像モデルで初めて動画を入力できる。順を追って考える機能、物の位置関係の把握</td></tr>
+<tr><td>LFM3-Audio-2B（音声）</td><td>文字・音声 → 文字・音声</td><td>18言語で、書き起こし、音声の合成、翻訳。道具の呼び出しにも対応</td></tr>
+<tr><td>LFM3-Omni-2B（全方式）</td><td>画像・音声・文字</td><td>見て、聞いて、話し返す初めての「オムニ」モデル。音声つきの動画の理解</td></tr>
+<tr><td>d1-2B（判断）</td><td>文字・画像</td><td>状況と質問の一覧を渡すと、1回の処理で全部に答える</td></tr>
+<tr><td>d1-Omni-2B（判断）</td><td>音声も加える</td><td>d1-2B の入力に音声を加えたもの</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>新しい構造</h2>
+
+<ul>
+<li>3種類の部品を混ぜる：ゲートつきの短い畳み込み、窓つきの注意機構（SWA）、全体の注意機構。24層のうち、畳み込みが13層、窓つきの注意が5層（窓は256トークン）、全体の注意が6層。</li>
+<li>探し方：機器の中で実際に速度を測りながら構造を探す自動探索を、旧世代の2台（スマートフォンとノートPC）から、14種類の機器と実行環境の組み合わせに広げた。スマートフォン、Raspberry Pi 5、ノートPC、クラウドのCPU、GPU、Qualcomm の NPU など。</li>
+<li>速さ：同じパラメータの数で比べると、短い入力では LFM2-1.2B と同等で、8Kトークンを入れると約25%速い、と説明している。</li>
+<li>学習：22兆トークン。科学論文、コードのリポジトリ、数学を増やした。最後の3.5兆トークンは、質の高いデータでの追加の学習で、エージェントの動きの記録と道具の呼び出しを増やし、文脈を256Kトークンに広げた。</li>
+</ul>
+
+<h2>評価の例（自社の報告）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>文字のモデルの評価の一部（公式ブログの表より。数字が大きいほどよい）</caption>
+<thead><tr><th>評価</th><th>LFM3-1.7B</th><th>LFM2.5-2.6B（旧世代）</th><th>Qwen3.5 9B（約9.7B）</th></tr></thead>
+<tbody>
+<tr><td>WebArena-Verified（ブラウザの操作）</td><td>38.42</td><td>3.02</td><td>28.94</td></tr>
+<tr><td>AutomationBench（業務の自動化）</td><td>41.29</td><td>0.94</td><td>15.10</td></tr>
+<tr><td>BFCL V4（道具の呼び出し）</td><td>71.39</td><td>55.89</td><td>62.83</td></tr>
+<tr><td>MCP-Atlas（MCPの道具の利用）</td><td>32.57</td><td>16.45</td><td>42.67</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>旧世代との差：多くのエージェント関連の評価で大きく上回る。ただし旧世代が極端に低い値の評価もあり、差の大きさは評価ごとに違う。</li>
+<li>他社との比較：同じ表で、5倍以上大きい Qwen3.5 9B が上回る評価（MCP-Atlas など）もある。</li>
+<li>画像のモデル：62の画像の評価で、同じ大きさのモデルを7.4点以上上回り、6倍以上大きい Gemma 4 12B と同じくらい、と説明している。ブログの表の「General」では、LFM3-VL-2B が66.0、Gemma 4 12B が74.0。</li>
+<li>音声：旧世代より音声の質がよくなり、18言語に対応。</li>
+</ul>
+
+<h2>判断専用のモデル</h2>
+
+<ul>
+<li>使い方：サポートのチケット、請求書、アプリの画面、写真、音声のメモなどの状況と、質問の一覧を渡す。文章を書く代わりに、1回の処理で全部の質問に、確率つきで答える。</li>
+<li>答えの種類：はい・いいえ、選択肢、点数に加えて、物を指して枠で囲む（数も数える）、書類から文字・数・日付を抜き出して根拠の場所を示す（なければ「見つからない」と答える）、範囲つきで数を見積もる、当てはまる選択肢を全部選ぶ。</li>
+<li>前の判断モデル（d1-3B）との比較：パラメータが3分の1少なくなり、実際の企業の記録での評価が83.6から85.2、写真と規則による判断の評価が64.0から75.5に上がった、と説明している。</li>
+<li>音声で聞いた場合：d1-Omni-2B は、文字で聞いた場合より少し下がる（業務の振り分けの評価で83.4から78.2）程度に保つ。</li>
+</ul>
+
+<h2>特化させる実験</h2>
+
+<ul>
+<li>風力タービンの羽根の欠陥：公開されたドローン写真約3,000枚で、数時間、1枚の A100 で追加の学習をした。そのままでは LFM3-VL-2B も GPT-6 Luna も欠陥の種類を当てられるのは10%未満の画像。追加の学習のあと、約1,400枚の評価用の写真で分類の正答率が67%、検出の F1 が0.003から0.11（GPT-6 Luna は0.01）になった。</li>
+<li>ロボット：LFM3-VL-2B を土台に、ロボットアームを道具で動かす司令役、経路の説明にもとづく移動、低水準の操作（15種類の機体のデータで学習）の3つの方向を試した、と説明している。研究の延長として載せたもので、製品としての提供ではない。</li>
+</ul>
+
+<h2>入手と利用</h2>
+
+<ul>
+<li>重み：基本のモデルと、追加の学習を済ませたモデルを、Hugging Face で公開。Liquid AI のプレイグラウンドと API でも使える。</li>
+<li>実行環境：llama.cpp、MLX、vLLM に対応。Apple、AMD、NVIDIA、Qualcomm などの機器で、初日から動かせる。</li>
+<li>初日の提携先：Ambarella、AMD、Arm、Intel、NVIDIA、OpenRouter、Qualcomm、Vercel。事前の評価に、Mercedes-Benz と Shopify が協力した。</li>
+<li>ライセンスの条件は、公式ブログの本文には書かれていない（この記事では確認していない）。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>すべて自社の評価：表の数字は Liquid AI が測った値。比較の相手のモデルや、評価の条件の違いで、結果は変わる。</li>
+<li>「オープンウェイト」は重みの公開：学習のデータや、使い方の条件まで公開するという意味ではない。ライセンスは、別に確認が必要。</li>
+<li>小さいモデルの得意と不得意：2B級は、特定の用途に鍛えたときに力を発揮する、という位置づけ。幅広い知識や、長い推論が必要な場面は、大きなモデルのほうが有利な場合がある。</li>
+<li>追加の学習の実験は例：風力タービンとロボットの結果は、公式が選んだ題材での例。ほかの題材で同じ効果が出るとは限らない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>クラウドの大きなモデルを呼ぶのではなく、手元の機器に小さな専門家を置く、という方向の発表。判断専用のモデルは、文章を書かせずに確率つきの答えを返すので、業務の振り分けのような用途に向く設計。</li>
+<li>6つのモデルが同じ土台から派生している点は、文字・画像・音声を、機器の中で組み合わせやすくする工夫。</li>
+<li>独立した第三者の再現と、ライセンスの確認がそろってから、数字を評価するのがよい。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>2B級</dt><dd>パラメータ（モデルの大きさを表す数）が約20億個の大きさ。</dd>
+<dt>オープンウェイト</dt><dd>モデルの重み（学習の結果の数値）を公開して、誰でも手元で動かせるようにすること。</dd>
+<dt>オンデバイス</dt><dd>クラウドに送らず、スマートフォンやノートPCなどの手元の機器でAIを動かすこと。</dd>
+<dt>オムニ</dt><dd>文字、画像、音声などの複数の形式を、1つのモデルで扱うこと。</dd>
+<dt>畳み込みと注意機構</dt><dd>入力の並びを処理する2つの部品。畳み込みは近くの要素を見て、注意機構は離れた要素どうしの関係を見る。</dd>
+<dt>追加の学習（ファインチューニング）</dt><dd>公開されたモデルを、自分のデータでさらに学習させて、用途に合わせること。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Liquid AI の公式ブログ「Introducing LFM3」（2026年10月27日）をもとに、独自に整理したものです。</p>
+<p>数字は公式ブログが示したもので、再現していません。ライセンスの条件など、ブログに書かれていない点は確認していません。第三者の評価が出たときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（6つのモデル、構造、評価、判断モデル、特化の実験、提供の方法、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

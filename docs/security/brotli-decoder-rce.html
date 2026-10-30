@@ -192,10 +192,10 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>圧縮データを開くだけで、メモリが壊される：Brotli のデコーダーの欠陥（CVE-2026-111497）が、Node.js・Bun・Python に広がった</h1><p class="summary">2026年10月21日に Node.js が修正した、圧縮の部品 Brotli のデコーダーの欠陥（CVE-2026-111497）について、何が壊れるのか、影響を受ける版と直った版、Bun と Python への広がり、備え方を、Node.js・Bun・Google の公式の発表から、年表と模式図で整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-27</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>圧縮データを開くだけで、メモリが壊される：Brotli のデコーダーの欠陥（CVE-2026-111497）が、Node.js・Bun・Python に広がった</h1><p class="summary">2026年10月21日に Node.js が修正した、圧縮の部品 Brotli のデコーダーの欠陥（CVE-2026-111497）について、何が壊れるのか、影響を受ける版と直った版、Bun と Python への広がり、備え方を、Node.js・Bun・Google の公式の発表から、年表と模式図で整理する。</p><p class="meta">初回公開 2026-10-25 ／ 更新日 2026-10-29</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年10月21日、Node.js は、同梱している圧縮の部品「Brotli」のデコーダー（圧縮データを元に戻す部分）に、<strong>細工されたデータを読み込ませると、メモリを壊され、最悪の場合は遠隔からコードを実行されるおそれがある欠陥</strong>（CVE-2026-111497）があるとして、修正版を出しました。</p>
-<p>欠陥は、Node.js 自身ではなく、Google の Brotli のデコーダーにあります。影響を受けるのは Brotli 1.0.3〜1.2.0 で、同じ部品を同梱するソフトウェアは、それぞれ更新が必要です。Node.js のあとに、Bun（10月23日）や、Python のパッケージ（10月22日）も新しい版を出しました。</p>
+<p>欠陥は、Node.js 自身ではなく、Google の Brotli のデコーダーにあります。影響を受けるのは Brotli 1.0.3〜1.2.0 で、同じ部品を同梱するソフトウェアは、それぞれ更新が必要です。Node.js のあとに、Bun（10月23日）や、Python のパッケージ（10月22日）も新しい版を出しました。10月27日には、米国の CISA が<strong>この欠陥を「悪用が確認された脆弱性のカタログ」に加えました</strong>（10月28日追記）。</p>
 <p>中身は、不正なデータを「形式の誤り」として拒否せず、「入力がまだ足りない」と扱ったため、デコーダーが8バイトの内部の領域に、入力を書き足し続けてしまうことです。Node.js は、報告者として「OpenAI Codex Security」（AI を使った脆弱性の調査道具）を挙げています。</p>
 </section>
 
@@ -306,7 +306,14 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="card"><h3>PHP の Windows 版（10月26日）</h3><p>PHP 8.5.12-1、8.4.27-1、8.3.36-1、8.2.35-1 を公開。Brotli 1.2.1 を含み、この欠陥を直している。Windows 版の PHP では、cURL 拡張で HTTP の応答の自動展開を有効にしたときに、問題のデコーダーに届く。既定では無効だが、アプリケーションや HTTP クライアントのライブラリが有効にすることがある。末尾の「-1」は、PHP のバージョンは変えず、依存ライブラリだけを更新して作り直した Windows 版であることを示す。</p></div>
 </div>
 <div class="note">
-<p>筆者の整理：同じ欠陥の修正が、Node.js、Bun、Python のパッケージに続いて、.NET と PHP の Windows 版にも広がった。展開の機能が「既定で有効か」は製品で違う。Bun の fetch は既定で Brotli を受け入れるが、.NET のリクエストの展開と応答の自動展開、PHP の cURL の自動展開は既定では無効。影響を受けるかは、設定やライブラリの使い方で決まる。公式の発表（JPCERT/CC、Microsoft、PHP）には、実際の悪用や被害の報告は書かれていない。</p>
+<p>筆者の整理：同じ欠陥の修正が、Node.js、Bun、Python のパッケージに続いて、.NET と PHP の Windows 版にも広がった。展開の機能が「既定で有効か」は製品で違う。Bun の fetch は既定で Brotli を受け入れるが、.NET のリクエストの展開と応答の自動展開、PHP の cURL の自動展開は既定では無効。影響を受けるかは、設定やライブラリの使い方で決まる。10月26日までの公式の発表（JPCERT/CC、Microsoft、PHP）には、実際の悪用や被害の報告は書かれていなかったが、10月27日に米国の CISA が悪用の確認を示した（次の節）。</p>
+</div>
+
+<h2>米国の CISA が「悪用が確認された」と位置づけた（10月28日に追加）</h2>
+<div class="cards">
+<div class="card"><h3>CISA の KEV への追加（10月27日）</h3><p>CISA は、CVE-2026-111497 を「悪用が確認された脆弱性のカタログ（KEV）」に加えた。カタログでの名称は「Google Brotli の戻り値が確認されない脆弱性」。説明は、認証なしの遠隔の攻撃者が、細工した Brotli 形式のデータで、隣のデコーダーの状態のメモリを壊す、メモリの内容を読み出す、サービス拒否を起こす、場合によっては任意のコードを実行できる、というもの。連邦機関の対応の期限は11月10日。ランサムウェアの攻撃への利用は「不明」。</p></div>
+<div class="card"><h3>カタログの注記</h3><p>この欠陥は、オープンソースの部品やライブラリに関するもので、さまざまな製品で使われうる、と注記している。参考として Google の Brotli v1.2.1 のリリースを挙げている。つまり、悪用の確認は Brotli そのものについてで、どの製品経由の攻撃かは、カタログには書かれていない。</p></div>
+<div class="card"><h3>PowerShell の更新（10月25日）</h3><p>PowerShell 7.6.9、7.5.13、7.4.22 が、10月25日に GitHub で公開された。リリースノートに書かれた変更は、7.6.9 が .NET SDK 10.0.403、7.5.13 が 9.0.320、7.4.22 が 8.0.427 への更新。リリースノートに Brotli の記載はなく、Microsoft の勧告の本文は、この記事では取得できていない（未確認）。</p></div>
 </div>
 
 <h2>どう備えるか</h2>
@@ -336,7 +343,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="note">
 <p><strong>この記事について</strong>：2026年10月27日時点の情報です（10月27日に、10月26日までの JPCERT/CC、Microsoft、PHP の発表を追加）。内容は、Node.js、Google の Brotli、Bun、JPCERT/CC、Microsoft、PHP の公式の発表と、PyPI の公開情報をもとに、独自に整理したものです。実際の悪用や被害の報告は、公式の発表に書かれていません。深刻度の数値（CVSS）や、一部のソフトウェアの修正状況は、公式の発表で確認できていないため載せていません。この記事をまとめた筆者の道具には Anthropic の AI が含まれます。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-27</span>JPCERT/CC の注意喚起（10月26日）、Microsoft の .NET の定例外更新（10月25日）、PHP の Windows 版の再ビルド（10月26日）を追加</li><li><span class="date">2026-10-25</span>初回公開（欠陥の中身、影響を受ける版と直った版、Node.js・Bun・Python への広がり、備え方）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>CISA の KEV への追加（10月27日）と、PowerShell の更新（10月25日）を追加</li><li><span class="date">2026-10-27</span>JPCERT/CC の注意喚起（10月26日）、Microsoft の .NET の定例外更新（10月25日）、PHP の Windows 版の再ビルド（10月26日）を追加</li><li><span class="date">2026-10-25</span>初回公開（欠陥の中身、影響を受ける版と直った版、Node.js・Bun・Python への広がり、備え方）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

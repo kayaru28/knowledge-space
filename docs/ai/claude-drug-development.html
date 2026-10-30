@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Anthropic が2026年10月27日に公開した記事「Early progress on accelerating drug development with Claude」から、6組織との提携で示された事例（設計、候補の探索、最適化、製造の書類、会社づくり、治験の計画）と、自社の筋ジストロフィーの研究、研究者向けの提供の枠組み、読むときの注意を整理する。">
+<title>Anthropic が示した創薬での Claude の初期の成果：6つの提携先の事例と自社の筋ジストロフィーの研究、すべて自社の報告で、ほとんどが臨床の前の段階 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Anthropic が示した創薬での Claude の初期の成果：6つの提携先の事例と自社の筋ジストロフィーの研究、すべて自社の報告で、ほとんどが臨床の前の段階</h1><p class="summary">Anthropic が2026年10月27日に公開した記事「Early progress on accelerating drug development with Claude」から、6組織との提携で示された事例（設計、候補の探索、最適化、製造の書類、会社づくり、治験の計画）と、自社の筋ジストロフィーの研究、研究者向けの提供の枠組み、読むときの注意を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Anthropic は2026年10月27日、創薬で AI の Claude を使った<strong>初期の成果</strong>を記事にまとめました。数か月にわたって<strong>6つの組織</strong>と協力し、自社でも筋ジストロフィーの研究を始めています。</p>
+<p>示された事例は<strong>すべて Anthropic の記述</strong>で、<strong>ほとんどはヒトでの試験の前（前臨床）の段階</strong>です。薬として効くか、安全かが示されたわけではありません。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">6<small>組織</small></p><p class="stat-label">協力した製薬・バイオの組織の数</p></div>
+<div class="stat"><p class="stat-value">約35,000</p><p class="stat-label">Claude が約1か月で作った抗体の設計の数（Divergence Labs）</p></div>
+<div class="stat"><p class="stat-value">89<small>%</small></p><p class="stat-label">製造の書類の確認で減った人の確認時間（Enveda）</p></div>
+<div class="stat"><p class="stat-value">2028<small>年末</small></p><p class="stat-label">自社の候補の治験が早ければ始まる時期</p></div>
+</div>
+
+<h2>6つの事例</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Anthropic の記事が示した事例（創薬の段階ごと）</caption>
+<thead><tr><th>組織</th><th>段階</th><th>内容と示された数字</th></tr></thead>
+<tbody>
+<tr><td>Generate Biomedicines</td><td>治療の形の設計</td><td>固形がん向けに CAR-T 細胞療法の一部を短くする設計を、6人の科学者が Claude Code で提案。標準より約70%短い設計が、実験で受容体が約10倍作られ、腫瘍の細胞をより効率よく殺し、免疫細胞が長く活動した</td></tr>
+<tr><td>Divergence Labs</td><td>候補の探索</td><td>食物アレルギーの薬の設計。Claude が設計計画を作り、ほぼ自律的に約1か月で約35,000の抗体の設計を作成。初期の試験で、IgE に結合する設計が3つ、引きはがす設計が20（うち3つは標準の薬より多く引きはがした）</td></tr>
+<tr><td>BigHat Biosciences</td><td>候補の最適化</td><td>2つの候補について、約10週間に約1,010の変異体を作って試験。途中で標準の指標が誤解を招くと疑い、別の指標を提案して主な予測は成り立った。最良の版は結合が10倍以上強く、凝集が100倍以上遅い例もあった</td></tr>
+<tr><td>Enveda</td><td>製造の書類と申請</td><td>1,061ページの試験で、人が見つけた11件をすべて指摘し、人が見逃した7件も指摘。確認の時間は25時間超から3時間未満。規制当局向けの書類の初稿は、4時間（手作業では約3か月）</td></tr>
+<tr><td>The Column Group</td><td>会社づくり</td><td>Claude で小さなチームが多くの創薬計画を回す新会社 Pleiades を設立中。最初のスキルは45組の標的と疾患の組で評価</td></tr>
+<tr><td>Bristol Myers Squibb</td><td>治験の計画</td><td>初期の薬の治験計画を評価し、成功の見込みを見積もる。2027年に拡大する予定。担当者は、通常は数日かかる分析の初稿が、ひとつの指示から出たと述べている</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>自社の取り組み：Mithril Medicine</h2>
+
+<ul>
+<li>Anthropic は、2種類の希少な筋ジストロフィーの治療を研究していた一人の会社 Mithril Medicine を買収しました。</li>
+<li>創業者は Claude で、11の外部の研究室との契約、手配、実験を整理し、運営の多くを任せていました。1つの病型の候補を、<strong>18か月未満</strong>で、アイデアからマウスでの有望な結果まで進めたと説明しています。</li>
+<li>創業者はいま Anthropic で研究を続けています。候補が持ちこたえれば、ヒトでの治験の開始は<strong>早ければ2028年の終わり</strong>です。</li>
+</ul>
+
+<h2>今後と提供の枠組み</h2>
+
+<ul>
+<li>研究はまだ初期で、ほとんど前臨床です。治験の段階に進んだ組織とも組む予定です。</li>
+<li>Claude Science（研究者向けの作業環境）と、生命科学者向けの Claude のクレジットを提供。</li>
+<li>Life Sciences Verification Program：信頼できる組織に、安全策をゆるめた版の最も強力なモデルを提供する枠組み。生物学の研究を妨げうる制限を和らげるため、と説明しています。</li>
+<li>ゲスト研究者の公募を始めています。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>すべて Anthropic の記事の記述です。各提携先の技術報告は読んでいません。</li>
+<li>数字は、取り組みの一部の指標です。「結合が10倍強い」「書類の確認が89%減った」は、薬としての有効性や安全性を示すものではありません。</li>
+<li>前臨床：ヒトでの試験の結果ではありません。記事自身が、ほとんどは前臨床だと述べています。</li>
+<li>設計の数と成果：Divergence Labs の約35,000の設計から見つかったのは「ヒット」（さらに調べる価値のある候補）で、薬ではありません。次の段階の結果は、記事に出ていません。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>記事が強調するのは、設計を作る場面だけではなく、候補の最適化、製造の書類、治験の計画、会社の運営といった、周辺の作業にも AI を入れることです。</li>
+<li>BigHat の事例のように、標準の指標が誤解を招くと見直した場面は、AI が単に答えを出すだけでなく、データの解釈の見直しにも使われた例として挙がっています。</li>
+<li>確かめるべきは、独立した評価と、臨床の段階の結果です。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>前臨床</dt><dd>ヒトでの試験の前の段階。細胞やマウスなどでの研究。</dd>
+<dt>CAR-T細胞療法</dt><dd>患者の免疫細胞に、がんを見つける受容体を加えて戻す治療。</dd>
+<dt>IgE</dt><dd>アレルギーの反応に関わる抗体。</dd>
+<dt>ヒット</dt><dd>候補探しの最初の段階で見つかる、さらに調べる価値のある候補。</dd>
+<dt>抗体断片</dt><dd>抗体の一部を切り出したもの。薬の部品になる。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Anthropic の公式の記事「Early progress on accelerating drug development with Claude」（2026年10月27日）をもとに、独自に整理したものです。</p>
+<p>筆者の道具には Anthropic の AI が含まれます。この記事は、Anthropic 自身の発表を扱っています。</p>
+<p>数字は記事に書かれたもので、再現も独立した確認もしていません。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（6組織の事例、自社の研究、提供の枠組み、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

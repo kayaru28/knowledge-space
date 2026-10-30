@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月28日公開の Visual Studio Code 1.144 の公式リリースノートから、エージェントの既定のハーネス、他社のハーネス（Claude Code、Codex）への切り替え、モデルの比較と Copilot Fusion、リスク評価つきの承認、クラウドでの実行、エージェントの通信の規格を整理する。">
+<title>VS Code 1.144：エージェントの既定が Copilot の「ハーネス」になり、モデルを競わせる比較と自動選択（Fusion）、承認の自動化、クラウドでの実行が入った | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>VS Code 1.144：エージェントの既定が Copilot の「ハーネス」になり、モデルを競わせる比較と自動選択（Fusion）、承認の自動化、クラウドでの実行が入った</h1><p class="summary">2026年10月28日公開の Visual Studio Code 1.144 の公式リリースノートから、エージェントの既定のハーネス、他社のハーネス（Claude Code、Codex）への切り替え、モデルの比較と Copilot Fusion、リスク評価つきの承認、クラウドでの実行、エージェントの通信の規格を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月28日に公開された VS Code 1.144 のリリースノートによると、エージェントの既定は GitHub Copilot の<strong>「ハーネス」</strong>になりました。ハーネスは、AI のモデルを使ってエージェントを動かす土台のことです。Anthropic の Claude Code や OpenAI Codex のハーネスに切り替えて、<strong>Copilot の契約のまま</strong>使うこともできます。</p>
+<p>あわせて、同じ指示を複数のモデルに試させる<strong>比較</strong>、Copilot がモデルを選んで組み合わせる<strong>Fusion</strong>、リスク評価つきの<strong>承認の自動化</strong>、<strong>クラウドでの実行</strong>が入りました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>種類</small></p><p class="stat-label">選べるハーネス（Copilot／Claude Code／Codex）</p></div>
+<div class="stat"><p class="stat-value">30<small>%</small></p><p class="stat-label">Fusion の有料プランの割引（2026年11月30日まで）</p></div>
+<div class="stat"><p class="stat-value">6<small>言語</small></p><p class="stat-label">エージェントの通信の規格 AHP のライブラリの数</p></div>
+</div>
+
+<h2>今回の要点（公式のハイライト）</h2>
+
+<ul>
+<li><strong>セッションの継続</strong>：リモートを1か所で管理し、手元のコンピュータが止まっていても、セッションと自動化を動かし続ける。</li>
+<li><strong>Copilot Fusion とモデルの比較</strong>：Copilot が選んで組み合わせる、または並べて比べる。</li>
+<li><strong>画像生成（プレビュー）</strong>、<strong>コンピュータの操作（実験的）</strong>：エージェントがデスクトップのアプリを使う。</li>
+<li><strong>作業セット（実験的）</strong>：エージェントの編集を、エディタで残す、または取り消す。</li>
+<li><strong>支援つきの承認</strong>：リスク評価に通ったツールの呼び出しを自動で承認。</li>
+<li><strong>マーケットプレイスとコネクタ（プレビュー）</strong>：Slack や Notion などの文脈を、セッションに持ち込む。</li>
+</ul>
+
+<h2>ハーネスが既定に</h2>
+
+<ul>
+<li>既定：エージェントは Copilot ハーネスで動きます。Copilot のコードレビュー、CLI、アプリ、クラウドのセッションと同じ土台で、カスタマイズを1度書けば、どこでも同じように使えます。</li>
+<li>切り替え：Claude Code のハーネスや、OpenAI Codex のハーネスを、Copilot の契約で使えます。</li>
+<li>位置づけ：Copilot SDK の上に作られた最新のハーネスで、1.144 でも新しいセッションの既定であり続けます。</li>
+<li>作業セット（実験的）：Copilot ハーネスのエージェントの編集を記録し、個別に残す、または取り消せます。端末のコマンドによる変更は含まれません。</li>
+</ul>
+
+<h2>モデルの比較と Fusion</h2>
+
+<div class="table-wrap">
+<table>
+<caption>リリースノートの説明</caption>
+<thead><tr><th>機能</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>モデルの比較（Agent Bake-Off）</td><td>同じ指示を複数のモデルとハーネスで動かし、並べて確認する。対象の新しいセッションで既定で有効。今回、プロジェクトなしの会話や、コミットのない手元のリポジトリでも使えるようになった</td></tr>
+<tr><td>Copilot Fusion</td><td>モデルの選択を Copilot に任せる。リクエストごとに、モデル、推論の強さ、実行の型を選ぶ。簡単なものは1つのモデル、難しいものは1つが下書きし、他のモデルが見直す。強さは Standard / High / Max</td></tr>
+<tr><td>料金と提供</td><td>使ったモデルごとに通常の料金。2026年11月30日まで有料プランは30%割引。一般提供。High と Max は Pro+、Max、Business、Enterprise のプラン</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>承認の自動化</h2>
+
+<ul>
+<li>エージェントは、作業のために多くのツールを呼び出します。1回ごとに承認すると煩わしく、すべて任せると事故のおそれがあります。</li>
+<li>「支援つきの承認」：呼び出しごとに LLM がリスクを評価し、低リスクのものは自動で実行します。高リスクのものや、判断できないものは、利用者の承認が必要です。</li>
+<li>Copilot のセッションで一般提供。フォルダの分離が必要で、組織の設定で制限されることがあります。</li>
+</ul>
+
+<h2>クラウドでの実行</h2>
+
+<ul>
+<li>クラウドのセッション：GitHub の管理された環境でタスクを実行します。マシンを起動しておく必要がなく、GitHub.com やモバイルアプリからも進み具合を見られます。手元の未コミットの変更は自動ではコピーされません。有料の Copilot プランが必要です。</li>
+<li>クラウドの自動化（プレビュー）：スケジュールや、Issue・プルリクエストのイベントで動きます。リポジトリにアクセスできる人に見える形で、チームで共有できます。使えるツールとフィルターで、範囲を決めます。</li>
+</ul>
+
+<h2>Agent Host と規格</h2>
+
+<ul>
+<li>Agent Host：エージェントを動かし続ける別のプロセスです。クライアントを閉じても止まらず、手元でもリモートでも動かせます。</li>
+<li>Agent Host Protocol（AHP）：エージェントとやり取りする、オープンで拡張できる規格の最初の版が公開されました。独自の画面や、エージェントの基盤をつなぐための規格で、6つの言語のライブラリがあります。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>公式のリリースノートの記述です。実際の挙動や性能は確認していません。</li>
+<li>実験的・プレビューの機能が多く、プランや組織の設定で使えない場合があります。</li>
+<li>割引は2026年11月30日までの条件つきです。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>注目点は、エージェントを動かす土台（ハーネス）を選べる形になり、他社のものも同じ画面と契約で使える点です。モデルだけでなく、ハーネスも比べる対象になっています。</li>
+<li>承認を LLM が評価して自動化する仕組みは、利便性と安全性の折り合いを、判断を AI に任せる形で取ろうとするものです。「判断できない場合は承認を求める」とされているため、この線引きの精度が使いどころになります。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>ハーネス</dt><dd>AI のモデルを使ってエージェントを動かすための、道具の呼び出しや制御をまとめた土台。</dd>
+<dt>エージェント</dt><dd>目的に向けて、道具を使いながら自分で作業を進める AI。</dd>
+<dt>ツールの呼び出し</dt><dd>エージェントが、ファイルの編集やコマンドの実行などの道具を使うこと。</dd>
+<dt>Fusion</dt><dd>Copilot が、リクエストごとに複数のモデルを選び、組み合わせる機能。</dd>
+<dt>プルリクエスト</dt><dd>変更を本流に取り込んでもらうための依頼。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Visual Studio Code 1.144 の公式リリースノート（2026年10月28日）をもとに、独自に整理したものです。</p>
+<p>筆者の道具には Anthropic の AI が含まれます。この記事には、Claude Code のハーネスへの切り替えの記述が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（1.144の要点、ハーネス、モデルの比較、承認、クラウド、規格、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

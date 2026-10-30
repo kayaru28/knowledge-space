@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Mistral AI が2026年10月6日に公開プレビューを始めた Mistral Large 4 について、公式ブログから、1兆パラメータ・アクティブ520億という規模、欧州の自社データセンターでの学習、サイバーセキュリティやコーディングなどの自社報告の評価、制限を緩めた版での検証、重みを月末に公開するという予定とその確認状況を整理する。">
+<title>Mistral Large 4（愛称 Le Chonk）：1兆パラメータの欧州製モデルが、サイバーセキュリティで「拒否しない」ことを強みにする理由と、重みはまだ見当たらない現状 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Mistral Large 4（愛称 Le Chonk）：1兆パラメータの欧州製モデルが、サイバーセキュリティで「拒否しない」ことを強みにする理由と、重みはまだ見当たらない現状</h1><p class="summary">Mistral AI が2026年10月6日に公開プレビューを始めた Mistral Large 4 について、公式ブログから、1兆パラメータ・アクティブ520億という規模、欧州の自社データセンターでの学習、サイバーセキュリティやコーディングなどの自社報告の評価、制限を緩めた版での検証、重みを月末に公開するという予定とその確認状況を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>フランスの Mistral AI は2026年10月6日、最大のモデル「Mistral Large 4」（略して ML4、公式の愛称は「Le Chonk」）の<strong>公開プレビュー</strong>を始めました。総パラメータは1兆、1回の処理で使うのは520億で、画像も扱えます。欧州の自社データセンターで、一から学習したと説明しています。</p>
+<p>公式ブログが最も強調するのは、サイバーセキュリティです。閉じたモデルが「拒否」するために使えない作業も、重みを公開するモデルなら、利用者の側の方針で動かせる、という主張です。ただし、<strong>数字はすべて自社の報告</strong>です。公式が「今月末に公開する」と書いた重みは、10月29日時点では、確認できませんでした。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1<small>兆</small></p><p class="stat-label">総パラメータ（1回の処理で使うのは520億）</p></div>
+<div class="stat"><p class="stat-value">3,800<small>基</small></p><p class="stat-label">学習に使った NVIDIA Grace Blackwell GPU（欧州の自社データセンター）</p></div>
+<div class="stat"><p class="stat-value">82<small>%</small></p><p class="stat-label">サイバー指数の一部の試験（実在の脆弱性の再現と修正）での正答率。公式は「全モデルで最高」と説明</p></div>
+<div class="stat"><p class="stat-value">160<small>言語超</small></p><p class="stat-label">学習データに含まれた言語の数（EUの全公用語を含む）</p></div>
+</div>
+
+<h2>何が発表されたのか</h2>
+
+<ul>
+<li>公開プレビュー：Mistral Studio の API で試せる。モデルは改良が続いていて、完成版ではない、と説明している。</li>
+<li>重み：「今月末までに公開する」と書かれている。それまでは、サイバーの専門家や審査を済ませたパートナー、国家機関と、実際の場面での攻撃的な検証（レッドチーム）を行う。この検証には、制限を弱め、サイバー関連の能力を広げた版が使われる。</li>
+<li>位置づけ：公式は「オープンウェイトの性能の最前線」と呼び、世界の最も強いオープンなモデルに並び、米国と欧州で開発されたどのオープンウェイトのモデルも大きく上回る、と述べる。</li>
+<li>今後：構造の詳細、追加の評価、学習後の調整の方法を、重みの公開に向けて公開する予定。このモデルは、専門化・最適化した次世代のモデルの土台にもなる。</li>
+</ul>
+
+<h2>規模と学習</h2>
+
+<ul>
+<li>規模：総パラメータ1兆、アクティブ520億の、はじめから複数の形式（画像など）を扱うモデル。公式は、同社で最大かつ最も高性能と説明している。</li>
+<li>学習：NVIDIA Grace Blackwell GPU 3,800基を使い、Mistral 自身の欧州のデータセンターで一から学習した。プレビューもその同じ設備で提供している。</li>
+<li>主権：欧州での展開は、ほかのデジタルサービスの事業者に頼らず、欧州の法律のもとで同社が運営する、と説明している。世界の複数の地域でも使える予定。</li>
+<li>学習データ：多言語の比率が大きく、160を超える言語（EUの全公用語を含む）。金融、工学、製造、物流、製薬、科学、海運、公共分野などの企業と協力し、同社の「Mistral Forge」と同じ学習・調整・強化学習の環境を使った。</li>
+</ul>
+
+<h2>自社報告の評価</h2>
+
+<div class="table-wrap">
+<table>
+<caption>公式ブログが示した評価の例（すべて Mistral の報告）</caption>
+<thead><tr><th>分野</th><th>評価</th><th>ML4 の結果</th></tr></thead>
+<tbody>
+<tr><td>サイバー</td><td>Artificial Analysis のサイバー指数</td><td>世界の上位5つに入り、中国以外のオープンウェイトの中で大きくリード</td></tr>
+<tr><td>サイバー</td><td>指数の一部（実在の脆弱性を再現して修正）</td><td>82%（公式は全モデルで最高と説明）</td></tr>
+<tr><td>サイバー</td><td>Cybench（競技会の課題40問）</td><td>93%（オープンウェイトで最高水準と説明）</td></tr>
+<tr><td>コーディング</td><td>DeepSWE v1.1 / SWE-Atlas-QnA / Terminal-Bench 4</td><td>61.7% / 59.4% / 28.3%</td></tr>
+<tr><td>コーディング</td><td>人間による盲検の評価（Surge AI、5モデル）</td><td>3.74で2位。1位は Claude Opus 5（4.22）。Kimi K3 は3.59、GLM-5.3 は3.60</td></tr>
+<tr><td>エージェント</td><td>AutomationBench（業務657件）</td><td>59.9%（Kimi K3、DeepSeek V4 Pro などを上回る）</td></tr>
+<tr><td>画像</td><td>Dense 200（画像の位置の特定）</td><td>42%（GPT-6 Astra は41%）</td></tr>
+<tr><td>法務・金融</td><td>vals.ai（第三者の評価）</td><td>GPT-6 Astra を上回る。Harvey の法務の評価では、オープンなモデルで最高</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>サイバーでの「拒否しない」という主張</h2>
+
+<ul>
+<li>公式の主張：防御の作業は、脆弱性が本物だと証明することから始まる。閉じたモデルの安全装置は、この作業を止めることがある。Claude Opus 5.5 や GPT-6 Astra が、上の「再現して修正」の試験でほぼ0点なのは、作業を拒否するため、と説明している。</li>
+<li>攻撃者が同じ閉じたモデルを脱獄して攻撃に使うことも増えているので、防御側にも、同じ水準の能力で、拒否に縛られないシステムが必要、というのが公式の考え方。</li>
+<li>オープンウェイトと自前での運用により、組織が自社の方針のもとで高度なセキュリティの作業を行える、と述べる。事件の最中に、提供側の都合で能力が使えなくなることも、リスクだとしている。</li>
+</ul>
+
+<h2>安全性の評価（自社報告）</h2>
+
+<ul>
+<li>間接的なプロンプトインジェクションへの頑健性は、自社の評価ではほぼ満点。Lakera の公開の B3 ベンチマークで、攻撃の93.3%に耐えた。比較した相手の中に、これ以上の値はない、と説明している。</li>
+<li>KORA ベンチマークでは1.691（満点は2で「模範的」）。オープンなモデルの中で、同社が測った最高値。</li>
+<li>悪意あるサイバーの依頼を断る割合は、JailbreakBench などの平均で、オープンなモデルのどれよりも高い、と説明している。</li>
+</ul>
+
+<h2>重みは公開されたのか（確認の状況）</h2>
+
+<ul>
+<li>公式の予定：2026年10月末までに公開。</li>
+<li>2026年10月29日の確認：Hugging Face の mistralai の、最近更新されたモデルの一覧に、Mistral Large 4 の重みは見当たらなかった。一覧の上位は、別の小さなモデル（Timestral など）だった。</li>
+<li>Mistral のニュース一覧には、Mistral Large 4 の紹介が10月6日付のまま載っていて、重みの公開を知らせる別の記事は見当たらなかった。</li>
+<li>このため、重みが出たかどうかは「未確認」。月末までの予定なので、10月末を過ぎたときに見直す。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>すべて自社の報告：表の数字は Mistral が測った値か、Mistral が引用した値。評価の条件や比較の相手は、Mistral が選んでいる。</li>
+<li>「ほぼ0点」の意味：比較された閉じたモデルの点が低いのは、能力が低いのではなく、作業を拒否したため、というのが公式の説明。拒否の方針は、モデルの提供側が決める設計の違いで、どちらが望ましいかは立場によって分かれる。</li>
+<li>制限を弱めた版：レッドチームに使われる版は、公開のプレビューと設定が違う。評価の数字が、どちらの版のものかは、公式ブログから分からない。</li>
+<li>プレビューのモデル：改良が続いているため、重みの版の性能は変わる可能性がある。</li>
+<li>この記事をまとめた筆者の道具には、評価の比較に挙がる Claude と同じ会社（Anthropic）の AI が含まれます。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>性能の競争というより、「誰が能力の使い方を決めるか」を売りにした発表。提供側が拒否を決める閉じたモデルと、利用者が自分の方針で動かすオープンウェイト、という対比を、サイバーの分野で前面に出している。</li>
+<li>同時に、公式自身が、攻撃者による脱獄の悪用を理由に挙げている。能力を手元で使えることは、防御にも攻撃にも使える。重みの公開後に、第三者がどのように評価し、どんな制限が付くかが焦点になる。</li>
+<li>米国と中国以外の「主権」の選択肢を示す点も、発表の特徴。欧州の法律のもとでの運用が、顧客の判断材料になる。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>アクティブパラメータ</dt><dd>モデル全体のパラメータのうち、1回の処理で実際に使われる分。1兆のうち520億。</dd>
+<dt>オープンウェイト</dt><dd>モデルの重み（学習の結果の数値）を公開して、誰でも手元で動かせるようにすること。</dd>
+<dt>レッドチーム</dt><dd>攻撃者の立場で、システムの弱点を実際に試す検証。</dd>
+<dt>脱獄（ジェイルブレイク）</dt><dd>AI の安全装置をかいくぐって、本来断る依頼に答えさせること。</dd>
+<dt>プロンプトインジェクション</dt><dd>外部の文章に紛れ込ませた指示で、AI に意図しない動きをさせる攻撃。</dd>
+<dt>Cybench</dt><dd>セキュリティの競技会から選んだ課題で、AI の攻撃・防御の能力を測る評価。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Mistral AI の公式ブログ「Introducing Mistral Large 4」（2026年10月6日）と、Hugging Face の公開状況の確認をもとに、独自に整理したものです。</p>
+<p>数字は公式ブログが示したもので、再現していません。重みの公開は、予定の月末を過ぎたときに見直します。この記事をまとめた筆者の道具には、評価の比較に挙がる Claude と同じ会社（Anthropic）の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（発表内容、規模と学習、サイバー・コーディングなどの自社評価、安全性の評価、重みの公開予定と確認状況、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

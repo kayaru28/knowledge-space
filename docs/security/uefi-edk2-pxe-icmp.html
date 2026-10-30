@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="TianoCore（EDK II）が2026年10月22日に出した勧告 GHSA-99cj-7hg9-mp4m と修正の取り込みから、ネットワーク起動（PXE）の最中にICMPエラーを受けて起きるバッファあふれ、攻撃に必要な条件、影響、修正の状況、発見者を整理する。">
+<title>UEFI ファームウェアの部品 EDK II の PXE ドライバの欠陥（CVE-2026-97631）：OSが起動する前に、ネットワークからコードを動かせる条件と、公式の勧告に書かれたこと | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>UEFI ファームウェアの部品 EDK II の PXE ドライバの欠陥（CVE-2026-97631）：OSが起動する前に、ネットワークからコードを動かせる条件と、公式の勧告に書かれたこと</h1><p class="summary">TianoCore（EDK II）が2026年10月22日に出した勧告 GHSA-99cj-7hg9-mp4m と修正の取り込みから、ネットワーク起動（PXE）の最中にICMPエラーを受けて起きるバッファあふれ、攻撃に必要な条件、影響、修正の状況、発見者を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>パソコンやサーバーの起動を担う UEFI ファームウェアの共通の部品「EDK II」の、ネットワーク起動（PXE）のドライバに欠陥が見つかりました（CVE-2026-97631）。<strong>ネットワーク起動の最中にICMPのエラーメッセージを受けると、メモリが破壊され</strong>、条件がそろえば、<strong>OSが起動する前に</strong>攻撃者のコードが動く可能性があります。評価は CVSS v4 で <strong>9.5（Critical）</strong>です。</p>
+<p>ただし、起きるのは PXE で起動している最中だけです。公式の勧告に書かれているのは EDK II の部品の欠陥で、<strong>どの機器が実際に影響を受けるかは、機器メーカーごとの確認が必要</strong>です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">9.5</p><p class="stat-label">CVSS v4 の評価（Critical）</p></div>
+<div class="stat"><p class="stat-value">504<small>バイト</small></p><p class="stat-label">ICMPエラーを写す固定の欄の大きさ（これを超えて書き込まれる）</p></div>
+<div class="stat"><p class="stat-value">なし</p><p class="stat-label">攻撃に必要な認証</p></div>
+</div>
+
+<h2>何が起きるのか</h2>
+
+<ol>
+<li>機器がネットワーク起動（PXE）を始めると、ドライバ（NetworkPkg/UefiPxeBcDxe）は、ICMPのエラーメッセージを受け取る要求を開いたままにします。</li>
+<li>受けたメッセージを、ドライバの内部の <strong>504バイトの固定の欄</strong>に写します。</li>
+<li>IPv4 と IPv6 の両方の処理で、長さの扱いが誤っています。504バイトより長いメッセージでも写し続け、しかも書き込み先の位置を、1回分ではなく<strong>累計の長さ</strong>で進めるため、欄の外に、攻撃者が与えたバイト列が書き込まれます。</li>
+<li>受信の経路の前の段階に、メッセージの長さを制限する処理はありません。</li>
+</ol>
+
+<h2>影響（勧告の説明）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>勧告に書かれた攻撃の条件と結果</caption>
+<thead><tr><th>項目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>攻撃者</td><td>認証なし。機器のIPアドレス宛てに、単独のICMPエラーメッセージを届けられればよい。どれだけ離れたネットワークからでもよい</td></tr>
+<tr><td>いつ</td><td>機器が PXE で起動している間（IPv4 でも IPv6 でも）。この時間が攻撃できる窓</td></tr>
+<tr><td>結果 1</td><td>ドライバのデータが決まって壊れ、DXE のコアで CPU 例外が起きる。次のICMPエラーで起動が止まり、OSの導入や復旧ができなくなる</td></tr>
+<tr><td>結果 2</td><td>起動するファームウェアのビルドを知っている攻撃者が、同じパケットに偽のイベントを仕込むと、DXE の段階（リング0、OSの安全機能が存在する前）で攻撃者のバイト列が実行される</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>勧告は、この段階では Secure Boot も測定つきの起動も、OSの部品をまだ確認も測定もしていない、と説明しています。</p>
+
+<h2>修正と状況</h2>
+
+<ul>
+<li>修正：プルリクエスト #13302。ICMPエラー処理に境界の確認を加え、書き込み位置の計算を直しました。大きすぎるメッセージは、欄が満杯になったら切り捨てます。単体テストは、修正前は失敗し、修正後は通る、と書かれています。</li>
+<li>取り込み：プルリクエストは「マージ済み」と表示されています。ページ内の日付の表示が2通りあり、取り込みの日は確認できていません。</li>
+<li>勧告のページの記載：影響を受ける版は「2026年9月14日時点の EDK II master」、修正版は「現時点でなし」です。修正の取り込みの表示と、勧告の記載が食い違って見える理由は、確認できていません。</li>
+<li>発見：勧告は、Anthropic の研究者と Google の研究者が欠陥を見つけ、推奨の修正を提供したことに謝意を述べています。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>影響を受ける機器の範囲：勧告の説明は EDK II の PXE ドライバに限られます。どのメーカーのどのファームウェアが対象か、更新が出ているかは、この記事では確認していません。機器メーカーの案内が必要です。</li>
+<li>悪用の有無：勧告には、実際に悪用されたとは書かれていません。</li>
+<li>攻撃の条件：PXE で起動している最中であること、ICMPのメッセージが機器に届くこと、そして実行まで進めるには対象のファームウェアのビルドの情報が要ること、がそろったときの話です。</li>
+<li>報道の数字や説明：「何年前からある欠陥か」「影響を受ける範囲の広さ」といった説明は、一次情報で確認できていないため載せていません。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>起動の前の段階は、OSの安全機能がまだ動いていないので、そこで動くコードは、あとから見つけにくいのが難しいところです。この欠陥は、長さの確認の誤りという基本的な種類のものです。</li>
+<li>勧告が示す対処は修正のコードで、実際の機器では、機器メーカーが出すファームウェアの更新が必要になります。更新の有無は、この記事では確認していません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>UEFI</dt><dd>パソコンやサーバーの電源を入れてから、OSが起動するまでに動くファームウェアの規格。</dd>
+<dt>EDK II</dt><dd>UEFI ファームウェアの共通の部品を提供するオープンソースのプロジェクト（TianoCore）。</dd>
+<dt>PXE</dt><dd>ネットワーク経由でOSを起動したり導入したりする仕組み。</dd>
+<dt>ICMP</dt><dd>ネットワークの状態やエラーを知らせる通信。ping もその一種。</dd>
+<dt>DXE</dt><dd>UEFI の起動の中ほどの段階。ドライバが読み込まれて動く。</dd>
+<dt>バッファあふれ</dt><dd>決まった大きさの入れ物に、それより多いデータを書き込んで、隣のデータを壊してしまう欠陥。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、TianoCore EDK II のセキュリティ勧告 GHSA-99cj-7hg9-mp4m（2026年10月22日）と、修正のプルリクエスト #13302をもとに、独自に整理したものです。</p>
+<p>筆者の道具には Anthropic の AI が含まれます。この欠陥の発見者に、Anthropic の研究者が挙がっています。</p>
+<p>機器メーカーの対応の状況は確認していません。続報や修正版が出たときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（欠陥の仕組み、攻撃の条件、影響、修正の状況、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

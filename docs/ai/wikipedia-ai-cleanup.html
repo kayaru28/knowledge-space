@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="英語版 Wikipedia の有志の取り組み「WikiProject AI Cleanup」と、AI での記事の執筆を禁じる指針から、禁止の範囲と例外、見つけ方、実際にあった事例、迅速削除の基準、公式の説明する難しさを整理する。">
+<title>Wikipedia の AI 生成文の掃除：2026年3月から英語版が AI での記事の執筆・書き換えを禁止し、2022〜2026年に入った文を探して直す有志の取り組み | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Wikipedia の AI 生成文の掃除：2026年3月から英語版が AI での記事の執筆・書き換えを禁止し、2022〜2026年に入った文を探して直す有志の取り組み</h1><p class="summary">英語版 Wikipedia の有志の取り組み「WikiProject AI Cleanup」と、AI での記事の執筆を禁じる指針から、禁止の範囲と例外、見つけ方、実際にあった事例、迅速削除の基準、公式の説明する難しさを整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>英語版 Wikipedia は<strong>2026年3月から</strong>、LLM（ChatGPT のような文章を作る AI）を使って記事の内容を作ったり書き換えたりすることを、翻訳と基本的な校正を除いて<strong>禁止</strong>しています。一方で、<strong>2022年から2026年の間に入った AI 生成の文はまだ多く残っている</strong>として、有志のプロジェクト「WikiProject AI Cleanup」が見つけて直しています。</p>
+<p>確認した時点（2026年10月29日）で、整理が必要な事例は<strong>296件</strong>と掲示されています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">2026<small>年3月</small></p><p class="stat-label">AI での記事の執筆・書き換えを禁止する指針が始まった時期</p></div>
+<div class="stat"><p class="stat-value">296<small>件</small></p><p class="stat-label">整理が必要な事例の数（2026年10月29日に確認）</p></div>
+<div class="stat"><p class="stat-value">2022<small>年11月30日</small></p><p class="stat-label">これより前の文は、AI の生成である可能性が非常に低いとされる日（ChatGPT の公開日）</p></div>
+</div>
+
+<h2>禁止の範囲</h2>
+
+<div class="table-wrap">
+<table>
+<caption>情報ページの説明による範囲</caption>
+<thead><tr><th>区分</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>禁止</td><td>LLM で記事の内容を作る、書き換える</td></tr>
+<tr><td>例外</td><td>翻訳（別の指針の範囲内）と、自分で書いた文の基本的な校正</td></tr>
+<tr><td>校正の範囲</td><td>字面・綴り・句読点・大文字小文字・短縮形の訂正、書式の修正、冗長な語の削除のような最小限のもの。意味を変える言い換えや、新しい文を加えるのは、例外の範囲を超える</td></tr>
+<tr><td>発言や要約</td><td>ノートページの発言や編集の要約を、見えない形で LLM に書かせるのは強く非推奨。使ったときは編集の要約に書くべき</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>なぜ禁止するのか（情報ページの説明）</h2>
+
+<ul>
+<li><strong>もっともらしい誤り</strong>：存在しない動物について質問しても、事実のように答えた例が載っています。LLM は、もっともありそうな続きの文を作るため、作り話が避けられない、という説明です。</li>
+<li><strong>出典の問題</strong>：出典を付けない、基準を満たさない出典を付ける、題名・著者・URLをでっち上げる、ことがあります。</li>
+<li><strong>中立性</strong>：口調は中立に見えても、内容が偏りうる。2026年時点で、権威主義寄りの偏りがあるとする出典を挙げています。</li>
+<li><strong>著作権</strong>：元の文の一部を写す、近すぎる言い換えをする恐れがあり、Wikipedia のライセンス（CC BY-SA）と合わない可能性があります。</li>
+<li><strong>確認の負担</strong>：新しい内容の確認は有志の時間に頼っています。「他の人が後始末をしなくて済むように、時間をかけて投稿する」という暗黙の約束に反する、と説明しています。</li>
+</ul>
+
+<h2>掃除の取り組み</h2>
+
+<ul>
+<li>目標：AI が書いた文を見つけ、方針に合うか確かめ、出典のない・不正確な主張を優先して取り除く。AI 生成の画像の使い方を確かめる。AI を使う編集者に、弱点を教える。AI エージェントによる妨害に備える。</li>
+<li>やり方：記事に印のテンプレートを付ける。出典のない情報や、禁止に反して加えられた内容を取り除く。加えた利用者に警告する。</li>
+<li>ページ全体が明らかに LLM の生成なら、迅速削除の基準（G15）で削除を申請できる。</li>
+</ul>
+
+<h2>見つけるのが難しい</h2>
+
+<ul>
+<li>生成された文は人の文と見分けにくく、判別は多くの場合難しい。手がかりとして、「AI の文章の兆候」の一覧のページがあります。</li>
+<li>2022年11月30日より前からある文は、AI の生成である可能性が非常に低い。</li>
+<li>AI の文は「出典なし」とは限りません。関係のない本物の出典を付ける、存在しない出典を作る、正当な出典から文を作る、の3通りがあり、取り除くときは出典を確かめます。正当な出典なら、ノートページに残して、人が書く文に使えるようにします。</li>
+<li>2026年時点では、新しいモデルは本物の出典をよく引きますが、引いた内容を確かめているとは限りません。出典が実在することは、人が書いた証拠にはなりません。</li>
+</ul>
+
+<h2>ページに載っている事例</h2>
+
+<div class="cards">
+<div class="card">
+<h3>Leninist historiography</h3>
+<p>記事の全体が AI で書かれ、ロシア語とハンガリー語の、完全に偽の出典の一覧が付いていた。検索しても、結果は出なかった。</p>
+</div>
+<div class="card">
+<h3>Estola albosignata（甲虫）</h3>
+<p>AI が書いた段落に、本物のドイツ語とフランス語の出典が付いていたが、内容は無関係だった。フランス語の出典は、まったく別の生物の話だった。</p>
+</div>
+<div class="card">
+<h3>Amberlihisar</h3>
+<p>2023年1月に作られて審査を通り、2023年12月まで、全くの虚構だと気づかれなかった。現在は削除されている。</p>
+</div>
+</div>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>英語版の話です。日本語版など、他の言語版の対応は確認していません。</li>
+<li>296件は、ページを見た時点の数です。「AI で書かれた記事の割合」などの数字は、ページに出ていません。</li>
+<li>指針や情報ページは、有志が編集を続けるもので、内容は変わりえます。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>注目したいのは、禁止だけではなく、すでに入った文を探して直す作業が続いている点です。ページは、AI が加えた編集の判別は多くの場合難しい、と述べています。</li>
+<li>「出典が実在するから安全」とは言えない、という説明は、AI の生成文を扱う場面に広く当てはまる注意です。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>WikiProject</dt><dd>Wikipedia の有志が、特定の目的で集まる共同作業の場。</dd>
+<dt>LLM</dt><dd>大量の文章から学習して、文を作る AI（大規模言語モデル）。</dd>
+<dt>迅速削除</dt><dd>議論なしで削除できる、明らかな基準のこと。</dd>
+<dt>出典</dt><dd>記事の主張の根拠となる、公表された資料。</dd>
+<dt>ノートページ</dt><dd>記事の内容について、編集者が議論するための場。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、英語版 Wikipedia の「WikiProject AI Cleanup」のページと、「Large language models」の情報ページ（どちらも2026年10月29日に閲覧）をもとに、独自に整理したものです。</p>
+<p>数字や記述はページに書かれたものです。個々の記事の議論の経過は確認していません。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（禁止の範囲、掃除の取り組み、見つけ方、事例、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

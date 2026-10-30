@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="ニチレイが2026年7月13日から9月18日までに出した第1報〜第7報から、不正アクセスの発覚と遮断、冷蔵倉庫と冷凍食品の出荷への影響、業務の再開と通常稼働、従業員情報と配送先・取引先・求職者などの漏えいの確認、公表していないことを整理する。">
+<title>ニチレイグループのサイバー攻撃（2026年7月）：システム遮断から11日で通常稼働に戻り、2か月後に個人情報の漏えいを確認するまでの7つの公表 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>ニチレイグループのサイバー攻撃（2026年7月）：システム遮断から11日で通常稼働に戻り、2か月後に個人情報の漏えいを確認するまでの7つの公表</h1><p class="summary">ニチレイが2026年7月13日から9月18日までに出した第1報〜第7報から、不正アクセスの発覚と遮断、冷蔵倉庫と冷凍食品の出荷への影響、業務の再開と通常稼働、従業員情報と配送先・取引先・求職者などの漏えいの確認、公表していないことを整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>食品・低温物流のニチレイは2026年7月13日、<strong>不正アクセスによるシステム障害</strong>を公表し、被害を防ぐためシステムを遮断しました。冷蔵倉庫の入出庫と冷凍食品の出荷が止まりましたが、<strong>7月17日に一部制限つきで再開、7月24日に全拠点で通常稼働</strong>に戻りました。</p>
+<p>その後、<strong>9月18日の第7報で、個人情報の漏えいを確認した</strong>と公表しています。攻撃の手口やランサムウェアかどうかは、公表されていません。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">11<small>日</small></p><p class="stat-label">システムの遮断（7月13日）から、全拠点の通常稼働（7月24日）まで</p></div>
+<div class="stat"><p class="stat-value">7<small>回</small></p><p class="stat-label">公式の公表（第1報〜第7報）</p></div>
+<div class="stat"><p class="stat-value">43,709<small>件</small></p><p class="stat-label">漏えいが確認された従業員・家族・求職者などの情報（最多の区分）</p></div>
+</div>
+
+<h2>7つの公表の経過</h2>
+
+<div class="table-wrap">
+<table>
+<caption>ニチレイの公式の公表（2026年）</caption>
+<thead><tr><th>報</th><th>日付</th><th>主な内容</th></tr></thead>
+<tbody>
+<tr><td>第1報</td><td>7月13日</td><td>不正アクセスによるシステム障害が発生。個人情報・顧客データの社外流出は確認していない。冷蔵倉庫の入出庫業務と冷凍食品の出荷業務に影響。国内に限られる</td></tr>
+<tr><td>第2報</td><td>7月15日</td><td>サーバがサイバー攻撃を受けたことを確認。詳細は被害拡大を防ぐため開示しない。個人情報があったサーバの一部があり、個人情報保護委員会に第1報を提出。7月13日にシステムの遮断措置。7月17日から順次再開する予定</td></tr>
+<tr><td>第3報</td><td>7月17日</td><td>同日から業務を順次開始。受発注を一部制限し、冷蔵倉庫と食品工場を部分稼働。来週中を目指し、全拠点の通常稼働の準備</td></tr>
+<tr><td>第4報</td><td>7月22日</td><td>警察や関係機関と連携。対象者に別途通知を行っている。今週中に全拠点が通常稼働に移行する予定</td></tr>
+<tr><td>第5報</td><td>7月24日</td><td>受発注の制限を解除し、全拠点で平常時の通常稼働に移行</td></tr>
+<tr><td>第6報</td><td>8月14日</td><td>従業員の情報（氏名、生年月日、会社メールアドレス、従業員番号、人事・労務管理の情報）に漏えいのおそれ。不正利用は確認していない</td></tr>
+<tr><td>第7報</td><td>9月18日</td><td>個人情報の漏えいを確認。個人情報保護委員会への報告は9月11日。区分ごとの件数を公表</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>漏えいが確認された個人情報（第7報、9月18日時点）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>第7報の区分ごとの件数と項目</caption>
+<thead><tr><th>対象</th><th>項目</th><th>件数</th></tr></thead>
+<tbody>
+<tr><td>グループ各社が受託した配送業務の配送先のお客さま</td><td>氏名、住所、電話番号</td><td>3,308</td></tr>
+<tr><td>お取引先の役職員</td><td>会社名、所属、役職、氏名、住所、電話番号、メールアドレス</td><td>6,849</td></tr>
+<tr><td>グループの従業員（2021年以降の退職者を含む）とそのご家族、求職者</td><td>氏名、生年月日、性別、住所、電話番号、メールアドレス、従業員番号、給与賞与情報、在留資格、所属・異動などの人事情報など</td><td>43,709</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>一件ごとに、項目の全部が含まれているわけではありません。</li>
+<li>クレジットカード情報は含まれていません。</li>
+<li>不正利用などの二次被害は、確認されていません（9月18日時点）。</li>
+<li>対象の方には順次個別に連絡し、連絡先が不明などで難しい場合は、公表をもって案内に代えるとしています。</li>
+<li>3つの区分の件数に、重複があるかは書かれていません。そのため、合計は出していません。</li>
+</ul>
+
+<h2>公表されていないこと</h2>
+
+<ul>
+<li>攻撃の手口、侵入経路、ランサムウェアかどうか。第2報と第4報で、詳細の開示を差し控えるとしています。</li>
+<li>システムの遮断が解けた日や、全システムの復旧の状況。</li>
+<li>漏えいした情報が、実際に外部で悪用されたか（二次被害は確認していない、という表現にとどまる）。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>ニチレイの公表だけをもとにしています。報道にあるような取引先の数や、他社の事例との比較は、公式の資料で確認していないため載せていません。</li>
+<li>件数は9月18日時点で、調査の継続中です。第7報は、追加で漏えいが確認された場合に知らせるとしています。</li>
+<li>「通常稼働に戻った」ことと、システムが攻撃前の状態に完全に戻ったことは別です。公表されているのは業務の稼働です。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>最初の公表（7月13日）の「個人情報の流出は確認していない」から、約2か月後の「漏えいを確認」へと、公表の内容が段階的に変わりました。第2報の時点で、個人情報が保管されたサーバがあるため委員会に報告した、とも書かれています。</li>
+<li>漏えいした区分は、従業員・家族・求職者が最多で、給与賞与の情報や在留資格のような項目も含まれます。顧客や取引先だけでなく、人事の情報も対象になりうる、という例です。</li>
+<li>事業の停止期間は11日でしたが、情報の漏えいの確定には、その後さらに約2か月かかりました。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>遮断措置</dt><dd>被害の拡大を防ぐため、システムをネットワークから切り離すこと。</dd>
+<dt>個人情報保護委員会</dt><dd>個人情報の保護を担当する国の機関。漏えいが起きたときの報告先。</dd>
+<dt>二次被害</dt><dd>漏えいした情報を使った、なりすましや詐欺などの被害。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、ニチレイの公式の公表「当社グループでのシステム障害発生について」の第1報（7月13日）から第7報（9月18日）をもとに、独自に整理したものです。</p>
+<p>調査は継続中で、追加の公表があれば見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（第1報〜第7報の経過、影響した業務、漏えいが確認された個人情報、公表されていないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

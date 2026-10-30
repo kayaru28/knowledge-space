@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月24日に外部の研究者が公開した報告「Tailworm」を受け、Tailscale が10月26日に出した4件のセキュリティ勧告と10月28日の調査ブログから、何が破られたか、誰が影響を受けるか、v1.104.4での修正、当面の軽減策、ワームではないという説明を整理する。">
+<title>Tailscale SSH の権限の欠陥：接続を許された後の権限の境界が破られた4件の勧告と、「ワーム」ではないという説明 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>Tailscale SSH の権限の欠陥：接続を許された後の権限の境界が破られた4件の勧告と、「ワーム」ではないという説明</h1><p class="summary">2026年10月24日に外部の研究者が公開した報告「Tailworm」を受け、Tailscale が10月26日に出した4件のセキュリティ勧告と10月28日の調査ブログから、何が破られたか、誰が影響を受けるか、v1.104.4での修正、当面の軽減策、ワームではないという説明を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>VPN サービス Tailscale の組み込み SSH サーバー（Tailscale SSH）などで、<strong>接続が認められたあとに、与えられた権限の範囲を超えた操作ができる</strong>欠陥が見つかりました。2026年10月26日に4件の勧告が出て、修正は <strong>v1.104.4</strong> に入っています。</p>
+<p>公式の説明では、これは「誰が接続できるか」を決める認証や方針の確認が破られたものではなく、<strong>接続が認められたあとの権限の境界</strong>の問題です。認証されていない攻撃者が任意のサーバーに入れるものではなく、「ワーム」でもない、と説明しています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">4<small>件</small></p><p class="stat-label">10月26日付の勧告の数</p></div>
+<div class="stat"><p class="stat-value">2<small>時間</small></p><p class="stat-label">報告を受け取ってから、研究者が公開するまで</p></div>
+<div class="stat"><p class="stat-value">v1.104.4</p><p class="stat-label">修正が入ったクライアントのバージョン</p></div>
+</div>
+
+<h2>経過</h2>
+
+<div class="table-wrap">
+<table>
+<caption>公式の説明による経過</caption>
+<thead><tr><th>日付</th><th>できごと</th></tr></thead>
+<tbody>
+<tr><td>10月23日（金）</td><td>Tailscale SSH への懸念が SNS で広まり始め、調査を開始</td></tr>
+<tr><td>10月24日（土）</td><td>朝に外部の研究者から報告を受け取り、その2時間後に研究者が公開（報告の名前は「Tailworm」）</td></tr>
+<tr><td>10月26日（月）</td><td>調査の更新を公開（最初の評価と当面の対策）。4件の勧告も同日付</td></tr>
+<tr><td>10月27日</td><td>調査の更新のページを、4件の勧告と調査ブログへの案内に更新。修正版の公開目標はこの日の終わりだった</td></tr>
+<tr><td>10月28日</td><td>調査ブログで、修正が v1.104.4 で出たと説明</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>4件の勧告の内容</h2>
+
+<div class="cards">
+<div class="card">
+<h3>Serve の HTTP/2：権限情報の混ざり</h3>
+<p>同じ接続の複数の通信が状態を共有していたため、ある掲載先の権限情報（Tailscale-App-Capabilities）が別の掲載先に混ざることがあった。影響は、TLS つきの Serve で、権限の要件が違う掲載先を2つ以上持つ機器。</p>
+</div>
+<div class="card">
+<h3>Serve の Unix ソケット先：root だけの入口に届く</h3>
+<p>TCP の転送が Unix ソケットを root として呼び出し、tailscaled のローカルAPIの入口にそのまま届いた。もう1つは、設定のあとでパスをシンボリックリンクに差し替えて確認をすり抜けられた。公式は、前者は機器の乗っ取りにつながりうると説明している。対象は、設定を書ける操作者がいる、または掲載先のパスに書き込める利用者がいる機器。</p>
+</div>
+<div class="card">
+<h3>SSH のセッション：メモリが増え続ける</h3>
+<p>認証されたピアが、画面サイズの変更や環境変数の追加を続けると、tailscaled のメモリが増え続け、切断後も戻らなかった。メモリ不足で tailscaled が落ちると、その機器の Tailscale の接続がすべて止まる。方針で許された SSH のセッションが必要。</p>
+</div>
+<div class="card">
+<h3>SSH の Unix ソケット転送：root だけのソケットに届く</h3>
+<p>root で動く SSH サーバーが、パスの文字列だけを確認して、操作は root として行っていた。転送（ローカル・リモート）で、Docker のソケットや tailscaled のローカルAPIといった root だけのソケットに届く。対象は、SSH が有効で、方針で転送を許している機器。</p>
+</div>
+</div>
+
+<h2>公式の説明の要点</h2>
+
+<ul>
+<li>どこが問題か：「接続が認められたあとの権限の強制」。認証やアクセス方針の確認ではない。</li>
+<li>攻撃の前提：tailnet の中の認可された端末をすでに押さえていること、方針ファイルで SSH が明示的に許されていること、そして欠陥を使える条件。</li>
+<li>「ワーム」か：自己増殖して勝手に広がるものではなく、方針ファイルが許す接続の範囲での、横の移動にあたる、と説明している。到達できるのは、方針がすでに SSH を許していた機器だけ。</li>
+<li>報告にあった Serve と Funnel の5件：3件はバグで、v1.104.4 で修正。2件は設計どおりの動き（Funnel の属性の確認を回避するには機器の管理者権限が要る／TS_SERVE_ALLOW_ALL_INTERFACES は tailnet の外へ出すための任意の設定）。</li>
+<li>Conn25：報告にあった欠陥は、まだ公開前の次世代のアプリコネクタのもの。以前から把握しており、公開していない理由の1つ。いま使える安定版のアプリコネクタは影響を受けない。</li>
+</ul>
+
+<h2>利用者がやること</h2>
+
+<ul>
+<li>v1.104.4 以降に更新する。公式は、Tailscale SSH を使う利用者に勧めている。</li>
+<li>すぐ更新できないときの軽減策：tailscaled の環境変数に <code>TS_SSH_DISABLE_FORWARDING=1</code> を設定して再起動する。SSH 全体を止めずに、転送だけを止められる。</li>
+<li>SSH の方針を見直し、必要なユーザーと端末だけに絞る。機密性の高い機器には、追加の認証を求める「チェックモード」を検討する。</li>
+<li>10月26日の時点で公式は、「全員が Tailscale SSH を止めることは勧めない」と説明していた。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>公式の説明をもとにしている：外部の研究者の報告そのものは読んでおらず、その内容と公式の説明が一致するかは確認していない。</li>
+<li>悪用の有無：公式の資料には、実際に悪用されたかどうかは書かれていない。</li>
+<li>影響は設定しだい：勧告ごとに対象が違い、SSH の転送を許していない、Serve を使っていない、といった環境では、当てはまらない勧告がある。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>「認証」と「接続後の権限」は別の層で、後者の境界が root で動くサーバーの内側にあると、設定の文字列の確認だけでは守りきれない、という例。修正の説明にも、転送を root ではなく認証された利用者として行うよう変えた、とある。</li>
+<li>Tailscale は、報告を受けた時点で関連する問題の調査と修正がすでに進んでいた、と説明している。公開の2時間前に報告を受けた、という経過と合わせて、情報の出る順序が対応を急がせた例でもある。</li>
+<li>過去の勧告にも、Tailscale SSH の問題は複数出ている（7月の勧告では、環境変数がコマンドラインに見える問題、同じ月の別の勧告では、-i というユーザー名で root のセッションを得られる問題）。設定の見直しは、一度きりの対応ではなく継続的なものとして扱うのがよい。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>tailnet</dt><dd>Tailscale でつないだ、自分たち専用のネットワーク。</dd>
+<dt>方針ファイル（ACL）</dt><dd>誰がどの機器に、どのユーザーとして接続できるかを決める設定。</dd>
+<dt>権限昇格</dt><dd>許されている範囲より大きな権限を得ること。</dd>
+<dt>SSH の転送</dt><dd>SSH の接続を使って、別のポートや Unix ソケットへの通信を中継する機能。</dd>
+<dt>Unix ソケット</dt><dd>同じ機器の中のプログラム同士が通信する入口。Docker の操作用の入口などがある。</dd>
+<dt>Serve / Funnel</dt><dd>手元のサービスを tailnet に載せる機能（Serve）と、インターネットにも公開する機能（Funnel）。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Tailscale の公式の調査の更新（10月26日公開、27日更新）、公式ブログ「Tailscale SSH: Findings and fixes」（10月28日）、公式の勧告の一覧をもとに、独自に整理したものです。</p>
+<p>筆者の道具には Anthropic の AI が含まれます。この記事の本題とは関係ありませんが、Tailscale の過去の勧告には Anthropic が報告者として挙がっているものがあります。</p>
+<p>外部の研究者の報告そのものは読んでいません。公式の資料にない点は、確認できていないものとして扱っています。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（4件の勧告、調査ブログの説明、修正、軽減策、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

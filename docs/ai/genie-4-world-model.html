@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Google DeepMind が2026年10月27日に発表した世界モデル Genie 4 について、公式ブログから、リアルタイムで操作できる世界の生成、音声と会話の生成、Gemini が目標を段取りに分けて見張る仕組み、ロボット研究での使い方、研究プレビューの範囲、公式が認めている限界を整理する。">
+<title>Google DeepMind の Genie 4：音声と会話まで同時に生成する「世界モデル」と、Gemini が筋書きを見張る仕組み、そしてまだ限られた人しか使えない現状 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Google DeepMind の Genie 4：音声と会話まで同時に生成する「世界モデル」と、Gemini が筋書きを見張る仕組み、そしてまだ限られた人しか使えない現状</h1><p class="summary">Google DeepMind が2026年10月27日に発表した世界モデル Genie 4 について、公式ブログから、リアルタイムで操作できる世界の生成、音声と会話の生成、Gemini が目標を段取りに分けて見張る仕組み、ロボット研究での使い方、研究プレビューの範囲、公式が認めている限界を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Google DeepMind は2026年10月27日、世界モデル「Genie 4」を発表しました。文章で指示すると、操作できる映像の世界をリアルタイムで作り、そこに<strong>環境の音や、人物の会話まで同時に生成</strong>します。公式ブログは、リアルタイムの世界モデルとして、音声を最初から生成するのは初めてだと述べています。</p>
+<p>もう1つの特徴は、Gemini が世界の外から筋書きを見張っていることです。目標を段取りに分け、映像を確かめながら計画を直していきます。ただし、今使えるのは<strong>信頼できるテスターだけの研究プレビュー</strong>です。公式ブログも、短い時間では整合しているが、長く動かすと細部が崩れる、と限界を認めています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">4<small>つ</small></p><p class="stat-label">公式ブログが挙げた強化点（リアルタイムの操作、物理と人の動き、音声、Gemini との連携）</p></div>
+<div class="stat"><p class="stat-value">10<small>月</small>27<small>日</small></p><p class="stat-label">発表の日（2026年）</p></div>
+<div class="stat"><p class="stat-value">限定</p><p class="stat-label">いま使えるのは信頼できるテスターだけ（研究プレビュー）</p></div>
+</div>
+
+<h2>何が発表されたのか</h2>
+
+<ul>
+<li>世界モデル：出来事を始めると、世界がどう反応し、どんな音がし、人がどう動き、反応し、話すかを、続けて作り出す。作られた世界は、キーボードで動き回り、カメラも操作できる。</li>
+<li>音声：風や波などの環境音、音楽のような音、インタラクティブな会話を、世界と同時に生成する。会話は、ユーザーの操作や世界の出来事に応じてその場で変わる。</li>
+<li>Gemini との関係：Gemini の仲間の「Gemini Omni」が、現実の見た目と振る舞いにもとづく土台を担い、ほかの Gemini が、世界の整合性を保つための推論を担う、と説明している。</li>
+<li>目的：公式は、AGI（汎用の人工知能）の実現には世界を理解して再現することが重要で、ロボットやエージェントの訓練の環境や、新しい対話型の体験に役立つと述べている。</li>
+</ul>
+
+<h2>強化された4つの点</h2>
+
+<div class="cards">
+<div class="card"><h3>リアルタイムで世界を作り変える</h3><p>自然な言葉で、天気を変える、カメラを動かす、人や物を登場させる、といった変更ができる。Gemini が文脈に合わせて指示を補い、指示の合間も、世界が筋の通った形で進むように見守る。</p></div>
+<div class="card"><h3>物理と人の動きのリアルさ</h3><p>空気の流れや衝突などの物理を再現する。最も大きな進歩として、人物が自然に動き、環境に応じて反応し、リアルタイムで操作できる点を挙げている。</p></div>
+<div class="card"><h3>音を作る</h3><p>Genie 4 は、リアルタイムの世界モデルとして、初めて音声を最初から生成する、と述べている。世界ごとの環境音と、その場で変わる会話。</p></div>
+<div class="card"><h3>Gemini との連携で複雑な出来事を再現</h3><p>Gemini 3.8 Flash が、Genie 4 が世界を作る間、映像を見て、目標を段取りに分け、各段取りの成否を確かめる。世界が変わったりユーザーが割り込んだりすると、計画をその場で直す。</p></div>
+</div>
+
+<h2>ロボットの研究での使い方</h2>
+
+<ul>
+<li>Gemini 4 Argon が、ユーザーの指示した作業を段取りに分け、その段取りを文字の説明として Genie 4 に順に渡す。Genie 4 は、世界を作りながら、その文字で操作される。</li>
+<li>公式の例：人型ロボット（Apptronik の Apollo）がチェッカーを指す様子を再現する。ほかに、ロボットアーム（Universal Robots の UR5）がピペットで液を試験板に入れる例も載せている。</li>
+<li>狙い：現実に持ち込む前に、AI がさまざまな環境でどう動くかを試せる、想像の世界の多様な場面を作ること。</li>
+</ul>
+
+<h2>テスターから見えてきた使い方</h2>
+
+<ul>
+<li>創作：映画の場面に入り込み、カメラの角度、照明、せりふ、動きを変えながら、何度も撮り直す「下書き」。</li>
+<li>歴史・報道：1枚の古い写真から、その場所の動く世界を数秒で作る。洪水や山火事のような短期の環境の出来事を可視化する。</li>
+<li>ゲーム・体験の設計：最初の発想から、動き回れる試作品まで数秒。ゲームエンジンのコードを書く前に、見た目や仕組みを試す。</li>
+<li>シミュレーション：企業のパートナーが、ゼロから場面を作る道具として評価している。足りない点を見つけて改善しているところ、と書いている。</li>
+</ul>
+
+<h2>いつ、誰が使えるのか</h2>
+
+<ul>
+<li>いま：信頼できるテスターへの研究プレビュー。</li>
+<li>近日中：Google AI Ultra の加入者が使う Project Genie と、Gemini API・Google AI Studio の早期アクセスのパートナー。Project Genie では順番待ちの登録を受け付けている。</li>
+<li>料金、一般の開発者への提供時期、日本での提供は、公式ブログに書かれていない。</li>
+</ul>
+
+<h2>安全策</h2>
+
+<ul>
+<li>ほかのモデルと同じ安全方針にもとづく、厳しい安全策を入れた。有害な内容を作らせないための社内評価を、公開の前に行った。</li>
+<li>先に信頼できるテスターだけに出して、感想を集めてから広げる。</li>
+<li>Genie 4 が作るすべての映像と音声に、見えない電子透かし「SynthID」を入れる。AI が作った内容かを見分ける助けにする。</li>
+</ul>
+
+<h2>公式が認めている限界</h2>
+
+<ul>
+<li>短い時間の間は、整合した環境を保てる。しかし、動かし続けたり、複雑な指示の変更を重ねたり、場面の中を動き回ったりすると、見た目の細部や、物がそこにあり続けること（物の永続性）が、ずれることがある。</li>
+<li>研究が続いている課題：複雑な物理のやり取り、リアルタイムの音の正確さ、読める文字の表示、空間の正確さ、長期の一貫性。</li>
+<li>公式は、Genie 4 を「初期の、実験的なモデル」と呼び、研究の途中の姿として出している。</li>
+</ul>
+
+<h2>これから</h2>
+
+<ul>
+<li>公式が挙げる方向は「ハイブリッドの世界モデル」：コードや言語モデルの論理的な推論と、画素の水準の感覚的な再現を組み合わせる。Gemini が裏で構造と筋書きの時間軸を決め、Genie が目の前の物理的な世界の見た目、音、反応を作る、という分担。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>性能の数字はなし：公式ブログには、評価の数値や他社との比較表はない。「リアル」「最も大きな進歩」などは、公式の言葉と動画による説明。</li>
+<li>動画は公式が選んだ例：ブログの動画は、DeepMind が選んだ入力と結果。長い時間や複雑な操作での崩れは、公式自身も限界として書いている。</li>
+<li>「初めて」は自社の主張：リアルタイムの世界モデルで音声を最初から生成するのは初めて、という点は、公式の言葉。第三者の確認は、この記事の時点でない。</li>
+<li>提供の範囲は変わる：「近日中」と書かれた部分は、料金や時期が決まっていない。変わったときに見直す。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>映像を作る技術の話に見えるが、公式が強調するのは、ロボットやエージェントが試す「練習の場」としての使い方。動画の質より、世界を操作でき、筋書きを Gemini が見張るという構造が、この発表の特徴。</li>
+<li>音と会話が加わったことで、見た目だけの再現から、人が話す場面の再現へ範囲が広がった。同時に、本物と見分けがつきにくい内容を作れるため、SynthID のような出自の印の働きが重要になる。</li>
+<li>長く動かすと崩れるという限界が、どこまで縮むかが、次の発表の見どころ。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>世界モデル（ワールドモデル）</dt><dd>世界がどう動くかを内部で再現するモデル。ここでは、指示や操作に応じて、映像と音の世界を作り続けるもの。</dd>
+<dt>研究プレビュー</dt><dd>完成した製品ではなく、研究の途中のものを、限られた人に試してもらう公開の形。</dd>
+<dt>SynthID</dt><dd>Google が使う、人の目や耳に分からない電子透かし。AI が作った映像や音声かを後から見分けるための印。</dd>
+<dt>物の永続性</dt><dd>画面から見えなくなっても、物がそこにあり続けること。世界モデルでは、時間が経つとずれやすい点として挙げられる。</dd>
+<dt>AGI</dt><dd>人間の幅広い知的作業に対応できる、汎用の人工知能。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月29日時点の情報です。内容は、Google DeepMind の公式ブログ「Genie 4」（2026年10月27日）をもとに、独自に整理したものです。</p>
+<p>公式ブログの説明にもとづくもので、自分で動かして確かめてはいません。研究プレビューの段階なので、提供の範囲が広がったときや、第三者の評価が出たときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（発表内容、4つの強化点、Gemini との連携、ロボット研究、提供範囲、安全策、限界、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
