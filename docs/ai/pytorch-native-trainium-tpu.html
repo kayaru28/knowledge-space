@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月20日前後に AWS と Google が公開した、PyTorch を自社チップで動かすオープンソースの実装（TorchNeuron、TorchTPU）の使い方と制限、各社が示した検証と性能の数字、10月27日に発表された Oracle Cloud への Google TPU 導入（2027年）を、公式の発表から整理する。">
+<title>NVIDIA 以外の AI チップで PyTorch がそのまま動く：TorchNeuron（Trainium）と TorchTPU の公開、Oracle Cloud への Google TPU 導入 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>NVIDIA 以外の AI チップで PyTorch がそのまま動く：TorchNeuron（Trainium）と TorchTPU の公開、Oracle Cloud への Google TPU 導入</h1><p class="summary">2026年10月20日前後に AWS と Google が公開した、PyTorch を自社チップで動かすオープンソースの実装（TorchNeuron、TorchTPU）の使い方と制限、各社が示した検証と性能の数字、10月27日に発表された Oracle Cloud への Google TPU 導入（2027年）を、公式の発表から整理する。</p><p class="meta">初回公開 2026-10-30 ／ 更新日 2026-10-30</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月20日前後に、<strong>AWS と Google が、自社の AI チップ（Trainium、TPU）で PyTorch をそのまま動かすための実装を、それぞれオープンソースで公開</strong>しました。AWS の TorchNeuron は公開ベータ、Google の TorchTPU は PyTorch の公式ブログで公開されています。どちらも、コードの書き換えを「デバイス名を替える」程度に近づけることを狙っています。</p>
+<p>10月27日には、Oracle と Google が、<strong>2027年から Oracle Cloud で Google の TPU を提供する</strong>と発表しました。ただし、性能の数字はすべて、公開した会社自身のものです。独立した検証は、読んだ原本からは確認できませんでした。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">2<small>つ</small></p><p class="stat-label">NVIDIA 以外のチップ向けに公開された、PyTorch のネイティブな実装（Trainium 向けと TPU 向け）</p></div>
+<div class="stat"><p class="stat-value">4,917</p><p class="stat-label">TorchTPU の検証で使った Hugging Face のモデル数（Google の数字。落ちずに動いたのは98%）</p></div>
+<div class="stat"><p class="stat-value">2027<small>年</small></p><p class="stat-label">Oracle Cloud が Google TPU の提供を始める予定の年（暦年中）</p></div>
+</div>
+
+<h2>背景：なぜ「PyTorch のまま」が要点なのか</h2>
+
+<ul>
+<li>TorchNeuron の公式ブログによると、研究者は実験したく、顧客は Trainium の性能を使いたい。学習と推論のライブラリは PyTorch の API で書かれ、新しい版が出続けています。PyTorch は数年かけて API をアクセラレータに依存しない形にし、独自のハードウェアを登録する公式の拡張点（PrivateUse1、torch.accelerator）を用意しました。TorchNeuron は、この拡張点の上に作られています。</li>
+<li>TorchTPU の公式ブログによると、TPU はこれまで TensorFlow と JAX の環境と結びついてきました。2020年に PyTorch/XLA が出ましたが、コンパイルする範囲を明示する手直しが要る、コンパイル待ちが長い、通常の逐次実行（eager）に対応しない、といった課題があった、と Google は説明しています。</li>
+<li>TorchTPU は2025年半ばに Google で始まり、Meta の PyTorch チームと共同で進められました。</li>
+</ul>
+
+<h2>2つを並べる</h2>
+
+<div class="table-wrap">
+<table>
+<caption>PyTorch の公式ブログ、AWS の公開資料、Google の公開資料より</caption>
+<thead><tr><th>項目</th><th>TorchNeuron（AWS）</th><th>TorchTPU（Google）</th></tr></thead>
+<tbody>
+<tr><td>対象のチップ</td><td>Trainium2 と Trainium3</td><td>TPU（性能の測定は TPU v7）</td></tr>
+<tr><td>公開の状態</td><td>公開ベータ（10月20日。Neuron 2.33）。Apache 2.0 のオープンソース</td><td>オープンソースで公開。開発中で、Google Cloud の一部の大口顧客の本番（推論と学習）で使われていると書く。ライセンスは、読んだ原本では未確認</td></tr>
+<tr><td>切り替え</td><td>モデルを <code>.to('neuron')</code> に置く</td><td><code>.to('tpu')</code>。分散のバックエンド名は <code>tpu_dist</code></td></tr>
+<tr><td>実行方式</td><td>eager、torch.compile（バックエンド名 neuron）、adaptive eager（実験的）</td><td>eager（DeferAndFuse という新方式を含む）、torch.compile（Dynamo ベース）</td></tr>
+<tr><td>独自のカーネル</td><td>NKI と、オープンソースの NKI-lib（FlashAttention、MoE のブロック単位のカーネルなど）</td><td>Pallas と Helion</td></tr>
+<tr><td>連携</td><td>TorchTitan、Hugging Face（Transformers、Diffusers など）、vLLM Neuron</td><td>Hugging Face Transformers v5 など、vLLM、SGLang、TorchTitan、Ray、TorchRec</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>TorchNeuron（AWS）：公開ベータ</h2>
+
+<div class="cards">
+<div class="card"><h3>使い方</h3><p>モデルを <code>.to('neuron')</code> に置くと、Trainium で動きます。torch.compile は、バックエンドに neuron を指定します。<code>torch.nn</code>、<code>torch.distributed</code>、<code>torch.profiler</code> などの標準の API が、neuron のデバイスで動きます。PyTorch の自動読み込みで登録されるため、専用の import は要りません。対象は PyTorch 2.14 で、それより前の XLA ベースの torch-neuronx は、別の系統として提供が続きます。</p></div>
+<div class="card"><h3>実行方式</h3><p>eager は、演算ごとに実行ファイル（NEFF）を作って動かします。torch.compile は、Dynamo で計算グラフを捕まえ、Neuron のコンパイラが NEFF にします。adaptive eager は、小さな部分グラフをまとめて作る実験的な方式で、既定では無効です。</p></div>
+<div class="card"><h3>独自のカーネル</h3><p>NKI で、eager と torch.compile の両方に独自の演算を足せます。学習で使うには、backward 側の実装（register_autograd）が要ります。</p></div>
+</div>
+
+<h3>制限と検証</h3>
+
+<ul>
+<li><strong>制限</strong>：eager で Neuron 向けの実装がない演算は CPU で動き、警告が出ます。torch.compile は、変換できない演算があると失敗します。float64 は float32 として動きます。初版で対応しないと決めたものに、疎テンソル、NestedTensor、順方向の自動微分、動的・記号的な形状などがあります。TorchAO と FP8 は非公開のベータで、次の版で一般提供の予定です。</li>
+<li><strong>検証</strong>：Hugging Face の10万モデル（ダウンロード数で実際の利用の99.9%をカバーするとされる）を、縮小した構成で継続的に動かしています（2026年9月時点）。結果は図で示され、本文には数値がありません。PyTorch 本体のテスト（2026年8月）は約15.4万の結果があり、約6.9万が理由つきで飛ばされました。うち約3.9万が Neuron 側の意図した飛ばしで、最大は、Neuron 向けの実装がまだない演算の約2.2万です。</li>
+<li><strong>AWS の数字</strong>（Amazon Science）：キャッシュとコンパイルの共有で、1台の中で64プロセスに分けた大規模言語モデルの、最初の学習ステップまでの時間が約3分の1短くなりました。</li>
+<li><strong>顧客の声</strong>（公式ブログに載った顧客の発言で、会社の主張です）：音声認識の Deepgram は、評価したベンチマークで、既存の GPU の基準より、1ドルあたり約60%多い入力音声の秒数を Trainium で処理できた、としています。</li>
+</ul>
+
+<h2>TorchTPU（Google）：開発中のオープンソース</h2>
+
+<div class="cards">
+<div class="card"><h3>設計の原則</h3><p>PyTorch の実行環境に JAX を持ち込まない。eager を堅くする。torch.compile は Dynamo ベースで、JAX のコンパイルに近い性能を目指す。DDP、FSDP、DTensor などの分散に対応する。移植は <code>model.to("cuda")</code> を <code>model.to("tpu")</code> に替える程度を目指します。ただし、最高性能は、形状や分割が GPU 向けに偏っているため、それだけでは出ないと書いています。</p></div>
+<div class="card"><h3>対応の範囲</h3><p>eager と compiled の両方。約450の Aten 演算。JAX/Pallas と Helion で独自のカーネルが書けます。Hugging Face の Transformers v5、Diffusers、Kernels と連携し、ダウンロード上位5,000のモデルが、そのまま動くと書いています。</p></div>
+</div>
+
+<h3>検証の数字（Google）</h3>
+
+<div class="table-wrap">
+<table>
+<caption>PyTorch 公式ブログの「Case Studies」より。Google 自身の数字</caption>
+<thead><tr><th>項目</th><th>結果</th></tr></thead>
+<tbody>
+<tr><td>検証したモデル</td><td>4,917（アーキテクチャの系統は500以上）</td></tr>
+<tr><td>人気順の層（Tier 1）で、落ちずに動いた数</td><td>4,821（98%）</td></tr>
+<tr><td>アーキテクチャの代表の層（Tier 2）で、GPU と数値が一致した数</td><td>657のうち638（97%）</td></tr>
+<tr><td>動的な形状の対応</td><td>839モデルのうち、834（99%）で数値が正しかった</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>性能の数字（Google の測定。条件つき）</h3>
+
+<div class="table-wrap">
+<table>
+<caption>数字は、条件（モデル、チップの数、系列長）が違うため、行どうしを比べないでください</caption>
+<thead><tr><th>測定</th><th>条件</th><th>結果</th></tr></thead>
+<tbody>
+<tr><td>推論（prefill）</td><td>純粋な PyTorch で書いた30B規模のモデル。TPU v7 の1チップ。系列長 5,120</td><td>約25.7k トークン/秒。利用効率（MFU）59%。系列長 10,240 では約22.4k、51%</td></tr>
+<tr><td>学習</td><td>同じモデル。4チップ（1ホスト）。系列長 5,120</td><td>1チップあたり約5.6k。MFU 38%。系列長 10,240 では約4.6k、32%</td></tr>
+<tr><td>学習（GPU 向けの実装を移植）</td><td>TorchTitan にある GPU 向けの実装を、最小限だけ直した。4チップ。系列長 5,120</td><td>1チップあたり約5.3k。MFU 36%。系列長 10,240 では約4.2k、29%</td></tr>
+<tr><td>JAX との比較</td><td>Qwen3 MoE 235B の学習。64チップ</td><td>PyTorch/TorchTitan が1,828、JAX/MaxText が1,937（トークン/秒）</td></tr>
+<tr><td>規模</td><td>同じモデルの学習。1,024チップから8,192チップ</td><td>MFU は28.8%から27.1%で、ほぼ保たれる</td></tr>
+<tr><td>推論の費用</td><td>Qwen3.5。TPU v7 の4チップ。vLLM-TorchTPU</td><td>100万トークンあたり2.01セント（8K入力・1K出力）。公式ブログが、外部の評価（SemiAnalysis の InferenceX）として引用した結果で、原本は読んでいない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Oracle Cloud への Google TPU 導入（10月27日）</h2>
+
+<ul>
+<li><strong>何が発表されたか</strong>：Oracle と Google が、Oracle AI World で、Oracle Cloud Infrastructure（OCI）が、Google 以外のハイパースケールのクラウドとして初めて Google の TPU を提供する、と発表しました。</li>
+<li><strong>時期</strong>：2027年の暦年中に提供を始め、複数年かけて段階的に広げます。</li>
+<li><strong>役割</strong>：Google が TPU を提供し、オープンソースのソフトウェアと共同で設計します。OCI は、大規模な展開に必要な電力、冷却、データセンターのネットワークを提供します。顧客は OCI の中で、ワークロードや性能・費用の要件に応じて TPU を選べます。</li>
+<li><strong>TPU の世代</strong>：発表文は第8世代の TPU 8t（学習向け）と TPU 8i（推論向け）を紹介していますが、OCI で提供する具体的な世代は書かれていません。</li>
+<li><strong>会社の主張</strong>（独立した検証や測定条件はありません）：TPU 8t は、最先端モデルの開発サイクルを数か月から数週間に縮め、前世代より、ポッドあたりの計算性能が約3倍とされます。TPU 8i は、多数の専門化したエージェントによる反復の処理向けの設計です。</li>
+<li><strong>想定する用途</strong>：高密度モデルと MoE の大規模な学習・ポストトレーニング、推論、エージェント、長い文脈の本番の推論。</li>
+<li><strong>未確認</strong>：価格、提供するリージョン、台数。Oracle 側のページは取得できませんでした。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>性能の数字は、AWS、Google、顧客それぞれのものです。条件が違い、直接は比べられません。</li>
+<li>TorchNeuron は公開ベータ、TorchTPU も開発中と書かれています。</li>
+<li>切り替えが簡単になっても、最高性能には独自のカーネルが要る、と両社が書いています。TorchTPU の公式ブログは、デバイス名の変更だけでは最高性能は出ないと明記し、本番の最高性能には Pallas のカーネルを勧めています。TorchNeuron の顧客の発言も、繰り返し呼ぶ層で NKI のカーネルを書いたとしています。</li>
+<li>Oracle の提供は2027年で、世代・価格・リージョンは書かれていません。Oracle のその他の発表は、扱っていません。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>同じ週に、PyTorch のカンファレンスで、AWS と Google が、同じ「PyTorch の標準の拡張点に乗る」設計で、自社のチップを開きました。既存の PyTorch のコードとライブラリを持ち込みやすくすることが、チップ選びの障壁を下げる、という見立てです。</li>
+<li>一方で、「動く」ことと「速く安い」ことは別で、後者は個別のカーネルの調整と、実際のワークロードで決まります。各社の数字は自社の測定で、第三者による比較は、今回の原本には少ないです。</li>
+<li>Oracle の件は、Google が TPU を自社のクラウドの外に出す動きです。ただし提供は2027年で、詳細は未発表です。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>PyTorch</dt><dd>機械学習の開発で広く使われる、Python のフレームワーク。</dd>
+<dt>Trainium</dt><dd>AWS の自社開発の AI チップ。TPU は Google のもの。</dd>
+<dt>eager</dt><dd>1行ずつ、すぐ実行する方式。torch.compile は、まとめて最適化する方式。</dd>
+<dt>XLA</dt><dd>計算を、チップに合う形に変換するコンパイラの基盤。</dd>
+<dt>カーネル</dt><dd>チップの上で動く、演算の小さなプログラム。NKI（AWS）、Pallas（Google）で書く。</dd>
+<dt>MFU</dt><dd>チップの演算能力の何割を、実際の計算に使えたかを示す指標。</dd>
+<dt>PrivateUse1</dt><dd>PyTorch が、独自のハードウェアを登録するために用意した、公式の拡張点。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月30日時点の情報です。内容は、PyTorch の公式ブログ、AWS と Amazon Science の公開資料、Google が公開した Oracle との発表文をもとに、独自に整理したものです。性能の数字は、再現していません。</p>
+<p>筆者の道具には Anthropic の AI が含まれます。TorchNeuron の公式ブログの謝辞には、設計への意見を寄せた組織として Anthropic の名が挙がっています。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-30</span>初回公開（TorchNeuron と TorchTPU の比較、それぞれの使い方・制限・検証の数字、Oracle への TPU 導入、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
