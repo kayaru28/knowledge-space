@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月26日の第1回サイバーセキュリティに関する関係閣僚会議での首相の発言から、被害企業の支援、情報の収集と発信、攻撃への対処、被害の未然防止、政府自身のシステムの5つの柱と、来週中を目途にした緊急対策パッケージの取りまとめの方針を整理する。">
+<title>政府が、相次ぐ情報漏えいに「緊急対策パッケージ」を取りまとめる：10月26日の関係閣僚会議で首相が示した5つの柱 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>政府が、相次ぐ情報漏えいに「緊急対策パッケージ」を取りまとめる：10月26日の関係閣僚会議で首相が示した5つの柱</h1><p class="summary">2026年10月26日の第1回サイバーセキュリティに関する関係閣僚会議での首相の発言から、被害企業の支援、情報の収集と発信、攻撃への対処、被害の未然防止、政府自身のシステムの5つの柱と、来週中を目途にした緊急対策パッケージの取りまとめの方針を整理する。</p><p class="meta">初回公開 2026-10-31 ／ 更新日 2026-10-31</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月26日、政府は、第1回の「サイバーセキュリティに関する関係閣僚会議」を首相官邸で開きました。首相は、相次ぐサイバー攻撃で大規模な情報漏えいが多数起きていて、漏えいした情報を悪用した二次被害への不安が高まっているとして、<strong>来週中を目途に、政府として「緊急対策パッケージ」を取りまとめる</strong>方針を示しました。各大臣には、財政措置を含めて、必要な対策の検討と調整を急ぐよう指示しました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">第1回</p><p class="stat-label">サイバーセキュリティに関する関係閣僚会議の初会合（2026年10月26日、首相官邸）</p></div>
+<div class="stat"><p class="stat-value">5<small>つの柱</small></p><p class="stat-label">首相が指示した対策の分野（支援、情報、対処、未然防止、政府自身のシステム）</p></div>
+<div class="stat"><p class="stat-value">来週中</p><p class="stat-label">『緊急対策パッケージ』を取りまとめる目途（10月26日の発言。財政措置を含む）</p></div>
+</div>
+
+<h2>首相が示した5つの柱</h2>
+<div class="cards">
+<div class="card"><h3>被害企業への支援</h3><ul>
+<li>IPA（情報処理推進機構）や警察の相談対応を充実させ、民間機関や地方自治体との連携も強めて、どこに相談しても必要な支援を受けられる体制を整える。</li>
+<li>国家サイバー統括室は、経済産業省の協力を得て、初動から復旧まで、民間の高度な専門能力を活用する仕組みを作る。</li>
+<li>経済産業大臣は、「サイバーセキュリティお助け隊」を中小企業や小規模事業者が十分に使えるよう、体制と支援策の拡充を急いで検討する。相談窓口を抜本的に拡充し、プッシュ型で情報を届ける。</li>
+</ul></div>
+<div class="card"><h3>情報の収集と発信</h3><ul>
+<li>サイバー安全保障担当大臣は、「サイバー協議会」へのセキュリティベンダーなどの参加を広げ、情報収集力を高める。</li>
+<li>各大臣は、基幹インフラ・重要インフラに限らず、所管の業界の被害企業から速やかに情報を集め、国家サイバー統括室に集約する。</li>
+<li>国家サイバー統括室は、集約した情報を分析し、想定される脅威とリスクに応じて、経営層、専門家、国民など、対象を明確にして発信する。</li>
+</ul></div>
+<div class="card"><h3>攻撃への対処</h3><ul>
+<li>実態を解明したサイバー攻撃に対しては、「アクセス・無害化措置」を含む、あらゆる対処のオプションを戦略的に選んで実行する。</li>
+<li>サイバー安全保障担当大臣の調整のもと、同盟国・同志国や海外の関係機関と連携し、攻撃主体の特定など、国際社会と一体の取り組みを進める。</li>
+</ul></div>
+<div class="card"><h3>被害の未然防止</h3><ul>
+<li>経済産業大臣は、IPA の知見と人材を使い、高性能 AI も活用しながら、システムの弱点を見つける「トップガン人材」が模擬的な攻撃テストを行う取り組みを、前倒しで実施する。</li>
+<li>あわせて、サプライチェーン全体にサイバー攻撃の観測網を整え、中小企業を含めた迅速な対策につなげる取り組みも、前倒しで実施する。</li>
+<li>サイバー安全保障担当大臣は、これらの取り組みを、ほかへ広げる方策を検討する。</li>
+</ul></div>
+<div class="card"><h3>政府自身のシステム</h3><ul>
+<li>各大臣は、サイバー安全保障担当大臣を中心に、AI セーフティ・インスティテュート（AISI）の知見も活用して、「高性能 AI を用いた脆弱性チェック」を前倒しで実施し、担当する府省庁のシステムの安全確保を改めて徹底する。</li>
+</ul></div>
+</div>
+
+<h2>読むときの注意</h2>
+<ul>
+<li>この記事は、首相官邸が公開した会議の発言の記録にもとづく。緊急対策パッケージの中身は、確認した時点では、まだ公表されていない。</li>
+<li>「来週中を目途」は、10月26日の発言。実際の取りまとめの時期と、財政措置の額は、パッケージが公表されたときに見直す。</li>
+<li>「アクセス・無害化措置」を、個別の事案に適用するかどうかは、この会議の記録には書かれていない。</li>
+<li>報道されている、通信事業者への接続の遮断（ブロッキング）の要請は、公式の資料を確認できていないため、扱っていない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+<ul>
+<li>5つの柱は、被害後（支援、情報）、攻撃（対処）、被害の前（未然防止）、政府自身の守りに、またがっている。個別の企業の対策ではなく、情報を国家サイバー統括室に集める流れが、各柱に共通する。</li>
+<li>経済産業大臣が先に示した、IPA を中心に AI を使った模擬的な攻撃テストを行う取り組みが、首相の指示でも、前倒しの対象として挙げられた。</li>
+<li>中小企業向けは、お助け隊の拡充、相談窓口の拡充、プッシュ型の情報提供と、支援の入口を増やす方向。一方で、緊急対策パッケージの財政措置の中身は、これから。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>国家サイバー統括室</dt><dd>政府のサイバーセキュリティの司令塔となる組織。情報を集約し、分析して発信する役割が示された。</dd>
+<dt>アクセス・無害化措置</dt><dd>攻撃元のサーバーなどに入り、その機能を無害化する措置と説明される。この会議の記録には、定義は書かれていない。</dd>
+<dt>サイバーセキュリティお助け隊</dt><dd>中小企業・小規模事業者のサイバー対策を、見守りや相談などで支える、民間のサービスの枠組み。</dd>
+<dt>サイバー協議会</dt><dd>官民で、サイバー攻撃の情報を共有する場。</dd>
+<dt>AISI（AI セーフティ・インスティテュート）</dt><dd>AI の安全性の評価を担う国内の機関。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月31日時点の情報。内容は、首相官邸が公開した、第1回サイバーセキュリティに関する関係閣僚会議（2026年10月26日）の記録をもとに、独自に整理したもの。</p>
+<p>緊急対策パッケージが公表されたときに、見直す。</p>
+<p>関連する話題として、国内の情報漏えいの状況は<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>、経済産業省の取り組みは<a href="white-hacker-team-ipa.html">経産省が、AI を使った防御のために、IPA にホワイトハッカーチームを置く</a>を参照してください。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>初回公開（第1回の関係閣僚会議での首相の指示、5つの柱）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

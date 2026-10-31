@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月29日に起きた、暗号資産取引所 Binance からの約63億ドル相当の流出について、Binance の発表と、ブロックチェーン分析企業 TRM Labs と Chainalysis の分析から、時間の流れ、金額と凍結額、北朝鮮の集団との関連の見立て、原因について分かっていることと分かっていないことを整理する。">
+<title>Binance から約63億ドルが流出：20分で10のブロックチェーンから動き、凍結は約27〜30億ドル、原因は「エンジニアの端末」か「署名の仕組み」か | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>Binance から約63億ドルが流出：20分で10のブロックチェーンから動き、凍結は約27〜30億ドル、原因は「エンジニアの端末」か「署名の仕組み」か</h1><p class="summary">2026年10月29日に起きた、暗号資産取引所 Binance からの約63億ドル相当の流出について、Binance の発表と、ブロックチェーン分析企業 TRM Labs と Chainalysis の分析から、時間の流れ、金額と凍結額、北朝鮮の集団との関連の見立て、原因について分かっていることと分かっていないことを整理する。</p><p class="meta">初回公開 2026-10-31 ／ 更新日 2026-10-31</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月29日（協定世界時の20時過ぎ）、暗号資産の取引所で世界最大手の Binance から、<strong>約63億ドル相当の暗号資産が、10のブロックチェーンにまたがって流出しました</strong>。大半は約20分で動きました。暗号資産の窃盗としては過去最大で、2025年2月の Bybit（約15億ドル）の約4倍にあたります。Binance は、出金を一時停止し、損失を SAFU 基金と自社の資金で補償するとしています。</p>
+<p>ブロックチェーン分析企業の TRM Labs と Chainalysis は、<strong>北朝鮮の集団 TraderTraitor によるもの</strong>と評価しています。凍結は約27〜30億ドル分で進みましたが、凍結できない資産（約24億ドル分）は攻撃者の手元にあります。原因は、Binance が「エンジニアのノート PC の侵害から、サービスのコンテナに到達した可能性」という初期の見立てを示す一方、TRM Labs は「署名の仕組みの侵害の可能性が最も高い」と評価していて、確定していません。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">約63<small>億ドル</small></p><p class="stat-label">流出した額の推定（Binance の発表。分析企業は約63.6〜64億ドル）。暗号資産の窃盗として過去最大とされる</p></div>
+<div class="stat"><p class="stat-value">約20<small>分</small></p><p class="stat-label">TRM Labs によると、大半の資産が動いた時間（10月29日 協定世界時の20時5分から）</p></div>
+<div class="stat"><p class="stat-value">27〜30<small>億ドル</small></p><p class="stat-label">凍結された額。Binance は約30億、TRM Labs は約27億、Chainalysis は約28億と、数え方と時点が違う</p></div>
+<div class="stat"><p class="stat-value">10</p><p class="stat-label">資産が動いたブロックチェーンの数（TRM Labs）。Ethereum、Bitcoin、Tron、Solana などにまたがる</p></div>
+</div>
+
+<h2>3つの発表を読み比べる</h2>
+<div class="table-wrap">
+<table>
+<caption>3つの発表の読み比べ（時点と数え方が違う）</caption>
+<thead><tr><th>項目</th><th>Binance（10月30日）</th><th>TRM Labs</th><th>Chainalysis</th></tr></thead>
+<tbody>
+<tr><td>損失の額</td><td>約63億ドル（推定）</td><td>約63.6億ドル（流出時の価格）。今の価格では約62.3億ドル</td><td>約64億ドル</td></tr>
+<tr><td>動き始め</td><td>（時刻は書かれていない）</td><td>10月29日 協定世界時の20時5分から。大半は約20分</td><td>米国東部時間の16時20分ごろ（協定世界時の20時20分）から</td></tr>
+<tr><td>凍結</td><td>約30億ドル</td><td>約27億ドル（Tether、Circle、Ripple、World Liberty Financial、Arbitrum の評議会）</td><td>約28億ドル。凍結は17時14分（東部時間）から</td></tr>
+<tr><td>原因の見立て</td><td>開発・運用のエンジニアのノート PC が侵害され、サービスのコンテナに到達して、不正な出金が出された可能性（初期の見立て）。秘密鍵の漏えいの形跡はない</td><td>ホットウォレットの署名の仕組みが侵害された可能性が最も高い。根本の原因は未公表</td><td>原因は扱っていない（資金の動きの追跡が中心）</td></tr>
+<tr><td>攻撃した集団</td><td>触れていない</td><td>北朝鮮の TraderTraitor（高い確信）</td><td>TraderTraitor（先月の Bitget の盗難の資金と混ざったことが、強い根拠）</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">動き始めから、0時30分までの流れ（協定世界時）</p>
+<p class="viz-sub">TRM Labs の分析より。10月29日の20時から、10月30日の0時30分まで。準備は、その36時間以上前から</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 190" role="img" aria-label="10月29日の20時5分に最初の流出、20時20分にBitcoinとEthereumの流出。21時1分にTether、21時4分にCircle、22時1分にRipple、22時10分にWorld Libertyが凍結。23時5分に第2波、23時35分にBinanceが検証済みの凍結を25.4億ドルと公表、0時8分にArbitrumの評議会が強制移動。">
+<line class="axis" x1="40" y1="100" x2="840" y2="100"/>
+<circle class="dot-case" cx="54.8" cy="100" r="7"><title>20:05（協定世界時）：最初の流出</title></circle>
+<text class="t-small" x="54.8" y="76" text-anchor="start">最初の流出</text>
+<text class="t-small t-muted" x="54.8" y="126" text-anchor="middle">20:05</text>
+<circle class="dot-case" cx="99.3" cy="100" r="7"><title>20:20（協定世界時）：BTC・ETH の流出</title></circle>
+<text class="t-small" x="99.3" y="152" text-anchor="start">BTC・ETH の流出</text>
+<text class="t-small t-muted" x="99.3" y="126" text-anchor="middle">20:20</text>
+<circle class="mk-announce" cx="220.7" cy="100" r="7"><title>21:01（協定世界時）：Tether が凍結</title></circle>
+<text class="t-small" x="220.7" y="76" text-anchor="middle">Tether が凍結</text>
+<text class="t-small t-muted" x="216" y="126" text-anchor="end">21:01</text>
+<circle class="mk-announce" cx="229.6" cy="100" r="7"><title>21:04（協定世界時）：Circle が凍結</title></circle>
+<text class="t-small" x="229.6" y="152" text-anchor="middle">Circle が凍結</text>
+<text class="t-small t-muted" x="234" y="126" text-anchor="start">21:04</text>
+<circle class="mk-announce" cx="398.5" cy="100" r="7"><title>22:01（協定世界時）：Ripple が凍結</title></circle>
+<text class="t-small" x="398.5" y="76" text-anchor="middle">Ripple が凍結</text>
+<text class="t-small t-muted" x="394" y="126" text-anchor="end">22:01</text>
+<circle class="mk-announce" cx="425.2" cy="100" r="7"><title>22:10（協定世界時）：World Liberty が凍結</title></circle>
+<text class="t-small" x="425.2" y="152" text-anchor="middle">World Liberty が凍結</text>
+<text class="t-small t-muted" x="430" y="126" text-anchor="start">22:10</text>
+<circle class="dot-case" cx="588.1" cy="100" r="7"><title>23:05（協定世界時）：第2波（Avalanche・Polygon）</title></circle>
+<text class="t-small" x="588.1" y="76" text-anchor="middle">第2波（Avalanche・Polygon）</text>
+<text class="t-small t-muted" x="588.1" y="126" text-anchor="middle">23:05</text>
+<circle class="mk-announce" cx="677.0" cy="100" r="7"><title>23:35（協定世界時）：Binance：検証済みの凍結 25.4億ドル</title></circle>
+<text class="t-small" x="677.0" y="152" text-anchor="middle">Binance：検証済みの凍結 25.4億ドル</text>
+<text class="t-small t-muted" x="677.0" y="126" text-anchor="middle">23:35</text>
+<circle class="mk-announce" cx="774.8" cy="100" r="7"><title>00:08（協定世界時）：Arbitrum が強制移動</title></circle>
+<text class="t-small" x="774.8" y="76" text-anchor="end">Arbitrum が強制移動</text>
+<text class="t-small t-muted" x="774.8" y="126" text-anchor="middle">00:08</text>
+</svg>
+</div>
+<figcaption>流出は最初の約15分に集中し、凍結は流出の約40分後から、数時間にわたって順に出た。ラベルに、流出、凍結、公表の内容を直接書いている。</figcaption>
+</figure>
+
+<figure class="viz">
+<p class="viz-title">流出した約63.6億ドルの扱い</p>
+<p class="viz-sub">TRM Labs の分析より（10月30日 協定世界時の0時30分の時点）。「そのほか」は差し引きの筆者の計算</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 110" role="img" aria-label="流出した約63.6億ドルのうち、凍結が約27億ドル、攻撃者の手元の凍結できない資産が約24億ドル、そのほかが約12.6億ドル。">
+<text class="t-strong" x="20" y="30">合計：約63.6億ドル</text>
+<rect class="bar" x="20" y="42" width="339.6" height="28" rx="4"><title>凍結：約27億ドル</title></rect>
+<rect class="bar-2" x="361.6" y="42" width="301.9" height="28" rx="4"><title>攻撃者の手元（凍結できない資産）：約24億ドル</title></rect>
+<rect class="bar-old" x="665.5" y="42" width="158.5" height="28" rx="4"><title>そのほか：約12.6億ドル（筆者の計算）</title></rect>
+<text class="t-small" x="20" y="92">凍結 約27億</text>
+<text class="t-small" x="361.6" y="92">攻撃者の手元 約24億</text>
+<text class="t-small" x="665.5" y="92">そのほか 約12.6億</text>
+</svg>
+</div>
+<figcaption>凍結できたのは約4割で、約4割は、凍結できない資産として攻撃者の手元にある。残りの約2割は、この資料では扱い先が示されていない。</figcaption>
+</figure>
+
+<h2>Binance の発表（10月30日）</h2>
+<ul>
+<li>公表：2026年10月30日。11時36分の更新で、入金には影響がなく、通常どおり動いていると追記した。</li>
+<li>推定の損失：約63億ドル。約30億ドルは、ブロックチェーン上で凍結できた（凍結の時点は書かれていない）。</li>
+<li>原因の見立て（初期の調査）：開発・運用（DevOps）のエンジニアのノート PC が侵害され、攻撃者がサービスのコンテナに到達して、不正な出金を出した可能性がある。確定した結論ではなく、仮説として示している。ウォレットの秘密鍵が漏れた証拠は、見つかっていない。</li>
+<li>対応：出金を一時的に止めて、安全確認を進めている。再開の日は示していない。影響を受けたアドレスの承認（authorization）は取り消した。法執行機関とブロックチェーン分析の提携先に協力を求め、資産の追跡と回収、犯人の特定を進める。</li>
+<li>補償：すべての損失を、SAFU 基金と自社の資金で補償するとし、利用者の資産は安全としている。</li>
+<li>今後：調査が終わり、事実が確認できたら、詳しい技術の事後報告を出す。対応が終わったあとに、更新した準備金の証明（Proof of Reserves）も出す。</li>
+</ul>
+
+<h2>TRM Labs の分析</h2>
+<ul>
+<li>規模と範囲：10のブロックチェーンから、約63.6億ドル（盗まれた時点の価格）。内訳の大きいものは、Ethereum が約37.9億ドル、Bitcoin が18,270 BTC（約14.7億ドル）、Tron が約6.3億ドル、XRP Ledger が約3億ドル。2025年2月の Bybit の約15億ドルの約4倍。</li>
+<li>時間の流れ：準備は、盗難の少なくとも36時間前（10月28日の朝）から始まっていた。少額の Tornado Cash（資金の出どころを隠すサービス）からの出金で、攻撃者の操作用のウォレットに資金を入れ、試験を重ねた。10月29日の20時5分（協定世界時）に XRP Ledger から始まり、20時20分に Bitcoin と Ethereum が続いた。約2時間半後の23時5分に、Avalanche と Polygon の第2波があった。</li>
+<li>Ethereum での手口（概要）：Binance のホットウォレットが署名した、事前の承認50件を1回の取引にまとめて使い、ウォレットを、攻撃者だけが操作できる契約の支配下に置いた（EIP-7702 という仕組みの悪用）。承認はあらかじめまとめて作られていた。</li>
+<li>署名の仕組みについての見立て：Ethereum 以外の9つのチェーンでも、Binance のウォレットが、約30分以内に、通常の署名付きの送金として資金を送った。チェーンも鍵の種類も署名の方式も違うのに、すべてで有効な署名が得られた。TRM Labs は、攻撃者が、Binance のホットウォレットの署名の仕組みに、自分の選んだ取引を署名させる力を得た可能性が最も高いと評価している。Binance は、まだ根本原因を公表していない。</li>
+<li>凍結：Tether が約17.7億 USDT、Circle が約8.25億 USDC、Ripple が4,050万 RLUSD、World Liberty Financial が2,780万 USD1、Arbitrum の評議会が約3,000万ドル分を、それぞれ凍結または強制的に移動した。合計は約27億ドル（協定世界時の0時30分の時点）。</li>
+<li>攻撃者の手元：凍結できない資産（420,000 ETH 超と18,270 BTC）で約24億ドル。凍結を先回りするため、凍結できるステーブルコインを、市場の取引業者に割り引いて売ったり、貸し付けの仕組みに預けて ETH を借りたりした（約10%超の割引）。次は、ブリッジ、交換サービス、店頭の取引業者を通る可能性が高いと見ている。</li>
+<li>集団の見立て：北朝鮮の TraderTraitor によると評価（高い確信）。操作用ウォレットへの Tornado Cash の少額の出金、盗難のずっと前からの準備、事前に得た署名を一度に実行する形が、Bybit やKelpDAO（2026年4月）の過去の事件と一致する。一方、洗浄の手口（大口の交換と貸し付けの仕組み）は、Bybit のときの橋の多用とは違う。</li>
+</ul>
+
+<h2>Chainalysis の分析</h2>
+<ul>
+<li>規模と時間：10月29日の東部時間16時20分ごろから、複数のブロックチェーンのホットウォレットから資金が動いた。不正な移動は約64億ドル。凍結は17時14分から始まり、約28億ドルが凍結された。</li>
+<li>凍結の先回り：攻撃者は、約5億ドルのステーブルコインを、交換用のウォレットに移し、約20分で、3.25億ドルのステーブルコインを2.85億ドル分の ETH に交換した。10分後に残りの1.75億ドルを中継のウォレットに送った。</li>
+<li>集団の見立て：TraderTraitor によると評価した。最も強い根拠は、Binance から盗まれた資金が、先月の Bitget の盗難（北朝鮮の関与が指摘されている）の資金と、ブロックチェーン上で混ざったこと。評価は、盗難の数時間後までの、ブロックチェーン上の動きに基づく（10月30日 0時30分〈東部時間〉に公表）。</li>
+<li>洗浄の特徴：数千件の取引が短時間に出て、自動化の兆候がある。多くのアドレスが、ちょうど1 TRX を受け取ってから資金を受け、ほかへ送る同じ形を繰り返している。これまで見たことのない形、としている。</li>
+</ul>
+
+<h2>分かっていないこと</h2>
+<ul>
+<li>根本原因は、公表されていない。Binance は、技術の事後報告を出すとしている。</li>
+<li>Binance の「エンジニアのノート PC」という見立てと、TRM Labs の「署名の仕組みが侵害された」という見立ては、矛盾しない。端末の侵害が入口で、署名の仕組みに広がった、ということもありうる。どちらも、確認はされていない。</li>
+<li>Binance は、秘密鍵の漏えいの形跡はないとしている。一方、TRM Labs は、複数のチェーンで有効な署名が得られたことを、重く見ている。「鍵が漏れた」ことと「署名を出させる力を得た」ことは、別のこととして書かれている。</li>
+<li>北朝鮮の集団によるという見立ては、分析企業の評価で、捜査当局の公式の発表は、この記事では確認していない。</li>
+<li>金額は、時点と数え方で違う（63億、63.6億、62.3億、64億ドル）。凍結の額も、動いている。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+<ul>
+<li>Binance の発表は、公式ページの本文を直接は読めず、取得した要約に基づく。時刻の表記が明記されていない部分がある。</li>
+<li>TRM Labs と Chainalysis は、ブロックチェーン分析を事業にする会社で、数字は各社の分析。TRM Labs の数字は、10月30日 協定世界時の0時30分の時点で、その後、変わっている。</li>
+<li>攻撃の手順の詳細（アドレスや契約の名前、操作の手順）は載せない。</li>
+<li>被害に遭った利用者の人数や、Binance の補償の実施状況は、確認できていない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+<ul>
+<li>取引所の「ホットウォレット」は、出金のためにインターネットにつながっている。守りの要は、鍵そのものだけでなく、「誰が、どの取引に署名させられるか」の管理にあることを、TRM Labs の分析は示唆している。複数のチェーンを1つの署名の仕組みで扱う構成は、1か所の侵害が全チェーンに広がりうる。</li>
+<li>凍結は、一部で効いた。約27〜30億ドルが、発行元の協力で凍結された。一方、ビットコインや ETH のような凍結できない資産は、攻撃者の手元に残る。凍結できる資産と、できない資産の差が、被害の最終額を左右している。</li>
+<li>同じ集団が、1年8か月（2025年2月〜2026年10月）で、過去最大の窃盗を2度起こした、という見立てになる（分析企業の評価）。Bybit のときと手口の一部が似る一方、洗浄の方法は変わっている。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>ホットウォレット</dt><dd>インターネットにつながっていて、出金の処理にすぐ使えるウォレット（暗号資産の入れ物）。便利な反面、攻撃を受けやすい。</dd>
+<dt>秘密鍵</dt><dd>ウォレットから資産を動かすために必要な、暗証番号にあたるもの。</dd>
+<dt>SAFU 基金</dt><dd>Binance が、緊急時の補償のために積み立てている基金。</dd>
+<dt>ステーブルコイン</dt><dd>ドルなどの価値に連動する暗号資産。発行元が、特定のアドレスの資産を凍結できるものがある（USDT、USDC など）。</dd>
+<dt>凍結</dt><dd>発行元や、ネットワークの管理の権限を持つ主体が、特定のアドレスの資産を動かせなくすること。ビットコインや ETH には、発行元がないため、できない。</dd>
+<dt>EIP-7702</dt><dd>Ethereum の仕組みの1つ。通常のウォレットが、署名した承認によって、契約のプログラムの動きを使えるようにする。</dd>
+<dt>準備金の証明（Proof of Reserves）</dt><dd>取引所が、預かっている資産に見合う準備があることを示す仕組み。</dd>
+<dt>TraderTraitor</dt><dd>米国の FBI が、Bybit の窃盗の実行者とした、北朝鮮に関連するとされるサイバー攻撃の集団。</dd>
+<dt>Tornado Cash</dt><dd>暗号資産の送金の経路を見えにくくするサービス。</dd>
+<dt>ブロックチェーン分析</dt><dd>ブロックチェーン上の資金の動きを追跡して、持ち主や関係を推定すること。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月31日時点の情報です。調査は続いていて、金額や原因は変わる可能性があります。内容は、Binance、TRM Labs、Chainalysis の公開資料をもとに、独自に整理したものです。北朝鮮の集団によるという見立ては、分析企業の評価です。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>初回公開（Binance の発表、TRM Labs と Chainalysis の分析、3つの読み比べ、分かっていないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

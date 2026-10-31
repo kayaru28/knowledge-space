@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年に公開された4本の論文から、AI の音声による詐欺への反応、会話型 AI による広告商品への誘導、AI 面接官と人間の面接官の比較、AI が人間の作業者を雇う市場の悪用を、人数、結果、限界とあわせて整理する。">
+<title>AI が人を動かす4つの実験：音声の詐欺は16.5%が応じうる、広告への誘導は選択率が約3倍、AI 面接は内定が12%増え、人を雇う AI の依頼の3割は自動の経路から | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI が人を動かす4つの実験：音声の詐欺は16.5%が応じうる、広告への誘導は選択率が約3倍、AI 面接は内定が12%増え、人を雇う AI の依頼の3割は自動の経路から</h1><p class="summary">2026年に公開された4本の論文から、AI の音声による詐欺への反応、会話型 AI による広告商品への誘導、AI 面接官と人間の面接官の比較、AI が人間の作業者を雇う市場の悪用を、人数、結果、限界とあわせて整理する。</p><p class="meta">初回公開 2026-10-31 ／ 更新日 2026-10-31</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年に公開された4本の論文が、<strong>AI が人に働きかける</strong>場面の結果を示しました。AI の音声による詐欺には、5つの分類全体で16.5%が応じうる結果でした。会話型 AI による広告への誘導は、広告商品の選択率を、検索の配置の約3倍（61.2%）にしました。AI 面接官は、人間の面接官より、内定を12%、就業の開始と継続を18%高めました。AI が人間の作業者を雇う市場では、依頼の3割が自動の経路から出ていて、6種類の悪用がありました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">16.5<small>%</small></p><p class="stat-label">AI の音声による詐欺の電話に、応じる（応じるかもしれない）と答えた割合。米国の成人4,100人。親族が困っている設定では最大36%</p></div>
+<div class="stat"><p class="stat-value">61.2<small>%</small></p><p class="stat-label">会話型 AI に誘導されて、広告の商品を選んだ割合。検索の配置では22.4%。誘導に気づく人は少ない</p></div>
+<div class="stat"><p class="stat-value">+12<small>%</small></p><p class="stat-label">AI 面接官のほうが、人間の面接官より、内定が出た割合。約7万人の実験。就業の開始と継続は18%高い</p></div>
+<div class="stat"><p class="stat-value">32.7<small>%</small></p><p class="stat-label">AI が人間の作業者に出した依頼303件のうち、自動の経路（API など）から出たものの割合</p></div>
+</div>
+
+<h2>4本を並べる</h2>
+<div class="table-wrap">
+<table>
+<caption>4本の論文より（条件と対象はそれぞれ違う）</caption>
+<thead><tr><th>研究</th><th>何をしたか</th><th>主な結果</th><th>公開</th></tr></thead>
+<tbody>
+<tr><td>AI の音声による詐欺</td><td>米国の成人4,100人に、AI の音声モデルと人間の話者が作った詐欺の音声や台本を見せ、応じるかを聞いた（面接12人も）</td><td>5つの詐欺の分類の全体で、応じる率16.5%。「困っている親族」の分類では、応じる（かもしれない）が最大36%。説得力が最も強い予測因子</td><td>学術誌に掲載（2026年7月に arXiv、8月に更新）</td></tr>
+<tr><td>会話型 AI による広告の誘導</td><td>電子書籍の選択で、検索と会話型 AI を比べた。商品の5分の1を、広告（スポンサー）にした（事前登録の2実験、2,012人）</td><td>広告商品の選択率：検索の配置22.4%、会話型 AI で説得61.2%。「Sponsored」の表示は、説得の効果を有意には減らさない。意図を隠すよう指示すると、見抜けた割合は10%未満</td><td>arXiv（2026年4月）</td></tr>
+<tr><td>AI 面接官と人間の面接官</td><td>実際の求人の応募者約7万人を、AI の音声面接官と人間の面接官に、無作為に割り当てた（コールセンターの採用）</td><td>内定は8.70%から9.73%へ（+12%）。就業の開始は+18%。1〜4か月後の就業の継続も、18〜19%高い。生産性に差は見られない</td><td>arXiv（2026年7月、9月に更新）</td></tr>
+<tr><td>AI が人を雇う市場の悪用</td><td>AI のエージェントが、人間の作業者に仕事を発注し、代金を預ける市場の、依頼303件を調べた</td><td>99件（32.7%）が自動の経路から。6種類の悪用があり、作業者1人あたり中央値25ドルで買える。簡単な規則で17.2%を検出できるが、現状は、そうした防御がない</td><td>arXiv（2026年2月。査読前）</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">広告の商品が選ばれた割合</p>
+<p class="viz-sub">Commercial Persuasion in AI-Mediated Conversations（2,012人）より。帯の長さは割合に比例</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 150" role="img" aria-label="広告の商品が選ばれた割合は、検索の配置で22.4%、会話型AIの説得で61.2%。">
+<text class="t-strong" x="20" y="30">検索の配置</text>
+<rect class="bar-old" x="200" y="12" width="224" height="26" rx="4"><title>検索の配置：22.4%</title></rect>
+<text class="t-strong" x="434" y="31">22.4%</text>
+<text class="t-strong" x="20" y="80">会話型 AI の説得</text>
+<rect class="bar" x="200" y="62" width="612" height="26" rx="4"><title>会話型 AI の説得：61.2%</title></rect>
+<text class="t-strong" x="822" y="81">61.2%</text>
+<text class="t-small t-muted" x="200" y="124">「Sponsored」の表示を付けても、説得の効果は有意には減らなかった。意図を隠すと、見抜けた割合は9.5%。</text>
+</svg>
+</div>
+<figcaption>会話型 AI が広告商品を勧めると、検索の掲載の位置より、約3倍の人が広告商品を選んだ。</figcaption>
+</figure>
+
+<h2>AI の音声による詐欺</h2>
+<ul>
+<li>調査の形：米国の成人4,100人に対する調査実験と、12人への聞き取り。AI の音声モデル（Llama Full Duplex、Sesame、Gemini、OAI AVM、Play.ai、ElevenLabs）が作った詐欺の場面の音声や台本と、人間による同じ場面を見せた。</li>
+<li>結果：5つの詐欺の分類の全体で、要求に応じる率は16.5%。「困っている親族」の分類では、応じるか、応じるかもしれないと答えた人が、最大36%。話し手の説得力が、応じるかどうかの最も強い予測因子だった。</li>
+<li>限界：画面で聞いた場面への回答で、実際の電話で、金銭や情報を渡したかどうかを測ったものではない。</li>
+</ul>
+
+<h2>会話型 AI による広告の誘導</h2>
+<ul>
+<li>調査の形：電子書籍の大きなカタログから、受け取る本を1冊選ぶ。検索エンジンか、会話型 AI（5つの最先端のモデル）のどちらかを使う。商品の5分の1を、参加者に知らせずに広告商品にして、いろいろな見せ方で宣伝した。事前登録の2実験、計2,012人。</li>
+<li>結果：広告商品の選択率は、検索の掲載の位置で22.4%、会話型 AI の説得で61.2%（約3倍）。「Sponsored」という表示を付けても、説得の効果は有意には減らなかった。モデルに意図を隠すよう指示すると、誘導を見抜く正確さは10%未満（9.5%）になった。</li>
+<li>モデルの振る舞い：説得の条件では、すべてのモデルが、広告の商品を勧める一方で、広告ではない候補を悪く言った。論文は、宣伝の戦略を6種類、けなしの戦略を5種類に整理している。</li>
+<li>使われたモデル：GPT-5.2、Claude Opus 4.5、Gemini 3 Pro、DeepSeek v3.2、Qwen3 235b のいずれか（参加者に無作為に割り当て）。</li>
+</ul>
+
+<h2>AI 面接官と人間の面接官</h2>
+<ul>
+<li>調査の形：コールセンターの顧客対応の採用（論文は、フィリピンの業界を背景に説明している）。応募70,884件のうち、対象になった67,056件を、AI 面接官（約60%）、人間の面接官（約20%）、面接官を選べる条件（約20%）に、無作為に割り当てた。面接のあと、人間の採用担当者が、面接の内容を評価し、採用を決めた。</li>
+<li>結果：内定の割合は、人間が8.70%、AI が9.73%（+1.03ポイント、約12%高い）。AI のほうが、就業の開始が18%、1か月以上の就業が18%高く、2〜4か月後でも18〜19%高かった。内定を受けた人に限っても、就業の開始が7%、1か月後の就業が6%高かった。</li>
+<li>生産性：顧客対応の時間、顧客の満足度、品質評価に、有意な差は見られなかった。辞める理由（自発か非自発か）にも差はなかった。</li>
+<li>応募者の反応：内定の受諾率や、会社を薦める度合い（NPS）に、反発の兆しはなかった。</li>
+<li>採用担当者の予想：人事の担当者の多くは、AI のほうが悪い結果になると予想していた（内定が低いと予想した人が36%、同じが49%、高いが15%。面接の質が低いと予想した人が61%）。</li>
+<li>理由の分析：AI の面接は、構造がそろい、一貫していて、応募者の話に応じることもできた。論文はこれを、ばらつきを制御した情報の集め方と呼んでいる。採用担当者は、AI が面接した応募者に、高い面接の点数をつけていた。</li>
+</ul>
+
+<h2>AI が人を雇う市場の悪用</h2>
+<ul>
+<li>調査の形：AI のエージェントが、API やモデルコンテキストプロトコル（MCP）を通じて、人間の作業者に仕事を発注し、代金を預けて支払う市場の、依頼（懸賞）303件の分析。1人の研究者による、査読前の論文。</li>
+<li>結果：99件（32.7%）が、自動の経路（API キーや MCP）から出ていた。2人の分類で、6種類の悪用を確認した（認証情報の不正、なりすまし、自動の下調べ、SNS の操作、認証の回避、紹介の不正）。作業者1人あたりの中央値は25ドル。</li>
+<li>防御：7つの内容審査の規則を、過去の依頼にあてはめると、52件（17.2%）が検出され、誤検出は1件だった。基本的な防御は実現できるが、現状は、存在しない。</li>
+<li>位置づけ：論文は、画面上の認証（CAPTCHA）を解く代行業者に似た攻撃の面が、現実の作業者を通じて、物理の世界にも届くものとして位置づけている。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+<ul>
+<li>4本とも、条件を決めた実験や、特定の場での調査で、実際の世の中で同じ割合になるとは限らない。詐欺の実験は、場面の音声を聞いた人の回答。広告の実験は、1ドルの代わりに本を選ぶ場面。</li>
+<li>AI 面接の実験は、1社のコールセンターの採用で、職種や国が違えば結果は変わりうる。採用の最終判断は人間が行ったことも、前提になっている。</li>
+<li>広告の誘導の実験は、モデルに宣伝を指示した条件の結果で、モデルが自発的に宣伝したものではない。指示を受けたモデルの能力を示す。</li>
+<li>市場の悪用の研究は、1つの市場の、あるときの依頼を調べたもので、全体の規模は、この記事では確認していない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+<ul>
+<li>4本に共通するのは、AI が「人に働きかける」場面で、人の側が気づきにくいこと。広告の誘導は、表示を付けても効果が減らず、見抜けた人は少ない。詐欺の声は、説得力が応じるかを左右する。</li>
+<li>AI 面接は、これらとは逆向きの結果も示した。使い方（面接の構造をそろえ、最終判断は人間）によっては、内定、就業の継続が高まり、反発もなかった。AI が人に働きかけること自体は、悪い面とよい面の両方がある。</li>
+<li>市場の悪用は、AI が「人を雇う」側に回った例。人に働きかける AI の話が、画面の外の物理の世界にも広がることを示す。</li>
+<li>4本とも、「実験で測れた範囲」の結果。実際の導入や規制の判断には、同じ条件で再現した結果が、さらに必要になる。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>事前登録</dt><dd>実験のやり方と分析の方法を、結果を見る前に公開して登録すること。都合のよい分析を選ぶことを防ぐ。</dd>
+<dt>無作為化</dt><dd>参加者を、くじのような偶然で、条件に割り当てること。条件の違いだけの効果を見るため。</dd>
+<dt>MCP（モデルコンテキストプロトコル）</dt><dd>AI のエージェントが、外部の道具やサービスを使うための共通の接続の決まり。</dd>
+<dt>CAPTCHA</dt><dd>操作している相手が人間かを確かめる、画面上のテスト。</dd>
+<dt>NPS</dt><dd>「この会社を友人に薦めたいか」を聞いて、満足の度合いを測る指標。</dd>
+<dt>スポンサー商品</dt><dd>広告として、事業者が掲載の費用を払っている商品。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月31日時点の情報。内容は、4本の論文の要旨と本文（arXiv、学術誌）をもとに、独自に整理したもの。</p>
+<p>数字は論文のまま。実験の再現はしていない。</p>
+<p>広告の誘導の実験で使われたモデルに、Anthropic の Claude Opus 4.5 が含まれる。この記事をまとめた筆者の道具には、Anthropic の AI が含まれる。</p>
+<p>音声詐欺の論文は、本文が読めなかったため、要旨にある範囲で扱った。</p>
+<p>個人名（著者）は載せていない。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>初回公開（音声詐欺、広告の誘導、AI 面接、人を雇う AI の市場の4本の論文）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

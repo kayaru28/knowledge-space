@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月28日と29日に発表された Alphabet、Microsoft、Amazon の7〜9月期の決算の原本から、クラウド事業の伸び、設備投資の増え方、現金収支、純利益が増減した理由を、3社の数字を並べて整理する。">
+<title>AI 投資が決算に表れた：Alphabet・Microsoft・Amazon の7〜9月期（クラウドは最大2倍の伸び、設備投資は約2.1倍、純利益の増減は別の理由） | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI 投資が決算に表れた：Alphabet・Microsoft・Amazon の7〜9月期（クラウドは最大2倍の伸び、設備投資は約2.1倍、純利益の増減は別の理由）</h1><p class="summary">2026年10月28日と29日に発表された Alphabet、Microsoft、Amazon の7〜9月期の決算の原本から、クラウド事業の伸び、設備投資の増え方、現金収支、純利益が増減した理由を、3社の数字を並べて整理する。</p><p class="meta">初回公開 2026-10-31 ／ 更新日 2026-10-31</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>10月28日と29日に、Alphabet、Microsoft、Amazon が7〜9月期の決算を発表しました。3社とも、<strong>クラウド事業が大きく伸びました</strong>（Google Cloud +103%、Azure +48%、AWS +39%）。同時に、<strong>設備投資（現金ベース）は、3社の合計で前年同期の約2.1倍</strong>に増え、Alphabet と Amazon は、フリーキャッシュフローがマイナスになりました。</p>
+<p>純利益の動きは、3社でばらばらでした（Alphabet −25%、Microsoft +32%、Amazon −2%）。ただし、原本を読むと、理由は設備投資の負担だけではありません。Alphabet は株式の評価損、Amazon は前年の Anthropic への投資益の反動、Microsoft は OpenAI への投資の損益が入っています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">約2.1<small>倍</small></p><p class="stat-label">3社の設備投資（現金ベース）の合計。約784億ドルから約1,680億ドルへ（前年同期との比較。定義は各社で違う）</p></div>
+<div class="stat"><p class="stat-value">+103<small>%</small></p><p class="stat-label">Google Cloud の売上の伸び（307億ドル）。Azure は+48%、AWS は+39%</p></div>
+<div class="stat"><p class="stat-value">6,770<small>億ドル</small></p><p class="stat-label">Microsoft の商用の受注残（残存履行義務）。前年同期から+73%</p></div>
+<div class="stat"><p class="stat-value">−424<small>億ドル</small></p><p class="stat-label">Amazon の過去12か月のフリーキャッシュフロー（前年は+148億ドル）</p></div>
+</div>
+
+<h2>3社の数字を並べる</h2>
+<div class="table-wrap">
+<table>
+<caption>各社の発表資料より（2026年7〜9月期。前年同期との比較）</caption>
+<thead><tr><th>項目</th><th>Alphabet</th><th>Microsoft</th><th>Amazon</th></tr></thead>
+<tbody>
+<tr><td>発表日</td><td>10月28日</td><td>10月28日</td><td>10月29日</td></tr>
+<tr><td>対象の期間</td><td>2026年7〜9月期</td><td>2027会計年度の第1四半期（7〜9月）</td><td>2026年7〜9月期</td></tr>
+<tr><td>売上</td><td>1,276億ドル（+25%）</td><td>923億ドル（+19%）</td><td>2,019億ドル（+12%）</td></tr>
+<tr><td>クラウド事業の売上</td><td>Google Cloud 307億ドル（+103%）</td><td>Microsoft Cloud 639億ドル（+30%）。Azure は+48%</td><td>AWS 460億ドル（+39%）</td></tr>
+<tr><td>営業利益</td><td>406億ドル（+30%）</td><td>459億ドル（+21%）</td><td>281億ドル（前年174億ドル）</td></tr>
+<tr><td>純利益</td><td>262億ドル（前年350億ドル、−25%）</td><td>366億ドル（+32%）</td><td>207億ドル（前年212億ドル）</td></tr>
+<tr><td>設備投資（現金）</td><td>514億ドル（前年240億ドル）</td><td>394億ドル（前年194億ドル）</td><td>773億ドル（前年351億ドル）</td></tr>
+<tr><td>現金の収支</td><td>フリーキャッシュフロー −91億ドル（過去12か月は+197億ドル）</td><td>営業キャッシュフロー580億ドル、設備投資394億ドル（差し引き186億ドル。筆者の計算）</td><td>過去12か月のフリーキャッシュフロー −424億ドル</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">設備投資（現金）：前年同期と今期</p>
+<p class="viz-sub">各社の発表資料より。単位は億ドル。棒の長さは額に比例。定義は各社で違う</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="設備投資は、Alphabetが240億ドルから514億ドル、Microsoftが194億ドルから394億ドル、Amazonが351億ドルから773億ドルに増えた。">
+<text class="t-strong" x="20" y="24">Alphabet</text>
+<text class="t-small t-muted" x="20" y="52">前年同期</text>
+<rect class="bar-old" x="140" y="34" width="168" height="24" rx="4"><title>前年同期 240億ドル</title></rect>
+<text class="t-strong" x="318" y="52">240</text>
+<text class="t-small t-muted" x="20" y="82">今期</text>
+<rect class="bar" x="140" y="64" width="359.5" height="24" rx="4"><title>今期 514億ドル</title></rect>
+<text class="t-strong" x="510" y="82">514</text>
+
+<text class="t-strong" x="20" y="124">Microsoft</text>
+<text class="t-small t-muted" x="20" y="152">前年同期</text>
+<rect class="bar-old" x="140" y="134" width="135.8" height="24" rx="4"><title>前年同期 194億ドル</title></rect>
+<text class="t-strong" x="286" y="152">194</text>
+<text class="t-small t-muted" x="20" y="182">今期</text>
+<rect class="bar" x="140" y="164" width="275.6" height="24" rx="4"><title>今期 394億ドル</title></rect>
+<text class="t-strong" x="426" y="182">394</text>
+
+<text class="t-strong" x="20" y="224">Amazon</text>
+<text class="t-small t-muted" x="20" y="252">前年同期</text>
+<rect class="bar-old" x="140" y="234" width="245.7" height="24" rx="4"><title>前年同期 351億ドル</title></rect>
+<text class="t-strong" x="396" y="252">351</text>
+<text class="t-small t-muted" x="20" y="282">今期</text>
+<rect class="bar" x="140" y="264" width="540.8" height="24" rx="4"><title>今期 773億ドル</title></rect>
+<text class="t-strong" x="691" y="282">773</text>
+</svg>
+</div>
+<figcaption>3社とも、設備投資は前年同期のほぼ2倍以上になった。Amazon の今期の額は、Alphabet の約1.5倍、Microsoft の約2倍。</figcaption>
+</figure>
+
+<h2>各社の発表から</h2>
+<h3>Alphabet（10月28日）</h3>
+<ul>
+<li>売上は1,276億ドル（+25%）。Google Services は963億ドル（+11%）で、検索は+12%。検索のクエリ数の伸びは、過去5年で最も高いと説明している。</li>
+<li>Google Cloud は307億ドル（+103%）。営業利益は111億ドル（前年36億ドル）。企業向けの AI の基盤と AI の製品が伸び、TPU システムの販売も売上の伸びに寄与したと書いている。</li>
+<li>設備投資は514億ドル（前年240億ドル）。過去12か月で1,598億ドル。営業キャッシュフロー423億ドルを上回り、フリーキャッシュフローは−91億ドル（4〜6月期は−59億ドル）。過去12か月では+197億ドル。</li>
+<li>純利益は262億ドルで、前年の350億ドルより25%減った。営業利益は+30%で、減った理由は営業の外にある。株式への投資の損益が、前年の+107億ドルから、−87億ドルになった。この損失で、純利益が67億ドル、1株あたり利益が0.55ドル下がったと書いている。</li>
+<li>手元の現金と有価証券は2,651億ドル（2025年12月末は1,268億ドル）。7〜9月に、市場での売り出し（at-the-market）で、クラスA株を43億ドル、クラスC株を81億ドル分、発行した。</li>
+<li>CEO の説明：Gemini 4 Argon と Carbon が最先端にある。自社モデルの API は毎分約320億トークンを処理（1年前の4倍超）。Gemini アプリは10億人に達した。</li>
+</ul>
+
+<h3>Microsoft（10月28日。2027会計年度の第1四半期）</h3>
+<ul>
+<li>売上は923億ドル（+19%）、営業利益は459億ドル（+21%）、純利益は366億ドル（+32%）。</li>
+<li>Microsoft Cloud は639億ドル（+30%。成長が加速したと説明）。Azure は+48%。商用の残存履行義務（契約済みで、まだ売上にしていない金額）は6,770億ドルで、+73%。</li>
+<li>設備投資（有形固定資産の増加）は394億ドル（前年194億ドル）。営業活動による現金は580億ドル（前年451億ドル）。</li>
+<li>純利益の+32%には、OpenAI への投資の損益が入っている。今期は純利益を2億ドル増やし、前年同期は31億ドル減らした。この影響を除いた（非GAAP）純利益は364億ドルで+18%。</li>
+<li>Devices and Consumer の売上は155億ドル（−3%）で、Windows OEM と Devices が−22%。株主への還元は102億ドル。</li>
+</ul>
+
+<h3>Amazon（10月29日）</h3>
+<ul>
+<li>売上は2,019億ドル（+12%）。AWS は460億ドル（+39%。約5年ぶりの速い伸びと説明）で、年換算で1,840億ドル。AWS の営業利益は178億ドル（前年114億ドル）。</li>
+<li>営業利益は281億ドル（前年174億ドル）、営業利益率は13.9%で、同社で最も高い。</li>
+<li>純利益は207億ドルで、前年の212億ドルから減った。同社は、前年の7〜9月期に、Anthropic への投資による税引前の利益95億ドルがあったことが主な理由と書いている。</li>
+<li>設備投資（有形固定資産の購入）は773億ドル（前年351億ドル）。過去12か月で2,152億ドル（前年1,201億ドル）。2026年の現金での設備投資は約2,200億ドルの見込みで、従来の見込みを維持した。</li>
+<li>過去12か月の営業キャッシュフローは1,683億ドル（+29%）。フリーキャッシュフローは−424億ドル（前年+148億ドル）。設備投資（受取分を差し引いた純額）が948億ドル増えたのが主因で、主に AI への投資を反映していると書いている。</li>
+<li>10〜12月期の見通し：売上2,400億〜2,470億ドル、営業利益285億〜335億ドル。</li>
+<li>CEO の説明：AWS の売上の伸びは、2027年と2028年も40%超になる見込み。同社の AI 推論サービス Bedrock は、Fortune 500 の企業の支出が前年の約7倍、トークンの量が約17倍になった。Bedrock に、OpenAI、Anthropic、Moonshot AI などのモデルを追加した。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+<ul>
+<li>設備投資の定義は、各社で違う：Alphabet は「有形固定資産の購入」、Microsoft は「有形固定資産の増加」（ファイナンスリースによる分は別）、Amazon は「有形固定資産の購入」（フリーキャッシュフローは、売却や補助金の受取分を引いた純額）。3社の合計は、規模の目安。</li>
+<li>「クラウド」の範囲も違う：Google Cloud は事業区分、Microsoft Cloud は Azure のほか Microsoft 365 などを含む、AWS は事業区分。伸び率を、同じ物差しで並べることはできない。</li>
+<li>純利益は、投資先の評価損益に左右される：Alphabet の−25%は、営業利益が+30%のなかでの、株式の評価損による。Amazon の減少は、前年の Anthropic への投資益の反動。Microsoft の増加には、OpenAI への投資の損益が入る。AI の設備投資の負担だけで説明できない。</li>
+<li>受注残は、売上ではない：Microsoft の6,770億ドルは、契約済みの金額で、売上になる時期はさまざま。そのまま今期以降の売上になるとは限らない。</li>
+<li>今後の設備投資の見通しは、読んだ範囲では、Amazon の2026年の約2,200億ドルだけ。Alphabet と Microsoft の見通しは、決算説明会での発言で、この記事では確認していない。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>設備投資</dt><dd>建物、サーバー、ネットワーク機器など、長く使う設備を買うための支出。決算では「有形固定資産の購入（増加）」として出る。</dd>
+<dt>フリーキャッシュフロー</dt><dd>営業活動で得た現金から、設備投資を引いた金額。マイナスは、事業で稼いだ現金を、設備投資が上回っていること。</dd>
+<dt>残存履行義務（RPO）</dt><dd>契約を結んだが、まだ売上にしていない金額。Microsoft は、商用の分を受注残の目安として出している。</dd>
+<dt>営業利益</dt><dd>本業で稼いだ利益。株式などへの投資の損益は含まない。</dd>
+<dt>TPU</dt><dd>Google が作る、AI 向けの計算用のチップ。</dd>
+<dt>Bedrock</dt><dd>Amazon の AWS が提供する、複数の AI モデルを使えるサービス。</dd>
+<dt>非GAAP</dt><dd>会計基準（GAAP）の数字から、特定の項目を除いた数字。Microsoft は、OpenAI への投資の損益を除いている。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月31日時点の情報です。内容は、Alphabet（10月28日）、Microsoft（10月28日）、Amazon（10月29日）の決算の発表資料をもとに、独自に整理したものです。</p>
+<p>数字は各社の発表のままです。合計の約784億ドルと約1,680億ドル、約2.1倍、Microsoft の差し引き186億ドルは筆者の計算です。決算説明会での発言、今後の見通し（Alphabet・Microsoft）、財務諸表の注記は読んでいません。</p>
+<p>同じ週の、Meta の株式発行と NVIDIA・AMD の提携拡大は、<a href="meta-muse-nvidia-amd-equity.html">別のまとめ</a>にあります。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。Amazon の発表は Anthropic への投資と Anthropic のモデルに触れていて、その部分は Amazon の発表のとおりに書きました。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>初回公開（3社の7〜9月期の決算、設備投資の比較、純利益の増減の理由、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月に公開された、AI エージェントに専門の仕事を任せる2つの評価（Surge AI の DAYJOB: Tax と、Alibaba の Qwen チームの E-Commerce Bench）の公開資料から、何を測っているか、結果、読むときの注意を整理する。">
+<title>AI に仕事を任せたら、どこまでできるか：税務の50課題で合格率は最高10.8%、1年間の店舗運営では元手が最大14.3倍、ただし詐欺の回避は16位 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI に仕事を任せたら、どこまでできるか：税務の50課題で合格率は最高10.8%、1年間の店舗運営では元手が最大14.3倍、ただし詐欺の回避は16位</h1><p class="summary">2026年10月に公開された、AI エージェントに専門の仕事を任せる2つの評価（Surge AI の DAYJOB: Tax と、Alibaba の Qwen チームの E-Commerce Bench）の公開資料から、何を測っているか、結果、読むときの注意を整理する。</p><p class="meta">初回公開 2026-10-31 ／ 更新日 2026-10-31</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年10月に、AI のエージェントに、<strong>専門の仕事を任せる</strong>2つの評価が出ました。Surge AI の DAYJOB: Tax は、税務の専門家の仕事を50課題で試し、<strong>最高の合格率が10.8%</strong>でした。Alibaba の Qwen チームの E-Commerce Bench は、1年間のネットショップの運営を任せ、最も稼いだモデルは元手を約14.3倍にしましたが、<strong>詐欺の回避は18モデル中16位</strong>でした。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">10.8<small>%</small></p><p class="stat-label">DAYJOB: Tax の最高の合格率（95%以上の基準を満たした試行の割合）。50の環境、1,789のファイル</p></div>
+<div class="stat"><p class="stat-value">14.3<small>倍</small></p><p class="stat-label">E-Commerce Bench で最も稼いだモデルの、1年後の資産（元手の約14.3倍）。5回の平均</p></div>
+<div class="stat"><p class="stat-value">16<small>位</small></p><p class="stat-label">その最も稼いだモデルの、詐欺の回避の順位（18モデル中）</p></div>
+<div class="stat"><p class="stat-value">18</p><p class="stat-label">E-Commerce Bench で評価されたモデルの数。各モデル365日を5回</p></div>
+</div>
+
+<h2>2つの評価を並べる</h2>
+<div class="table-wrap">
+<table>
+<caption>2つの評価の読み比べ（合格の基準が違うので、数字は比べられない）</caption>
+<thead><tr><th>項目</th><th>DAYJOB: Tax</th><th>E-Commerce Bench</th></tr></thead>
+<tbody>
+<tr><td>作った会社</td><td>Surge AI（AI の学習用のデータと評価を提供する会社）</td><td>Alibaba の Qwen チーム</td></tr>
+<tr><td>公開</td><td>2026年10月27日（ブログ。完全な課題は、問い合わせて入手）</td><td>2026年8月31日（arXiv の論文。コードは公開）</td></tr>
+<tr><td>任せる仕事</td><td>税務の専門家の仕事。顧客の依頼から、申告書、資料、助言などの成果物まで</td><td>1年（365日）の間、複数のネットショップを運営し、年末の総資産を最大にする</td></tr>
+<tr><td>規模</td><td>50の環境（8つの分野）、1,789のファイル（PDF 1,487、Excel 117 ほか）</td><td>18のモデルを、365日の1年を5回ずつ</td></tr>
+<tr><td>測り方</td><td>95%以上の採点の基準を満たす試行の割合（pass@1）</td><td>年末の総資産と、交渉、詐欺の回避、資金繰り、効率、実行、学習の6つの軸</td></tr>
+<tr><td>主な結果</td><td>最高が10.8%。上位3つは、Claude Sonnet 5.5（10.8%）、Claude Fable 5.1（9.6%）、Claude Opus 5.5（9.2%）</td><td>最も稼いだのは GPT-5.6 Sol で、元手10万が1,431,425（14.3倍）。ただし、詐欺の回避は18モデル中16位。1つのモデルが全部で勝つことはない</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure class="viz">
+<p class="viz-title">DAYJOB: Tax の合格率（上位3つ）</p>
+<p class="viz-sub">Surge AI のブログより。95%以上の採点の基準を満たした試行の割合（pass@1）。0〜20%の範囲で、棒の長さは割合に比例</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 190" role="img" aria-label="DAYJOB: Taxの合格率は、Claude Sonnet 5.5が10.8%、Claude Fable 5.1が9.6%、Claude Opus 5.5が9.2%。">
+<text class="t-strong" x="20" y="38">Claude Sonnet 5.5</text>
+<rect class="bar" x="200" y="20" width="324" height="26" rx="4"><title>Claude Sonnet 5.5：10.8%</title></rect>
+<text class="t-strong" x="534" y="39">10.8%</text>
+<text class="t-strong" x="20" y="88">Claude Fable 5.1</text>
+<rect class="bar" x="200" y="70" width="288" height="26" rx="4"><title>Claude Fable 5.1：9.6%</title></rect>
+<text class="t-strong" x="498" y="89">9.6%</text>
+<text class="t-strong" x="20" y="138">Claude Opus 5.5</text>
+<rect class="bar" x="200" y="120" width="276" height="26" rx="4"><title>Claude Opus 5.5：9.2%</title></rect>
+<text class="t-strong" x="486" y="139">9.2%</text>
+<text class="t-small t-muted" x="200" y="176">公開された上位3つ。全モデルの順位は、確認していない</text>
+</svg>
+</div>
+<figcaption>最も高くても、合格に届くのは、10回に1回ほど。専門家の仕事を、最初から最後まで任せる評価は、まだ厳しい結果だった。</figcaption>
+</figure>
+
+<h2>DAYJOB: Tax（税務）</h2>
+<ul>
+<li>何を測るか：税務の専門家の仕事を、依頼から成果物まで、最初から最後まで任せられるか。指示が不完全で、記録に食い違いがあり、顧客が気づいていない重要な問題を、自分で見つけて、判断する必要がある。</li>
+<li>課題：8つの分野（個人と家族、小規模事業、パートナーシップ、不動産と投資、遺産・贈与・信託、国際税務、企業の取引、税務の審査と紛争）。成果物は、申告書、作業の資料、技術的な審査、顧客への助言。手書きの領収書の写真や、複数の州にまたがる作業日誌などの、整っていない証拠も含む。</li>
+<li>作り方：税務の専門家が、現実の業務の流れから課題と採点の基準を作り、3段階の専門家の確認（正しさ、網羅性、解けること）を通している。</li>
+<li>結果：合格率（95%以上の基準を満たした試行の割合）は、最高の Claude Sonnet 5.5 でも10.8%。Surge は、個々の手順ができても、専門家としての判断と、実際の業務の流れを確実にこなすことは、まだ届かないと述べ、「エージェントは、まだ監査に合格していない」と結論づけている。</li>
+<li>例（Surge が示した2つ）：マンションの売却の時期を比べる依頼で、住んでいない期間が長くなると特別控除の資格を失う期限（2027年8月ごろ）を、あるモデルは5回とも指摘しなかった。別の例では、別居する夫婦の資産の分け方の相談で、法的に結婚しているかが、記録から疑える点を確かめずに、「結婚していない」前提で助言したモデルがあった。</li>
+</ul>
+
+<h2>E-Commerce Bench（店舗運営）</h2>
+<ul>
+<li>何を測るか：1年間のネットショップの運営を、AI のエージェントに任せる。市場の調査、仕入れ先との価格の交渉、在庫、販売の戦略、注文の処理、返品、資金繰り。目標は、年末の総資産を最大にすること。</li>
+<li>環境：商品と仕入れ先のデータは、実際の電子商取引のプラットフォームのもの。販促、自然災害、供給の混乱などの1年の暦が、需要を変える。再現できるよう、顧客の購買と返品、仕入れ先の価格は、決まった規則（交渉の仕組み）で決め、言語モデルは、その結果を言葉にするだけに使う。</li>
+<li>結果：18のモデルを評価。元手の10万（論文の表記は ¥。通貨は、この記事では確認していない）から、最も稼いだ GPT-5.6 Sol は、1年後の平均で1,431,425。一方、詐欺の回避は18モデル中16位で、運営の効率は Fable5 に及ばない。オープンウェイトの中では、Qwen3.8-Max-Preview が416,252で最も高く、GLM 5.2（high）より38%高い。価格の交渉では、繰り返しの注文で、徐々に価格を下げる学習が最も強いとされる。</li>
+<li>意味：総資産という1つの数字では、モデルの弱い点が見えない。論文は、6つの軸を並べると、最も稼ぐモデルが、最もよい交渉者でも、最も効率のよい運営者でもないことが分かる、と述べている。</li>
+<li>破産：10日続けて、銀行の残高がマイナスで終わると、その回は破産で終わる。破産した回も、平均に含まれる。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+<ul>
+<li>2つとも、評価を作った側が公表した結果で、第三者の検証は、この記事では確認していない。Surge は、AI の開発企業の評価の仕事もしている会社で、税務の評価は、同社のブログの記載による。完全な課題は非公開で、中身は確認していない。</li>
+<li>合格の基準が違う：DAYJOB: Tax は、基準の95%以上を満たす厳しい合格の判定。E-Commerce Bench は、資産の大きさなどの連続の指標で、合格・不合格ではない。2つの数字（10.8%と14.3倍）は、比べられない。</li>
+<li>E-Commerce Bench は、決まった規則の世界（顧客と仕入れ先は、規則で動く）で、実際の市場とは違う。税務の評価は、アメリカの税務が中心とみられるが、各国の制度への適用は、この記事では確認していない。</li>
+<li>モデルの名前は、各資料の表記のまま。評価の時点のモデルで、その後の更新は反映していない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+<ul>
+<li>どちらも、「問題が決まっていて、答える」評価ではなく、「問題が何かを見つけることを含めて、任される」評価。結果は、税務では厳しく、店舗運営では大きく稼ぐモデルも出た。条件と、成功の基準が、まったく違う。</li>
+<li>共通するのは、1つの数字で順位をつけるより、弱い点を並べると見えることが多い、という点。税務では、顧客が気づいていない期限や、前提の確認の抜け。店舗運営では、詐欺の回避の弱さ。</li>
+<li>「AI に任せる」判断では、最高の成績だけでなく、どの失敗の仕方をするかが重要になる。この記事の2本は、それを具体的な例で示している。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>pass@1</dt><dd>1回の試行で、基準を満たした割合。</dd>
+<dt>エージェント</dt><dd>目標に向かって、道具を使いながら、自分で手順を決めて作業を進める AI。</dd>
+<dt>ベンチマーク</dt><dd>AI の能力を測るための、決まった課題と採点の基準のセット。</dd>
+<dt>オープンウェイト</dt><dd>重み（モデルの中身）が公開されていて、手元で動かせるモデル。</dd>
+<dt>パレートフロンティア</dt><dd>性能と費用のように、両立が難しい2つの指標で、他より劣らない組み合わせの境界。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年10月31日時点の情報。内容は、Surge AI のブログ「DAYJOB: Tax — Benchmarking AI Agents on Professional Tax Work」（2026年10月27日）と、論文「E-Commerce Bench: Evaluating LLM Agents on Long-Horizon Autonomous Business Operation」（arXiv、2026年8月31日）をもとに、独自に整理したもの。</p>
+<p>数字は、各資料のまま。評価の再現はしていない。</p>
+<p>DAYJOB: Tax の上位3つは、Anthropic の Claude のモデルで、E-Commerce Bench にも Anthropic のモデルが含まれる。この記事をまとめた筆者の道具には、Anthropic の AI が含まれる。</p>
+<p>個人名（著者）は載せていない。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>初回公開（DAYJOB: Tax と E-Commerce Bench の2つの評価、結果、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
