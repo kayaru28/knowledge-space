@@ -192,11 +192,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash</h1><p class="summary">Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。10月21日に、米国土安全保障省の DeepSeek 排除の命令と、DeepSeek の推論フレームワーク DeepInfer の公開を追記。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash</h1><p class="summary">Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。10月21日に、米国土安全保障省の DeepSeek 排除の命令と、DeepSeek の推論フレームワーク DeepInfer の公開を追記。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-31</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月10日から10月17日にかけて、Google、Meta、DeepSeek がそれぞれ新しいAIモデルを出しました。<strong>Gemini 4 Argon は API で使うモデル、Muse Spark Open と DeepSeek V4.1-Flash は重みが公開されたモデル</strong>で、提供形態が違います。</p>
 <p>性能の数字（ベンチマーク）は、各社が自社で公表したもので、条件も指標も違うため、<strong>横に並べて順位をつけることはできません</strong>。選ぶときは、提供形態、価格、動かすのに必要なもの、ライセンスを見ます。</p>
 <p>10月19〜20日には、米国土安全保障省（DHS）が、連邦の民間機関から DeepSeek の製品を取り除く命令を官報で公表しました。DeepSeek は、自社の推論フレームワーク「DeepInfer」をオープンソースで公開しました（10月21日追記）。</p>
+<p>10月28日には、Google が次のモデル「Gemini 4 Carbon」を発表しました。一部のサイバー防御者に限った段階的な提供で、開発者や一般の利用者への提供日は示されていません（10月31日追記）。</p>
 </section>
 
 <div class="stats">
@@ -452,6 +453,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <h3>関連する動き：Meta の Muse Wonder</h3>
 <p>Meta は10月12日、エージェント向けの「Muse Wonder」と「Muse Wonder Full」を発表しました。Muse Wonder は Meta Model API と Muse Code で、Muse Wonder Full は Muse Code の有料会員向けに提供されます。会話をまたいで情報を保つ「Active Memory」と、難しい課題でも作業を続ける「Active Focus」を挙げています。発表には、価格、重みの公開、具体的なベンチマークの数値の記載はありません。重みを公開した Muse Spark Open とは、提供形態が違います。</p>
 
+<h2>10月31日の追記：Gemini 4 Carbon（10月28日に発表）</h2>
+<p>Google の公式ブログ「Gemini 4 Carbon: our next frontier model」（10月28日）をもとに整理しました。Argon の後継にあたりますが、一般には使えない段階的な提供で、この記事の「3つのモデル」の比較には加えず、追記として載せます。</p>
+<ul>
+<li>発表：Google は10月28日に、Gemini 4 Carbon を「次のフロンティアモデル」として発表した（Argon の2週間後）。サイバーセキュリティと、長い時間のかかる作業に強い、同社で最も強いモデルと説明している。</li>
+<li>提供の方法：段階的。今週から、一部のサイバー防御者に提供し、「Fairwind プログラム」を通じて、信頼できる提携先に順に広げる。米国政府の、公開前のモデル試験の任意の手続きにも参加している。開発者、企業、一般の利用者には、ガードレールの調整のあと、できるだけ早く提供するとしていて、日付は示していない。</li>
+<li>価格：Argon と同じ導入期間の価格で、入力が100万トークンあたり2ドル、出力が10ドル、キャッシュ済みの入力は入力価格の95%引き。導入期間が終わると、入力4ドル、出力20ドルになる。導入期間の終わりの日付は、この発表には書かれていない（Argon の導入期間の終わりは11月30日）。</li>
+<li>自社の報告の数字：Artificial Analysis Intelligence Index の v5.0 で59点の1位。SEC-bench Pro（脆弱性の発見）が88.2%、ExploitGym（悪用の可否の確認）が54.8%、Collinear の CWE-bench（根本の原因からの修正）が71.0%。いずれも、ガードレールなしで評価したと書かれている。WebDev Arena は+89点で4位（1768）。</li>
+<li>サイバー防御での試験（自社の報告）：安全なコードを生成する成功率は、社内の評価で Argon の2倍超。Chrome チームは、他の研究所の大きなフロンティアモデルより、質の高い修正パッチの生成が10倍以上よいと報告している。</li>
+<li>安全面（自社の評価）：Terminal-Bench 4.0 での不正（近道）の成功は0.0%、試みは0.4%。社内の実際のコーディングでは、重大な不整合の警告が約80%減った。裏づけのない主張は Argon の約半分。やりすぎが26%、やらなさすぎが29%減った。間接的なプロンプトインジェクションの評価（Gray Swan）では、攻撃の成功率が Argon の0.7%から0.0%。</li>
+<li>数字はすべて Google の自社の報告で、第三者の検証ではない。「ガードレールなし」の評価と、実際に提供される版の振る舞いは、同じとは限らない。</li>
+</ul>
+
 <h2>選ぶときの観点</h2>
 <div class="note">
 <p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
@@ -484,7 +497,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p>DeepSeek V4.1-Flash の具体的な単価、コンテキスト長、ライセンスは、確認できなかったため扱っていません。Google の発表にあるモデルカード（PDF）は読んでいません。</p>
 <p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="ai-coding-productivity.html">AIコーディングで生産性は上がったか</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>米国土安全保障省の DeepSeek 排除の命令（図）、DeepInfer の公開、Meta の Muse Wonder を追加</li><li><span class="date">2026-10-19</span>初回公開（3つのモデルの提供形態・価格・ライセンス・日程の整理）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>10月28日に発表された Gemini 4 Carbon（段階的な提供、価格、自社報告の評価）を追記</li><li><span class="date">2026-10-21</span>米国土安全保障省の DeepSeek 排除の命令（図）、DeepInfer の公開、Meta の Muse Wonder を追加</li><li><span class="date">2026-10-19</span>初回公開（3つのモデルの提供形態・価格・ライセンス・日程の整理）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

@@ -192,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">開発</p><h1>開発ツールの更新を整理する（2026年10月）：SvelteKit 3、bun check、dotnetup、HydraFusion、Aurora の DuckDB</h1><p class="summary">9月30日から10月15日までに公開された5つの開発ツールの更新を、公式の発表から整理し、提供状況の違い、移行が必要なもの、数字の読み方を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-23</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">開発</p><h1>開発ツールの更新を整理する（2026年10月）：SvelteKit 3、bun check、dotnetup、HydraFusion、Aurora の DuckDB</h1><p class="summary">9月30日から10月15日までに公開された5つの開発ツールの更新を、公式の発表から整理し、提供状況の違い、移行が必要なもの、数字の読み方を図で比べる。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-31</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>9月30日から10月15日までに、5つの開発ツールの更新が公開されました。<strong>提供状況はそれぞれ違います</strong>。Aurora の DuckDB 統合は一般提供、SvelteKit 3 は正式版、bun check はリリース済み、dotnetup はパブリックプレビュー、HydraFusion は研究プレビューです。</p>
 <p>自分のプロジェクトで手を動かす必要があるのは、<strong>SvelteKit 3</strong>（設定の場所、<code>$lib</code>、最低バージョンなど、破壊的変更が多い）です。ほかは、使うかどうかを選べる新機能です。数字（速度やコストの削減）は、いずれも開発元の自己申告です。</p>
@@ -498,6 +498,16 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </div>
 <p>Cloudflare は、AI のモデルが大規模な移植をほぼ自力で数日のうちにこなせるようになり、TypeScript の移植がいくつも現れていると書いています。tsrs は、本家の変更をエージェントで毎日追いかけ、違いが出ないようにする運用をとるとしています。</p>
 
+<h2>10月31日の更新：止まる動き（Python の JIT、Pico CSS）</h2>
+<p>ここまでは新しい機能の更新でした。ここでは、開発や保守が止まる、または止まりそうな2件を載せます。</p>
+<ul>
+<li>Python の JIT（CPython）：PEP 836 が、2026年10月19日に撤回された（PEP のページの状態は「撤回（Withdrawn）」、決定日は10月19日）。この提案は、2024年の Python 3.13 で入った実験的な JIT コンパイラを、性能、互換性、ツールの測定できる条件を満たせば、実験ではない「サポートされる機能」にする道筋を示すもので、7月2日に作られた。提案の中では、Python 3.15 の JIT は、測定した主要なプラットフォーム全体の幾何平均で、インタープリターより約4〜12%速いとされている（提案者の自己申告）。</li>
+<li>Python の JIT（報道による情報）：LWN（10月26日）によると、6月に運営委員会が、保守、互換性、成功の指標と完了までの日程に答える PEP が承認されるまで、main ブランチでの JIT の作業を止めると発表していた。PEP 836 はその要請に応えるものだったが、数か月の議論のあとで撤回され、LWN は、JIT は取り除かれる方向で、開発は当面終わったようだと伝えている。CPython 側が JIT の削除を決めたという公式の記載は、この記事では確認していない。</li>
+<li>Pico CSS：10月4日に、メンテナーが「保守を終了する」と告知した。v2.1.1 が最後のリリースで、リポジトリはアーカイブされ（読み取り専用）、新しい issue、プルリクエスト、リリースはない。理由は、AI が必要な CSS だけを持つ軽量でアクセシブルな HTML を作れるようになり、「セマンティックな HTML 向けの最小の CSS フレームワーク」の意義が薄れたこと。生き残るには、Sass をやめて現代的な CSS（OKLCH の色、カスケードレイヤー、Popover、アンカー位置指定）に書き直し、未使用の CSS を取り除くコンパイラを備える必要があり、それは別のプロジェクトになる、としている。</li>
+<li>Pico CSS の影響：何も壊れない。npm の配布、CDN（jsDelivr）、サイトは長期間公開が続く。MIT ライセンスなのでフォークは自由で、名前とロゴは MIT の対象外のため、フォークには別の名前をつけるよう求めている。</li>
+<li>見方（筆者の整理）：止まる理由は、JIT では保守の負担と合意の条件、Pico CSS では AI による代替で、同じではない。Pico CSS は、使っている場合、動き続けるが、新しい修正は入らない。</li>
+</ul>
+
 <h2>選ぶときの観点</h2>
 <div class="note">
 <p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
@@ -526,7 +536,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p>HydraFusion の評価は、GitHub 自身のオフライン評価の結果で、実際の開発での効果は未検証と、GitHub が述べています。</p>
 <p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="../ai/ai-coding-productivity.html">AIコーディングで生産性は上がったか</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-23</span>10月21日に公開された DuckDB 2.0.0（長期サポート版）と tsrs（TypeScript の Rust への移植の実験版）を追加</li><li><span class="date">2026-10-19</span>初回公開（5つの開発ツールの更新、提供状況、SvelteKit 3 の移行手順、bun check の速度）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>止まる動きを追加（Python の JIT の PEP 836 の撤回、Pico CSS の保守終了）</li><li><span class="date">2026-10-23</span>10月21日に公開された DuckDB 2.0.0（長期サポート版）と tsrs（TypeScript の Rust への移植の実験版）を追加</li><li><span class="date">2026-10-19</span>初回公開（5つの開発ツールの更新、提供状況、SvelteKit 3 の移行手順、bun check の速度）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

@@ -192,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>Anthropic が示した創薬での Claude の初期の成果：6つの提携先の事例と自社の筋ジストロフィーの研究、すべて自社の報告で、ほとんどが臨床の前の段階</h1><p class="summary">Anthropic が2026年10月27日に公開した記事「Early progress on accelerating drug development with Claude」から、6組織との提携で示された事例（設計、候補の探索、最適化、製造の書類、会社づくり、治験の計画）と、自社の筋ジストロフィーの研究、研究者向けの提供の枠組み、読むときの注意を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-29</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Anthropic が示した創薬での Claude の初期の成果：6つの提携先の事例と自社の筋ジストロフィーの研究、すべて自社の報告で、ほとんどが臨床の前の段階</h1><p class="summary">Anthropic が2026年10月27日に公開した記事「Early progress on accelerating drug development with Claude」から、6組織との提携で示された事例（設計、候補の探索、最適化、製造の書類、会社づくり、治験の計画）と、自社の筋ジストロフィーの研究、研究者向けの提供の枠組み、読むときの注意を整理する。</p><p class="meta">初回公開 2026-10-29 ／ 更新日 2026-10-31</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>Anthropic は2026年10月27日、創薬で AI の Claude を使った<strong>初期の成果</strong>を記事にまとめました。数か月にわたって<strong>6つの組織</strong>と協力し、自社でも筋ジストロフィーの研究を始めています。</p>
 <p>示された事例は<strong>すべて Anthropic の記述</strong>で、<strong>ほとんどはヒトでの試験の前（前臨床）の段階</strong>です。薬として効くか、安全かが示されたわけではありません。</p>
@@ -239,6 +239,16 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li>ゲスト研究者の公募を始めています。</li>
 </ul>
 
+<h2>Divergence Labs のプレプリント（10月31日に追加）</h2>
+
+<ul>
+<li>位置づけ：Divergence Labs が公開したプレプリント（査読前の論文）「Towards a best-in-class IgE disruptor for food allergy with Claude-enabled antibody design」。著者は同社の研究者で、Anthropic の説明に出てきた事例の、同社自身による詳しい報告にあたる。</li>
+<li>背景：食物アレルギーは世界で2億2000万〜2億5000万人と見積もられる。米国で唯一承認されている生物学的製剤（オマリズマブ）は、血中を回る IgE を中和するが、免疫細胞の受容体（FcεRI）にすでに結合した IgE は、効果的に外せない。受容体に結合した IgE は、皮膚で数週間から数か月残るとされる。</li>
+<li>設計：受容体から IgE を引きはがす「ディスラプター腕」と、受容体に結合した IgE に競合せずに結合して分子を留める「アンカー腕」を組み合わせた、二つの腕を持つ分子。Claude が、研究チームの指示のもとで、目的の分解、文献と仕組みの調査、モデリングの道具の使用、設計と絞り込みの繰り返しを行った。ディスラプター腕の再設計は11,273件、アンカー腕のゼロからの設計は23,600件で、合わせて約35,000件。そこから、ディスラプターの91件と、アンカーの57件を、実験に選んだ。</li>
+<li>結果：実験で調べたディスラプターの設計91件のうち、20件が、受容体に結合した IgE に対して活性を示した（競合する結合の測定）。用量を変えた試験で、3つの変異体が、治療で意味のある濃度（25〜400 nM）で、オマリズマブより多くの IgE を取り除いた。アンカー腕のゼロからの設計は、さまざまな部位で IgE に結合し、見かけの親和性は3.4〜235 nM。</li>
+<li>限界：結果は「部品」の段階で、二つの腕を組み合わせた分子の評価は、これから。論文自身が、これらを「最良の IgE ディスラプターに向けた出発点」と位置づけている。薬としての安全性や効果は、示されていない。</li>
+</ul>
+
 <h2>読むときの注意</h2>
 
 <ul>
@@ -270,7 +280,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p>筆者の道具には Anthropic の AI が含まれます。この記事は、Anthropic 自身の発表を扱っています。</p>
 <p>数字は記事に書かれたもので、再現も独立した確認もしていません。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-29</span>初回公開（6組織の事例、自社の研究、提供の枠組み、読むときの注意）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>Divergence Labs のプレプリント（食物アレルギーの IgE ディスラプター。約35,000の設計、実験に選んだ148件、20件が活性）を追加</li><li><span class="date">2026-10-29</span>初回公開（6組織の事例、自社の研究、提供の枠組み、読むときの注意）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

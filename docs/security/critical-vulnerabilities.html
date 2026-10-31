@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている12製品・16件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。">
+<meta name="description" content="JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている20製品・29件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。">
 <title>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
@@ -192,21 +192,22 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている12製品・16件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-30</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年10月）：悪用が確認されたものから対応する</h1><p class="summary">JPCERT/CC と IPA の注意喚起・週次レポートから、悪用が報告されている20製品・29件の脆弱性を整理し、公開の経緯と、対応の優先順位、侵害調査の要点をまとめる。悪用は確認されていないが深刻度が高い Linux カーネルの PwnEscape も、仕組みを図で示す。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-31</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
-<p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは15製品・19件</strong>です（10月23日に3件、10月27日に4件、10月30日に3件を追加）。対応は、悪用が確認されているものから順に行います。</p>
+<p>2026年9月中旬から10月中旬にかけて、JPCERT/CC と IPA が注意喚起や週次レポートで取り上げた脆弱性のうち、<strong>悪用が報告・確認されているものは20製品・29件</strong>です（10月23日に3件、10月27日に4件、10月30日に3件、10月31日に10件を追加）。対応は、悪用が確認されているものから順に行います。</p>
 <p>注意したいのは、<strong>回避策が提供されていない製品がある</strong>ことです（NetScaler、Cisco Secure Email Gateway）。また、<strong>侵害の痕跡が消される可能性</strong>が示されている製品もあります（Cisco Secure Email Gateway、SiteGuard Server Edition）。更新するだけでなく、すでに侵害されていないかの調査も必要です。</p>
 <p>10月20日追記：悪用は確認されていないものの深刻度が高いものとして、Linux カーネルの <strong>PwnEscape</strong>（CVE-2026-99999）を加えました。仮想マシンの中から、ホスト側の Linux のメモリを読み出せるもので、仮想マシンを動かすホストの管理者は、カーネルの更新が必要です。</p>
 <p>10月21日追記：サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を加えました。修正は出ないため、使うのをやめて、ほかの製品に乗り換えるよう案内されています。</p>
 <p>10月23日追記：10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を加えました。</p>
 <p>10月25日追記：悪用は確認されていないものの深刻度が最大のものとして、<strong>GitLab の CVE-2026-110264</strong>（CVSS 10.0。認証なしで、サーバー上でコードを実行されるおそれ）を加えました。自分で運用している GitLab は、10月21日の緊急パッチ（19.5.1、19.4.3 など）への更新が必要です。</p>
 <p>10月27日追記：悪用が確認された3製品（<strong>Arista VeloCloud Orchestrator、Collabora Online の Built-in CODE Server、PHP</strong>）を、開発元の発表と米国の CISA のカタログから加えました。Arista と Collabora の件は10月23日に、PHP の2件は10月26日にカタログへ追加されています。</p>
+<p>10月31日追記：10月20〜30日に CISA のカタログに加わった5製品・10件（<strong>GitLab、Plex Media Server、Siemens Software Center、Adobe Commerce・Magento、Google Brotli</strong>）と、Ivanti Connect Secure の追加2件を、各開発元の発表と CISA のカタログから加えました。GitLab の CVE-2026-97229 は、根本原因が Ruby にあり、自前の Ruby の環境では GitLab を更新しても修正が入らない例があります。あわせて、悪用は確認されていないが深刻度の高い修正（Splunk Enterprise、Apache Tomcat、ヤマハ NWR100）も整理しました。</p>
 <p>10月30日追記：10月28日に悪用が確認された3製品（<strong>Cisco Secure Firewall の ASA・FTD、Linux カーネル、VMware ESX</strong>）を、Cisco の発表、CISA のカタログ、CVE の記録から加えました。あわせて、10月27日に公表された WatchGuard の Fireware OS の17件（9.0以上は7件）も整理しました。</p>
 </section>
 
 <div class="stats">
-<div class="stat"><p class="stat-value">15<small>製品</small></p><p class="stat-label">悪用が報告・確認されている製品（10月27日と30日に、3製品ずつ追加）</p></div>
-<div class="stat"><p class="stat-value">19<small>件</small></p><p class="stat-label">その製品のCVE（脆弱性の識別番号。10月27日に4件、10月30日に3件を追加）</p></div>
+<div class="stat"><p class="stat-value">20<small>製品</small></p><p class="stat-label">悪用が報告・確認されている製品（10月27日と30日に3製品ずつ、10月31日に5製品を追加）</p></div>
+<div class="stat"><p class="stat-value">29<small>件</small></p><p class="stat-label">その製品のCVE（脆弱性の識別番号。10月27日に4件、10月30日に3件、10月31日に10件を追加）</p></div>
 <div class="stat"><p class="stat-value">2<small>製品</small></p><p class="stat-label">回避策が提供されていない（NetScaler、Cisco Secure Email Gateway）</p></div>
 <div class="stat"><p class="stat-value">10/14</p><p class="stat-label">Microsoft の10月の更新プログラムが公開された日</p></div>
 </div>
@@ -368,6 +369,30 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p><strong>筆者の整理</strong>：カタログに載った Linux カーネルと ESX の2件は、どちらも新しい脆弱性ではない。CVE の記録の公開は5月と7月で、悪用の確認が、数か月あとにカタログへ載る形になった。ESX の件は、深刻度が最も低い区分でも、悪用が確認されたものに入っている。深刻度の数字だけで、対応の優先を決めないほうがよい。Cisco の件は、二次認証という、安全性を高めるための設定が、攻撃の条件になっている。いずれも、悪用の中身や規模は、公開された原本には書かれていない。</p>
 <p>10月28日に Broadcom が、VMware Cloud Foundation の SDDC Manager の件を公表した、と報じられていますが、原本を取得できなかったため、扱っていません。</p>
 </div>
+
+<h2>10月31日の追記：10月20〜30日に CISA のカタログに加わった脆弱性（GitLab ほか6製品）と、深刻度の高い修正</h2>
+<p>米国の CISA の「悪用が確認された脆弱性のカタログ（KEV）」の原本（10月30日時点）と、各開発元の発表から整理しました。これまでの JPCERT/CC と IPA の資料、このまとめの追記になかった5製品・10件（GitLab、Plex Media Server、Siemens Software Center、Adobe Commerce・Magento、Google Brotli）です。Ivanti Connect Secure は追加2件、Cisco は掲載日の確認です。あわせて、悪用は確認されていないが深刻度の高い修正（Splunk Enterprise、Apache Tomcat、ヤマハ NWR100）を加えます。</p>
+<div class="cards">
+<div class="card"><h3>GitLab（CVE-2026-97229）</h3><p>CISA が10月29日に追加し、対応の期限を11月1日とした。CI/CD の設定に含まれる正規表現のコンパイルで起きる整数オーバーフローで、細工した正規表現によって、認証をしていない人が GitLab のサーバー上でコードを実行できる可能性がある（深刻度 Critical、CVSS 10.0）。GitLab は10月12日に 19.4.2、19.3.5、19.2.8 で修正した。10月25日の追記の CVE-2026-110264（10月21日の緊急パッチ）とは別の番号で、同じ原因の系統。</p>
+<p>根本原因は、GitLab が使う Ruby の正規表現エンジン（Onigmo）の欠陥。Ruby は10月23日に 4.0.9、3.4.12、3.3.13 で修正し、GitLab が公表した4件（CVE-2026-89078、93577、97229、110264）の元の不具合がこの3版に入っていると書いている。CISA は、同じ問題が GitLab 以外の製品にも影響しうる、と注記している。Ruby は、利用者が与えた文字列から正規表現を作る使い方（Regexp.new など）で影響を受け、実行時間の制限（Regexp.timeout）や、パターンの長さの制限では防げない、としている。GitLab の更新だけでは足りないことがあり、自分の Ruby で GitLab を動かしている場合は、Ruby 自体の更新も必要。</p>
+<p>悪用の一例（Alpine Linux の公表、10月28日）：10月20日と21日に、新規登録されたアカウントが、細工した CI 設定を送り、更新前（修正の公開から1週間後）の GitLab のワーカーが8回クラッシュした。うち4回は、攻撃が途中の段階まで進んで失敗した。10月22日に 19.3.6 へ更新したが、修正は GitLab 公式のパッケージの Ruby にだけ入っていて、自前の Ruby のコンテナは脆弱なまま（10月26日に気づいた）。攻撃が成功した証拠は見つからず、改ざんされた形跡もない（リリースとパッケージは、サーバー外の記録と照合して確認）。ただし、成功した攻撃は痕跡を残さず、一部のログが失われているため、成功を排除できず、GitLab を作り直した。</p></div>
+<div class="card"><h3>Cisco Secure Firewall の ASA・FTD（CVE-2026-76418）</h3><p>10月30日の追記の件。CISA のカタログへの追加は10月29日で、対応の期限は11月1日（Cisco の公表は10月28日）。</p></div>
+<div class="card"><h3>Ivanti Connect Secure の追加2件</h3><p>CVE-2026-104935（認証回避。10月13日にカタログ入り）に加えて、CVE-2026-111357（重要な機能の認証の欠如。ローカルで認証済みの人が権限を昇格できる）と CVE-2026-118527（予測できるファイル名。遠隔の認証済みの人が、ディスク上の既知の場所に、任意の内容のファイルを置ける）が、10月30日に追加された。CISA は、3件を連鎖して悪用できる、と書いている。対応の期限は、111357 が11月2日、118527 が11月13日。Ivanti の勧告ページは本文を取得できなかった。</p></div>
+<div class="card"><h3>Plex Media Server（4件：CVE-2026-96652、96654、96655、96656）</h3><p>CISA が10月20日に追加。いずれも連鎖して悪用できると書かれている。96652 は SSRF で、任意の X-Plex-Token の値で、サーバーに攻撃者が選んだ宛先へ POST させられる。96654 は URI スキームの不適切な無害化で、ほかのプラグインの関数を、攻撃者のパラメーターで呼べる。96655 も SSRF で、認証済みの人が、動画の変換のパスのパラメーターから、任意の内部・外部のアドレスへ要求できる。96656 はファイル名・パスの外部制御で、管理者が、読み込み時に実行されうる任意のファイルを書ける。期限は、96654 と 96656 が10月23日、96652 と 96655 が11月3日。</p>
+<p>Plex は、9月1日の発表で、Plex Media Server 1.43.3 と Plex Desktop 1.115.0 で複数のセキュリティの問題に対処したとして、更新を勧めている（その時点では CVE は未公表で、あとで公表するとしていた）。</p></div>
+<div class="card"><h3>Siemens Software Center（CVE-2026-110936）</h3><p>DLL サイドローディング（読み込む DLL の検索先を制御できない問題）。認証済みのローカルの人が、アプリが探すフォルダーに細工した DLL を置き、アプリの権限でコードを実行できる。CVSS 3.1 で 6.7、4.0 で 8.4。Siemens は10月15日に公表し、10月19日の更新で「現在知られている悪用」について別の記事を参照するよう書いた。V4.0.9.8 未満が対象で、既存の版は次の起動時に自動更新される。CISA が10月20日に追加し、期限は11月3日。</p></div>
+<div class="card"><h3>Adobe Commerce・Magento（CVE-2026-48356）</h3><p>任意の種類のファイルを無制限にアップロードできる欠陥で、コードを実行される可能性がある。Adobe の更新（APSB26-73）は7月14日で、その時点の発表は「悪用は把握していない」だった。CISA が10月27日にカタログへ追加し、期限は11月10日。修正の公開から3か月以上たって、悪用が確認された。</p></div>
+<div class="card"><h3>Google Brotli（CVE-2026-111497）</h3><p>CISA が10月27日に追加（期限11月10日）。リモートの認証されていない人が、細工された Brotli 圧縮データで、デコーダーの状態のメモリを壊し、メモリの内容の開示、サービス拒否、場合によってはコードの実行ができる。仕組みは、別のまとめ「Brotli のデコーダーの欠陥」を参照。</p></div>
+</div>
+
+<h3>悪用は確認されていないが、深刻度が高いもの（開発元の発表）</h3>
+<ul>
+<li><strong>Splunk Enterprise（10月21日、3件の勧告）：</strong>SVD-2026-1008 は、内部調査で見つけた問題を4件の CVE にまとめたもので、CVE-2026-76299（アクセス制御の不備）と CVE-2026-76302（不適切な無害化）が CVSS 3.1 で 9.9（Critical）、CVE-2026-76300 が 8.8、CVE-2026-76301 が 7.6。SVD-2026-1007 は、そのほかの複数の問題（最高 8.8、High）で、CVE-2026-76292 と 76295 は更新に加えて追加の手順が必要。SVD-2026-1009 は、サードパーティのパッケージの更新（31件の CVE）。修正は、10.4.4、10.2.8、10.0.11、9.4.16 以降。悪用についての記載は、読んだ範囲ではない。</li>
+<li><strong>Apache Tomcat（10月20日公表）：</strong>Tomcat 11 系のセキュリティのページで確認できた「重要（Important）」の3件。CVE-2026-101296 は、JNDI レルムを GSSAPI 以外の SASL 認証で構成している場合に、正しいパスワードなしで認証を通過できる。CVE-2026-101356 は、HTTP/2 と非同期サーブレットで、利用者の間の要求・応答が混ざりうる。CVE-2026-103119 は、AJP で、大きな非ブロッキングの書き込みの応答本文が、次の要求の応答に混ざりうる（11.0.0-M1 から 11.0.26 が対象）。11系は 11.0.27（10月12日）で修正。ほかの系列の版と、「低」とされた5件は、読んでいない。</li>
+<li><strong>ヤマハ NWR100（10月28日）：</strong>無線LANルーターの Rev.26.00.07 以前。CVE-2026-97854 は、特定のリクエストで任意の OS コマンドを実行される（JVN の評価は CVSS 3.1 で 9.8、4.0 で 9.3。認証・操作とも不要）。CVE-2026-109822 は、エクスポートした設定ファイルを、認証なしで読み取られる（6.5 / 7.1）。Rev.26.00.08 で修正。更新が難しい場合は、IP フィルターや Web GUI へのアクセス管理で、アクセス元を制限する。既定ではインターネット側から Web GUI へはアクセスできないが、ポートを開けていると攻撃を受けうる。NWR100 以外のヤマハのルーター、UTM、アクセスポイント、スイッチは該当しない。</li>
+<li><strong>扱わなかったもの：</strong>Chrome 156（10月29日。21件、うち1件が Critical とされる）、ServiceNow（10月29日。Critical の CVE-2026-103093 など）、Firefox for Android の CVE-2026-113470 は、開発元の原本を取得できなかったため、このまとめでは扱わない。JPCERT/CC の10月21日の週次レポートの残りの項目（Microsoft Edge、Juniper、NGINX、Drupal、Adobe、Next.js、Palo Alto Networks、Zoom、Mozilla、SAP、Fortinet など）は、カタログへの掲載を確認できなかったため、個別には取り上げない。</li>
+</ul>
+<p><strong>見方（筆者の整理）：</strong>カタログの追加は、修正の公開から日がたっているものが多い。Adobe Commerce は修正の公開（7月14日）から約3か月半、Plex は発表（9月1日）から約7週間、Siemens は公表（10月15日）の5日後、GitLab は修正（10月12日）の17日後。更新を後回しにすると、悪用が確認されたとき、すでに遅れている。GitLab は、更新したつもりでも、自前の Ruby の場合は修正が入らない例があり、版の番号だけでなく、修正の入り方（パッケージか、自前の部品か）の確認が要る。Plex と Ivanti は、複数の欠陥を連鎖させる攻撃で、1つ1つの深刻度が低めでも、組み合わせで影響が大きくなる。</p>
 
 <h2>悪用は確認されていないが、深刻度が高いもの：PwnEscape</h2>
 <p>10月20日の追記です。Linux カーネルの脆弱性 PwnEscape（CVE-2026-99999）を、CVE の記録、発見者（pwn.ai）の解説、Vercel の報告をもとに整理しました。CVE の記録は10月15日に公開され、CVSS 3.1 の基本値は 9.3（緊急）です。CISA の評価では、悪用は確認されていません。</p>
@@ -625,13 +650,14 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月30日時点の情報です（10月23日に、10月21日の週次レポートの3件を、10月25日に GitLab の件を、10月27日と30日に悪用が確認された3件ずつを追加）。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
+<p>2026年10月31日時点の情報です（10月31日に、CISA のカタログに加わった10件と深刻度の高い修正を追加。10月23日に、10月21日の週次レポートの3件を、10月25日に GitLab の件を、10月27日と30日に悪用が確認された3件ずつを追加）。状況は更新されていくため、最新の内容は各開発元の情報で確認してください。</p>
 <p>修正バージョンの番号など、注意喚起に明記されていない項目は、開発元の最新情報で確認する必要があります。</p>
 <p>ここで取り上げたのは、JPCERT/CC と IPA が10月中旬までに取り上げたもののうち、本文を直接確認できたものです。Linux の Copy Fail（IPA、CVE-2026-31431）は、5月の注意喚起で10月の更新がないため、今月の対象には入れていません。報道で伝えられた別の脆弱性は、一次情報を確認できていないため、扱っていません。</p>
+<p>10月31日の追記は、CISA のカタログ（10月30日時点）、GitLab、Ruby、Alpine Linux、Plex、Siemens、Adobe、Splunk、Apache Tomcat、ヤマハ、JVN の発表から加えました。Ivanti の勧告ページ、Chrome、ServiceNow、Firefox for Android の原本は取得できなかったため、CISA のカタログの記載だけを使うか、扱っていません。</p>
 <p>10月27日の追記の3件は、JPCERT/CC と IPA の資料ではなく、Arista と Collabora の開発元の発表と、CISA のカタログから加えました。10月30日の追記は、Cisco と WatchGuard の発表、CISA のカタログ、CVE の記録から加えました。</p>
 <p>内容は、JPCERT/CC と IPA の資料をもとに、独自に整理したものです。PwnEscape は、CVE の記録、発見者、Vercel の公表をもとにしています。関連する話題として、<a href="domestic-data-breaches.html">国内で相次ぐ不正アクセスによる情報漏えい</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-30</span>10月28日に悪用が確認された3製品（Cisco Secure Firewall の ASA・FTD、Linux カーネル、VMware ESX）を、Cisco の発表、CISA のカタログ、CVE の記録から追加。あわせて、WatchGuard の Fireware OS の17件（10月27日公表）を整理</li><li><span class="date">2026-10-27</span>悪用が確認された3製品（Arista VeloCloud Orchestrator、Collabora Online の Built-in CODE Server、PHP）を、開発元の発表と CISA のカタログから追加</li><li><span class="date">2026-10-25</span>悪用は確認されていないが深刻度が最大のものとして、GitLab の CVE-2026-110264（CVSS 10.0）と、10月21日の緊急パッチ（12件）を追加</li><li><span class="date">2026-10-23</span>10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を追加</li><li><span class="date">2026-10-21</span>サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を図とともに追加</li><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>10月20〜30日に CISA のカタログに加わった GitLab（CVE-2026-97229。根本原因は Ruby の Onigmo）、Plex Media Server（4件）、Siemens Software Center、Adobe Commerce・Magento、Google Brotli と、Ivanti Connect Secure の追加2件を追加。悪用は確認されていないが深刻度の高い修正として、Splunk Enterprise、Apache Tomcat、ヤマハ NWR100 を追加。20製品・29件に更新</li><li><span class="date">2026-10-30</span>10月28日に悪用が確認された3製品（Cisco Secure Firewall の ASA・FTD、Linux カーネル、VMware ESX）を、Cisco の発表、CISA のカタログ、CVE の記録から追加。あわせて、WatchGuard の Fireware OS の17件（10月27日公表）を整理</li><li><span class="date">2026-10-27</span>悪用が確認された3製品（Arista VeloCloud Orchestrator、Collabora Online の Built-in CODE Server、PHP）を、開発元の発表と CISA のカタログから追加</li><li><span class="date">2026-10-25</span>悪用は確認されていないが深刻度が最大のものとして、GitLab の CVE-2026-110264（CVSS 10.0）と、10月21日の緊急パッチ（12件）を追加</li><li><span class="date">2026-10-23</span>10月21日の週次レポートで悪用が確認されたとされた3件（Cisco Secure Email Gateway の別の脆弱性、BeyondTrust Remote Support、Ivanti Connect Secure）を追加</li><li><span class="date">2026-10-21</span>サポートが終わった機器の脆弱性として、楽天モバイルのスマートフォン4機種（Rakuten Mini など）を図とともに追加</li><li><span class="date">2026-10-20</span>悪用は確認されていないが深刻度が高いものとして、Linux カーネルの PwnEscape（CVE-2026-99999）と仕組みの図を追加</li><li><span class="date">2026-10-19</span>初回公開（2026年10月分。悪用が確認された7製品、対応の流れ、製品別の要点）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
