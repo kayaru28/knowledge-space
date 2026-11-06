@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年11月5日に Google（ワイオミング州に170億ドル）と OpenAI（National Community Compact と政策提言）が出した、データセンター立地地域への約束を、各社の発表から整理する。11月3日の選挙での住民投票は、報道による情報として区別して書く。">
+<title>データセンターと地域社会：Google はワイオミングで電力費を全額負担、OpenAI は「地域との約束」を全施設に、選挙では建設の規制を求める票が相次いだ | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>データセンターと地域社会：Google はワイオミングで電力費を全額負担、OpenAI は「地域との約束」を全施設に、選挙では建設の規制を求める票が相次いだ</h1><p class="summary">2026年11月5日に Google（ワイオミング州に170億ドル）と OpenAI（National Community Compact と政策提言）が出した、データセンター立地地域への約束を、各社の発表から整理する。11月3日の選挙での住民投票は、報道による情報として区別して書く。</p><p class="meta">初回公開 2026-11-06 ／ 更新日 2026-11-06</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>米国で AI 向けのデータセンターが急増するなか、電気料金や水への住民の心配が強まっている。11月5日、Google は米ワイオミング州に初のデータセンターを建てると発表し（長期で170億ドル）、使う電力の費用を100%負担すると約束した。同じ日、OpenAI も、自社が持つ全施設に地域ごとの「約束」を設け、電力費の全額負担や公職者との秘密保持契約（NDA）を原則結ばないことなどを示した。</p>
+<p>どちらの発表にも、11月3日の選挙には触れていない。報道では、同じ選挙で、データセンターの建設を禁止・制限する住民投票が各地で可決された。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">170<small>億ドル</small></p><p class="stat-label">Google がワイオミング州のデータセンターに長期で投資する額（Google の発表）</p></div>
+<div class="stat"><p class="stat-value">100<small>%</small></p><p class="stat-label">Google が約束した、使う電力の費用の負担割合</p></div>
+<div class="stat"><p class="stat-value">702<small>MW</small></p><p class="stat-label">契約した燃料電池の発電設備の規模（CCS つき。Google は計画中で最大と記述）</p></div>
+<div class="stat"><p class="stat-value">1,000<small>MW</small></p><p class="stat-label">OpenAI のエフィンガム郡の施設で、電力会社が需要が高い時に減らせる供給量（契約）</p></div>
+</div>
+
+<h2>数字で見る（各社の記述）</h2>
+
+<ul>
+<li><strong>170億ドル：</strong>Google がワイオミング州に長期で投資する額（ララミー郡）。</li>
+<li><strong>702 MW：</strong>同データセンターの電力のために契約した、燃料電池の発電設備の規模。二酸化炭素の大部分を回収・貯留する設備（CCS）とセットで、Google は「この種のものとして計画中で最大」と書く。</li>
+<li><strong>1,000 MW：</strong>OpenAI が計画するジョージア州エフィンガム郡の施設で、電力会社が需要が高い時に OpenAI への供給を減らせる量（契約）。</li>
+<li><strong>480万ドル：</strong>エフィンガム郡で、住民の意見で決まった助成（郡内の全生徒約14,000人の給食）。</li>
+</ul>
+
+<h2>Google のワイオミングのデータセンター（11月5日）</h2>
+
+<ul>
+<li><strong>提携：</strong>Tallgrass Energy、Black Hills Energy、American Electric Power（AEP）、Related Digital。</li>
+<li><strong>約束：</strong>使う電力の100%の費用を負担し、成長が直接生むインフラの費用も負担する。</li>
+<li><strong>電力：</strong>AEP と契約した、Bloom Energy 製の燃料電池（天然ガス）702 MW に、CCS を組み合わせる。回収した二酸化炭素は、近くの Tallgrass の貯留拠点に永久に地下に貯める。Google の契約済みの CCS の容量は、合計でほぼ1 GW。ほかに、Tallgrass と Black Hills の天然ガス発電からも調達し、Tallgrass のコンバインドサイクルのタービンに CCS をつけられるかを調べる技術検討（FEED）もしている。</li>
+<li><strong>水：</strong>空冷にして、地域の水への負担を抑える。水の補給への投資も続ける。</li>
+<li><strong>地域：</strong>チェイエンで200人超の住民と会い、意見を聞いた。郡と学区の固定資産税で数億ドルの見込み。教育、職業訓練、地元企業への助成を行う。Google と協力企業は、成長の影響への対策を考える「コミュニティ・カウンシル」を設ける。</li>
+</ul>
+
+<h2>OpenAI の National Community Compact と政策提言（11月5日）</h2>
+
+<ul>
+<li><strong>対象：</strong>OpenAI が今後所有・運営する、すべての計算拠点（Compute Campus）。1月の「Stargate Community」の延長で、ジョージア州とオハイオ州の個別の約束に続く。</li>
+<li><strong>約束（施設ごとの協定に共通）：</strong>電力とインフラの費用を全額負担し、大きな支出の前に、計画が遅れたり、縮小・中止されたりしたときに他の利用者を守る財務上の保証を出す。水の計画を作り、水を使わない・循環式の冷却を優先し、施設ごとの水と電力の使用量を公開する。工事の計画と第三者の騒音調査を公開する。公職者との NDA は、安全情報や企業秘密など限られたものを除いて結ばない。雇用の見込みを公開し、労働組合や訓練機関と組み、毎年報告する。地域の優先事項への継続的な投資（エフィンガム郡：480万ドル。オハイオ州パイク郡：OpenAI と SB Energy の共同で600万ドル）。</li>
+<li><strong>政策提言（Compute Campus Policy Blueprint）：</strong>企業の自主的な約束は出発点にすぎないとして、連邦・州・地方の政府に、業界共通のルールを求める。州の公益事業委員会は、大口の電力利用者に、送電網にかけるコストを負担させ、計画が頓挫したときに他の利用者を守らせる。需要が逼迫したときに消費を減らせる施設は、接続しやすくする。議会は、送電網の増強を速め、クリーン電力の税の優遇を戻し広げる。水・電力・騒音・雇用の公開、公職者への NDA の制限、税の優遇を受けた企業が約束を守らなかった場合の優遇分の回収を求める。地元の調達や、建設・保守の雇用に向けた訓練。</li>
+</ul>
+
+<h2>報道による情報：11月3日の選挙とデータセンター</h2>
+
+<ul>
+<li>以下は、ITmedia と産経新聞の記事による。原典（開票結果）は読んでいない。</li>
+<li><strong>住民投票：</strong>データセンターの建設の禁止や制限を問う投票が、各地で可決された。数は報道で食い違う（Washington Post の引用で「少なくとも38の地域」、産経新聞が引く Ballotpedia で「10州の41件、1件を除いて可決」）。</li>
+<li><strong>選挙：</strong>民主党が上下両院の多数を取った。テキサス州の知事選と、連邦上院の選挙で、データセンターの規制や、新規承認の一時停止を訴えた候補が当選した、と報じられている。大統領には拒否権があり、AI の包括的な連邦法の成立は不透明、との見方も添えられている。</li>
+<li><strong>影響は限られるという見方：</strong>住民投票の対象は市街地や公有地に限るものが多く、郊外や私有地の計画には及びにくい。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>約束は、各社の自己申告。実際の費用の負担や公開は、これから確かめられる。</li>
+<li>選挙の結果と各社の発表の関係は、各社の発表に書かれていない。時期が重なっているだけで、因果は分からない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>電力費の全額負担、水、NDA、地域への投資という約束が、Google と OpenAI で重なった。地域での受け入れが、建設の条件として前面に出てきた。</li>
+<li>OpenAI は、自社の約束に加えて、すべての開発者に適用されるルールを求めた。ルールがあれば、約束を守る企業とそうでない企業の差が競争上の不利にならない。</li>
+<li>需要が逼迫したときに電力を減らす契約（エフィンガム郡の1,000 MW）は、「電力を大量に使う側が、送電網の都合に合わせる」形で、地域の反発に応える設計になっている。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>NDA（秘密保持契約）</dt><dd>契約の内容などを外に話さない約束。データセンター計画では、自治体の職員との NDA が、住民への説明不足の原因になるとされる。</dd>
+<dt>CCS</dt><dd>発電などで出る二酸化炭素を回収し、地下に貯める技術。</dd>
+<dt>燃料電池</dt><dd>燃料（ここでは天然ガス）を、燃やさずに化学反応で電気にする装置。</dd>
+<dt>空冷</dt><dd>水を使わず、空気で冷やす方式。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月6日時点の情報です。内容は、Google と OpenAI の発表（11月5日）をもとに、独自に整理したものです。選挙に関する部分は、報道による情報として区別しています。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-06</span>初回公開（Google のワイオミング、OpenAI の National Community Compact と政策提言、選挙の報道）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

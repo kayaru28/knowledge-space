@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年11月6日13時27分から19時05分まで、しんきん共同システムの障害で、西日本エリアの信用金庫の窓口とATMなどが使えなくなった件を、しんきん共同センターなどの発表から整理する。原因はシステム機器の故障で、サイバー攻撃ではないとしている。">
+<title>信用金庫の共同システム障害（11月6日）：西日本の信用金庫で、窓口とATMが約5時間半止まった | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>信用金庫の共同システム障害（11月6日）：西日本の信用金庫で、窓口とATMが約5時間半止まった</h1><p class="summary">2026年11月6日13時27分から19時05分まで、しんきん共同システムの障害で、西日本エリアの信用金庫の窓口とATMなどが使えなくなった件を、しんきん共同センターなどの発表から整理する。原因はシステム機器の故障で、サイバー攻撃ではないとしている。</p><p class="meta">初回公開 2026-11-06 ／ 更新日 2026-11-06</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年11月6日13時27分、信用金庫の共同システム「しんきん共同システム」で障害が起き、西日本エリアの信用金庫の窓口業務とATMなどが使えなくなった。19時05分に復旧作業が完了し、全てのサービスが使えるようになった（約5時間半）。原因はシステム機器の故障で、サイバー攻撃ではないことを確認した、としている。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">約5.6<small>時間</small></p><p class="stat-label">障害が続いた時間（11月6日13時27分〜19時05分）</p></div>
+<div class="stat"><p class="stat-value">1<small>件</small></p><p class="stat-label">公表された原因（システム機器の故障。サイバー攻撃ではない）</p></div>
+</div>
+
+<h2>時系列（発表）</h2>
+
+<ul>
+<li><strong>11月6日 13時27分：</strong>「しんきん共同システム」で障害が発生。最初の発表では13時35分と書かれていたが、復旧の発表で13時27分に訂正された。広島信用金庫は「13時30分頃から」と書いている。</li>
+<li><strong>発生中：</strong>西日本エリアの信用金庫で、窓口業務やATMなどの各種サービスが休止。広島信用金庫は、オンライン端末、為替、ATM（コンビニATMを含む）などが使えないと書き、大阪シティ信用金庫は、窓口・ATM・インターネットバンキング・他行のキャッシュカードによるATM取引など、勘定に関わる全ての取引が使えないと書いた。急ぎの振り込みは、信用金庫以外の金融機関を使うよう案内している。</li>
+<li><strong>11月6日 19時05分：</strong>復旧作業が完了。西日本エリアの信用金庫で、ATMなど全てのサービスが使えるようになった。</li>
+</ul>
+
+<h2>原因について</h2>
+
+<ul>
+<li>発表されたのは、「システム機器の故障によるもの」で、サイバー攻撃に起因するものではない、という点だけ。どの機器か、なぜ止まったか、なぜ全体に広がったかは、読んだ発表には書かれていない。</li>
+<li>当初の発表では「サイバー攻撃に起因するものではないと考えております」、復旧の発表では「確認している」と書き方が変わっている。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>「西日本エリア」とだけ書かれ、対象の信用金庫の数や名前の一覧は、読んだ発表にはない。</li>
+<li>件数（影響を受けた取引や口座の数）、再発防止策は、読んだ範囲では未公表。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>信用金庫は、各金庫が独自にシステムを持つのではなく、共同のセンターを使っている。そのため、1か所の機器の故障が、多数の金庫の窓口とATMに同時に及んだ。</li>
+<li>同じ6日に、国内では不正アクセスの漏えいの公表が続いていたが、この障害は攻撃ではなく機器の故障だった。止まった原因が攻撃かどうかを、発表がすぐに示している。</li>
+<li>利用者側の手当ては、他の金融機関を使う、という案内に限られた。共同システムの障害は、利用者が自分で避ける手段が少ない。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>しんきん共同システム</dt><dd>信用金庫が共同で使う、勘定（口座の取引）などのオンラインシステム。しんきん共同センターが運営・管理する。</dd>
+<dt>勘定系</dt><dd>口座の残高や入出金など、金融機関の基幹の取引を扱うシステム。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月6日時点の情報です。内容は、全国信用金庫協会・しんきん共同センター・信金中央金庫の発表（11月6日の2件）と、大阪シティ信用金庫・広島信用金庫の告知をもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-06</span>初回公開（経過、影響、原因）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

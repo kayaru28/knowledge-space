@@ -192,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>AI 投資が決算に表れた：Alphabet・Microsoft・Amazon の7〜9月期（クラウドは最大2倍の伸び、設備投資は約2.1倍、純利益の増減は別の理由）</h1><p class="summary">2026年10月28日と29日に発表された Alphabet、Microsoft、Amazon の7〜9月期の決算の原本から、クラウド事業の伸び、設備投資の増え方、現金収支、純利益が増減した理由を、3社の数字を並べて整理する。</p><p class="meta">初回公開 2026-10-31 ／ 更新日 2026-10-31</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AI 投資が決算に表れた：Alphabet・Microsoft・Amazon の7〜9月期（クラウドは最大2倍の伸び、設備投資は約2.1倍、純利益の増減は別の理由）</h1><p class="summary">2026年10月28日と29日に発表された Alphabet、Microsoft、Amazon の7〜9月期の決算の原本から、クラウド事業の伸び、設備投資の増え方、現金収支、純利益が増減した理由を、3社の数字を並べて整理する。</p><p class="meta">初回公開 2026-10-31 ／ 更新日 2026-11-06</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>10月28日と29日に、Alphabet、Microsoft、Amazon が7〜9月期の決算を発表しました。3社とも、<strong>クラウド事業が大きく伸びました</strong>（Google Cloud +103%、Azure +48%、AWS +39%）。同時に、<strong>設備投資（現金ベース）は、3社の合計で前年同期の約2.1倍</strong>に増え、Alphabet と Amazon は、フリーキャッシュフローがマイナスになりました。</p>
 <p>純利益の動きは、3社でばらばらでした（Alphabet −25%、Microsoft +32%、Amazon −2%）。ただし、原本を読むと、理由は設備投資の負担だけではありません。Alphabet は株式の評価損、Amazon は前年の Anthropic への投資益の反動、Microsoft は OpenAI への投資の損益が入っています。</p>
@@ -287,6 +287,15 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li>CEO の説明：AWS の売上の伸びは、2027年と2028年も40%超になる見込み。同社の AI 推論サービス Bedrock は、Fortune 500 の企業の支出が前年の約7倍、トークンの量が約17倍になった。Bedrock に、OpenAI、Anthropic、Moonshot AI などのモデルを追加した。</li>
 </ul>
 
+<h2>11月6日の追記：クラウド市場全体の数字（Synergy）と、AI の計算基盤をめぐる2つの発表（Marvell–Lumentum、NVIDIA DSX POD）</h2>
+<p>Synergy Research Group の発表（10月29日）、Marvell と Lumentum の共同発表（11月2日）、NVIDIA の GTC Berlin の基調講演の記事（10月21日）から整理した。市場調査の数字は調査会社の推計で、各社の決算とは別のもの。</p>
+<ul>
+<li><strong>クラウド市場全体（Synergy。10月29日）：</strong>7〜9月期のクラウドインフラ（IaaS、PaaS、ホステッドプライベートクラウド）への支出は、前年同期比55%増の1,680億ドル（推計1,677億ドル）で過去最高。成長率の上昇は12四半期続けて、市場が倍になるのに8四半期しかかからなかった。直近12か月の売上は5,580億ドル。ChatGPT の公開（2022年末）以降、市場は185%成長し、成長率は3倍になった、と書く。AI 専用のクラウドサービスは市場の約3分の1。上位3社のシェアは、Amazon 26%、Microsoft 19%、Google 16%。Microsoft と Google の成長率は Amazon を大きく上回る。第2グループでは Oracle と、AI に特化した新興のクラウド事業者（CoreWeave、Crusoe、Nebius、Fluidstack、Together AI、Nscale）の成長が高く、Anthropic と OpenAI も、基盤の事業で上位に入ってきた。今年クラウドを始めた SpaceX/SI は、売上で早くも上位10社に入った。新興事業者の急成長が、既存の事業者のシェアを削っている。地域では、米国が世界の44%で、主要国の中で最も成長が速い。</li>
+<li><strong>Marvell による Lumentum の買収合意（11月2日）：</strong>Marvell Technology が、光通信の Lumentum を、全額株式交換で買収する合意。Lumentum の株1株に Marvell の株4.500株を渡す。Lumentum の企業価値は約1,150億ドル（1株約1,132ドル、10月28日の終値に対して約23.9%の上乗せ）。完了後の持ち株比率は、Marvell の株主が約67%、Lumentum の株主が約33%。両社は、AI のインフラで、銅線から光への接続の転換が加速していると説明する。Marvell は電気と光の接続、ネットワークスイッチ、カスタム AI 半導体を、Lumentum は高性能レーザー、光トランシーバー、光回路スイッチ（OCS）、化合物半導体の製造を持つ。対応できる市場は5,500億ドルに広がり、年間10億ドル超のコスト削減が見込める、としている。完了は2028年上半期の見込みで、両社の株主の承認と規制当局の承認などが条件。</li>
+<li><strong>NVIDIA の DSX POD（GTC Berlin。10月21日）：</strong>量産中の次世代プラットフォーム Vera Rubin を使った AI 工場の参照設計。パートナーが、モジュール式のコンテナの中に AI 工場を組み上げ、統合と検証を済ませてから納入する。現地の設備が整っていれば、現地での導入期間を6か月から14日に短縮できる、と NVIDIA は説明する。AI 工場向けのプラットフォーム（DSX AI Factory Platform）を使うと、冷却の水の消費を最大100%減らせ、同じ AI の出力を最大30%少ない電力で得られる、とも書く（NVIDIA の主張）。</li>
+</ul>
+<p>見方（筆者の整理）：各社の7〜9月期の設備投資が膨らむ一方、市場全体の売上も55%増になった。支出の対象が、半導体そのものから、その間をつなぐ光接続（Marvell–Lumentum）や、建て方そのもの（DSX POD の導入期間の短縮）にも広がっている。クラウドの支出の約3分の1が AI 専用で、新興事業者がシェアを削る、という Synergy の見立ては、3社の決算の比較とは別の角度からの数字。</p>
+
 <h2>読むときの注意</h2>
 <ul>
 <li>設備投資の定義は、各社で違う：Alphabet は「有形固定資産の購入」、Microsoft は「有形固定資産の増加」（ファイナンスリースによる分は別）、Amazon は「有形固定資産の購入」（フリーキャッシュフローは、売却や補助金の受取分を引いた純額）。3社の合計は、規模の目安。</li>
@@ -308,11 +317,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </dl>
 
 <div class="note">
-<p><strong>この記事について</strong>：2026年10月31日時点の情報です。内容は、Alphabet（10月28日）、Microsoft（10月28日）、Amazon（10月29日）の決算の発表資料をもとに、独自に整理したものです。</p>
+<p><strong>この記事について</strong>：2026年11月6日時点の情報です（11月6日に、クラウド市場全体の数字、Marvell–Lumentum、NVIDIA DSX POD を追加）。内容は、Alphabet（10月28日）、Microsoft（10月28日）、Amazon（10月29日）の決算の発表資料をもとに、独自に整理したものです。</p>
 <p>数字は各社の発表のままです。合計の約784億ドルと約1,680億ドル、約2.1倍、Microsoft の差し引き186億ドルは筆者の計算です。決算説明会での発言、今後の見通し（Alphabet・Microsoft）、財務諸表の注記は読んでいません。</p>
 <p>同じ週の、Meta の株式発行と NVIDIA・AMD の提携拡大は、<a href="meta-muse-nvidia-amd-equity.html">別のまとめ</a>にあります。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。Amazon の発表は Anthropic への投資と Anthropic のモデルに触れていて、その部分は Amazon の発表のとおりに書きました。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>初回公開（3社の7〜9月期の決算、設備投資の比較、純利益の増減の理由、読むときの注意）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-06</span>追記：クラウド市場全体の数字（Synergy、7〜9月期1,680億ドル）、Marvell による Lumentum の買収合意、NVIDIA の DSX POD を追加</li><li><span class="date">2026-10-31</span>初回公開（3社の7〜9月期の決算、設備投資の比較、純利益の増減の理由、読むときの注意）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

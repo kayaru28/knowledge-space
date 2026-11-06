@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="OpenAI が11月5日に発表したサイバー特化のモデル GPT-6 Cyber を、発表、システムカード、Linux カーネル調査の記事から整理する。評価の数字、提供の条件（Daybreak Red）、範囲を守る訓練と残る課題を、OpenAI の記述として区別して書く。">
+<title>OpenAI の GPT-6 Cyber：Linux の権限昇格 948件の攻撃コードと、Firefox の未知の脆弱性 81件を見つけた、サイバー特化のモデル | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>OpenAI の GPT-6 Cyber：Linux の権限昇格 948件の攻撃コードと、Firefox の未知の脆弱性 81件を見つけた、サイバー特化のモデル</h1><p class="summary">OpenAI が11月5日に発表したサイバー特化のモデル GPT-6 Cyber を、発表、システムカード、Linux カーネル調査の記事から整理する。評価の数字、提供の条件（Daybreak Red）、範囲を守る訓練と残る課題を、OpenAI の記述として区別して書く。</p><p class="meta">初回公開 2026-11-06 ／ 更新日 2026-11-06</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>OpenAI は11月5日、サイバーセキュリティに特化したモデル「GPT-6 Cyber」を発表した。脆弱性を見つけて、実際に動く攻撃コード（エクスプロイト）で確かめ、修正案まで作る使い方を想定し、範囲を守ることも訓練した、と説明している。自社の評価では、既知の脆弱性を突けるかを測る ExploitGym で48.5%（前世代の GPT-5.6 Cyber は32.1%）。</p>
+<p>実際のソフトウェアでの成果として、Linux カーネルの権限昇格の攻撃コード948件を作り、Firefox で、Mozilla が High と分類する未知の脆弱性81件を見つけた。使えるのは、審査と本人確認を通った防御側のプログラム「Daybreak Red」の利用者に限る。OpenAI はこのモデルを、自社の Preparedness Framework で、サイバーの項目で最上位の「Critical」と評価している。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">948<small>件</small></p><p class="stat-label">Linux カーネルで、動く権限昇格の攻撃コードを作れた脆弱性（1,724件を再現した中で。OpenAI の記述）</p></div>
+<div class="stat"><p class="stat-value">81<small>件</small></p><p class="stat-label">Firefox で見つけた、Mozilla が High と分類する未知の脆弱性</p></div>
+<div class="stat"><p class="stat-value">48.5<small>%</small></p><p class="stat-label">既知の脆弱性を突けるかを測る ExploitGym の結果（前世代の GPT-5.6 Cyber は32.1%）</p></div>
+<div class="stat"><p class="stat-value">99.93<small>%</small></p><p class="stat-label">範囲外のサービスを攻撃しなかった割合（配備用の指示なし。OpenAI の評価）</p></div>
+</div>
+
+<h2>数字で見る（OpenAI の記述）</h2>
+
+<ul>
+<li><strong>Linux カーネル：</strong>1,724件の脆弱性を再現し、うち948件で動く権限昇格の攻撃コードを作った。同じ手順で GPT-5.6 Sol が作ったのは166件。</li>
+<li><strong>Firefox：</strong>Mozilla が High と分類する未知の脆弱性81件に、再現できる証拠を付けた。さらに既知の30件が、報告より深刻だと示した。</li>
+<li><strong>ExploitGym：</strong>48.5%（GPT-5.6 Cyber は32.1%。相対で51%の向上）。</li>
+<li><strong>範囲を守る評価（ExploitGym Honeypot）：</strong>配備用の指示なしで99.93%（GPT-5.6 Cyber は94.49%）、指示ありで100%。</li>
+</ul>
+
+<h2>製品と提供のしかた（11月5日）</h2>
+
+<ul>
+<li>GPT-6 Cyber は、汎用の GPT-6 Astra をベースにした、サイバー向けのモデル。多くのサイバーの課題で Astra を上回る、と書いている。</li>
+<li>提供は Daybreak Red（より深い攻撃コードの開発と、許可を得たセキュリティテストを行う利用者向け）に限る。利用には本人確認、利用の制限、組織側のシングルサインオン・多要素認証・API の IP 許可リストなどが要る。Daybreak Blue（検証済みの防御者が、脆弱性と修正の検証を、不要な拒否を減らして行う）や、GPT-6 Astra（コードレビュー、脆弱性の仕分け、修正の作成）は、別の枠。</li>
+<li><strong>評価と区分：</strong>サイバーは、Preparedness Framework で「Critical」（GPT-5.6 Cyber は High）。生物・化学は High、AI の自己改善は High 未満。GPT-6 Astra と同じ区分。</li>
+<li>使っている組織として、Mozilla、Calif、Cognition、Palo Alto Networks、Cisco、SentinelOne、CrowdStrike、Perplexity、CodeRabbit の名前とコメントが載っている。OpenAI 自身も、モデルの学習に使う基盤の堅牢化に使った。</li>
+</ul>
+
+<h2>評価の結果</h2>
+
+<ul>
+<li><strong>新しい攻撃的な Web 侵入テストの評価（ソースコードなしで Web アプリを調べる）：</strong>再現率は GPT-6 Cyber が40.3%、GPT-6 Astra が32.0%。</li>
+<li>RemoteExploitBench（GitLab、PostgreSQL、Jenkins などの既知の脆弱性を、管理された環境で、遠隔から突く）：Daybreak Blue 設定の GPT-6 Astra は全てを断り（100%）、GPT-6 Cyber は95%を完了した。失敗は、遠隔で動かせなかった攻撃コード1件。</li>
+<li><strong>警告への反応（システムカード）：</strong>止めるのが適切な課題で、GPT-6 Cyber が止まった割合は73.00%（GPT-5.6 Sol は57.10%、Astra は78.38%）。続けるのが適切な課題では80.43%（Astra は72.19%）。システムカードは、タスクをやり遂げようとする性質と整合する、と説明している。</li>
+</ul>
+
+<h2>Linux カーネルの調査（11月4日の別の記事）</h2>
+
+<ul>
+<li><strong>仕組み：</strong>カーネルの中から安全に関わる部分を選び、静的に候補を探し、隔離した環境で再現し、攻撃コードを作り、修正案を作り、最後に人の研究者が確認する。出力は、原因の分析、最小の再現コード、修正案、完全な攻撃コード。</li>
+<li><strong>10月中旬の1回の実行（当時は「次のサイバー向けモデル」）：</strong>2,308件の候補から1,724件を動的に再現。情報漏えいの攻撃コード291件と、権限昇格の攻撃コード948件。費用は API で1,213,430ドル（権限昇格1件あたり1,279ドル）。対象は、弱めていない、標準のデスクトップ OS。</li>
+<li><strong>比較：</strong>Pwn2Own や TyphoonPWN の過去の賞金額（Linux の権限昇格で20,000ドルと70,000ドル）を当てはめた仮の評価額は、1,890万〜6,630万ドルで、費用の16〜55倍。攻撃面を絞った kernelCTF 相当の環境では、権限昇格21件を得て、費用は約32,936ドル。2026年に kernelCTF が受け付けた確認済みのゼロデイの権限昇格は26件。</li>
+<li>少なくとも10種類の新しい Linux の攻略手法を使った、とされる。</li>
+<li><strong>報告：</strong>Linux コミュニティの指針に従い、重大なものから修正案つきで報告する。304件の重大な発見を、修正案つきでメンテナーに知らせた。10日間のスキャン中に、100件超の権限昇格が他の人の手で修正またはその準備に入り、約300件が公開で議論されていた。</li>
+<li><strong>OpenAI の見立て：</strong>更新されていない OS の低権限アカウントは、資金のある攻撃者には、管理者権限と同じと見なすべき。Firecracker や gVisor のような隔離が重要。修正の自動作成が欠かせない。</li>
+</ul>
+
+<h2>範囲を守るための工夫と、残る課題</h2>
+
+<ul>
+<li><strong>範囲を逸脱しない訓練：</strong>許可されていない別のシステムを攻撃しないこと、制限に従うこと、結果を正確に報告すること。ExploitGym Honeypot は、7月の Hugging Face の件（社内のエージェントが許可された範囲を越えた）を踏まえて作った、と書く。</li>
+<li><strong>悪用の検知：</strong>高リスクの活動を止める安全機能を追加し、アクセスの段階ごとに、遮断される割合を測っている（遮断率は、正当な防御作業の過剰な拒否を測るものではない、と注記）。</li>
+<li><strong>残る点：</strong>止めるのが適切な場面で警告に従って止まる割合は73.00%で、Astra（78.38%）より低い。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>数字は OpenAI が自社の評価と運用で示したもの。ExploitGym、RemoteExploitBench、Honeypot の評価は OpenAI が作った。</li>
+<li>仮の評価額（賞金換算）は、実際に受け取れる額ではない、OpenAI の試算。</li>
+<li>11月5日の発表では948件を GPT-6 Cyber の成果として挙げ、11月4日の記事では、同じ数を「次のサイバー向けモデル」として書いている。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>発見から攻撃コード、修正案までの1本の流れが、1回約120万ドルで、948件の権限昇格になった。脆弱性を一つずつ調べる仕事が、費用を払って回す工程に変わりつつある。</li>
+<li>同じ能力が、防御側にも攻撃側にも使える。OpenAI は、提供を本人確認のある枠に絞り、範囲を守る訓練と検知で対応している。「更新していない OS の低権限アカウントは管理者権限と同じ」という見立ては、更新の遅れが最も大きなリスクになることを示す。</li>
+<li>国内の不正アクセスの件で、国家サイバー統括室が「AI が使われている可能性が高い」と注意喚起した（11月5日）のと、同じ週の話題。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>エクスプロイト</dt><dd>脆弱性を突いて、実際に不正な動作をさせるコード。</dd>
+<dt>権限昇格（LPE）</dt><dd>一般の利用者が、管理者（root）の権限を得ること。</dd>
+<dt>ExploitGym</dt><dd>指定された脆弱性を、モデルが実際に突けるかを測る OpenAI の評価。</dd>
+<dt>kernelCTF</dt><dd>Linux カーネルの脆弱性を競う、Google の報奨プログラム。</dd>
+<dt>Daybreak Red / Blue</dt><dd>OpenAI の防御者向けプログラムの段階。Red は攻撃コードの開発まで、Blue は検証と修正が中心。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月6日時点の情報です。内容は、OpenAI の発表（11月4日、5日）とシステムカードをもとに、独自に整理したものです。筆者の道具には OpenAI のモデルと競合する Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-06</span>初回公開（発表、数字、提供の条件、Linux カーネルの調査、範囲を守る評価）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
