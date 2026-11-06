@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Robert C. Martin が示したクリーンアーキテクチャについて、一言での説明、3行の要約、ヘキサゴナル・オニオン・従来の N 層との違い、前提になる考え方と使う側、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、原典と各資料から整理する。">
+<title>クリーンアーキテクチャ：業務のルールを中心に置き、依存を必ず内側に向けて、画面・データベース・フレームワークから切り離す設計 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>クリーンアーキテクチャ：業務のルールを中心に置き、依存を必ず内側に向けて、画面・データベース・フレームワークから切り離す設計</h1><p class="summary">Robert C. Martin が示したクリーンアーキテクチャについて、一言での説明、3行の要約、ヘキサゴナル・オニオン・従来の N 層との違い、前提になる考え方と使う側、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、原典と各資料から整理する。</p><p class="meta">初回公開 2026-11-04 ／ 更新日 2026-11-04</p></header><section class="lede">
+<h2>一言で言うと</h2>
+<p><strong>クリーンアーキテクチャ</strong>は、業務のルールを中心に置き、ソースコードの依存を必ず内側に向けることで、画面、データベース、フレームワークから業務のルールを切り離す、ソフトウェアの設計の考え方です。</p>
+</section>
+<h2>3行で表すと</h2>
+<ul>
+<li>何であるか：Robert C. Martin が2012年に示した設計の考え方。ヘキサゴナル、オニオンなど、先行するいくつかの設計を、1つの図にまとめようとしたもの。</li>
+<li>何ができるか：画面、データベース、フレームワーク、外部のサービスから独立した、テストしやすい業務のルールを作れる。外側の部品を、業務のルールを変えずに入れ替えやすくなる。</li>
+<li>何が特徴か：同心円の層と、「依存性のルール」（ソースコードの依存は、内側にだけ向く）。内側から外側を呼ぶ必要がある所は、インターフェースで依存の向きを反転する。</li>
+</ul>
+<h2>類似するものと、違い</h2>
+<p>横のつながりです。どれも、業務のルールを、画面やデータベースの都合から守るための設計です。</p>
+<figure class="viz">
+<p class="viz-title">依存の向きの比較</p>
+<p class="viz-sub">原典と Microsoft のガイドをもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 296" role="img" aria-label="従来の N 層では、UI、業務の層、データアクセス、データベースの順に、依存が上から下へ向く。クリーンアーキテクチャでは、UI とインフラが、中心の業務のルールに依存する。">
+<defs><marker id="arrow-ca-dep" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="230" y="22" text-anchor="middle">従来の N 層</text>
+<rect class="box" x="130" y="40" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="230" y="64" text-anchor="middle">UI</text>
+<rect class="box" x="130" y="100" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="230" y="124" text-anchor="middle">業務の層</text>
+<rect class="box" x="130" y="160" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="230" y="184" text-anchor="middle">データアクセス</text>
+<rect class="box" x="130" y="220" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="230" y="244" text-anchor="middle">データベース</text>
+<line class="arrow" x1="230" y1="82" x2="230" y2="98" marker-end="url(#arrow-ca-dep)"/>
+<line class="arrow" x1="230" y1="142" x2="230" y2="158" marker-end="url(#arrow-ca-dep)"/>
+<line class="arrow" x1="230" y1="202" x2="230" y2="218" marker-end="url(#arrow-ca-dep)"/>
+<text class="t-small t-muted" x="345" y="150" text-anchor="start">依存</text>
+<text class="t-small t-muted" x="230" y="284" text-anchor="middle">業務の層が、データアクセスに依存する</text>
+<text class="t-strong" x="650" y="22" text-anchor="middle">クリーンアーキテクチャ</text>
+<rect class="box" x="550" y="40" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="650" y="64" text-anchor="middle">UI</text>
+<rect class="box-key" x="550" y="100" width="200" height="100" rx="6"></rect>
+<text class="t-strong" x="650" y="134" text-anchor="middle">業務のルール</text>
+<text class="t-small" x="650" y="154" text-anchor="middle">エンティティ、ユースケース</text>
+<text class="t-small" x="650" y="174" text-anchor="middle">（アプリケーションの核）</text>
+<rect class="box" x="550" y="220" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="650" y="244" text-anchor="middle">インフラ（DB など）</text>
+<line class="arrow" x1="650" y1="82" x2="650" y2="98" marker-end="url(#arrow-ca-dep)"/>
+<line class="arrow" x1="650" y1="218" x2="650" y2="202" marker-end="url(#arrow-ca-dep)"/>
+<text class="t-small t-muted" x="765" y="94" text-anchor="start">依存</text>
+<text class="t-small t-muted" x="765" y="214" text-anchor="start">依存（実装する）</text>
+<text class="t-small t-muted" x="650" y="284" text-anchor="middle">外側が、内側の核に依存する</text>
+</svg>
+</div>
+<figcaption>N 層では、業務の層が、データアクセスの詳細に依存します。クリーンアーキテクチャは、この向きを反転して、業務のルールが、外側のどれにも依存しないようにします。</figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+<caption>各原典と Microsoft のガイドより（比較の軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>クリーンアーキテクチャ</th><th>ヘキサゴナル（ポートとアダプター）</th><th>オニオン</th><th>従来の N 層（UI・業務・データアクセス）</th></tr></thead>
+<tbody>
+<tr><td>提唱</td><td>Robert C. Martin（2012年）</td><td>Alistair Cockburn（2005年）</td><td>Jeffrey Palermo（2008年）</td><td>古くからの一般的な構成</td></tr>
+<tr><td>核になる考え</td><td>依存性のルール。依存は内側にだけ向く</td><td>ポートとアダプター。アプリを、利用者、プログラム、自動テスト、バッチのどれからも同じように動かせるようにする</td><td>結合を中心に向け、中心にドメインモデルを置く。データベースは外部</td><td>上から下へ呼び、依存も上から下へ向く</td></tr>
+<tr><td>層の見せ方</td><td>同心円（エンティティ、ユースケース、インターフェースアダプター、フレームワークとドライバー）。4つとは限らない</td><td>六角形。内と外の違いを強調し、一次元の層の絵から離れる。窓口（ポート）の数だけ辺を使う</td><td>玉ねぎの層。中心がドメインモデル</td><td>横の層（UI、業務、データアクセス）</td></tr>
+<tr><td>業務のルールの位置</td><td>内側</td><td>アプリケーションの内側</td><td>中心</td><td>中間の層。データアクセスの層に依存しやすい</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>原典は、ヘキサゴナル、オニオン、Screaming Architecture、DCI、BCE を並べ、細部は違うが、とても似ていると書く。どれも、関心の分離が目的で、業務のルールの層と、インターフェースの層を持つ。クリーンアーキテクチャの図は、これらを1つの実践できる形にまとめる試み、と位置づけている。</li>
+<li>従来の N 層との違いは、依存の向き。N 層では、依存が上から下へ向くので、業務の層が、データアクセスの詳細（多くはデータベースの存在）に依存する。そのため、業務のルールをテストするのに、テスト用のデータベースが要ることが多い（Microsoft のガイドによる）。クリーンアーキテクチャでは、この依存を反転する。</li>
+<li>Screaming Architecture（Martin、2011年）は、同じ著者の関連する考え方。アーキテクチャは、フレームワークではなく、システムのユースケースを語るべきで、ディレクトリの構成を見て「医療システム」と分かるべきだ、という主張。</li>
+</ul>
+<h2>前後で組み合わされるもの</h2>
+<p>縦のつながりです。前段と後段の分け方は、筆者の整理です。</p>
+<figure class="viz">
+<p class="viz-title">クリーンアーキテクチャの前と後</p>
+<p class="viz-sub">原典と Microsoft のガイドより。前段・後段の分け方は筆者の整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 274" role="img" aria-label="上から、画面の構造、テストの方針、実装の足場、クリーンアーキテクチャ、そして前提となる依存性逆転の原則、ドメイン駆動設計、ユースケース中心の設計、依存性の注入の順に積み重なる。">
+<defs><marker id="arrow-ca-stack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="10" y="40" text-anchor="start">後段</text>
+<text class="t-small t-muted" x="10" y="58" text-anchor="start">（使う側）</text>
+<text class="t-strong" x="10" y="142" text-anchor="start">本体</text>
+<text class="t-strong" x="10" y="236" text-anchor="start">前段</text>
+<text class="t-small t-muted" x="10" y="254" text-anchor="start">（前提）</text>
+<rect class="box" x="110" y="14" width="200" height="56" rx="6"></rect>
+<text class="t-strong" x="210" y="36" text-anchor="middle">画面の構造</text>
+<text class="t-small" x="210" y="56" text-anchor="middle">MVC は外側の層に入る</text>
+<line class="arrow" x1="210" y1="72" x2="210" y2="104" marker-end="url(#arrow-ca-stack)"/>
+<rect class="box" x="330" y="14" width="200" height="56" rx="6"></rect>
+<text class="t-strong" x="430" y="36" text-anchor="middle">テストの方針</text>
+<text class="t-small" x="430" y="56" text-anchor="middle">内側は単体、外側は統合</text>
+<line class="arrow" x1="430" y1="72" x2="430" y2="104" marker-end="url(#arrow-ca-stack)"/>
+<rect class="box" x="550" y="14" width="200" height="56" rx="6"></rect>
+<text class="t-strong" x="650" y="36" text-anchor="middle">実装の足場</text>
+<text class="t-small" x="650" y="56" text-anchor="middle">参照アプリ、ひな形</text>
+<line class="arrow" x1="650" y1="72" x2="650" y2="104" marker-end="url(#arrow-ca-stack)"/>
+<rect class="box-key" x="110" y="108" width="640" height="56" rx="6"></rect>
+<text class="t-strong" x="430" y="130" text-anchor="middle">クリーンアーキテクチャ</text>
+<text class="t-small" x="430" y="150" text-anchor="middle">依存性のルール：依存は内側にだけ向く</text>
+<line class="arrow" x1="187" y1="166" x2="187" y2="202" marker-end="url(#arrow-ca-stack)"/>
+<rect class="box" x="110" y="206" width="155" height="56" rx="6"></rect>
+<text class="t-strong" x="187.5" y="238" text-anchor="middle">依存性逆転の原則</text>
+<line class="arrow" x1="354" y1="166" x2="354" y2="202" marker-end="url(#arrow-ca-stack)"/>
+<rect class="box" x="277" y="206" width="155" height="56" rx="6"></rect>
+<text class="t-strong" x="354.5" y="238" text-anchor="middle">ドメイン駆動設計</text>
+<line class="arrow" x1="521" y1="166" x2="521" y2="202" marker-end="url(#arrow-ca-stack)"/>
+<rect class="box" x="444" y="206" width="155" height="56" rx="6"></rect>
+<text class="t-strong" x="521.5" y="238" text-anchor="middle">ユースケース中心の設計</text>
+<line class="arrow" x1="688" y1="166" x2="688" y2="202" marker-end="url(#arrow-ca-stack)"/>
+<rect class="box" x="611" y="206" width="155" height="56" rx="6"></rect>
+<text class="t-strong" x="688.5" y="238" text-anchor="middle">依存性の注入</text>
+</svg>
+</div>
+<figcaption>クリーンアーキテクチャは、いくつかの前提の考え方に支えられ、画面、テスト、実装の足場の考え方に使われます。</figcaption>
+</figure>
+<h3>前段：前提になる考え方</h3>
+<ul>
+<li>依存性逆転の原則：境界をまたぐ依存の向きを反転する方法。原典も、オニオンの記事も、この原則に頼ると書く。</li>
+<li>ドメイン駆動設計の考え方：Microsoft のガイドは、依存性逆転の原則とドメイン駆動設計に従うアプリケーションは、似た構造にたどり着くと書く。</li>
+<li>ユースケースを中心にした設計：Ivar Jacobson の「Object Oriented Software Engineering」の副題は「ユースケース駆動のアプローチ」。Martin は、アーキテクチャは、ユースケースを支える構造だと書く。</li>
+<li>依存性の注入：実行時に、内側のインターフェースの実装を、外側のクラスから差し込む仕組み。Palermo も、Microsoft のガイドも、必要としている。</li>
+</ul>
+<h3>後段：これを使う側</h3>
+<ul>
+<li>画面の構造：MVC の Controller、Presenter、View は、インターフェースアダプターの層に入る（原典）。</li>
+<li>テストの方針：内側（業務のルール）は、外部の部品なしに単体でテストする。外側の実装（データベースなど）は、実際の外部と結ぶ統合テストで確かめる（Microsoft のガイド）。</li>
+<li>実装の足場：Microsoft のガイドは、このアーキテクチャのプロジェクト構成の参照アプリと、ASP.NET Core 向けのひな形を紹介している。</li>
+<li>位置づけ：Microsoft のガイドは、依存性の注入を備えた ASP.NET Core では、これを、小さくないモノリスの構造として、最も適したものと位置づけている。</li>
+</ul>
+<h2>具体的な仕組み</h2>
+<h3>なぜ必要か</h3>
+<ul>
+<li>ヘキサゴナルの文書は、問題を次のように説明する。業務のロジックが、画面のコードの中に染み込む。すると、自動テストが書きにくくなり、人が使う形から、バッチやほかのプログラムが使う形へ移せなくなる。</li>
+<li>解決の試みとして、新しい層を作り、「今度こそ業務のロジックを入れない」と約束しても、違反を検出する仕組みがなければ、数年後に、その層が業務のロジックで散らかる、とも書く。</li>
+<li>オニオンの記事は、画面が業務のロジックに結合し、その業務のロジックがデータアクセスに結合する、と問題を示す。間接的な依存も、依存である。</li>
+<li>原典が挙げる目標は、5つ。フレームワークから独立していること、テストしやすいこと、画面から独立していること、データベースから独立していること、外部の何物からも独立していること。</li>
+</ul>
+<h3>どう動くか</h3>
+<figure class="viz">
+<p class="viz-title">同心円の4つの層</p>
+<p class="viz-sub">原典の図をもとにした模式図（層は4つとは限らない）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 430" role="img" aria-label="外側から、フレームワークとドライバー、インターフェースアダプター、ユースケース、エンティティの4つの円が入れ子になり、依存は外側から内側へ向く。">
+<defs><marker id="arrow-ca-ring" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<circle class="box" cx="300" cy="200" r="190"/>
+<circle class="box" cx="300" cy="200" r="145"/>
+<circle class="box" cx="300" cy="200" r="100"/>
+<circle class="box-key" cx="300" cy="200" r="55"/>
+<text class="t-small" x="300" y="36.5" text-anchor="middle">フレームワークとドライバー</text>
+<text class="t-small" x="300" y="81.5" text-anchor="middle">インターフェースアダプター</text>
+<text class="t-small" x="300" y="126.5" text-anchor="middle">ユースケース</text>
+<text class="t-strong" x="300" y="204" text-anchor="middle">エンティティ</text>
+<line class="arrow" x1="114" y1="240" x2="238" y2="240" marker-end="url(#arrow-ca-ring)"/>
+<text class="t-small" x="176" y="232" text-anchor="middle">依存は内側へ</text>
+<text class="t-strong" x="560" y="60" text-anchor="start">1. フレームワークとドライバー</text>
+<text class="t-small t-muted" x="560" y="82" text-anchor="start">DB、Web のフレームワークなど。細部はここ</text>
+<text class="t-strong" x="560" y="140" text-anchor="start">2. インターフェースアダプター</text>
+<text class="t-small t-muted" x="560" y="162" text-anchor="start">Controller、Presenter、View。DB との変換</text>
+<text class="t-strong" x="560" y="220" text-anchor="start">3. ユースケース</text>
+<text class="t-small t-muted" x="560" y="242" text-anchor="start">アプリケーション固有の業務のルール</text>
+<text class="t-strong" x="560" y="300" text-anchor="start">4. エンティティ</text>
+<text class="t-small t-muted" x="560" y="322" text-anchor="start">企業全体で通じる業務のルール</text>
+<text class="t-small t-muted" x="300" y="418" text-anchor="middle">外側は仕組み（細部）、内側は方針（高いレベルの業務のルール）</text>
+</svg>
+</div>
+<figcaption>内側ほど抽象的な方針、外側ほど具体的な仕組みです。依存は、いつも内側にだけ向きます。</figcaption>
+</figure>
+<figure class="viz">
+<p class="viz-title">境界をまたぐ流れ</p>
+<p class="viz-sub">原典の図をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 292" role="img" aria-label="Controller から、入力ポート、ユースケース、出力ポート、Presenter の順に処理が流れる。Presenter は内側の出力ポートを実装し、依存は内側に向く。">
+<defs><marker id="arrow-ca-boundary" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box dashed" x="185" y="58" width="490" height="116" rx="6"><title>内側（ユースケースの層）</title></rect>
+<text class="t-small t-muted" x="199" y="78" text-anchor="start">内側（ユースケースの層）</text>
+<rect class="box" x="20" y="94" width="130" height="60" rx="6"></rect>
+<text class="t-strong" x="85" y="118" text-anchor="middle">Controller</text>
+<text class="t-small" x="85" y="138" text-anchor="middle">外側</text>
+<rect class="box" x="200" y="94" width="120" height="60" rx="6"></rect>
+<text class="t-strong" x="260" y="118" text-anchor="middle">入力ポート</text>
+<text class="t-small" x="260" y="138" text-anchor="middle">インターフェース</text>
+<rect class="box-key" x="360" y="94" width="130" height="60" rx="6"></rect>
+<text class="t-strong" x="425" y="128" text-anchor="middle">ユースケース</text>
+<rect class="box" x="530" y="94" width="120" height="60" rx="6"></rect>
+<text class="t-strong" x="590" y="118" text-anchor="middle">出力ポート</text>
+<text class="t-small" x="590" y="138" text-anchor="middle">インターフェース</text>
+<rect class="box" x="720" y="94" width="140" height="60" rx="6"></rect>
+<text class="t-strong" x="790" y="118" text-anchor="middle">Presenter</text>
+<text class="t-small" x="790" y="138" text-anchor="middle">外側</text>
+<line class="arrow" x1="152" y1="124" x2="196" y2="124" marker-end="url(#arrow-ca-boundary)"/>
+<line class="arrow" x1="322" y1="124" x2="356" y2="124" marker-end="url(#arrow-ca-boundary)"/>
+<line class="arrow" x1="492" y1="124" x2="526" y2="124" marker-end="url(#arrow-ca-boundary)"/>
+<line class="arrow" x1="652" y1="124" x2="716" y2="124" marker-end="url(#arrow-ca-boundary)"/>
+<text class="t-small t-muted" x="440" y="40" text-anchor="middle">処理の流れ（呼び出しの向き）→</text>
+<path class="arrow" d="M 790 158 C 790 232 590 232 590 160" fill="none" marker-end="url(#arrow-ca-boundary)"/>
+<text class="t-small" x="690" y="258" text-anchor="middle">Presenter が出力ポートを実装する</text>
+<text class="t-small t-muted" x="690" y="278" text-anchor="middle">（依存は、内側の出力ポートに向く）</text>
+</svg>
+</div>
+<figcaption>処理の流れは、Controller から内側を通って、外側の Presenter へ向かいますが、ユースケースが呼ぶのは内側のインターフェースだけです。Presenter が、そのインターフェースを実装します。</figcaption>
+</figure>
+<ul>
+<li>同心円の4つの層：外側から、フレームワークとドライバー（データベース、Web のフレームワーク。書くのは、内側とつなぐ接着のコードくらい）、インターフェースアダプター（Controller、Presenter、View。データベースとの変換）、ユースケース（アプリケーション固有の業務のルール）、エンティティ（企業全体で通じる業務のルール）。内側ほど、方針（高いレベルの抽象）で、外側ほど、仕組み（具体的な細部）。層は4つとは限らない。</li>
+<li>依存性のルール：ソースコードの依存は、内側にだけ向く。内側にあるものは、外側にあるものの名前を、一切知ってはいけない。関数、クラス、変数も同じ。外側が作ったデータの形（フレームワークが返す行など）も、内側で使ってはいけない。</li>
+<li>境界をまたぐ流れ：処理の流れは、Controller から始まり、ユースケースを通って、Presenter で実行される。ところが、依存は、すべて内側のユースケースに向く。この食い違いを、依存性逆転の原則で解く。ユースケースは、内側にあるインターフェース（出力ポート）を呼び、外側の Presenter が、それを実装する。</li>
+<li>境界を越えるデータ：単純なデータ構造（構造体、データ転送用のオブジェクト、関数の引数）。エンティティや、データベースの行を、そのまま渡さない。内側にとって、最も都合のよい形で渡す。</li>
+<li>実行時：インターフェースの実装を、依存性の注入などで、内側のインターフェースにつなぐ。</li>
+</ul>
+<h3>使いどころ</h3>
+<ul>
+<li>画面やデータベースを入れ替える見込みがあるとき。原典は、Web の画面を、業務のルールを変えずに、コンソールの画面に替えられる、と例に挙げる。</li>
+<li>業務のルールを、画面やデータベースなしに、速くテストしたいとき。</li>
+<li>業務のルールが小さくなく、長く使われるアプリケーション。Microsoft のガイドは、小さくないモノリスの構造として最も適すると位置づける。Palermo は、企業向けのアプリケーションの、ふだんの作り方として提案している。</li>
+<li>逆に、小さなアプリケーションでは、1つのプロジェクトに、画面も業務もデータアクセスも入れる構成でも、十分に役立つ、と Microsoft のガイドは書く。</li>
+</ul>
+<h3>限界と注意</h3>
+<ul>
+<li>依存性のルールだけが決まり：層の数や、層の名前は、決まっていない（原典）。具体的な構成は、使う人の解釈に任される。流儀によって、構成にゆれが出る。</li>
+<li>実装の手間が増える：境界ごとに、インターフェースを置き、データを単純な形に変換する必要がある（原典の説明からの、筆者の整理）。実行時には、実装をつなぐ仕組み（依存性の注入など）も要る（Microsoft のガイド）。</li>
+<li>規則を守る仕組みが要る：ヘキサゴナルの文書が指摘するように、約束だけでは違反は検出されない。依存の向きを、レビューや自動の検査で確かめる運用が要る（筆者の整理）。</li>
+<li>小さなアプリケーションには、過剰になりうる（筆者の整理。Microsoft のガイドが、単一のプロジェクトでも十分な場合があるとする）。</li>
+<li>フレームワークは敵ではない：Martin は、フレームワークを、使う道具であり、従う生き方ではないと書く。ただし、疑いの目で見て、どう使うか、どう身を守るかを考えるよう勧める。</li>
+</ul>
+<h2>読むときの注意</h2>
+<ul>
+<li>主な根拠は、提唱者本人の記事（2012年）。「テストしやすい」などの効果は、提唱者の主張で、この記事は、効果を測った資料を確認していない。</li>
+<li>Microsoft のガイドは、.NET のためのガイドで、「最も適している」という評価は、その文脈でのもの。</li>
+<li>比較表の軸（核になる考え、層の見せ方、業務のルールの位置）は、筆者の整理。優劣を示すものではない。</li>
+<li>書籍「Clean Architecture」（2017年）は、参照していない。</li>
+</ul>
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>依存性のルール</dt><dd>ソースコードの依存は、内側にだけ向くという決まり。</dd>
+<dt>エンティティ</dt><dd>企業全体で通じる、最も一般的で高いレベルの業務のルール。</dd>
+<dt>ユースケース</dt><dd>アプリケーション固有の業務のルール。エンティティとの間のデータの流れを組み立てる。</dd>
+<dt>インターフェースアダプター</dt><dd>内側が使う形と、外側（データベースや Web）が使う形を、変換する層。</dd>
+<dt>Presenter</dt><dd>ユースケースの結果を、画面に見せる形に整える部品。</dd>
+<dt>依存性逆転の原則</dt><dd>上位のコードが、下位のコードの具体的な実装ではなく、抽象（インターフェース）に依存するようにする原則。</dd>
+<dt>依存性の注入</dt><dd>実行時に、インターフェースの実装を外から差し込む仕組み。</dd>
+<dt>ポートとアダプター</dt><dd>外とのやり取りの窓口（ポート）と、外の技術に合わせる変換部品（アダプター）。</dd>
+<dt>ドメインモデル</dt><dd>組織にとっての事実を表す、状態と振る舞いの組。</dd>
+<dt>関心の分離</dt><dd>役割の違うものを、別々の部分に分けること。</dd>
+<dt>モノリス</dt><dd>1つの単位としてまとまって動くアプリケーション。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月4日時点の情報です。内容は、Robert C. Martin の2つの記事、Alistair Cockburn と Jeffrey Palermo の記事、Microsoft の .NET のガイドをもとに、独自に整理したものです。</p>
+<p>提唱者の主張は、そのまま事実として扱わず、主張として書いています。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-04</span>初回公開（コンセプトの型：一言、3行、類似との違い、前後の組み合わせ、具体的な仕組み。図4つ）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

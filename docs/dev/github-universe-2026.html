@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月28日の GitHub Universe の発表（Copilot アプリ、Fusion、projects、automations、コードレビュー Max、エンタープライズの契約）と、エージェントの増加に合わせた Git の保存の作り直し（5,000のエージェントが毎秒7,200プッシュ）、Octoverse 2026 の数字を、GitHub の公式ブログから整理する。">
+<title>GitHub Universe 2026：「完成した作業」を出力にする、エージェント前提の開発基盤と、Git の作り直し | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>GitHub Universe 2026：「完成した作業」を出力にする、エージェント前提の開発基盤と、Git の作り直し</h1><p class="summary">2026年10月28日の GitHub Universe の発表（Copilot アプリ、Fusion、projects、automations、コードレビュー Max、エンタープライズの契約）と、エージェントの増加に合わせた Git の保存の作り直し（5,000のエージェントが毎秒7,200プッシュ）、Octoverse 2026 の数字を、GitHub の公式ブログから整理する。</p><p class="meta">初回公開 2026-11-06 ／ 更新日 2026-11-06</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>GitHub は10月28日の Universe で、GitHub を「アイデアから完成したソフトウェアまで」を届ける基盤と位置づけ、開発者が方向を決めて、エージェントが実装と検証をする形を打ち出した。出力として大事なのは、コードの量ではなく、機能、バグ修正、セキュリティ修正といった「完成した作業」だとしている。</p>
+<p>新しい機能は、Copilot アプリ、モデルを自動で選ぶ Copilot Fusion、複数のリポジトリにまたがる Copilot projects、端末をまたいで続けられるセッション、結果から学ぶ automations、深く見るコードレビュー Max。あわせて、エンタープライズの契約者は別の契約なしに Copilot の機能を使える（使った AI クレジットの分を払う）ようになった。</p>
+<p>土台では、今年の追加が CPU コア400万、ストレージ160 PB、ネットワーク50 Tb/s。Git の保存の仕組みも作り直していて、社内の試験で、5,000のエージェントが1つのリポジトリに毎秒7,200回プッシュできた。限定的な先行公開中で、広い展開は来年の初めとしている。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">179<small>億回</small></p><p class="stat-label">過去12か月の GitHub へのプッシュ（2024年と2025年の合計より多い）</p></div>
+<div class="stat"><p class="stat-value">40<small>%超</small></p><p class="stat-label">プルリクエストのうち、エージェントで始めるもの（9月。3月は17%）</p></div>
+<div class="stat"><p class="stat-value">4.9<small>倍</small></p><p class="stat-label">月あたりのプッシュの前年比（6.9億回から33.5億回）</p></div>
+<div class="stat"><p class="stat-value">61<small>%</small></p><p class="stat-label">複数のモデルを使った Copilot の利用者（9月）</p></div>
+</div>
+
+<h2>発表された製品と機能（10月28日、Jay Parikh 氏のブログ）</h2>
+
+<ul>
+<li><strong>考え方：</strong>ソフトウェア開発のライフサイクルは直線ではなくなり、コードの変更、同僚からの依頼、本番の指標のどれからでも作業が始まる。開発者は方向を決め、判断し、出すものに責任を持つ。エージェントは実装と検証をする。目指すのは、速度（アイデアから完成まで）、知能（プラットフォーム全体の文脈と、使うほどよくなる学習）、品質（既定で安全にし、出る前にバグを見つける）の3つ。</li>
+<li><strong>GitHub Copilot アプリ：</strong>エージェント前提で作ったアプリ。プロジェクトをまたいでエージェントとツールをつなぎ、イシューからマージまでを1つで扱う。コードを書くだけでなく、仕様書、設計の議論、テレメトリの分析もできる。</li>
+<li><strong>Copilot Fusion：</strong>推論、コード生成、デバッグ、ツールの使用という、作業に必要なことを評価して、1つ以上のモデルでの実行の仕方を選ぶ。GitHub は、Artificial Analysis の Coding Agent Index で、Fusion Max が Opus 5.5 Max に2ポイント以内で、半分のコストで、1タスクあたりの時間が40%少なかった、と書いている（GitHub による記述で、独立した確認ではない）。</li>
+<li><strong>Copilot projects：</strong>複数のリポジトリにまたがるエージェントの作業を、管理された並列のセッションで動かし、進み具合の確認と判断を1か所でする。Copilot アプリで、10月28日から使える。</li>
+<li><strong>セッションの継続：</strong>GitHub のアプリ、VS Code、CLI、Web のどれからでも、同じクラウドのエージェントのセッションを始め、追いかけられる。</li>
+<li><strong>Copilot automations：</strong>リポジトリの中で、クラウドで動く AI の作業の流れを作る。手動、イベント、スケジュールで動き、イシューの仕分けやコードレビューなどを調整する。新しく、結果から学んで、改善案を出し、人が確認して承認できる。</li>
+<li><strong>Copilot code review Max：</strong>GitHub は、重大度の高い問題の ReviewBench で、F1 スコアが最も高かったと書いている（GitHub による記述）。Lite と Balanced は日常のレビュー用で、Max は深く見るとき用。</li>
+<li><strong>契約：</strong>10月28日から、GitHub Enterprise の顧客は、別の Copilot の契約なしに、Copilot アプリ、コードレビュー、automations などを使える。使った AI クレジットの分を払う。GitHub の営業経由で今日から、セルフサービスは近日。既存の Copilot Business・Enterprise の顧客は、現在のプランのままでも、移行してもよい。</li>
+</ul>
+
+<h2>インフラ（Universe の発表と、エンジニアリングのブログ）</h2>
+
+<ul>
+<li><strong>今年の追加：</strong>CPU コア400万、高速ストレージ160 PB、ネットワーク50 Tb/s。Azure でのマルチリージョン展開へ移行中で、完了は来年の初めの見込み。</li>
+<li><strong>背景（エンジニアリングのブログ、10月6日）：</strong>エージェントと開発者が同じリポジトリで同時に動き、1日に数百万のコミットを受けるリポジトリがある。9月の1か月で73.8億コミット（前年の5倍超）。8月に最もにぎやかなリポジトリは、約10億回の要求を受けた。Git の活動の総量は、2025年9月から2026年8月で、月2,182億件から4,733億件に増えた（2倍超）。</li>
+<li><strong>課題として挙がったもの：</strong>エージェントは、ほぼ1動作ごとにコミットするため、1回のプッシュの遅さが上限になる。書き込みの量が桁違いに増える（プッシュは月6.9億回から33.5億回）。マージが1つの参照に集中する（マージの量は前年の約4倍）。1回のプッシュが、CI やコードスキャンの数千の読み取りに広がる（GitHub Actions は9月に32.6億回で、前年の4倍超）。リポジトリのデータを整理する作業が積み重なる。</li>
+<li><strong>今の仕組みの限界：</strong>各リポジトリを、Spokes が、複数のファイルサーバー（既定は5台）のローカルディスクに全コピーで持つ。コピーが「正」であり、読み取りの余力を増やすには、耐久性のあるコピーを増やすことになる。すべてのコピーが書き込みに加わるので、読み取りを増やすと、書き込みが遅くなる。リポジトリが非常ににぎやかだと、これが上限になる。</li>
+<li><strong>作り直しの原則（3つ）：</strong>調整を最小にする（合意が要るのは参照の更新だけで、オブジェクトの保存や検証などは並行できる）、保存と計算を切り離す、調整は必要なところだけ。整理（圧縮・ごみ集め）の作業は、実際に要求に答えるホストから外す。</li>
+<li>新しい保存の仕組み（11月5日のブログ、コードネーム「Rubicon」）：Git のオブジェクト（パック）は Azure Blob Storage に置く。参照とパックの一覧は、別に複製された記録のサービス（Ref-CAS）に置く。要求は、使い捨ての計算（仮想レプリカ）が処理し、ローカルのディスクは作り直せるキャッシュ。にぎやかなリポジトリには仮想レプリカを足す。整理は、専用の圧縮ノードが Blob Storage に対して背景で行う。書き込みは、仮想レプリカがパックを索引して Blob Storage に上げ、Ref-CAS に1回の取引で、パックの登録と参照の更新を書く。</li>
+<li><strong>試験の結果：</strong>社内の試験で、1つのリポジトリに、5,000のエージェントが毎秒7,200回のプッシュを送り、読み取りの遅延は低いままだった。限定的な先行公開（プライベートプレビュー）で、広い展開は来年の初め。</li>
+<li><strong>次の計画（ブログ）：</strong>必要なオブジェクトだけ読む、種類ごとにパックを整理する、部分的なレプリカ、すぐ使える形の保存、どのリージョンにも置けるレプリカ、使われていないときは縮める。エージェントの操作を安くする（クローンなしの作業、複数ファイルを1回で確定するコミットの API、イベントの配信）。Git 自体の改善（軽いクローン、隠れた計算量の増加の除去、履歴を速くたどる、よくある失敗の警告）。</li>
+</ul>
+
+<h2>Octoverse 2026（10月28日）の数字</h2>
+
+<ul>
+<li>過去12か月のプッシュは179億回。2024年と2025年の合計より多い。すべての種類のリポジトリ（公開と非公開）のコミットは343億回で、2年前の3倍超。マージされたプルリクエストは13億件で、1日平均350万件。</li>
+<li>エージェントの設定ファイルがあるリポジトリは、今年作られたものの中で、ないものより、平均して8倍のコミットがあった。9月時点で、プルリクエストの40%超をエージェントで始める（3月は17%）。</li>
+<li>複数のモデルを使った Copilot の利用者は9月に61%。</li>
+<li>GitHub Actions は、今年、1秒に1,440回のジョブを動かした（1日に1.24億回）。Dependabot のプルリクエストは3,000万件超がマージされ、2025年の約2倍のペース。</li>
+<li>公開リポジトリへの貢献は25億回で、前年（11.2億回）の2倍超。</li>
+<li>開発者は2.25億人超。米国が3,830万人、インドが3,200万人（それぞれ、今年1,000万人以上増えた）、中国1,240万人、ブラジル1,020万人、日本715万人。ブラジルは今年328万人増えて、国別で3番目。</li>
+<li>今年初めて、業種別の公開リポジトリの見方を示した。鉱業、建設、医療、農業のリポジトリは、2022年から、それぞれ数倍に増えた。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>いずれも GitHub の公式の記述で、第三者の確認ではない。モデルの比較（Fusion）やレビューの評価（Max）は、GitHub が示した指標と数字。</li>
+<li>機能の使える範囲やプランは、一部が「今日から」「近日」「プレビュー」で、組織や契約によって違う。</li>
+<li>Publickey が伝えた「180倍」と「Copilot Dreaming」は、読んだ原本で確認できなかったため、扱っていない。</li>
+<li>新しい Git の保存の仕組みは、限定的な先行公開で、広い展開は来年の初め。試験の数字は社内の試験。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>発表の中心は、「コードを速く書く」から、「完成した作業を出す」に変わっている点。複数のリポジトリ、端末をまたぐ継続、結果からの学習、レビューの強化は、いずれもエージェントが長く動き、並列で動くことを前提にしている。</li>
+<li>同じ公式の資料が、エージェントによる活動の増加（プッシュ4.9倍、コミット5倍超）を数字で示したうえで、それに耐える Git の作り直しを説明している。製品の発表と基盤の投資が、同じ問題（エージェントの量）に向いている。</li>
+<li>Git の読み取りを増やすと書き込みが遅くなる、という構造は、エージェントが多数の書き込みをするようになったことで、はじめて上限になった。ブログは、にぎやかなリポジトリのための設計が、すべてのリポジトリに効くと書いている（GitHub の主張）。</li>
+<li>契約の変更（別の契約なしで使い、使った分を払う）は、席の数ではなく、AI の使用量で課金する方向を示している。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>エージェント</dt><dd>目的に向けて、道具を使いながら自分で作業を進める AI。</dd>
+<dt>Copilot Fusion</dt><dd>作業に応じて、複数のモデルから選び、組み合わせる機能。</dd>
+<dt>ハーネス</dt><dd>AI のモデルを使ってエージェントを動かすための、道具の呼び出しや制御をまとめた土台。</dd>
+<dt>参照（ref）</dt><dd>ブランチやタグなど、コミットを指す名前。</dd>
+<dt>パック</dt><dd>Git のオブジェクトをまとめて圧縮した保存の単位。</dd>
+<dt>プルリクエスト</dt><dd>変更を本流に取り込んでもらうための依頼。</dd>
+<dt>Octoverse</dt><dd>GitHub が年に1回出す、利用状況の報告書。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月6日時点の情報です。内容は、GitHub Blog の4本の記事（2026年10月6日〜11月5日）をもとに、独自に整理したものです。筆者の道具には Anthropic の AI が含まれます。この記事には、Anthropic のモデル（Opus 5.5）との比較の記述が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-06</span>初回公開（Universe の発表、製品と機能、インフラ、Git の保存の作り直し、Octoverse 2026、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

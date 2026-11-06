@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="AWS が作った軽量な仮想マシンモニター Firecracker について、一言での説明、3行の要約、類似の技術との違い、前後で組み合わされる仕組み、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、公式の文書と論文から整理する。">
+<title>Firecracker：コンテナの速さと、仮想マシンの安全性を両立させる、AWS の軽量な仮想マシン | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>Firecracker：コンテナの速さと、仮想マシンの安全性を両立させる、AWS の軽量な仮想マシン</h1><p class="summary">AWS が作った軽量な仮想マシンモニター Firecracker について、一言での説明、3行の要約、類似の技術との違い、前後で組み合わされる仕組み、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、公式の文書と論文から整理する。</p><p class="meta">初回公開 2026-11-04 ／ 更新日 2026-11-04</p></header><section class="lede">
+<h2>一言で言うと</h2>
+<p><strong>Firecracker</strong> は、複数の利用者の処理を同じマシンで安全に動かすために、機能を絞り込んだ軽量な仮想マシン（microVM）を、素早く作って動かす仮想マシンモニターです。</p>
+</section>
+<h2>3行で表すと</h2>
+<ul>
+<li>何であるか：Linux の KVM を使って microVM を作る、オープンソース（Apache 2.0）の仮想マシンモニター（VMM）。AWS が、AWS Lambda と AWS Fargate のために作った。</li>
+<li>何ができるか：1つのプロセスが1台の microVM を受け持ち、API で設定して起動する。仕様では、1 CPU・128 MiB の構成で、起動の指示から Linux の最初のプロセスまでが 125 ミリ秒以下、VMM のメモリの上乗せが 5 MiB 以下。</li>
+<li>何が特徴か：BIOS や古い周辺機器を持たず、機能を最小限にして攻撃されうる面を減らし、さらにプロセスの制限（seccomp、jailer）を重ねることで、仮想化の隔離と、コンテナに近い軽さを両立させる。</li>
+</ul>
+<h2>類似するものと、違い</h2>
+<p>横のつながりです。どれも、アプリケーションを隔離して動かすための技術です。</p>
+<figure class="viz">
+<p class="viz-title">隔離の境界の位置</p>
+<p class="viz-sub">論文と各プロジェクトの README をもとにした模式図（筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 284" role="img" aria-label="アプリとホストのカーネルのあいだに何を挟むかの比較。コンテナは何も挟まない。gVisor はユーザー空間のカーネルを挟む。Firecracker と QEMU は、ゲストのカーネルと VMM を挟み、Firecracker の VMM は最小限で小さい。">
+<text class="t-strong" x="110.0" y="22" text-anchor="middle">コンテナ</text>
+<rect class="box" x="10" y="36" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="110" y="60" text-anchor="middle">アプリ</text>
+<text class="t-strong" x="330.0" y="22" text-anchor="middle">gVisor</text>
+<rect class="box" x="230" y="36" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="330" y="60" text-anchor="middle">アプリ</text>
+<text class="t-strong" x="550.0" y="22" text-anchor="middle">Firecracker</text>
+<rect class="box" x="450" y="36" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="550" y="60" text-anchor="middle">アプリ</text>
+<text class="t-strong" x="770.0" y="22" text-anchor="middle">通常の VM（QEMU/KVM）</text>
+<rect class="box" x="670" y="36" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="770" y="60" text-anchor="middle">アプリ</text>
+<rect class="box dashed" x="10" y="84" width="200" height="88" rx="6"></rect>
+<text class="t-small" x="110" y="122" text-anchor="middle">間に何もない</text>
+<text class="t-small" x="110" y="142" text-anchor="middle">ホストのカーネルを直接呼ぶ</text>
+<rect class="box" x="230" y="84" width="200" height="40" rx="6"></rect>
+<text class="t-small" x="330" y="98" text-anchor="middle">gVisor（ユーザー空間の</text>
+<text class="t-small" x="330" y="118" text-anchor="middle">Linux 風のカーネル）</text>
+<rect class="box dashed" x="230" y="132" width="200" height="40" rx="6"></rect>
+<text class="t-small" x="330" y="156" text-anchor="middle">VMM なし</text>
+<rect class="box" x="450" y="84" width="200" height="40" rx="6"></rect>
+<text class="t-small" x="550" y="108" text-anchor="middle">ゲストの Linux カーネル</text>
+<rect class="box-key" x="450" y="132" width="200" height="40" rx="6"><title>機能を絞った、小さな仮想マシンモニター</title></rect>
+<text class="t-strong" x="550" y="146" text-anchor="middle">Firecracker</text>
+<text class="t-small" x="550" y="166" text-anchor="middle">最小限の VMM</text>
+<rect class="box" x="670" y="84" width="200" height="40" rx="6"></rect>
+<text class="t-small" x="770" y="108" text-anchor="middle">ゲストの Linux カーネル</text>
+<rect class="box" x="670" y="132" width="200" height="40" rx="6"></rect>
+<text class="t-strong" x="770" y="146" text-anchor="middle">QEMU</text>
+<text class="t-small" x="770" y="166" text-anchor="middle">機能が多い、大きな VMM</text>
+<rect class="box" x="10" y="180" width="200" height="44" rx="6"></rect>
+<text class="t-small" x="110" y="206" text-anchor="middle">ホストの Linux カーネル</text>
+<rect class="box" x="230" y="180" width="200" height="44" rx="6"></rect>
+<text class="t-small" x="330" y="206" text-anchor="middle">ホストの Linux カーネル</text>
+<rect class="box" x="450" y="180" width="200" height="44" rx="6"></rect>
+<text class="t-small" x="550" y="206" text-anchor="middle">ホストの Linux（KVM）</text>
+<rect class="box" x="670" y="180" width="200" height="44" rx="6"></rect>
+<text class="t-small" x="770" y="206" text-anchor="middle">ホストの Linux（KVM）</text>
+<text class="t-small" x="110.0" y="248" text-anchor="middle">隔離は弱いが、軽い</text>
+<text class="t-small t-muted" x="110.0" y="268" text-anchor="middle">（論文の整理）</text>
+<text class="t-small" x="330.0" y="248" text-anchor="middle">ホストのカーネルに触れる</text>
+<text class="t-small t-muted" x="330.0" y="268" text-anchor="middle">範囲を小さくする</text>
+<text class="t-small" x="550.0" y="248" text-anchor="middle">仮想化の隔離に、</text>
+<text class="t-small t-muted" x="550.0" y="268" text-anchor="middle">小さな VMM を組み合わせる</text>
+<text class="t-small" x="770.0" y="248" text-anchor="middle">同じ仮想化の隔離。</text>
+<text class="t-small t-muted" x="770.0" y="268" text-anchor="middle">VMM が大きい</text>
+</svg>
+</div>
+<figcaption>Firecracker は、通常の仮想マシンと同じ仮想化の隔離を使いながら、VMM を小さくしています。緑の枠が Firecracker の中心です。破線の枠は、その層がないことを表します。</figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+<caption>各プロジェクトの公式の README と論文より（比較の軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>Firecracker</th><th>QEMU/KVM</th><th>Cloud Hypervisor</th><th>crosvm</th><th>gVisor</th></tr></thead>
+<tbody>
+<tr><td>何か</td><td>microVM を動かす VMM</td><td>汎用の VMM</td><td>クラウドの処理向けの VMM</td><td>ChromeOS 由来の VMM</td><td>ユーザー空間で動くアプリケーションカーネル</td></tr>
+<tr><td>隔離のしかた</td><td>KVM によるハードウェア仮想化に、seccomp と jailer を重ねる</td><td>ハードウェア仮想化</td><td>ハードウェア仮想化（KVM と Microsoft Hypervisor）</td><td>ハードウェア仮想化</td><td>仮想マシンではなく、Linux 風の機能をユーザー空間で自前に実装して、アプリとホストのカーネルのあいだに入る</td></tr>
+<tr><td>方針</td><td>最小限の機能。サーバーレスやコンテナ向けに絞る</td><td>柔軟さと機能の網羅を重視（論文による。2020年に140万行超）</td><td>最新のクラウド向けの OS を想定し、Firecracker と考え方が近い（論文による）</td><td>Rust による安全な実装。Firecracker は、ここから出発して機能を削った</td><td>通常のコンテナの道具（Docker、Kubernetes）と組み合わせて使う OCI のランタイム（runsc）</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Firecracker は、論文の言い方では、コンテナの道具（Docker や Kubernetes）ではなく、QEMU の代わりにあたる。仮想マシンの管理、パッケージ化、配置の仕組みは持たず、上の層に任せる。</li>
+<li>論文は、Firecracker が約5万行の Rust で、QEMU（4.2版）より96%少ないと書く（2020年の数字）。crosvm の半分未満の行数で、不要な機器（USB、GPU など）を削ったとも書く。</li>
+<li>論文は、gVisor を、オペレーティングシステムの機能の一部をユーザー空間で提供して、ホストのカーネルに触れる範囲を小さくする方式の例として挙げていて、仮想化とは別の方式として扱っている。</li>
+<li>Kata Containers も「コンテナのように使える、軽量な仮想マシン」を目指すプロジェクトだが、Firecracker のような VMM ではなく、その上の層（コンテナのランタイム）にあたる。そのため、次の節（前後）で扱う。</li>
+</ul>
+<h2>前後で組み合わされるもの</h2>
+<p>縦のつながりです。前段と後段の分け方は、筆者の整理です。</p>
+<figure class="viz">
+<p class="viz-title">Firecracker の前と後</p>
+<p class="viz-sub">公式 README と論文より。前段・後段の分け方は筆者の整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 320" role="img" aria-label="上から、AWS Lambda と AWS Fargate、管理の仕組み（Flintlock、Kata Containers、firecracker-containerd）、Firecracker、Linux のホストと KVM、プロセッサの仮想化機能の順に積み重なる。">
+<defs><marker id="arrow-fc-stack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="10" y="40" text-anchor="start">後段</text>
+<text class="t-small t-muted" x="10" y="58" text-anchor="start">（上位）</text>
+<text class="t-strong" x="10" y="168" text-anchor="start">本体</text>
+<text class="t-strong" x="10" y="238" text-anchor="start">前段</text>
+<text class="t-small t-muted" x="10" y="256" text-anchor="start">（土台）</text>
+<rect class="box" x="110" y="14" width="200" height="40" rx="6"><title>Firecracker が作られた目的の1つ</title></rect>
+<text class="t-strong" x="210" y="38" text-anchor="middle">AWS Lambda</text>
+<rect class="box" x="330" y="14" width="200" height="40" rx="6"><title>Firecracker が作られた目的の1つ</title></rect>
+<text class="t-strong" x="430" y="38" text-anchor="middle">AWS Fargate</text>
+<text class="t-small t-muted" x="560" y="38" text-anchor="start">サービス（本番で使用）</text>
+<rect class="box" x="110" y="66" width="150" height="40" rx="6"></rect>
+<text class="t-strong" x="185" y="90" text-anchor="middle">Flintlock</text>
+<rect class="box" x="280" y="66" width="170" height="40" rx="6"></rect>
+<text class="t-strong" x="365" y="90" text-anchor="middle">Kata Containers</text>
+<rect class="box" x="470" y="66" width="250" height="40" rx="6"></rect>
+<text class="t-strong" x="595" y="90" text-anchor="middle">firecracker-containerd</text>
+<text class="t-small t-muted" x="740" y="90" text-anchor="start">管理・ランタイム</text>
+<line class="arrow" x1="415" y1="108" x2="415" y2="126" marker-end="url(#arrow-fc-stack)"/>
+<rect class="box-key" x="110" y="130" width="610" height="56" rx="6"></rect>
+<text class="t-strong" x="415" y="152" text-anchor="middle">Firecracker（jailer 経由で起動）</text>
+<text class="t-small" x="415" y="172" text-anchor="middle">1プロセス ＝ 1台の microVM</text>
+<line class="arrow" x1="415" y1="188" x2="415" y2="206" marker-end="url(#arrow-fc-stack)"/>
+<rect class="box" x="110" y="210" width="610" height="44" rx="6"></rect>
+<text class="t-strong" x="415" y="226" text-anchor="middle">Linux のホスト ＋ KVM</text>
+<text class="t-small" x="415" y="246" text-anchor="middle">更新と設定が前提</text>
+<line class="arrow" x1="415" y1="256" x2="415" y2="270" marker-end="url(#arrow-fc-stack)"/>
+<rect class="box" x="110" y="272" width="610" height="36" rx="6"></rect>
+<text class="t-small" x="415" y="294" text-anchor="middle">プロセッサの仮想化機能</text>
+</svg>
+</div>
+<figcaption>上の層が microVM を作って管理し、Firecracker は下の層の KVM とホストの Linux に依存します。</figcaption>
+</figure>
+<h3>前段：Firecracker が動くための土台</h3>
+<ul>
+<li>Linux の KVM：Firecracker は、KVM とプロセッサの仮想化機能に依存して、隔離を実現する。Linux のホストと Linux のゲストで動く。</li>
+<li>ホストの設定：隔離と多層防御は、ホストの設定が適切であることが前提。公式の文書は、ホストとゲストのカーネルと、CPU のマイクロコードを定期的に更新すること、seccomp の制限を弱めないこと、シリアルの出力の扱いなどを、本番の推奨として挙げている。</li>
+<li>jailer：本番では、Firecracker を `jailer` という別のプログラム経由で起動する。jailer は、権限の要る設定（cgroup、chroot など）をしてから、権限を落とし、Firecracker を実行する。</li>
+<li>ゲストのカーネルとルートファイルシステム：最小の構成では、ゲストのカーネルと、1つのルートのブロックデバイスを指定すれば足りる（論文による）。</li>
+<li>ホストのネットワークとストレージ：ネットワークは、ホストの TAP デバイスが受け、ブロックデバイスは、ホストのファイルが支える。</li>
+</ul>
+<h3>後段：Firecracker を使う上位の仕組み</h3>
+<ul>
+<li>AWS Lambda と AWS Fargate：Firecracker が作られた目的。公式 README が、本番で使われていると書く。</li>
+<li>Kata Containers と Flintlock：Firecracker を組み込んだコンテナのランタイム・管理の仕組みとして、公式 README が挙げている。Flintlock は、Firecracker と Cloud Hypervisor のどちらかを microVM ごとに選べる。</li>
+<li>firecracker-containerd：コンテナのランタイム containerd で、Firecracker の microVM を管理する。公式リポジトリの README が挙げる使い道は、信頼できない第三者のコンテナを専用の microVM に隔離すること、隔離を保ちながら多様なコンテナを同じホストに詰めること。</li>
+<li>Kubernetes や Docker などのコンテナの道具：論文は、これらを Firecracker の上位の仕組みとして想定している。</li>
+</ul>
+<h2>具体的な仕組み</h2>
+<h3>なぜ必要か</h3>
+<ul>
+<li>論文の説明では、従来は選択肢が二つに分かれていた。仮想化は隔離が強いがオーバーヘッドが大きく、コンテナは軽いが隔離が弱い。</li>
+<li>サーバーレスやコンテナのサービスは、複数の顧客の処理を同じハードウェアで動かす（マルチテナント）。そのため、セキュリティと性能の両面の隔離が要る。同時に、関数やコンテナをミリ秒の単位で用意できることも求められる、と論文は書く。</li>
+<li>Firecracker は、この二者択一をしたくないために作られた、と論文は書く。</li>
+</ul>
+<h3>どう動くか</h3>
+<figure class="viz">
+<p class="viz-title">microVM が動き出すまで</p>
+<p class="viz-sub">公式の仕様（SPECIFICATION.md）をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 216" role="img" aria-label="Firecracker を起動し、API で microVM を設定し、起動の指示を送ると、ゲストの Linux の最初のプロセスが始まる。起動の指示からここまでは125ミリ秒以下。">
+<defs><marker id="arrow-fc-boot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="30" width="190" height="96" rx="6"></rect>
+<text class="t-strong" x="115" y="62" text-anchor="middle">1. 起動</text>
+<text class="t-small" x="115" y="82" text-anchor="middle">jailer 経由で</text>
+<text class="t-small" x="115" y="102" text-anchor="middle">Firecracker を起動</text>
+<line class="arrow" x1="212" y1="78" x2="230" y2="78" marker-end="url(#arrow-fc-boot)"/>
+<rect class="box" x="234" y="30" width="190" height="96" rx="6"></rect>
+<text class="t-strong" x="329" y="62" text-anchor="middle">2. 設定</text>
+<text class="t-small" x="329" y="82" text-anchor="middle">API で vCPU、メモリ、</text>
+<text class="t-small" x="329" y="102" text-anchor="middle">ディスク、カーネルなどを指定</text>
+<line class="arrow" x1="426" y1="78" x2="444" y2="78" marker-end="url(#arrow-fc-boot)"/>
+<rect class="box" x="448" y="30" width="190" height="96" rx="6"></rect>
+<text class="t-strong" x="543" y="62" text-anchor="middle">3. 起動の指示</text>
+<text class="t-small" x="543" y="82" text-anchor="middle">InstanceStart を</text>
+<text class="t-small" x="543" y="102" text-anchor="middle">API で送る</text>
+<line class="arrow" x1="640" y1="78" x2="658" y2="78" marker-end="url(#arrow-fc-boot)"/>
+<rect class="box-key" x="662" y="30" width="190" height="96" rx="6"></rect>
+<text class="t-strong" x="757" y="62" text-anchor="middle">4. ゲストが動く</text>
+<text class="t-small" x="757" y="82" text-anchor="middle">Linux の最初のプロセス</text>
+<text class="t-small" x="757" y="102" text-anchor="middle">（/sbin/init）が始まる</text>
+<path class="arrow" d="M 448 136 L 448 156 L 852 156 L 852 136" fill="none"/>
+<text class="t-strong" x="650" y="180" text-anchor="middle">125 ミリ秒以下</text>
+<text class="t-small t-muted" x="650" y="202" text-anchor="middle">仕様の条件：シリアルのコンソールなし、最小のカーネルとルートファイルシステム</text>
+</svg>
+</div>
+<figcaption>microVM は、API で設定してから、起動の指示を出す順序で動かします。起動の指示から最初のプロセスまでが、仕様で 125 ミリ秒以下と決められています。</figcaption>
+</figure>
+<figure class="viz">
+<p class="viz-title">1つのプロセスの中</p>
+<p class="viz-sub">公式の設計文書をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 272" role="img" aria-label="Firecracker のプロセスの中に、API のスレッド、VMM のスレッド、vCPU のスレッドがあり、VMM のスレッドは機器をエミュレートし、vCPU のスレッドは KVM を通じてゲストを動かす。">
+<defs><marker id="arrow-fc-inside" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box dashed" x="10" y="50" width="120" height="70" rx="6"></rect>
+<text class="t-strong" x="70" y="79" text-anchor="middle">上位の仕組み</text>
+<text class="t-small" x="70" y="99" text-anchor="middle">API を呼ぶ</text>
+<rect class="box dashed" x="160" y="10" width="480" height="252" rx="6"><title>Firecracker のプロセス</title></rect>
+<text class="t-small" x="176" y="32" text-anchor="start">Firecracker のプロセス（1つのプロセスが1台の microVM を担当）</text>
+<rect class="box" x="176" y="56" width="130" height="82" rx="6"></rect>
+<text class="t-strong" x="241" y="81" text-anchor="middle">API スレッド</text>
+<text class="t-small" x="241" y="101" text-anchor="middle">設定と起動の</text>
+<text class="t-small" x="241" y="121" text-anchor="middle">指示を受ける</text>
+<rect class="box-key" x="326" y="48" width="300" height="110" rx="6"><title>機器のふりをして、ゲストの入出力を受け持つ</title></rect>
+<text class="t-strong" x="476" y="77" text-anchor="middle">VMM スレッド</text>
+<text class="t-small" x="476" y="97" text-anchor="middle">virtio のネットワーク・ディスク・vsock、</text>
+<text class="t-small" x="476" y="117" text-anchor="middle">シリアル、レート制限、MMDS</text>
+<text class="t-small" x="476" y="137" text-anchor="middle">通信は TAP に、ディスクはファイルにつなぐ</text>
+<rect class="box" x="326" y="176" width="300" height="70" rx="6"></rect>
+<text class="t-strong" x="476" y="205" text-anchor="middle">vCPU スレッド（ゲストの CPU の数だけ）</text>
+<text class="t-small" x="476" y="225" text-anchor="middle">KVM の実行ループを回す</text>
+<rect class="box" x="680" y="56" width="190" height="190" rx="6"></rect>
+<text class="t-strong" x="775" y="135" text-anchor="middle">ゲスト</text>
+<text class="t-small" x="775" y="155" text-anchor="middle">microVM の中の</text>
+<text class="t-small" x="775" y="175" text-anchor="middle">Linux とアプリ</text>
+<line class="arrow" x1="628" y1="100" x2="676" y2="100" marker-end="url(#arrow-fc-inside)"/>
+<line class="arrow" x1="628" y1="212" x2="676" y2="212" marker-end="url(#arrow-fc-inside)"/>
+<text class="t-small" x="652" y="92" text-anchor="middle">機器</text>
+<text class="t-small" x="652" y="204" text-anchor="middle">KVM</text>
+<line class="arrow" x1="132" y1="85" x2="174" y2="85" marker-end="url(#arrow-fc-inside)"/>
+</svg>
+</div>
+<figcaption>API のスレッドは設定だけを受け持ち、処理の本流には入りません。ゲストの入出力は VMM のスレッドが受け、CPU は vCPU のスレッドが KVM を通じて動かします。</figcaption>
+</figure>
+<ul>
+<li>1プロセスに1台の microVM。プロセスの中には、API のスレッド、VMM のスレッド、vCPU のスレッド（ゲストの CPU の数だけ）がある。API のスレッドは、仮想マシンの高速な処理経路には入らない。</li>
+<li>使う前に、API で microVM を設定する（vCPU の数、メモリの大きさ、ネットワーク、ディスクなど）。そのあとに起動の指示（`InstanceStart`）を出す。</li>
+<li>見せる機器は最小限：virtio のネットワークとブロック、vsock、シリアルのコンソール、リセット用の簡易なキーボードコントローラー。そのほか KVM が提供する割り込みコントローラーとタイマー。</li>
+<li>レート制限：ディスクとネットワークごとに、トークンバケット方式で、転送量と操作の回数を制限できる。</li>
+<li>メタデータ：microVM の中から、ホストが設定したデータを読む軽い仕組み（MMDS）がある。</li>
+<li>多層防御：KVM の仮想化の境界が最初の層。そのうえで、Firecracker が自動で入れる seccomp のフィルター（許すシステムコールを最小に絞る）、cgroup と名前空間による資源の隔離、jailer による権限の低下を重ねる。公式の設計文書は、ゲストの vCPU のスレッドを、動き始めた時点で悪意のあるコードを実行していると見なし、信頼のゾーンを入れ子にして封じ込める考え方を取る。</li>
+<li>スナップショット：動いている microVM の状態を保存し、あとで別のプロセスで再開できる。差分のスナップショットは、開発者向けのプレビューの段階。</li>
+</ul>
+<figure class="viz">
+<p class="viz-title">封じ込めの層</p>
+<p class="viz-sub">公式の設計文書をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 228" role="img" aria-label="外側からホストの Linux、jailer、seccomp、KVM の仮想化の境界の順に入れ子になり、一番内側にゲストの vCPU スレッドがある。">
+<rect class="box" x="10" y="8" width="860" height="212" rx="6"><title>ホストの Linux：更新と設定が前提</title></rect>
+<text class="t-strong" x="24" y="30" text-anchor="start">ホストの Linux</text>
+<text class="t-small t-muted" x="178" y="30" text-anchor="start">更新と設定が前提</text>
+<rect class="box" x="36" y="38" width="808" height="174" rx="6"><title>jailer：権限の要る設定をしたあと、権限を落とす（cgroup、名前空間、chroot）</title></rect>
+<text class="t-strong" x="50" y="60" text-anchor="start">jailer</text>
+<text class="t-small t-muted" x="152" y="60" text-anchor="start">権限の要る設定をしたあと、権限を落とす（cgroup、名前空間、chroot）</text>
+<rect class="box" x="62" y="68" width="756" height="136" rx="6"><title>seccomp：使えるシステムコールを最小に絞る（Firecracker が自動で入れる）</title></rect>
+<text class="t-strong" x="76" y="90" text-anchor="start">seccomp</text>
+<text class="t-small t-muted" x="191" y="90" text-anchor="start">使えるシステムコールを最小に絞る（Firecracker が自動で入れる）</text>
+<rect class="box" x="88" y="98" width="704" height="98" rx="6"><title>KVM：ハードウェア仮想化の境界</title></rect>
+<text class="t-strong" x="102" y="120" text-anchor="start">KVM</text>
+<text class="t-small t-muted" x="165" y="120" text-anchor="start">ハードウェア仮想化の境界</text>
+<rect class="box-key" x="114" y="128" width="652" height="60" rx="6"></rect>
+<text class="t-strong" x="440" y="152" text-anchor="middle">ゲストの vCPU スレッド</text>
+<text class="t-small" x="440" y="172" text-anchor="middle">動き始めた時点で、悪意のあるコードを実行していると見なす</text>
+</svg>
+</div>
+<figcaption>一番内側のゲストを信頼せず、外側へ何重にも壁を重ねます。壁のどれか1つが破られても、すぐにホストには届かないようにする考え方です。</figcaption>
+</figure>
+<h3>使いどころ</h3>
+<ul>
+<li>サーバーレスの関数や、コンテナのサービスなど、多数の短命な処理を、隔離を保ちながら高密度に動かす場面（AWS Lambda、AWS Fargate が実例）。</li>
+<li>信頼できないコードの実行：第三者のコンテナなどを、専用の microVM に閉じ込める（firecracker-containerd の例）。</li>
+<li>Kubernetes のノードを microVM にする、など、軽い仮想マシンを大量に作る用途（Flintlock の例）。</li>
+<li>目安となる仕様：1 CPU と 128 MiB のメモリの microVM を、約5台/秒/コアの速さで作れる。36コアのホストで、毎秒180台という例を、設計文書は挙げている。</li>
+</ul>
+<h3>限界と注意</h3>
+<ul>
+<li>機能を絞っている：論文によると、BIOS を持たず、任意のカーネルを起動できず、古い周辺機器と PCI をエミュレートせず、仮想マシンの移動（マイグレーション）に対応しない。Windows は、大きな変更なしには起動できない。ここは2020年の記述で、その後、virtio の PCI 機器のホットプラグが開発者向けのプレビューとして加わっている。最新の仕様は、公式の README と文書を見る。</li>
+<li>隔離は、設定に依存する：公式の文書は、安全にマルチテナントで使えるかは、適切に設定された Linux のホストに依存すると明記している。推奨の設定を実施しないと、保証は成り立たない。</li>
+<li>通信の制限はしない：Firecracker はネットワークの通信を絞らない。ゲストの外向きの通信はすべて信頼できないものとして扱い、ホスト側で絞る必要がある。</li>
+<li>スナップショットの再利用：同じ状態から2回以上再開すると、乱数の種、識別子、暗号の情報など、本来は一意であるべきものが重複しうる。公式の文書は、一意性を守る仕組みなしにこの使い方をするのは安全でないと考える。再開のあと、ネットワークとの接続が保たれる保証もない。</li>
+<li>カーネルの対応：検証されたホストとゲストのカーネルの版にしか、保証がない。公式の方針は、一度追加した版を最低2年は支える。</li>
+<li>移植性：論文は、Firecracker がホストの OS の間の移植性を犠牲にしていると書く。</li>
+</ul>
+<h2>読むときの注意</h2>
+<ul>
+<li>論文は2020年の発表で、数字（行数、機能の有無）はその時点のもの。公式の README と文書は、2026年11月4日時点で読んだ。</li>
+<li>仕様の数値は、AWS の特定のインスタンス上で、会社が測る条件での保証で、ほかの環境では変わりうる。</li>
+<li>比較表の軸（隔離のしかた、方針）は、筆者の整理。各プロジェクトの公式の README の説明にもとづくが、優劣を示すものではない。</li>
+<li>Firecracker の最新の版は、変更履歴によると 1.17.0（2026年11月4日に確認）。機能や制約は版で変わる。</li>
+</ul>
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>microVM</dt><dd>機能を最小限にした、軽量な仮想マシン。</dd>
+<dt>仮想マシンモニター（VMM）</dt><dd>仮想マシンを作って動かすプログラム。ハイパーバイザーの一部として、機器のエミュレーションなどを受け持つ。</dd>
+<dt>KVM</dt><dd>Linux のカーネルに組み込まれた、ハードウェアの仮想化機能。</dd>
+<dt>jailer</dt><dd>Firecracker を権限の少ない状態で起動するための、補助のプログラム。</dd>
+<dt>seccomp</dt><dd>プロセスが使えるシステムコールを制限する Linux の仕組み。</dd>
+<dt>virtio</dt><dd>仮想マシンと、ホストの機器をつなぐ標準の仕組み。ネットワークやディスクに使う。</dd>
+<dt>TAP デバイス</dt><dd>仮想のネットワークインターフェース。microVM の通信を、ホストのネットワークにつなぐ。</dd>
+<dt>vsock</dt><dd>ホストと仮想マシンのあいだの通信の仕組み。</dd>
+<dt>MMDS</dt><dd>microVM の中から、ホストが設定したメタデータを読む仕組み。</dd>
+<dt>マルチテナント</dt><dd>複数の利用者が、同じ設備を共有して使うこと。</dd>
+<dt>サーバーレス</dt><dd>サーバーの管理を意識せず、関数などの小さな処理を、必要なときだけ動かす使い方。</dd>
+<dt>トークンバケット</dt><dd>転送量や操作の回数を、一定の速さで制限するアルゴリズム。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月4日時点の情報です。内容は、Firecracker の公式リポジトリ、論文（USENIX NSDI '20）、AWS の発表記事、比較の対象の公式リポジトリの README をもとに、独自に整理したものです。</p>
+<p>数字は資料のままで、再計算や検証はしていません。論文の数字は2020年のものです。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-04</span>初回公開（コンセプトの型の第1段階：一言、3行、類似との違い、前後の組み合わせ、具体的な仕組み）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

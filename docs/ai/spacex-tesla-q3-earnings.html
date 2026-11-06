@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月20日の SpaceX と、10月21日の Tesla の7〜9月期の決算の原本（SpaceX の発表資料、Tesla の8-Kと10-Q）から、事業ごとの数字、投資の負担、両社の取引と資本関係、Tesla が設置した特別委員会について、確認できることと確認できていないことを整理する。">
+<title>SpaceX と Tesla の7〜9月期決算：SpaceX は売上2.6倍で黒字転換、Tesla は売上横ばいで営業利益56%減、そして両社をつなぐ特別委員会 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>SpaceX と Tesla の7〜9月期決算：SpaceX は売上2.6倍で黒字転換、Tesla は売上横ばいで営業利益56%減、そして両社をつなぐ特別委員会</h1><p class="summary">2026年10月20日の SpaceX と、10月21日の Tesla の7〜9月期の決算の原本（SpaceX の発表資料、Tesla の8-Kと10-Q）から、事業ごとの数字、投資の負担、両社の取引と資本関係、Tesla が設置した特別委員会について、確認できることと確認できていないことを整理する。</p><p class="meta">初回公開 2026-11-04 ／ 更新日 2026-11-04</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>SpaceX は10月20日、7〜9月期の<strong>売上が146億ドル</strong>（前年同期の56億ドルの約2.6倍、+161%）、<strong>純利益が44億ドル</strong>（前年同期は11億ドルの赤字）だったと発表しました。伸びを引っ張ったのは、AI 事業を含む「SI」部門（売上76億ドル、前年同期比+830%）です。一方で設備投資は196億ドル（前年同期の約2.8倍）に膨らみ、その大半（164億ドル）が SI でした。</p>
+<p>Tesla は10月21日、7〜9月期の<strong>売上が280億ドル</strong>（前年同期とほぼ同じ）、<strong>営業利益が7.18億ドル</strong>（前年同期は16.2億ドルで、約56%減）と発表しました。研究開発費が約1.7倍の27.6億ドルになっています。</p>
+<p>Tesla の10-Qには、取締役会が、利害関係のない取締役による<strong>特別委員会</strong>を設置し、SpaceX との関係を深めること（企業結合を含む）を検討していると書かれています。成立の保証はなく、特別委員会の推薦と、必要な株主の承認が条件です。Tesla は SpaceX に蓄電池「Megapack」を売っていて、SpaceX の株式にも20億ドルを投資しています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">+161<small>%</small></p><p class="stat-label">SpaceX の7〜9月期の売上の伸び（146億ドル。前年同期は56億ドル）</p></div>
+<div class="stat"><p class="stat-value">+830<small>%</small></p><p class="stat-label">SpaceX の SI 部門の売上の伸び（76億ドル。前年同期は8.1億ドル）</p></div>
+<div class="stat"><p class="stat-value">−56<small>%</small></p><p class="stat-label">Tesla の営業利益の減り方（7.18億ドル。前年同期は16.2億ドル。筆者の計算）</p></div>
+<div class="stat"><p class="stat-value">20<small>億ドル</small></p><p class="stat-label">Tesla が2026年3月に SpaceX の普通株へ投資した額（持ち分は1%未満）</p></div>
+</div>
+
+<h2>2社の数字を並べる</h2>
+<div class="table-wrap">
+<table>
+<caption>各社の発表資料より（単位：百万ドル。前年同期との比較。2026年7〜9月期）</caption>
+<thead><tr><th>項目</th><th>SpaceX</th><th>Tesla</th></tr></thead>
+<tbody>
+<tr><td>発表日</td><td>10月20日</td><td>10月21日</td></tr>
+<tr><td>売上</td><td>14,575（前年同期 5,576）</td><td>28,046（前年同期 28,095）</td></tr>
+<tr><td>営業損益</td><td>2,791 の利益（前年同期 273 の損失）</td><td>718 の利益（前年同期 1,624 の利益）</td></tr>
+<tr><td>純損益</td><td>約44億ドルの利益（前年同期は約11億ドルの損失）</td><td>787 の利益（普通株主に帰属。前年同期 1,373）</td></tr>
+<tr><td>研究開発費</td><td>部門ごとに記載（SI は 3,183）</td><td>2,761（前年同期 1,630）</td></tr>
+<tr><td>設備投資</td><td>19,593（前年同期 6,880）</td><td>1〜9月の合計が約130億ドル（前年同期は約61億ドル）</td></tr>
+<tr><td>現金</td><td>51,294（2026年9月30日。2025年末は 24,747）</td><td>現金と短期投資で約454.5億ドル（2026年9月30日）</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>SpaceX の決算（10月20日）</h2>
+<ul>
+<li>売上は146億ドル（+161%）。部門別では、宇宙（Space）が17.7億ドル（+6%）、通信（Connectivity）が52.5億ドル（+69%）、SI が75.6億ドル（+830%）。</li>
+<li>営業利益は27.9億ドルの黒字（4〜6月は1.4億ドルの赤字）。調整後 EBITDA（会社が定義した非GAAP指標）は88億ドル（前年同期の22億ドルから+306%）。</li>
+<li>SI 部門：売上のうち、SI のソリューションとインフラが70.2億ドル（前年同期は3.6億ドル）、広告が5.4億ドル。会社は、クラウドサービスの契約の開始、Cursor の買収、Grok の企業への広がりを理由に挙げている。SI の営業利益は4.3億ドル（Cursor の買収に伴う株式報酬12億ドルを含む）。SI の設備投資は164億ドル。計算能力（公称）は1.7GW で、前年同期の0.6GW、4〜6月の1.4GW から増えた。</li>
+<li>通信部門：Starlink の個人向けの契約者は1,360万人（前年同期は720万人）。1人あたりの月額収入は69ドル（前年同期は83ドル）。個人向けの売上は31.2億ドル、企業・政府向けは21.3億ドル。営業利益は23.7億ドル（+99%）。</li>
+<li>宇宙部門：打ち上げは35回（顧客向け12回、自社向け23回）。Starship の第14回の飛行で、Starlink V3 の衛星26基を軌道に送った。営業損益はほぼゼロ（7百万ドルの赤字）で、研究開発費の増加が響いた。</li>
+<li>Cursor の買収：2026年8月14日に完了。株式の評価額は600億ドル相当（会計上の取得対価は425億ドル）。買収後から9月30日までの売上への寄与は6.08億ドル。</li>
+<li>10月8日に、全米の800MHz帯の周波数免許を取得する契約を結んだ（完了は2027年上半期の見込み）。</li>
+<li>設備投資は合計196億ドル（SI が164億ドル、宇宙が16億ドル、通信が15億ドル）。</li>
+</ul>
+
+<h2>Tesla の決算（10月21日）</h2>
+<ul>
+<li>売上は280.5億ドルで、前年同期（281.0億ドル）とほぼ同じ。自動車が205.6億ドル（前年同期は212.1億ドル）、エネルギー（発電・蓄電）が28.8億ドル（前年同期は34.2億ドル）、サービス・その他が46.1億ドル（前年同期は34.8億ドル）。</li>
+<li>営業利益は7.18億ドルで、前年同期の16.2億ドルから減った。営業利益率は約2.6%（筆者の計算）。</li>
+<li>費用の増え方：研究開発費が27.6億ドル（前年同期は16.3億ドル）、販売費・一般管理費が20.2億ドル（前年同期は15.6億ドル）。</li>
+<li>普通株主に帰属する純利益は7.87億ドル（前年同期は13.7億ドル）。</li>
+<li>1〜9月の設備投資は約130億ドル（前年同期は約61億ドル）。主に、AI を含む「SI」の基盤と工場の増設。営業活動によるキャッシュフローは約149億ドル。</li>
+<li>2026年9月30日の現金と短期投資は約454.5億ドル。</li>
+</ul>
+
+<h2>2社のあいだの関係（Tesla の10-Qから）</h2>
+<ul>
+<li>特別委員会：Tesla の取締役会は、利害関係のない取締役からなる特別委員会を設置した。目的は、SpaceX との関係を深めること。方法には、企業結合（合併など）を含む。10-Qは、「取引にはメリットがありうるが、成立の保証はない」とし、取引には特別委員会の肯定的な推薦と、必要な場合の株主の承認が要ると書いている。</li>
+<li>取引：Tesla は SpaceX に蓄電池「Megapack」を売っていて、7〜9月に2.21億ドル、1〜9月に6.26億ドルの売上を計上した。9月30日時点の売掛金は7.29億ドル（まだ納めていない Megapack の前払いの請求を含む）、契約負債（前受け金）は6.48億ドル。ほかの取引は重要でないとしている。</li>
+<li>資本関係：Tesla は2026年3月に、20億ドルで SpaceX の普通株を取得した（もとは xAI の優先株への投資で、規制当局の承認を受けて SpaceX の普通株になった）。持ち分は1%未満。CEO が両社の CEO を兼ねるため、重要な影響力があると推定され、持分法で扱い、公正価値で評価している。7〜9月は1.42億ドルの損失、1〜9月は8.63億ドルの利益を計上した。</li>
+<li>取締役会が特別委員会を設置した時期や、委員の人数、検討の中身は、10-Qには書かれていない。</li>
+</ul>
+
+<h2>分かっていないこと</h2>
+<ul>
+<li>SpaceX 側の特別委員会：SpaceX の決算説明会で、SpaceX 側にも特別委員会があるという発言があったと報じられているが、公式の書き起こしを確認できていないため、この記事では扱わない。</li>
+<li>条件と時期：合併の条件、時期、株式の交換比率は、確認できる資料にない。10-Qは「成立の保証はない」と書くだけ。</li>
+<li>Tesla の運営の数字（納車台数、FSD の契約数、Robotaxi の状況など）は、今回読んだ提出書類の範囲では確認していない。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+<ul>
+<li>SpaceX の発表資料は、会社の自社資料で、監査前の数字。調整後 EBITDA は会社が定義した非GAAP指標で、通常の会計基準の利益とは違う。</li>
+<li>会社の区分（宇宙、通信、SI）は SpaceX の定義。前年同期との比較は、会社の開示のままの数字。事業の統合や買収（Cursor など）の影響を含む。</li>
+<li>約2.6倍（売上）、約2.8倍（設備投資）、約56%減（Tesla の営業利益）、Tesla の営業利益率（約2.6%）は、筆者の計算。</li>
+<li>本稿は筆者の整理であり、投資の助言ではない。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>営業利益</dt><dd>本業で稼いだ利益。投資の損益などは含まない。</dd>
+<dt>調整後 EBITDA</dt><dd>利息、税金、減価償却などを除いた利益に、株式報酬などの調整を加えた、会社が定義した指標。</dd>
+<dt>SI</dt><dd>SpaceX と Tesla が、AI 関連の事業・開発を指して使う区分名。</dd>
+<dt>持分法</dt><dd>持ち分が過半でなくても、重要な影響力がある投資先の損益を、持ち分に応じて自社の損益に取り込む会計の方法。</dd>
+<dt>特別委員会</dt><dd>取引の当事者と利害関係のない取締役だけで作る委員会。取引条件の検討や、推薦をする。</dd>
+<dt>Megapack</dt><dd>Tesla の大型の蓄電池。</dd>
+<dt>契約負債</dt><dd>代金を先に受け取ったが、まだ商品やサービスを渡していない分。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月4日時点の情報です。内容は、SpaceX の決算の発表資料（10月20日）と、Tesla の SEC への提出書類（10月21日、22日）をもとに、独自に整理したものです。</p>
+<p>数字は各社の資料のままで、再計算や検証はしていません。約2.6倍、約2.8倍、約56%減、Tesla の営業利益率は筆者の計算です。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-04</span>初回公開（SpaceX と Tesla の7〜9月期の決算、2社の取引と資本関係、Tesla の特別委員会、分かっていないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

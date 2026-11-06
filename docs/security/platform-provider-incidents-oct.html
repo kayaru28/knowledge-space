@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="2026年10月下旬に公表された、Railway（環境変数への不正アクセスの可能性）、Dreamhost（メールと FTP/SFTP のパスワードの予防的な初期化）、Cloudflare（Workers AI で他の顧客の要求のデータが応答に混ざった問題）を、各社の公式の発表から整理し、原因と利用者への案内の違いを比べる。10月31日には、Northflank と bunny.net の事案も追加した。">
+<meta name="description" content="2026年10月下旬に公表された、Railway（環境変数への不正アクセスの可能性）、Dreamhost（メールと FTP/SFTP のパスワードの予防的な初期化）、Cloudflare（Workers AI で他の顧客の要求のデータが応答に混ざった問題）を、各社の公式の発表から整理し、原因と利用者への案内の違いを比べる。10月31日には、Northflank と bunny.net の事案も追加した。 11月6日には、PingCAP（TiDB Cloud）の事案も追加した。">
 <title>預ける基盤で相次いだ事案：Railway の環境変数、Dreamhost のパスワード初期化、Cloudflare Workers AI の他の顧客のデータの混入 | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
@@ -192,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>預ける基盤で相次いだ事案：Railway の環境変数、Dreamhost のパスワード初期化、Cloudflare Workers AI の他の顧客のデータの混入</h1><p class="summary">2026年10月下旬に公表された、Railway（環境変数への不正アクセスの可能性）、Dreamhost（メールと FTP/SFTP のパスワードの予防的な初期化）、Cloudflare（Workers AI で他の顧客の要求のデータが応答に混ざった問題）を、各社の公式の発表から整理し、原因と利用者への案内の違いを比べる。10月31日には、Northflank と bunny.net の事案も追加した。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-10-31</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>預ける基盤で相次いだ事案：Railway の環境変数、Dreamhost のパスワード初期化、Cloudflare Workers AI の他の顧客のデータの混入</h1><p class="summary">2026年10月下旬に公表された、Railway（環境変数への不正アクセスの可能性）、Dreamhost（メールと FTP/SFTP のパスワードの予防的な初期化）、Cloudflare（Workers AI で他の顧客の要求のデータが応答に混ざった問題）を、各社の公式の発表から整理し、原因と利用者への案内の違いを比べる。10月31日には、Northflank と bunny.net の事案も追加した。 11月6日には、PingCAP（TiDB Cloud）の事案も追加した。</p><p class="meta">初回公開 2026-10-27 ／ 更新日 2026-11-06</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年10月下旬、開発者やサイト運営者が預けるサービスを提供する<strong>プラットフォーム事業者</strong>で、利用者の情報や認証情報に関わる事案が公表されました。Railway は、顧客の環境変数に第三者がアクセスした可能性を公表し（10月21日）、Dreamhost は、メールと FTP/SFTP の利用者のパスワードを予防として初期化しました（10月23日から）。Cloudflare は、AI モデルの基盤で、他の顧客の要求のデータが応答に混ざった問題の報告を公表しました（10月26日）。</p>
 <p>3件は、原因も性質も違います。<strong>Railway は不正アクセス、Cloudflare はソフトウェアの不具合と設定のミス、Dreamhost は原因が公表されていません</strong>。この記事は、各社の公式の発表を並べて、何が分かっていて、何が分かっていないかを整理します。</p>
@@ -249,6 +249,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li>原因2（エンジンの不具合）：領域に入らない長さの要求は、エンジンが拒否として扱い、1トークンの代わりの文面に差し替える。1台で動かす構成ではエラーが返るが、事前計算と生成を別のノードに分ける構成では、拒否された要求が通常の要求と同じく進み、生成側が、以前の要求が残した領域（他の顧客のプロンプトや途中の生成）を読んで応答を作り、HTTP 200で返していた。</li>
 <li>対処：KV キャッシュの領域を文脈の長さの約2倍（約204万トークン）にして、拒否の経路に入らないようにした。さらに、エンジンのパッチで、拒否された要求を早い段階で、元のエラーとともに終了させる。上流の SGLang も、v0.5.20〜v0.5.22 で修正し、同社はすべての運用者に v0.5.22 以降への更新を強く勧めている。</li>
 <li>今後の取り組み：KV キャッシュの領域の解放と共有の不具合は、同社が数か月前から取り組んでいる種類の問題として、ほかの修正も上流に提案している。新しい展開では、領域の大きさと文脈の長さの照合などを、チェック項目に加えた。</li>
+<li>詳細：原因の連鎖、時系列、対処、同じ種類の別の不具合、運用者への推奨は、別のまとめ「<a href="cloudflare-workers-ai-kv-exposure.html">Workers AI で他の顧客の要求の内容が応答に混ざった</a>」で詳しく読めます。</li>
 </ul>
 
 <h2>10月31日の追記：Northflank と bunny.net</h2>
@@ -278,12 +279,40 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li><strong>「鍵を替える」範囲は、疑わしい範囲に合わせる。</strong>Northflank は「すべて」、bunny.net は「そのサーバーに置いたすべての証明書」。調べて証拠が見つからなくても、使われた可能性が残る間は、更新を続ける対応が選ばれている。</li>
 </ul>
 
+<h2>11月6日の追記：PingCAP（TiDB Cloud）：社内の分析・保管・サポートの環境から、顧客の情報がコピーされた</h2>
+<p>データベースのクラウドサービス TiDB Cloud を提供する PingCAP が、10月19日に不正アクセスを公表しました。以前は、攻撃者側の主張しか確認できなかったため扱いませんでしたが、会社自身の公式の発表が3つ確認できたため加えます。確認したのは、英語版の「Security Incident Report」（10月19日）、日本語版の「不正アクセスによる情報漏洩に関するお詫びとご報告」（10月21日 13:05 に追記）、CEO の文書（10月23日）です。</p>
+<ul>
+<li><strong>経緯：</strong>2026年9月9日から10月7日（米国時間）に、第三者が、不正に取得した認証情報で社内のシステムに入り、データのコピーとソースコードを取得した。10月7日に同社が認識し、同日中に影響を受けた認証情報の無効化を始めた。10月10日に、追加で侵害された認証情報を削除し、プロジェクトをまたぐ過剰な権限を外し、保管場所のログを増やした。10月12〜13日に外部のセキュリティ会社が4件の脆弱性を報告し、10月14日に4件とも修正して再試験し、判明した不正アクセスの経路を遮断した。</li>
+<li><strong>侵入の入口：</strong>CEO の文書は、攻撃者が、侵害された GitHub のアカウントと、露出した認証情報を使い、社内システムに入ったと書いている。顧客の情報は、社内の分析・保管・サポートの環境からコピーされた。</li>
+<li><strong>日本国内の個人情報：</strong>最大約5万件が、漏えいした可能性がある（日本語版）。</li>
+</ul>
+<h3>影響を受けた情報（顧客ごとに異なり、全員に全項目が当てはまるわけではない）</h3>
+<ul>
+<li><strong>TiDB Cloud のアカウント情報：</strong>ユーザー名、メールアドレス、組織・プロジェクトとの関連づけ、SQL エディターの文面とエラー、組織・プロジェクト・クラスターの識別子の一部。日本語版には、10月21日に、問い合わせ（サポートチケット）の情報が加わった。</li>
+<li><strong>取引の関連情報：</strong>連絡先（氏名、メールアドレス、企業名、電話番号）、契約条件（注文、価格、支払い条件、請求設定）。</li>
+<li><strong>API キー：</strong>TiDB Cloud の API キーの値が、暗号化された状態で含まれていた。日本語版は、Public Key の部分だけで、Private Key は流出していないとし、CEO の文書は、暗号化の鍵は露出していないとしている。ただし、サポートに共有した認証情報には、この保護が当てはまらない。</li>
+</ul>
+<h3>確認できていないこと、見つかっていないこと</h3>
+<ul>
+<li>TiDB に保存された顧客のデータに影響があった証拠はない（英語版）。外部のセキュリティ会社は、本番環境で攻撃者が居座った証拠、特定した脆弱性が悪用された証拠も見つけていない（CEO の文書）。</li>
+<li>TiDB Cloud への不正アクセスとクレジットカード情報の流出は、確認されていない（日本語版）。</li>
+<li>顧客ごとの影響と、ほかにも使える認証情報が露出したかは、調査中。攻撃者が支援資料で認証情報について述べた主張は、未検証とされている。</li>
+</ul>
+<h3>利用者への案内と、同社の約束</h3>
+<ul>
+<li><strong>利用者への案内：</strong>TiDB Cloud と関連するクラウドのアカウントのアクセスログで、不審な操作を確認する。組織のメンバーとロールを見直す。API キーを再発行する。サポートに共有した認証情報、鍵、接続文字列、秘密を含むログも更新する。同社を装ったメールに注意する（同社がメールでパスワードやアクセスキーを尋ねることはない）。影響を受けた顧客には、個別に連絡するとしている。</li>
+<li><strong>同社の約束：</strong>特定した侵害された認証情報の無効化（実施済み）、見つかった脆弱性の修正と再試験（実施済み）、すべての認証情報に持ち主を決めて必要な範囲だけに限ること、異常なアクセスや大量の持ち出しの検知。CEO は文書で、情報を守るべき水準で守れていなかったと認め、責任は自分にあると書いている。</li>
+</ul>
+<h3>PingCAP から見えること（筆者の整理）</h3>
+<p>Railway や Northflank は、預かった環境変数など、顧客が置いた秘密そのものが狙われた。PingCAP は、顧客のデータベースの中身ではなく、事業者自身の社内の分析・保管・サポートの環境にコピーされた顧客の情報が対象で、入口は GitHub のアカウントと露出した認証情報だった。事業者の内部の認証情報の管理が、顧客の情報の安全に直結する点は共通している。ほかの事案と同じ攻撃者によるものかは、会社の発表に書かれておらず、この記事も関連を主張しない。サポートに共有した認証情報が保護の対象外になる点は、利用者側で確認できる。</p>
+
 <h2>読むときの注意</h2>
 
 <ul>
 <li>3件に共通する原因はない：Railway の侵害について、同社は一連の攻撃との関連を述べているが、Dreamhost と Cloudflare の事案との関連は、各社の発表に書かれていない。この記事も、関連を主張しない。</li>
 <li>各社の自己申告：影響の範囲や原因は、各社の説明。Railway の「一連の攻撃」という見方も、同社の推測で、攻撃者や手口の裏づけは示されていない。</li>
 <li>2社（Northflank、bunny.net）の追記は、各社のステータスページの記載。Northflank の「Black October」の報告（Wiz）は、この記事では確認できておらず、同社の記載として引用している。2社の事案が Railway と同じ攻撃者によるものかは、どちらの発表でも断定されていない。</li>
+<li>PingCAP（11月6日の追記）は、同社の公式の発表3つ（英語版、日本語版、CEO の文書）をもとにした。調査は続いていて、顧客ごとの影響は確定していない。攻撃者側の主張は、同社が検証していないため載せていない。</li>
 <li>進行中の事案：Railway と Dreamhost は、公表の時点で調査や復旧が続いている。影響の範囲や原因は、続報で変わる可能性がある。</li>
 <li>Cloudflare の公表は、対処の約7週間後：問題の発生から対処までは短い（40分以内に停止）が、公開は10月26日で、上流のエンジンの修正との共同の公開にそろえている。</li>
 </ul>
@@ -307,10 +336,10 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </dl>
 
 <div class="note">
-<p><strong>この記事について</strong>：2026年10月31日時点の情報です（10月28〜31日の Northflank と bunny.net を追加）。内容は、Railway の「Security Disclosure: Wednesday October 21st」（10月21日）と、同社の別のブログ記事（10月23日）、Dreamhost のステータスページ（10月23日〜26日）、Cloudflare のブログ「Cross-request KV cache exposure in the GLM-5.3 Workers AI model, and our remediation with SGLang」（10月26日）をもとに、独自に整理したものです。</p>
+<p><strong>この記事について</strong>：2026年11月6日時点の情報です（11月6日に PingCAP を追加。10月28〜31日の Northflank と bunny.net を追加）。内容は、Railway の「Security Disclosure: Wednesday October 21st」（10月21日）と、同社の別のブログ記事（10月23日）、Dreamhost のステータスページ（10月23日〜26日）、Cloudflare のブログ「Cross-request KV cache exposure in the GLM-5.3 Workers AI model, and our remediation with SGLang」（10月26日）をもとに、独自に整理したものです。</p>
 <p>数字は各社が示したもので、再現していません。進行中の事案は、続報で変わる可能性があります。個人名は載せていません。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>Northflank（すべての環境変数が復号されたと仮定した更新の案内、AI キーの無断利用）と bunny.net（インフラ提供元のサーバー管理ソフトウェアへの不正アクセス、証明書の再発行）を追加</li><li><span class="date">2026-10-27</span>初回公開（3事案の概要、各社の経緯と対応、読むときの注意）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-06</span>PingCAP（TiDB Cloud）の不正アクセスを追加。社内の分析・保管・サポートの環境から顧客の情報がコピーされた事案を、同社の英語版・日本語版の発表と CEO の文書から整理</li><li><span class="date">2026-11-05</span>Cloudflare の節に、詳細なまとめ（別ページ）への案内を追加</li><li><span class="date">2026-10-31</span>Northflank（すべての環境変数が復号されたと仮定した更新の案内、AI キーの無断利用）と bunny.net（インフラ提供元のサーバー管理ソフトウェアへの不正アクセス、証明書の再発行）を追加</li><li><span class="date">2026-10-27</span>初回公開（3事案の概要、各社の経緯と対応、読むときの注意）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

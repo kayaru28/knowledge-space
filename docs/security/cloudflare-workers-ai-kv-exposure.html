@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年8月27日から9月9日まで、Cloudflare の Workers AI（GLM-5.3）で、他の顧客の要求の内容が応答に混ざった事案について、設定のミスと推論エンジンの不具合の仕組み、時系列、対処、上流の修正、同じ種類の別の不具合、運用者への推奨を、公式の報告から整理する。">
+<title>Workers AI で他の顧客の要求の内容が応答に混ざった：Cloudflare の GLM-5.3 の事案を、原因から対処まで詳しく読む | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>Workers AI で他の顧客の要求の内容が応答に混ざった：Cloudflare の GLM-5.3 の事案を、原因から対処まで詳しく読む</h1><p class="summary">2026年8月27日から9月9日まで、Cloudflare の Workers AI（GLM-5.3）で、他の顧客の要求の内容が応答に混ざった事案について、設定のミスと推論エンジンの不具合の仕組み、時系列、対処、上流の修正、同じ種類の別の不具合、運用者への推奨を、公式の報告から整理する。</p><p class="meta">初回公開 2026-11-05 ／ 更新日 2026-11-05</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年8月27日から9月9日までの約2週間、Cloudflare の AI 推論サービス「Workers AI」で、GLM-5.3 のモデルに非常に長いプロンプトを送ると、<strong>直前に別の顧客が同じモデルに送った要求の内容が混ざった応答</strong>が返ることがありました。155件です。</p>
+<p>原因は、<strong>設定のミスと、推論エンジン（SGLang）の不具合が重なったこと</strong>です。共有されていたのは、キャッシュの内容ではなく、メモリの領域（ページ）で、消去されないページの、書き込まれていない部分を読んでしまったことが、漏えいの正体でした。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">155<small>件</small></p><p class="stat-label">他の顧客の要求の内容が混ざった応答の数（すべて 681,280 トークン超のプロンプトへの応答）</p></div>
+<div class="stat"><p class="stat-value">681,280</p><p class="stat-label">実際に確保できた領域（トークン）。モデルの文脈の長さは 1,048,576 トークンで、領域のほうが小さかった</p></div>
+<div class="stat"><p class="stat-value">13<small>日</small></p><p class="stat-label">8月27日の提供開始から、9月9日の停止までの、露出のあった期間</p></div>
+<div class="stat"><p class="stat-value">38<small>分</small></p><p class="stat-label">9月9日、事案の宣言（13時22分）からモデルを非公開にするまで（14時00分、世界協定時。筆者の計算）</p></div>
+</div>
+
+<h2>何が起きたか</h2>
+<ul>
+<li>9月8日の23時11分（世界協定時）、セキュリティ研究者から、Cloudflare の脆弱性報告制度（HackerOne）を通じて、「GLM-5.3 に非常に長いプロンプトを送ると、ほかの利用者のセッションのテキストが返ることがある」という報告を受けた。</li>
+<li>9月9日に、報告を検証し、2つの独立したアカウントで25分以内に再現して、事案を宣言した。モデルを非公開にし（要求には HTTP 400 を返す）、原因を特定して、設定の修正とエンジンのパッチを入れ、同日の19時40分に復旧した。</li>
+<li>8月27日から9月9日までの間に、少数の顧客が、同じモデルへの直前の他の顧客の要求の内容を含む応答を受け取った。合計155件で、すべて 681,280 トークンを超えるプロンプトへの応答だった。</li>
+<li>研究者と自社のテストを除くと、見つかった要求は、通常の長い文脈の使い方と、時期も量も一致していて、故意に悪用された証拠は見つからなかった。</li>
+<li>ほかの Workers AI のモデルは、影響を受けていない。</li>
+<li>公開は10月26日。報告した研究者と、推論エンジン SGLang の開発元との、連携した公開（コーディネートされた開示）として出された。</li>
+</ul>
+
+<h2>よくある疑問：キャッシュが顧客で共通化されていたのか</h2>
+<ul>
+<li>共有されていたのは、キャッシュの内容ではなく、メモリの領域（ページ）。全顧客の要求が、同じ GPU のメモリのページのプールから割り当てを受けるのは、設計どおり。</li>
+<li>使い終えたページは、ゼロに消去されない。次の要求が、上書きするだけ。原典は、これを推論エンジンで一般的な方式で、最高の性能を出すのに必要だと書く。そのため、ページの所有権の管理は、エンジンの責任になる。</li>
+<li>今回の事故は、他の顧客のキャッシュを「共有して再利用した」ものではなく、確保した領域の、書き込まれていない部分に、前の要求の残りが残っていて、それを読んでしまったもの。</li>
+<li>つまり、消去しない設計と、拒否の見落としが重なって、顧客の境界を越えて内容が漏れた。</li>
+</ul>
+
+<h2>仕組みの前提</h2>
+<ul>
+<li>KV キャッシュ：AI モデルが文章を作るとき、それまでの文脈の計算結果（キーと値）を、GPU のメモリに置いておく仕組み。長い文脈ほど大きい。</li>
+<li>分離構成（プレフィルとデコード）：Workers AI は、GLM-5.3 を、プロンプトを処理して KV キャッシュを作る GPU の群（プレフィル）と、それを受け取って応答を生成する GPU の群（デコード）に分けて動かしている。KV キャッシュは、RDMA（別のマシンのメモリに直接書き込む仕組み）で、プレフィルからデコードへ渡される。</li>
+<li>ページのプール：KV キャッシュは、固定サイズのページに分かれたプール。要求は、受け付けられるとページを割り当てられ、終わると返す。</li>
+<li>領域の大きさは設定値ではない：SGLang は、モデルの重みを読み込んだあとに残った GPU のメモリから、起動時に領域の大きさを決める。モデルの文脈の長さは、別の設定値で、2つが一致する保証はない。一致を確かめるのは、運用する側の仕事。</li>
+</ul>
+
+<h2>事故の流れ（原因の連鎖）</h2>
+<figure class="viz">
+<p class="viz-title">文脈の長さと、KV の領域</p>
+<p class="viz-sub">Cloudflare の報告より。棒の長さは、トークン数に比例</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 240" role="img" aria-label="モデルの文脈の長さは1,048,576トークン、修正前の領域は681,280トークンで、その間の長さの要求は領域に収まらない。修正後の領域は約204万トークンで、文脈の長さの約2倍。">
+<text class="t-small" x="20" y="48" text-anchor="start">モデルの文脈の長さ</text>
+<rect class="bar" x="250" y="30" width="279.6" height="26" rx="4"><title>モデルの文脈の長さ：1,048,576 トークン</title></rect>
+<text class="t-strong" x="539.6" y="48" text-anchor="start">1,048,576 トークン</text>
+<text class="t-small" x="20" y="108" text-anchor="start">修正前：KV の領域</text>
+<rect class="bar-2" x="250" y="90" width="181.7" height="26" rx="4"><title>修正前：KV の領域：681,280 トークン</title></rect>
+<text class="t-strong" x="441.7" y="108" text-anchor="start">681,280 トークン</text>
+<text class="t-small" x="20" y="168" text-anchor="start">修正後：KV の領域</text>
+<rect class="bar" x="250" y="150" width="544.0" height="26" rx="4"><title>修正後：KV の領域：約204万</title></rect>
+<text class="t-strong" x="804.0" y="168" text-anchor="start">約204万</text>
+<line class="axis" x1="431.7" y1="196" x2="529.6" y2="196"/>
+<line class="axis" x1="431.7" y1="190" x2="431.7" y2="202"/>
+<line class="axis" x1="529.6" y1="190" x2="529.6" y2="202"/>
+<text class="t-small" x="480.65" y="224" text-anchor="middle">この長さの要求は、領域に収まらず、拒否の経路に入る</text>
+</svg>
+</div>
+<figcaption>修正前は、領域が文脈の長さより小さく、681,280 から 1,048,576 トークンの要求が、領域に収まりませんでした。修正後は、文脈の長さの約2倍の領域になり、収まらない要求は起きません。</figcaption>
+</figure>
+<figure class="viz">
+<p class="viz-title">拒否が見落とされて、漏れるまで</p>
+<p class="viz-sub">Cloudflare の報告をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="長すぎる要求が受付で拒否されるが、分離構成では見落とされて通り、プレフィルは1ページだけを転送し、デコードは確保した8ページすべてを読んで、前の要求の内容が混ざった応答を HTTP 200 で返す。">
+<defs><marker id="arrow-cf-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="20" width="260" height="96" rx="6"></rect>
+<text class="t-strong" x="150" y="52" text-anchor="middle">1. 長すぎる要求</text>
+<text class="t-small" x="150" y="72" text-anchor="middle">681,280 トークンを超える</text>
+<text class="t-small" x="150" y="92" text-anchor="middle">プロンプトが届く</text>
+<line class="arrow" x1="282" y1="68" x2="306" y2="68" marker-end="url(#arrow-cf-flow)"/>
+<rect class="box" x="310" y="20" width="260" height="96" rx="6"></rect>
+<text class="t-strong" x="440" y="52" text-anchor="middle">2. 受付で拒否</text>
+<text class="t-small" x="440" y="72" text-anchor="middle">エラーで終わるはずが、</text>
+<text class="t-small" x="440" y="92" text-anchor="middle">1トークンの代わりに差し替え</text>
+<line class="arrow" x1="572" y1="68" x2="596" y2="68" marker-end="url(#arrow-cf-flow)"/>
+<rect class="box-key" x="600" y="20" width="260" height="96" rx="6"></rect>
+<text class="t-strong" x="730" y="52" text-anchor="middle">3. 拒否が見落とされる</text>
+<text class="t-small" x="730" y="72" text-anchor="middle">分離構成の受付は、「終わったか」</text>
+<text class="t-small" x="730" y="92" text-anchor="middle">だけを見て、通してしまう</text>
+<path class="arrow" d="M 730 118 C 730 148 150 138 150 172" fill="none" marker-end="url(#arrow-cf-flow)"/>
+<rect class="box" x="20" y="176" width="260" height="96" rx="6"></rect>
+<text class="t-strong" x="150" y="208" text-anchor="middle">4. プレフィル</text>
+<text class="t-small" x="150" y="228" text-anchor="middle">代わりの1トークンぶんだけ</text>
+<text class="t-small" x="150" y="248" text-anchor="middle">計算し、1ページを転送</text>
+<line class="arrow" x1="282" y1="224" x2="306" y2="224" marker-end="url(#arrow-cf-flow)"/>
+<rect class="box" x="310" y="176" width="260" height="96" rx="6"></rect>
+<text class="t-strong" x="440" y="208" text-anchor="middle">5. デコード</text>
+<text class="t-small" x="440" y="228" text-anchor="middle">「転送完了」を信じ、確保した</text>
+<text class="t-small" x="440" y="248" text-anchor="middle">8ページすべてを読んで生成</text>
+<line class="arrow" x1="572" y1="224" x2="596" y2="224" marker-end="url(#arrow-cf-flow)"/>
+<rect class="box-key" x="600" y="176" width="260" height="96" rx="6"></rect>
+<text class="t-strong" x="730" y="208" text-anchor="middle">6. 応答</text>
+<text class="t-small" x="730" y="228" text-anchor="middle">HTTP 200 で返る。前の要求</text>
+<text class="t-small" x="730" y="248" text-anchor="middle">（別の顧客）の内容が混ざる</text>
+</svg>
+</div>
+<figcaption>緑の枠は、不具合が起きた場所と、その結果です。1台で動かす構成では、手順2のあとで、要求がエラーで終わります。</figcaption>
+</figure>
+<figure class="viz">
+<p class="viz-title">確保したページの中身</p>
+<p class="viz-sub">Cloudflare の報告をもとにした模式図（8ページの例）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 268" role="img" aria-label="前の要求が使い終えたページは消去されず、今の要求が確保した同じ8ページのうち、書き込まれたのは1ページだけで、残りの7ページには前の要求の内容が残っている。">
+<defs><marker id="arrow-cf-pages" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-small" x="10" y="60" text-anchor="start">前の要求（別の顧客）</text>
+<text class="t-small" x="10" y="80" text-anchor="start">が使い終えたページ</text>
+<text class="t-small" x="10" y="170" text-anchor="start">今の要求が確保した</text>
+<text class="t-small" x="10" y="190" text-anchor="start">同じ8ページ</text>
+<rect class="box" x="200" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="238" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="238" y1="90" x2="238" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box-key" x="200" y="150" width="76" height="48" rx="6"><title>今の要求が書き込んだページ（1ページ）</title></rect>
+<text class="t-strong" x="238" y="178" text-anchor="middle">上書き</text>
+<text class="t-small t-muted" x="238" y="218" text-anchor="middle">P0</text>
+<rect class="box" x="284" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="322" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="322" y1="90" x2="322" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box dashed" x="284" y="150" width="76" height="48" rx="6"><title>書き込まれず、前の要求の内容が残ったページ</title></rect>
+<text class="t-small" x="322" y="168" text-anchor="middle">前の内容</text>
+<text class="t-small" x="322" y="188" text-anchor="middle">が残る</text>
+<text class="t-small t-muted" x="322" y="218" text-anchor="middle">P1</text>
+<rect class="box" x="368" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="406" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="406" y1="90" x2="406" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box dashed" x="368" y="150" width="76" height="48" rx="6"><title>書き込まれず、前の要求の内容が残ったページ</title></rect>
+<text class="t-small" x="406" y="168" text-anchor="middle">前の内容</text>
+<text class="t-small" x="406" y="188" text-anchor="middle">が残る</text>
+<text class="t-small t-muted" x="406" y="218" text-anchor="middle">P2</text>
+<rect class="box" x="452" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="490" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="490" y1="90" x2="490" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box dashed" x="452" y="150" width="76" height="48" rx="6"><title>書き込まれず、前の要求の内容が残ったページ</title></rect>
+<text class="t-small" x="490" y="168" text-anchor="middle">前の内容</text>
+<text class="t-small" x="490" y="188" text-anchor="middle">が残る</text>
+<text class="t-small t-muted" x="490" y="218" text-anchor="middle">P3</text>
+<rect class="box" x="536" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="574" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="574" y1="90" x2="574" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box dashed" x="536" y="150" width="76" height="48" rx="6"><title>書き込まれず、前の要求の内容が残ったページ</title></rect>
+<text class="t-small" x="574" y="168" text-anchor="middle">前の内容</text>
+<text class="t-small" x="574" y="188" text-anchor="middle">が残る</text>
+<text class="t-small t-muted" x="574" y="218" text-anchor="middle">P4</text>
+<rect class="box" x="620" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="658" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="658" y1="90" x2="658" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box dashed" x="620" y="150" width="76" height="48" rx="6"><title>書き込まれず、前の要求の内容が残ったページ</title></rect>
+<text class="t-small" x="658" y="168" text-anchor="middle">前の内容</text>
+<text class="t-small" x="658" y="188" text-anchor="middle">が残る</text>
+<text class="t-small t-muted" x="658" y="218" text-anchor="middle">P5</text>
+<rect class="box" x="704" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="742" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="742" y1="90" x2="742" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box dashed" x="704" y="150" width="76" height="48" rx="6"><title>書き込まれず、前の要求の内容が残ったページ</title></rect>
+<text class="t-small" x="742" y="168" text-anchor="middle">前の内容</text>
+<text class="t-small" x="742" y="188" text-anchor="middle">が残る</text>
+<text class="t-small t-muted" x="742" y="218" text-anchor="middle">P6</text>
+<rect class="box" x="788" y="40" width="76" height="48" rx="6"></rect>
+<text class="t-small" x="826" y="68" text-anchor="middle">前の内容</text>
+<line class="arrow" x1="826" y1="90" x2="826" y2="146" marker-end="url(#arrow-cf-pages)"/>
+<rect class="box dashed" x="788" y="150" width="76" height="48" rx="6"><title>書き込まれず、前の要求の内容が残ったページ</title></rect>
+<text class="t-small" x="826" y="168" text-anchor="middle">前の内容</text>
+<text class="t-small" x="826" y="188" text-anchor="middle">が残る</text>
+<text class="t-small t-muted" x="826" y="218" text-anchor="middle">P7</text>
+<text class="t-small t-muted" x="10" y="122" text-anchor="start">ページは消去されない</text>
+<text class="t-small t-muted" x="10" y="142" text-anchor="start">（同じページを使い回す）</text>
+<line class="axis" x1="200" y1="232" x2="836" y2="232"/>
+<text class="t-strong" x="518" y="254" text-anchor="middle">デコードは、確保した8ページすべてを読む → 前の顧客の内容が応答に混ざる</text>
+</svg>
+</div>
+<figcaption>共有されていたのは、キャッシュの内容ではなく、ページの領域です。ページは消去されず、書き込まれなかった部分に、前の顧客の内容が残っていました。</figcaption>
+</figure>
+<ul>
+<li>設定のミス：文脈の長さ 1,048,576 トークンに対して、プレフィルの領域は 681,280 トークンぶんしかなかった。Cloudflare は、開始前にこの不一致を知っていたが、エンジンが、収まらない要求にはエラーを返すと考えた。長い文脈の試験でも、成功の応答が返ったので、問題ないと判断した。</li>
+<li>試験の穴：試験は、応答の状態コードと性能だけを見て、モデルの出力の中身や一貫性は確かめていなかった。</li>
+<li>エンジンの不具合：領域に収まらない要求は、受付で「拒否」として印が付き、プロンプトが1トークンの代わりの文面に差し替えられる。1台で動かす構成では、これで要求が正しくエラーで終わる。</li>
+<li>分離構成での見落とし：プレフィルとデコードの受付は、要求が「終わったか」だけを見て、「拒否されたか」を見ていなかった。拒否された要求は、まだ生きている要求として通ってしまった。</li>
+<li>通ったあとの流れ：
+<ol>
+<li>ルーターが、デコードに、元のプロンプトの長さ（例では8ページ）を知らせ、デコードは8ページを確保した。</li>
+<li>プレフィルは、差し替えられた1トークンぶんだけを計算し、1ページぶんの KV キャッシュを転送して、「転送完了」を通知した。</li>
+<li>デコードは、プレフィルが全ページを書き込んだと思い込み、応答の生成を始めた。</li>
+<li>確保した8ページのうち、書き込まれたのは1ページだけ。残りの7ページには、前の要求が残したデータ（他の顧客のプロンプトや、途中の生成）が、そのまま残っていた。</li>
+<li>デコードは、8ページすべてを読んで応答を作り、HTTP 200 で返した。</li>
+</ol>
+</li>
+<li>外から見える特徴：応答の `prompt_tokens` は、長いプロンプトの長さと一致し、文章は筋が通っていた。ただし、8ページぶんのプレフィルにかかるはずの時間より、速く返ってきた。内容には、他の利用者のページの内容が含まれていた。</li>
+<li>閾値を超える要求は、すべてこの経路を通った。タイミングの偶然ではなく、毎回起きる不具合だった。</li>
+<li>上流への報告：同じ不具合は、7月6日に、別の利用者が SGLang に報告していた。Cloudflare は、この事案の調査中に気づいた。</li>
+</ul>
+
+<h2>時系列</h2>
+<figure class="viz">
+<p class="viz-title">9月9日（世界協定時）の1日</p>
+<p class="viz-sub">Cloudflare の報告の時系列より。報告の受付（8日23時11分）から宣言まで、約14時間</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 206" role="img" aria-label="9月9日の8時に検証を始め、13時22分に事案を宣言、14時にモデルを非公開にし、14時35分に根本原因を特定、14時52分に設定を修正、19時4分に全体を作り直し、19時40分に公開に戻した。">
+<line class="axis" x1="40" y1="100" x2="840" y2="100"/>
+<circle class="dot-case" cx="101.5" cy="100" r="7"><title>08:00（世界協定時）：検証を始める</title></circle>
+<text class="t-small t-muted" x="101.5" y="62" text-anchor="middle">08:00</text>
+<text class="t-small" x="101.5" y="80" text-anchor="middle">検証を始める</text>
+<circle class="dot-case" cx="431.8" cy="100" r="7"><title>13:22（世界協定時）：事案を宣言</title></circle>
+<text class="t-small t-muted" x="431.8" y="62" text-anchor="middle">13:22</text>
+<text class="t-small" x="431.8" y="80" text-anchor="middle">事案を宣言</text>
+<circle class="dot-case" cx="470.8" cy="100" r="7"><title>14:00（世界協定時）：モデルを非公開</title></circle>
+<text class="t-small t-muted" x="470.8" y="132" text-anchor="middle">14:00</text>
+<text class="t-small" x="470.8" y="150" text-anchor="middle">モデルを非公開</text>
+<circle class="dot-case" cx="506.7" cy="100" r="7"><title>14:35（世界協定時）：根本原因を特定</title></circle>
+<line class="axis" x1="506.7" y1="52" x2="506.7" y2="92"/>
+<text class="t-small t-muted" x="506.7" y="28" text-anchor="middle">14:35</text>
+<text class="t-small" x="506.7" y="46" text-anchor="middle">根本原因を特定</text>
+<circle class="dot-case" cx="524.1" cy="100" r="7"><title>14:52（世界協定時）：設定を修正（全ノード）</title></circle>
+<line class="axis" x1="524.1" y1="108" x2="524.1" y2="154"/>
+<text class="t-small t-muted" x="524.1" y="168" text-anchor="middle">14:52</text>
+<text class="t-small" x="524.1" y="186" text-anchor="middle">設定を修正（全ノード）</text>
+<circle class="dot-case" cx="782.6" cy="100" r="7"><title>19:04（世界協定時）：全体を作り直す</title></circle>
+<text class="t-small t-muted" x="782.6" y="62" text-anchor="middle">19:04</text>
+<text class="t-small" x="782.6" y="80" text-anchor="middle">全体を作り直す</text>
+<circle class="dot-case" cx="819.5" cy="100" r="7"><title>19:40（世界協定時）：公開に戻す</title></circle>
+<text class="t-small t-muted" x="819.5" y="132" text-anchor="middle">19:40</text>
+<text class="t-small" x="819.5" y="150" text-anchor="middle">公開に戻す</text>
+</svg>
+</div>
+<figcaption>宣言から非公開まで38分、根本原因の特定まで73分で、同日のうちに復旧しました。</figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+<caption>Cloudflare の報告の時系列より（日時は世界協定時）</caption>
+<thead><tr><th>日時</th><th>出来事</th></tr></thead>
+<tbody>
+<tr><td>2026年8月27日</td><td>GLM-5.3 を Workers AI で提供開始。領域が文脈の長さより小さい状態で、開始時から露出があった</td></tr>
+<tr><td>9月8日 23:11</td><td>HackerOne で報告を受ける</td></tr>
+<tr><td>9月9日 08:00</td><td>報告の検証を始める</td></tr>
+<tr><td>9月9日 13:22</td><td>事案を宣言。2つの独立したアカウントで、25分以内に再現</td></tr>
+<tr><td>9月9日 14:00</td><td>範囲を確認し、GLM-5.3 を非公開にする（要求には HTTP 400）。ステータスページを更新</td></tr>
+<tr><td>9月9日 14:35</td><td>根本原因（プレフィルの領域が文脈の長さより小さいこと）を特定。大きな領域を持つ試験用のノードで、影響がないことを確認</td></tr>
+<tr><td>9月9日 14:52</td><td>すべてのプレフィルのノードに、修正した設定を展開</td></tr>
+<tr><td>9月9日 19:04</td><td>修正した設定と、Cloudflare が作ったエンジンのパッチを入れた構成を、全体に作り直す。研究者の再現用のスクリプトで検証</td></tr>
+<tr><td>9月9日 19:40</td><td>モデルを公開に戻す</td></tr>
+<tr><td>9月10日 23:30</td><td>SGLang の開発元（RadixArk）の担当者と、上流の修正の方針を合わせる会議</td></tr>
+<tr><td>9月11日〜19日</td><td>追加の強化を、本番の SGLang の構成すべてに展開</td></tr>
+<tr><td>9月16日〜10月12日</td><td>SGLang の本流に、受付の修正、転送ごとのチェックサム、中止の確認応答の保持、遅延解放の既定化が入る</td></tr>
+<tr><td>10月2日</td><td>SGLang v0.5.21 を公開</td></tr>
+<tr><td>10月19日</td><td>SGLang v0.5.22 を公開</td></tr>
+<tr><td>10月26日</td><td>研究者、SGLang と連携して、報告を公開</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Cloudflare の対処</h2>
+<ul>
+<li>即時の対処（9月9日）：
+<ul>
+<li>領域を、文脈の長さ全体が入る大きさにした。GLM-5.3 の設定を、GLM-5.2 の設定に合わせ、GPU のメモリが空いた結果、プレフィルの領域は約204万トークン（文脈の長さの約2倍）になった。文脈に収まる要求が、必ず領域にも収まるので、拒否の経路には入らない。これだけで、不具合は起きなくなる。</li>
+<li>エンジンのパッチ：拒否された要求を、受付の段階で、元のエラーとともに終了させる。領域の大きさだけに頼るのは壊れやすい（量子化、並列化の設定、モデルの版などで、領域の大きさが簡単に変わる）うえ、ほかにも拒否が起きる場面がありうるため。上流への提案には、デコード側が、転送されたトークン数と、確保した数が一致するかを確かめる仕組みも含まれた。</li>
+<li>検証：研究者の再現用のスクリプトと、自社の目印（カナリア）を入れた試験で確かめてから、モデルを戻した。</li>
+</ul>
+</li>
+<li>9月11日〜19日の追加の強化（すべての本番の構成に）：
+<ul>
+<li>解放の遅延を、転送元（プレフィル）のページにも広げ、中止だけでなく、あらゆる失敗に対応させた。</li>
+<li>転送の1回の呼び出しの大きさに上限（バッチの上限）を設け、1回の呼び出しが、解放の待ち時間を超えないようにした。</li>
+<li>ロードバランサーを変えて、クライアントの切断が、転送の途中の中止を引き起こさないようにした（プレフィルは終わるまで、デコードは最初のトークンまで、接続を保つ）。</li>
+<li>分離構成の変更のたびに、領域の大きさと文脈の長さの照合、解放の遅延、転送のバッチの上限、必要なパッチが入っているかを、チェック項目にした。</li>
+</ul>
+</li>
+<li>同じ分離構成の、ほかのモデルは、領域が文脈の長さより大きいので、拒否の経路に入らない。エンジンの修正と強化は、SGLang で動かすすべてのモデルに入れた。</li>
+</ul>
+
+<h2>上流（SGLang）の対応</h2>
+<ul>
+<li>受付の修正：拒否された要求を、受付の段階（プレフィルとデコードの待ち行列に入る前）で終了させ、エラーを返す。9月16日に取り込まれた。それ以前の修正は、プレフィルの結果を処理した時点で終了させるものだった。</li>
+<li>影響の範囲：SGLang は、この拒否の経路は、分離構成のときだけ、1台で動かす構成ではエラーが返ると説明する。</li>
+<li>上流の版：Cloudflare は、この不具合の修正が v0.5.20 で出て、v0.5.21 と v0.5.22 で続けて直されたと書き、すべての運用者に、v0.5.22 以降への更新を強く勧めている。</li>
+</ul>
+
+<h2>同じ種類の別の不具合：中止された転送の競合</h2>
+<p>Cloudflare の報告も、SGLang の記事も、今回の不具合と同じ「KV キャッシュの領域の管理の不具合」の別の形を、あわせて説明している。今回の事案の原因ではない（今回は、拒否された要求が毎回通ることが原因）。</p>
+<p>対策として、次の仕組みが入った。</p>
+<ul>
+<li>仕組み：分離構成では、プレフィルが、デコードの領域に、RDMA で書き込む。要求が途中で中止されると（クライアントの切断、タイムアウト、転送の障害など）、すでに送り出した書き込みは、取り消せない。</li>
+<li>競合：デコードが、中止された要求の領域を、すぐに返してしまうと、別の要求に割り当てられ、そこへ、遅れて届いた書き込みが入り込む。割り当てられた要求は、他の要求の KV キャッシュを読んで、おかしな出力を返す、または、他の利用者のデータが混ざる。エラーは出ない。</li>
+<li>影響を受ける条件：分離構成で、転送の途中で要求が中止され、領域が、書き込みの着地の前に再割り当てされること。3つの条件のどれか1つがなければ、起きない。長い文脈ほど、競合の窓が長い（短いプロンプトはミリ秒、100万トークン級は、秒から分）。</li>
+<li>影響を受ける版：SGLang の記事によると、既定の設定でも、分離構成が RDMA の転送とともに出た v0.4.x の系統（2025年の前半）から、v0.5.21（MORI は v0.5.22）まで。</li>
+<li>悪用の可能性：SGLang の記事は、クライアントが、長い文脈の要求を送り、途中で切断することで、競合の確率を意図的に上げられる、と書く。ただし、被害を受ける要求（犠牲者）や、書き込まれる場所は、選べない。内容が流れる向きは一方向で、中止した要求の KV キャッシュが、別の要求の KV キャッシュに入る。中止した側には、何も返らない。</li>
+<li>検出：運用者は、すでに露出があったかどうかを、確実には知れない（エラーもログも残らない）。任意で有効にできるチェックサムで、一部の遅れた書き込みを検出できる。</li>
+<li>遅延解放：中止された要求の領域を、すぐには返さず、プレフィルが書き込みを使い切ったという確認応答（ABORT_ACK）か、上限の時間まで保持する。v0.5.21 から、Mooncake と NIXL で、既定で有効。</li>
+<li>転送のバッチの上限：1回の転送の呼び出しの大きさに上限を設け、呼び出しがハングしても、残る書き込みを最小にする。</li>
+<li>チェックサム（任意）：プレフィルが GPU で転送内容のチェックサム（Adler-32）を計算し、デコードが、要求を実行に入れる前に確かめる。既定では無効。有効にすると、転送ごとに GPU の読み取りと同期の分のコストがかかる。</li>
+<li>性能への影響：SGLang の測定（2×H100、1024 要求、7回ずつ）では、パッチの前後、機能の有無で、スループットは、統計的に区別できず、差は ±2% 以内だった。</li>
+</ul>
+
+<h2>運用者への推奨</h2>
+<ul>
+<li>Cloudflare の推奨（SGLang を分離構成で動かす運用者向け）：
+<ol>
+<li>各ノードで、エンジンの起動ログから、KV の領域の大きさと、文脈の長さを比べる（重みや量子化、並列化、メモリの割合を変えるたびに）。領域のほうが小さければ、文脈の長さを下げる。プロキシで制限を強制することや、エンジンが収まらないものを拒否すると仮定することはしない。</li>
+<li>v0.5.22 以降に更新して、領域の大きさに関わらず、長すぎる要求が、受け渡しの前に拒否されるようにする。</li>
+<li>両方の役割で遅延解放を有効にし、転送のバッチを制限する。</li>
+<li>破損の検出（チェックサム、カナリア）を、モデルが対応する範囲で有効にする。ただし、すべてのモデルの構造に対応しているわけではない（GLM-5.3 などへの拡張を作業中）。</li>
+<li>ロードバランサーが、不要な中止を作らないようにする。</li>
+</ol>
+</li>
+<li>SGLang の推奨：更新（v0.5.21 以降）、中止を両側に伝えるルーターの利用、更新後に遅延解放の指標で、保持が「使い切り」で解放されているかを確かめる。</li>
+</ul>
+
+<h2>今後の取り組み（Cloudflare の報告）</h2>
+<ul>
+<li>構造で保証する：すべての物理ページに、再割り当てのたびに変わるタグを付け、各要求が期待するタグを記録し、デコードが読む前に対応を確かめる。読もうとしているページが、自分のものでなければ、その要求だけを失敗させる。夏に試作し、GLM-5.2 で試験して、スループットと末尾の遅延の悪化は1%未満だったが、信頼性の問題で、いったん無効にした。特定の注意の仕組みやモデルの構造に結び付いていたため、汎用の修正にするため、SGLang の開発元と、エンジンの本体に組み込む作業をしている。</li>
+<li>数学的に保証する：分散システムの整合性の不具合として、RDMA による KV キャッシュ転送の安全性を、形式手法（モデル化と証明）で確かめる作業に着手する。現実には、証明器で分からない部分も残ると見ている。</li>
+</ul>
+
+<h2>分かっていないこと</h2>
+<ul>
+<li>個別の連絡：影響を受けた顧客への個別の連絡について、報告には書かれていない。</li>
+<li>漏れた内容：混ざった内容の種類や、どの顧客の情報が含まれたかは、公表されていない（155件は、応答の数）。</li>
+<li>研究者の報告：SGLang の記事は、発見と外部での検証を説明する研究者の報告を、近く公開すると書いている。この記事では、確認していない。</li>
+<li>悪用の有無の限界：「故意の悪用の証拠は見つからなかった」は、Cloudflare が、見つかった要求を調べた結果。ログに残らない形での悪用がなかったことの証明ではない（SGLang の記事も、運用者は、露出があったかを確実には知れないと書く）。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+<ul>
+<li>主な根拠は、Cloudflare 自身の報告と、推論エンジンの開発元の記事で、どちらも、事案の当事者（または当事者と連携した側）の説明。</li>
+<li>数字（155件、領域の大きさ、時刻）は、報告のまま。38分は、報告の時刻から筆者が計算した。</li>
+<li>「同じ種類の別の不具合」の節は、今回の事案の原因ではない。仕組みの理解のために並べている。</li>
+<li>影響を受けるバージョンや推奨は、2026年10月26日の公開時点のもの。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>KV キャッシュ</dt><dd>AI モデルが文章を作るとき、それまでの文脈の計算結果を、GPU のメモリに置いておく仕組み。</dd>
+<dt>ページ</dt><dd>KV キャッシュのメモリを区切る、固定サイズの単位。</dd>
+<dt>プレフィル</dt><dd>プロンプト全体を処理して、KV キャッシュを作る段階。</dd>
+<dt>デコード</dt><dd>KV キャッシュを使って、応答を1トークンずつ生成する段階。</dd>
+<dt>分離構成</dt><dd>プレフィルとデコードを、別の GPU の群で動かす構成。</dd>
+<dt>RDMA</dt><dd>別のマシンのメモリに、CPU を介さず直接書き込む仕組み。</dd>
+<dt>SGLang</dt><dd>AI モデルを動かして応答を作る、オープンソースの推論エンジン。</dd>
+<dt>Mooncake</dt><dd>プレフィルからデコードへ、KV キャッシュを RDMA で転送する部品。</dd>
+<dt>文脈の長さ</dt><dd>モデルが一度に扱えるトークン（文章の単位）の数。</dd>
+<dt>負荷分散（ロードバランサー）</dt><dd>要求を、複数のサーバーに振り分ける仕組み。</dd>
+<dt>コーディネートされた開示</dt><dd>脆弱性を、報告者、開発元、利用者が、公開の時期を合わせて公表すること。</dd>
+<dt>カナリア</dt><dd>不具合の検出のために、わざと入れる目印のデータ。</dd>
+<dt>チェックサム</dt><dd>データが壊れていないかを確かめる、短い値。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月5日時点の情報です。内容は、Cloudflare の事案報告（10月26日）と、SGLang（LMSYS Org）の公開記事（10月26日）をもとに、独自に整理したものです。</p>
+<p>数字は資料のままで、再計算や検証はしていません。38分は筆者の計算です。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-05</span>初回公開（Cloudflare の事案報告と SGLang の公開記事。原因の連鎖、時系列、対処、同種の別の不具合、運用者への推奨）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
