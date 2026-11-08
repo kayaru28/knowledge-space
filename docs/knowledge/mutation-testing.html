@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="ミューテーションテストについて、一言での説明、3行の要約、コードカバレッジやツールとの違い、前後で組み合わされる仕組み、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、各ツールの公式文書と3つの論文から整理する。">
+<title>ミューテーションテスト：コードに小さな欠陥を入れて、テストが気づけるかで、テストの質を測る手法 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>ミューテーションテスト：コードに小さな欠陥を入れて、テストが気づけるかで、テストの質を測る手法</h1><p class="summary">ミューテーションテストについて、一言での説明、3行の要約、コードカバレッジやツールとの違い、前後で組み合わされる仕組み、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、各ツールの公式文書と3つの論文から整理する。</p><p class="meta">初回公開 2026-11-08 ／ 更新日 2026-11-08</p></header><section class="lede">
+<h2>一言で言うと</h2>
+<p><strong>ミューテーションテスト</strong>は、プログラムに小さな欠陥（変異）を自動で入れ、既存のテストがそれに気づいて失敗するかを調べることで、テストの検出力を測る手法である。</p>
+</section>
+<h2>3行で表すと</h2>
+<ul>
+<li>何であるか：ソースコードやバイトコードに、小さな変更（変異体）を自動で入れ、テストを実行して、テストの質を測る手法。</li>
+<li>何ができるか：テストが失敗すれば変異体は「殺された」、通れば「生き残った」。殺された割合（変異スコア）でテストの有効性を見積もれ、生き残った変異体は、テストが足りない場所と変更の中身を具体的に示す。</li>
+<li>何が特徴か：コードカバレッジが「実行されたか」だけを見るのに対し、「欠陥を検出できるか」を見る。代わりに、変異体の数だけテストを実行するので時間がかかり、元と同じ動きをする変異体（同値変異体）も混ざる。</li>
+</ul>
+<h2>類似するものと、違い</h2>
+<p>横のつながりです。同じ目的の指標であるコードカバレッジとの違いと、代表的なツールの違いを扱います。比較の軸は、筆者の整理です。</p>
+<h3>コードカバレッジとの違い</h3>
+<figure class="viz">
+<p class="viz-title">カバレッジとミューテーションテストが見ているもの</p>
+<p class="viz-sub">PIT と Stryker の公式文書をもとにした模式図（筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="上の段はコードカバレッジ。コードに対してテストを1回実行し、どの行を実行したかを調べる。下の段はミューテーションテスト。コードに小さな欠陥を入れ、テストを実行し、テストが失敗して検出できたかを調べる。">
+<defs><marker id="arrow-cov" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="10" y="83" text-anchor="start">コードカバレッジ</text>
+<rect class="box" x="170" y="40" width="130" height="76" rx="6"></rect>
+<text class="t-strong" x="235.0" y="83" text-anchor="middle">コード</text>
+<line class="arrow" x1="302" y1="78" x2="338" y2="78" marker-end="url(#arrow-cov)"/>
+<rect class="box" x="340" y="40" width="150" height="76" rx="6"></rect>
+<text class="t-strong" x="415.0" y="73" text-anchor="middle">テストを</text>
+<text class="t-strong" x="415.0" y="93" text-anchor="middle">1回実行</text>
+<line class="arrow" x1="492" y1="78" x2="518" y2="78" marker-end="url(#arrow-cov)"/>
+<rect class="box" x="520" y="40" width="350" height="76" rx="6"></rect>
+<text class="t-strong" x="695.0" y="73" text-anchor="middle">どの行を実行したか</text>
+<text class="t-small" x="695.0" y="93" text-anchor="middle">実行された行／されなかった行</text>
+<text class="t-strong" x="10" y="193" text-anchor="start">ミューテーション</text>
+<text class="t-strong" x="10" y="213" text-anchor="start">テスト</text>
+<rect class="box" x="170" y="160" width="130" height="76" rx="6"></rect>
+<text class="t-strong" x="235.0" y="203" text-anchor="middle">コード</text>
+<line class="arrow" x1="302" y1="198" x2="338" y2="198" marker-end="url(#arrow-cov)"/>
+<rect class="box" x="340" y="160" width="150" height="76" rx="6"></rect>
+<text class="t-strong" x="415.0" y="183" text-anchor="middle">小さな欠陥を</text>
+<text class="t-strong" x="415.0" y="203" text-anchor="middle">入れる</text>
+<text class="t-small" x="415.0" y="223" text-anchor="middle">（変異体）</text>
+<line class="arrow" x1="492" y1="198" x2="518" y2="198" marker-end="url(#arrow-cov)"/>
+<rect class="box" x="520" y="160" width="150" height="76" rx="6"></rect>
+<text class="t-strong" x="595.0" y="193" text-anchor="middle">テストを</text>
+<text class="t-strong" x="595.0" y="213" text-anchor="middle">実行</text>
+<line class="arrow" x1="672" y1="198" x2="708" y2="198" marker-end="url(#arrow-cov)"/>
+<rect class="box-key" x="710" y="160" width="160" height="76" rx="6"></rect>
+<text class="t-strong" x="790.0" y="183" text-anchor="middle">検出できたか</text>
+<text class="t-small" x="790.0" y="203" text-anchor="middle">失敗＝殺された</text>
+<text class="t-small" x="790.0" y="223" text-anchor="middle">通過＝生き残った</text>
+<text class="t-small t-muted" x="440" y="267" text-anchor="middle">実行しただけでは、欠陥を検出できるかは分からない</text>
+</svg>
+</div>
+<figcaption>カバレッジは、テストがコードを実行したかを見ます。ミューテーションテストは、欠陥を入れたときにテストが失敗するか（検出できるか）を見ます。緑の枠が、ミューテーションテストだけが答える点です。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>公式文書と論文より（比較の軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>コードカバレッジ（行・文・分岐など）</th><th>ミューテーションテスト</th></tr></thead>
+<tbody>
+<tr><td>調べること</td><td>テストが、どのコードを実行したか</td><td>実行されたコードの欠陥を、テストが検出できるか</td></tr>
+<tr><td>分かること</td><td>実行されていないコード</td><td>実行されていないコードに加えて、実行されているが欠陥を検出できないコード</td></tr>
+<tr><td>アサーションのないテスト</td><td>実行された行として数える</td><td>変異が通ってしまい、生き残る</td></tr>
+<tr><td>費用</td><td>テストを1回実行して測る</td><td>変異体の数だけ、テストを実行する</td></tr>
+<tr><td>結果の形</td><td>割合と、実行されていない行</td><td>変異スコアと、生き残った個々の変異（どの行をどう変えたか）</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>PIT の公式は、従来のカバレッジは、テストが実行したコードしか測れず、実行されたコードの欠陥をテストが検出できるかは確かめない、と書く。確実にテストされていないコードが分かるだけ、という説明。</li>
+<li>論文（FSE 2014）は、Java の5つのオープンソースのプログラムで、開発者が直した実際の欠陥357件を使い、テストが変異体を検出する力と、実際の欠陥を検出する力のあいだに、統計的に有意な相関があるとした。この相関は、コードカバレッジの影響を除いても残り、文のカバレッジと実際の欠陥の検出のあいだの相関より強い、と書く。</li>
+</ul>
+<h3>ツールの違い</h3>
+<div class="table-wrap">
+<table>
+<caption>各ツールの公式文書より（比較の軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>PIT</th><th>Stryker</th><th>cargo-mutants</th><th>mutmut</th></tr></thead>
+<tbody>
+<tr><td>対象</td><td>Java と JVM</td><td>StrykerJS、Stryker.NET、Stryker4s の3つ</td><td>Rust</td><td>Python</td></tr>
+<tr><td>変異を入れる場所</td><td>コンパイル後のバイトコード（メモリ上）</td><td>ソースコード</td><td>関数の本体と演算子（ソースを文字として書き換える）</td><td>関数の中のコード（関数の外は mutmut 2）</td></tr>
+<tr><td>変異の例</td><td>条件の境界（&lt;を&lt;=）、増減、算術、戻り値、void メソッドの呼び出しの削除</td><td>算術、比較、論理、真偽値、ブロックの削除、文字列、正規表現</td><td>関数の本体を、戻り値の型に応じた値（0、1、true、false、空の文字列など）に置き換える。演算子の置き換え</td><td>読んだ範囲に、種類の一覧はない</td></tr>
+<tr><td>特徴</td><td>行カバレッジとテストの速さで、変異した行を実行するテストだけを選ぶ。変更した部分に絞って頻繁に動かすのが効果的、と書く</td><td>3つの実装で、変異演算子の名前をそろえる</td><td>ソースの変更も設定も要らずに動く。関数や範囲を除外できる</td><td>中断しても続きから再開できる。結果をファイルに反映できる。fork が要る（Windows は WSL）</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>どのツールも、変異体を1つずつ入れて、テストを実行し、失敗したら「殺された」、通ったら「生き残った」と数える流れは共通している。違いは、変異をどこに入れるか、どのテストを走らせるか。</li>
+<li>PIT の公式は、他の Java 向けの仕組みは遅く、使いにくく、研究向けだった、と書く（PIT 自身の説明）。</li>
+</ul>
+<h2>前後で組み合わされるもの</h2>
+<p>縦のつながりです。前段と後段の分け方は、筆者の整理です。</p>
+<figure class="viz">
+<p class="viz-title">ミューテーションテストの前と後</p>
+<p class="viz-sub">各ツールの公式文書と論文より。前段・後段の分け方は筆者の整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 270" role="img" aria-label="左から、前段（通る単体テスト、テストを動かす仕組み、カバレッジの情報）、本体のミューテーションテスト、後段（レポート、テストの追加、レビューへの組み込み）の順につながる。">
+<defs><marker id="arrow-ba" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="145" y="21" text-anchor="middle">前段</text>
+<text class="t-strong" x="440" y="21" text-anchor="middle">本体</text>
+<text class="t-strong" x="735" y="21" text-anchor="middle">後段</text>
+<rect class="box" x="20" y="40" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="145.0" y="66" text-anchor="middle">通る単体テスト</text>
+<text class="t-small" x="145.0" y="86" text-anchor="middle">元のコードで全部通る</text>
+<line class="arrow" x1="272" y1="71" x2="328" y2="115" marker-end="url(#arrow-ba)"/>
+<rect class="box" x="20" y="114" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="145.0" y="140" text-anchor="middle">テストを動かす仕組み</text>
+<text class="t-small" x="145.0" y="160" text-anchor="middle">JUnit、pytest、cargo test など</text>
+<line class="arrow" x1="272" y1="145" x2="328" y2="150" marker-end="url(#arrow-ba)"/>
+<rect class="box" x="20" y="188" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="145.0" y="214" text-anchor="middle">カバレッジの情報</text>
+<text class="t-small" x="145.0" y="234" text-anchor="middle">どのテストがどの行を実行するか</text>
+<line class="arrow" x1="272" y1="219" x2="328" y2="185" marker-end="url(#arrow-ba)"/>
+<rect class="box" x="610" y="40" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="735.0" y="66" text-anchor="middle">レポート</text>
+<text class="t-small" x="735.0" y="86" text-anchor="middle">殺された／生き残った変異</text>
+<line class="arrow" x1="552" y1="115" x2="608" y2="71" marker-end="url(#arrow-ba)"/>
+<rect class="box" x="610" y="114" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="735.0" y="140" text-anchor="middle">テストの追加</text>
+<text class="t-small" x="735.0" y="160" text-anchor="middle">生き残った変異を手がかりに</text>
+<line class="arrow" x1="552" y1="150" x2="608" y2="145" marker-end="url(#arrow-ba)"/>
+<rect class="box" x="610" y="188" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="735.0" y="214" text-anchor="middle">レビューへの組み込み</text>
+<text class="t-small" x="735.0" y="234" text-anchor="middle">変更した行に絞って見せる</text>
+<line class="arrow" x1="552" y1="185" x2="608" y2="219" marker-end="url(#arrow-ba)"/>
+<rect class="box-key" x="330" y="90" width="220" height="120" rx="6"></rect>
+<text class="t-strong" x="440.0" y="125" text-anchor="middle">ミューテーション</text>
+<text class="t-strong" x="440.0" y="145" text-anchor="middle">テスト</text>
+<text class="t-small" x="440.0" y="165" text-anchor="middle">変異体を入れて</text>
+<text class="t-small" x="440.0" y="185" text-anchor="middle">テストを実行する</text>
+</svg>
+</div>
+<figcaption>ミューテーションテストは、テストがすでにあることが前提です。結果は、レポートを読み、足りないテストを書き、コードレビューの流れに載せる形で使われます。</figcaption>
+</figure>
+
+<h3>前段：ミューテーションテストが動くための土台</h3>
+<ul>
+<li>通る状態の単体テスト：変異を入れる前に、元のコードでテストが全部通ることが前提。cargo-mutants は、変異の前に「baseline」としてテストを実行し、元から失敗していれば進まない。PIT のよくある質問にも、普段は通るテストが PIT では通らない原因（実行されるテストの範囲の違い、環境変数の違い、テストの順序への隠れた依存など）が挙がっている。</li>
+<li>テストを動かす仕組み：PIT は JUnit か TestNG、mutmut は pytest、cargo-mutants は cargo test を使う。</li>
+<li>ビルドの道具：PIT は Ant、Maven、Gradle などから動かす。コンパイル後のバイトコードを変異させるので、行番号とソースのファイル名の情報が残っている必要がある。</li>
+<li>カバレッジの情報：PIT は、最初に行カバレッジを測り、変異した行を実行するテストだけを選ぶ。mutmut は、coverage.py の情報で、実行される行だけを変異させる設定もできる（既定は関数の単位）。</li>
+</ul>
+<h3>後段：結果を使う仕組み</h3>
+<ul>
+<li>レポート：PIT は、行カバレッジと変異のカバレッジを合わせた読みやすいレポートを出す。Stryker は、変更前後の差分と、どの演算子を使ったか、殺されたか生き残ったかを、文字で出す報告などを用意する。</li>
+<li>テストの追加：生き残った変異体は、足りないテストの手がかり。Stryker の文書の例では、年齢が18以上かを調べる関数で、条件を常に真にする変異が生き残り、18未満を確かめるテストがおそらく足りない、と読む。</li>
+<li>除外と抑制：役に立たない変異体は、除外する。cargo-mutants は #[mutants::skip] で、PIT は、ログを呼ぶ行を既定では変異させないことで、避ける。</li>
+<li>コードレビューやプルリクエストへの組み込み：PIT は、同じ作者の有償の拡張（arcmutate）で、プルリクエストやマージリクエストに対して自動で動かせる。Google は、コードレビューの中で、変更した行の変異体を開発者に見せている。</li>
+</ul>
+<h2>具体的な仕組み</h2>
+<h3>なぜ必要か</h3>
+<ul>
+<li>テストは、書かれた行を実行するだけで、カバレッジを上げられる。極端な例は、アサーションのないテスト。PIT の文書は、そうしたテストは多くないが、コードの一部しか検査しないテストはよくある、と書く。Stryker の文書も、数字を上げるためだけのアサーションのないテストを例に挙げる。</li>
+<li>そのため、カバレッジが高くても、テストが欠陥を見つけられるとは限らない。ミューテーションテストは、「欠陥を入れたら、テストは気づくか」を実際に試して、この差を埋める。</li>
+<li>Stryker の文書は、パンにペーストを塗る例えを使う。カバレッジは、パンの80%にペーストが塗られていることを教える。ミューテーションテストは、それがチョコレートのペーストで、ほかの何かではないことを確かめる。</li>
+</ul>
+<h3>どう動くか</h3>
+<figure class="viz">
+<p class="viz-title">変異体が判定されるまで</p>
+<p class="viz-sub">各ツールの公式文書と論文をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 260" role="img" aria-label="変異体を作り、テストを実行し、テストが失敗すれば殺された、通れば生き残ったと判定する。全部の変異体の判定から、殺された割合の変異スコアを出す。">
+<defs><marker id="arrow-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="20" y="60" width="190" height="90" rx="6"></rect>
+<text class="t-strong" x="115.0" y="90" text-anchor="middle">1. 変異体を作る</text>
+<text class="t-small" x="115.0" y="110" text-anchor="middle">コードに小さな変更を</text>
+<text class="t-small" x="115.0" y="130" text-anchor="middle">1つ入れる</text>
+<line class="arrow" x1="212" y1="105" x2="248" y2="105" marker-end="url(#arrow-flow)"/>
+<rect class="box" x="250" y="60" width="190" height="90" rx="6"></rect>
+<text class="t-strong" x="345.0" y="100" text-anchor="middle">2. テストを実行</text>
+<text class="t-small" x="345.0" y="120" text-anchor="middle">変異体に対して</text>
+<line class="arrow" x1="442" y1="90" x2="508" y2="50" marker-end="url(#arrow-flow)"/>
+<line class="arrow" x1="442" y1="120" x2="508" y2="160" marker-end="url(#arrow-flow)"/>
+<rect class="box" x="510" y="20" width="190" height="64" rx="6"></rect>
+<text class="t-strong" x="605.0" y="47" text-anchor="middle">殺された</text>
+<text class="t-small" x="605.0" y="67" text-anchor="middle">テストが失敗した</text>
+<rect class="box-key" x="510" y="126" width="190" height="80" rx="6"></rect>
+<text class="t-strong" x="605.0" y="151" text-anchor="middle">生き残った</text>
+<text class="t-small" x="605.0" y="171" text-anchor="middle">テストが通った</text>
+<text class="t-small" x="605.0" y="191" text-anchor="middle">テストの不足かも</text>
+<line class="arrow" x1="702" y1="55" x2="738" y2="100" marker-end="url(#arrow-flow)"/>
+<line class="arrow" x1="702" y1="165" x2="738" y2="120" marker-end="url(#arrow-flow)"/>
+<rect class="box" x="740" y="60" width="130" height="90" rx="6"></rect>
+<text class="t-strong" x="805.0" y="100" text-anchor="middle">3. 変異スコア</text>
+<text class="t-small" x="805.0" y="120" text-anchor="middle">殺された割合</text>
+<text class="t-small t-muted" x="440" y="239" text-anchor="middle">これを、変異体の数だけ繰り返す。元のコードでテストが全部通ることが前提（baseline）</text>
+</svg>
+</div>
+<figcaption>変異体ごとに、テストの結果で「殺された」か「生き残った」かが決まります。緑の枠の「生き残った」変異体が、テストの穴の手がかりになります。</figcaption>
+</figure>
+
+<figure class="viz">
+<p class="viz-title">ツールが変異を入れる場所</p>
+<p class="viz-sub">PIT、Stryker、mutmut、cargo-mutants の公式文書をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 270" role="img" aria-label="PIT はコンパイル後のバイトコードに変異を入れる。Stryker、mutmut、cargo-mutants はソースコードに変異を入れる。">
+<defs><marker id="arrow-where" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="10" y="21" text-anchor="start">ツール</text>
+<text class="t-strong" x="290" y="21" text-anchor="middle">ソースコード</text>
+<text class="t-strong" x="510" y="21" text-anchor="middle">コンパイル後の形（バイトコード）</text>
+<text class="t-strong" x="640" y="21" text-anchor="start">どう変えるか</text>
+<rect class="box" x="10" y="36" width="150" height="44" rx="6"></rect>
+<text class="t-strong" x="85.0" y="63" text-anchor="middle">PIT</text>
+<rect class="box" x="190" y="36" width="200" height="44" rx="6"></rect>
+<text class="t-small t-muted" x="290.0" y="63" text-anchor="middle">そのまま</text>
+<rect class="box-key" x="410" y="36" width="200" height="44" rx="6"></rect>
+<text class="t-strong" x="510.0" y="63" text-anchor="middle">変異を入れる</text>
+<text class="t-small" x="640" y="53" text-anchor="start">バイトコードを、</text>
+<text class="t-small" x="640" y="73" text-anchor="start">メモリ上で書き換える</text>
+<rect class="box" x="10" y="92" width="150" height="44" rx="6"></rect>
+<text class="t-strong" x="85.0" y="119" text-anchor="middle">Stryker</text>
+<rect class="box-key" x="190" y="92" width="200" height="44" rx="6"></rect>
+<text class="t-strong" x="290.0" y="119" text-anchor="middle">変異を入れる</text>
+<rect class="box" x="410" y="92" width="200" height="44" rx="6"></rect>
+<text class="t-small t-muted" x="510.0" y="119" text-anchor="middle">そのまま</text>
+<text class="t-small" x="640" y="109" text-anchor="start">ソースコードを変えて、</text>
+<text class="t-small" x="640" y="129" text-anchor="start">テストを実行する</text>
+<rect class="box" x="10" y="148" width="150" height="44" rx="6"></rect>
+<text class="t-strong" x="85.0" y="175" text-anchor="middle">mutmut</text>
+<rect class="box-key" x="190" y="148" width="200" height="44" rx="6"></rect>
+<text class="t-strong" x="290.0" y="175" text-anchor="middle">変異を入れる</text>
+<rect class="box" x="410" y="148" width="200" height="44" rx="6"></rect>
+<text class="t-small t-muted" x="510.0" y="175" text-anchor="middle">そのまま</text>
+<text class="t-small" x="640" y="165" text-anchor="start">関数の中のコードを</text>
+<text class="t-small" x="640" y="185" text-anchor="start">変える</text>
+<rect class="box" x="10" y="204" width="150" height="44" rx="6"></rect>
+<text class="t-strong" x="85.0" y="231" text-anchor="middle">cargo-mutants</text>
+<rect class="box-key" x="190" y="204" width="200" height="44" rx="6"></rect>
+<text class="t-strong" x="290.0" y="231" text-anchor="middle">変異を入れる</text>
+<rect class="box" x="410" y="204" width="200" height="44" rx="6"></rect>
+<text class="t-small t-muted" x="510.0" y="231" text-anchor="middle">そのまま</text>
+<text class="t-small" x="640" y="221" text-anchor="start">関数の本体や演算子を、</text>
+<text class="t-small" x="640" y="241" text-anchor="start">文字として書き換える</text>
+</svg>
+</div>
+<figcaption>どのツールも「変異体を入れて、テストを実行する」流れは同じです。違いは、入れる場所です（緑の枠）。PIT はバイトコード、ほかはソースコードです。</figcaption>
+</figure>
+
+<ul>
+<li>流れ：（1）コードを解析して、変異を入れられる場所を見つける。（2）変異を1つ入れた版を作る。（3）テストを実行する。（4）判定する。（5）全部の変異体の判定から、変異スコアを出す。</li>
+<li>判定の種類：PIT は、殺された、生き残った、カバーなし（その行を実行するテストがない）、非実行可能（バイトコードが不正で、JVM が読み込めない）、タイムアウト（無限ループなど）、メモリエラー、実行エラーを分ける。cargo-mutants は、変異した版がコンパイルできないものを「unviable」（成立しない）として数える。</li>
+<li>変異の例：Stryker の文書は、年齢が18以上かを返す関数を挙げる。user.age &gt;= 18 に対して、&gt; や &lt; に変える、false や true を返すように変える、といった変異体ができる。テストの結果は、変異体ごとに殺される場合と、生き残る場合がある。</li>
+<li>変異スコア：殺された変異体の割合（論文の定義：テストが元のプログラムと区別できる変異体の割合）。</li>
+<li>時間の抑え方：変更した部分だけを対象にする（PIT、Google）。変異した行を実行するテストだけを選ぶ（PIT）。同じ作業用ディレクトリを使い回して、差分のビルドを活かす（cargo-mutants）。中断しても続きから再開する（mutmut）。</li>
+<li>Google の方式（論文）：変更したコードだけを、コードレビューの中で変異させる。変異体を1行につき最大1つに絞り、過去の結果から、役に立った演算子の変異を選ぶ。</li>
+<li>結合効果：変異分析の基本的な前提は、複雑な欠陥が、単純な欠陥の集まりと結びついていること（単純な欠陥をすべて検出するテストは、複雑な欠陥も検出する）。論文（FSE 2014）は、実際の欠陥357件のうち73%が、一般的な変異演算子の変異体と結びついていると報告した。</li>
+</ul>
+<figure class="viz">
+<p class="viz-title">Google の絞り込み</p>
+<p class="viz-sub">論文「Practical Mutation Testing at Scale」をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 240" role="img" aria-label="変更した行だけを対象にし、役に立たない場所を除き、1行に最大1つの変異体を選び、コードレビューで開発者に見せる。1つの変更あたりの変異体は中央値で7（従来の方式は820）。役に立つ変異体の割合は15%から89%になった。">
+<defs><marker id="arrow-google" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="10" y="20" width="190" height="100" rx="6"></rect>
+<text class="t-strong" x="105.0" y="45" text-anchor="middle">1. 変更した行だけ</text>
+<text class="t-small" x="105.0" y="65" text-anchor="middle">コードレビューに出した</text>
+<text class="t-small" x="105.0" y="85" text-anchor="middle">変更の中で、テストが</text>
+<text class="t-small" x="105.0" y="105" text-anchor="middle">実行する行</text>
+<line class="arrow" x1="202" y1="70" x2="228" y2="70" marker-end="url(#arrow-google)"/>
+<rect class="box" x="230" y="20" width="190" height="100" rx="6"></rect>
+<text class="t-strong" x="325.0" y="45" text-anchor="middle">2. 不要な所を除く</text>
+<text class="t-small" x="325.0" y="65" text-anchor="middle">役に立たない変異体しか</text>
+<text class="t-small" x="325.0" y="85" text-anchor="middle">できない場所を、</text>
+<text class="t-small" x="325.0" y="105" text-anchor="middle">ルールで外す</text>
+<line class="arrow" x1="422" y1="70" x2="448" y2="70" marker-end="url(#arrow-google)"/>
+<rect class="box" x="450" y="20" width="190" height="100" rx="6"></rect>
+<text class="t-strong" x="545.0" y="45" text-anchor="middle">3. 1行に最大1つ</text>
+<text class="t-small" x="545.0" y="65" text-anchor="middle">過去の結果から</text>
+<text class="t-small" x="545.0" y="85" text-anchor="middle">役に立った演算子の</text>
+<text class="t-small" x="545.0" y="105" text-anchor="middle">変異を選ぶ</text>
+<line class="arrow" x1="642" y1="70" x2="668" y2="70" marker-end="url(#arrow-google)"/>
+<rect class="box" x="670" y="20" width="190" height="100" rx="6"></rect>
+<text class="t-strong" x="765.0" y="45" text-anchor="middle">4. レビューで見せる</text>
+<text class="t-small" x="765.0" y="65" text-anchor="middle">生き残った変異体の</text>
+<text class="t-small" x="765.0" y="85" text-anchor="middle">一部だけを</text>
+<text class="t-small" x="765.0" y="105" text-anchor="middle">開発者に見せる</text>
+<rect class="box-key" x="10" y="154" width="420" height="64" rx="6"></rect>
+<text class="t-strong" x="220.0" y="181" text-anchor="middle">1つの変更あたりの変異体（中央値）</text>
+<text class="t-small" x="220.0" y="201" text-anchor="middle">従来の方式 820 → この方式 7</text>
+<rect class="box-key" x="450" y="154" width="420" height="64" rx="6"></rect>
+<text class="t-strong" x="660.0" y="181" text-anchor="middle">役に立つと開発者が判断した割合</text>
+<text class="t-small" x="660.0" y="201" text-anchor="middle">15% → 89%</text>
+</svg>
+</div>
+<figcaption>変異体を大幅に絞り込むことで、大きな組織でも使えるようにしています。数字はすべて論文（Google の社内のデータ）によります。</figcaption>
+</figure>
+
+<h3>使いどころ</h3>
+<ul>
+<li>変更したコードに絞って、頻繁に動かす。PIT の公式は、これがもっとも効果的な使い方だと書く。</li>
+<li>重要なロジックや、境界の条件が多い部分のテストが、本当に欠陥を検出できるかを確かめる。</li>
+<li>コードレビューの中で、変更に対するテストの穴を示す。Google では、20億行のコードと、1日に5億回を超えるテストの実行の中で、この方式を実際に動かしている（論文による）。</li>
+<li>論文（ICSE 2021）は、約1,500万の変異体を分析し、ミューテーションテストを使う開発者は、より多くのテストを書き、生き残る変異体が減るように、質の高いテストでテストを改善していった、と報告する。また、過去の重要な欠陥の修正を調べ、その欠陥は変異体と結びついており、変異テストを使っていれば、生き残った変異体として示されて、防げた可能性があるとした。</li>
+</ul>
+<h3>限界と注意</h3>
+<ul>
+<li>時間がかかる：全体の実行時間は、おおよそ、成立する変異体の数と、テストを1回実行する時間の積（cargo-mutants の文書）。PIT の文書も、計算量が大きく、規模とテストの速さによっては時間がかかると書く。</li>
+<li>同値変異体：変異しても動きが変わらない変異体がある。Stryker の文書は、2つの値が等しいときに結果が変わらない例を挙げ、これを自動で見つける確実な方法はなく、100%を目指さなくてよい、と書く。PIT も、ログのような、テストの対象にしない変更は、既定で避けると書く。</li>
+<li>役に立たない変異体：Google では、報告した変異体の85%が当初「役に立たない」と判断された（元と同じ動きをするか、検出できても、テストを足しても質が上がらないもの。例：コレクションの初期容量の変更）。ルールと選択を重ねて、役に立つ割合を15%から89%に上げた、と論文は書く。</li>
+<li>欠陥を全部は表せない：論文（FSE 2014）によると、実際の欠陥の17%は、どの変異体とも結びついていなかった。論文は、これを変異分析そのものの限界とする。</li>
+<li>変異スコアは、目標の数字ではない：Stryker の文書は、100%にならなくてもよいと書く。変異体の中には、テストする価値のないものも含まれる。</li>
+<li>使う環境の制約：mutmut は fork が使える環境が要る（Windows は WSL）。PIT は、バイトコードに行番号とソースのファイル名の情報が要る。</li>
+</ul>
+<h2>読むときの注意</h2>
+<ul>
+<li>公式のサイトと文書は、2026年11月8日時点で読んだ。ツールの対応する範囲や機能は版で変わる。</li>
+<li>PIT、Stryker、cargo-mutants の説明は、それぞれの開発側の自己の説明。優劣の比較ではない。</li>
+<li>論文の数字は発表時点のもの（FSE 2014は Java の5つのプログラム、ICSE 2021と Google の論文は Google の社内のデータ）。他の環境で同じ結果になるとは限らない。</li>
+<li>ICSE 2021 の論文は、要旨だけを読んだ。</li>
+<li>比較表の軸と、前段・後段の分け方は、筆者の整理。</li>
+</ul>
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>変異体（ミュータント）</dt><dd>元のプログラムに、小さな変更を1つ加えたもの。</dd>
+<dt>変異演算子（ミューテーター）</dt><dd>どんな変更を加えるかの規則。たとえば、比較の向きを変える、足し算を引き算にする。</dd>
+<dt>殺される／生き残る</dt><dd>変異体に対して、テストが失敗すれば「殺された」、すべて通れば「生き残った」。</dd>
+<dt>変異スコア</dt><dd>殺された変異体の割合。</dd>
+<dt>同値変異体</dt><dd>変更を加えても、元のプログラムと同じ動きをする変異体。</dd>
+<dt>結合効果</dt><dd>複雑な欠陥が、単純な欠陥の集まりと結びついているという前提。</dd>
+<dt>コードカバレッジ</dt><dd>テストが実行したコードの割合。</dd>
+<dt>アサーション</dt><dd>テストの中で、結果が期待どおりかを確かめる記述。</dd>
+<dt>バイトコード</dt><dd>Java のプログラムを、コンパイルして得られる中間の命令。</dd>
+<dt>ベースライン（baseline）</dt><dd>変異を入れる前の、元のコードでのテストの結果。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月8日時点の情報です。内容は、PIT、Stryker、cargo-mutants、mutmut の公式の文書と、3つの論文をもとに、独自に整理したものです。</p>
+<p>数字は資料のままで、再計算や検証はしていません。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-08</span>初回公開（コンセプトの型の第1段階：一言、3行、類似との違い、前後の組み合わせ、具体的な仕組み）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
