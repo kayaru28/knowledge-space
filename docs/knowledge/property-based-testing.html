@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="プロパティベーステストについて、一言での説明、3行の要約、例ベースのテストやファジング、ツールとの違い、前後で組み合わされる仕組み、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、各ツールの公式文書と2つの論文から整理する。">
+<title>プロパティベーステスト：入力の例ではなく「常に成り立つ性質」を書き、入力はツールに大量に作らせて確かめる手法 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>プロパティベーステスト：入力の例ではなく「常に成り立つ性質」を書き、入力はツールに大量に作らせて確かめる手法</h1><p class="summary">プロパティベーステストについて、一言での説明、3行の要約、例ベースのテストやファジング、ツールとの違い、前後で組み合わされる仕組み、具体的な仕組み（なぜ必要か、使いどころ、限界と注意）を、各ツールの公式文書と2つの論文から整理する。</p><p class="meta">初回公開 2026-11-08 ／ 更新日 2026-11-08</p></header><section class="lede">
+<h2>一言で言うと</h2>
+<p><strong>プロパティベーステスト</strong>は、「この入力ならこの出力」という例を並べる代わりに、「どんな入力でも成り立つはずの性質」を書き、入力はツールが自動で大量に作って確かめ、失敗したら反例を示す手法である。</p>
+</section>
+<h2>3行で表すと</h2>
+<ul>
+<li>何であるか：入力と出力の関係について、すべての入力で成り立つはずの主張（性質）を、実行できる形で書く。ツールが入力を自動で作り（既定は100件前後）、性質が成り立つかを確かめる。</li>
+<li>何ができるか：人が思いつかなかった入力でも欠陥を見つけ、見つけたら反例（性質を破った入力）を示す。現行の主要なツールは、反例を小さく縮め、失敗を再現できるようにする。性質は、仕様の説明にもなる。</li>
+<li>何が特徴か：例を並べるテストを置き換えず、補う。代わりに、性質を考えること、入力の生成器を書くこと、テストの効き目を確かめることが難しい、と実務の聞き取りは報告する。</li>
+</ul>
+<h2>類似するものと、違い</h2>
+<p>横のつながりです。同じ目的の手法である例ベースのテストと、よく比べられるファジング、代表的なツールの違いを扱います。比較の軸は、筆者の整理です。</p>
+<h3>例ベースのテストとの違い</h3>
+<figure class="viz">
+<p class="viz-title">例ベースとプロパティベースが書くもの</p>
+<p class="viz-sub">各ツールの公式文書をもとにした模式図（筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="上の段は例ベースのテスト。開発者が選んだ入力でコードを実行し、期待される出力と比べる。下の段はプロパティベーステスト。常に成り立つ性質を書き、入力を自動で作り、性質を確かめ、失敗なら反例を縮小して示す。">
+<defs><marker id="arrow-ex" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="10" y="83" text-anchor="start">例ベースのテスト</text>
+<rect class="box" x="170" y="40" width="170" height="76" rx="6"></rect>
+<text class="t-strong" x="255.0" y="73.0" text-anchor="middle">決めた入力</text>
+<text class="t-small" x="255.0" y="93.0" text-anchor="middle">開発者が選ぶ</text>
+<line class="arrow" x1="342" y1="78" x2="368" y2="78" marker-end="url(#arrow-ex)"/>
+<rect class="box" x="370" y="40" width="130" height="76" rx="6"></rect>
+<text class="t-strong" x="435.0" y="83.0" text-anchor="middle">コードを実行</text>
+<line class="arrow" x1="502" y1="78" x2="528" y2="78" marker-end="url(#arrow-ex)"/>
+<rect class="box" x="530" y="40" width="340" height="76" rx="6"></rect>
+<text class="t-strong" x="700.0" y="73.0" text-anchor="middle">期待される出力と比べる</text>
+<text class="t-small" x="700.0" y="93.0" text-anchor="middle">1つの例ごとに、答えを決めておく</text>
+<text class="t-strong" x="10" y="193" text-anchor="start">プロパティ</text>
+<text class="t-strong" x="10" y="213" text-anchor="start">ベーステスト</text>
+<rect class="box" x="170" y="160" width="150" height="76" rx="6"></rect>
+<text class="t-strong" x="245.0" y="193.0" text-anchor="middle">性質を書く</text>
+<text class="t-small" x="245.0" y="213.0" text-anchor="middle">常に成り立つ主張</text>
+<line class="arrow" x1="322" y1="198" x2="338" y2="198" marker-end="url(#arrow-ex)"/>
+<rect class="box" x="340" y="160" width="150" height="76" rx="6"></rect>
+<text class="t-strong" x="415.0" y="183.0" text-anchor="middle">入力を自動で</text>
+<text class="t-strong" x="415.0" y="203.0" text-anchor="middle">作る</text>
+<text class="t-small" x="415.0" y="223.0" text-anchor="middle">100件前後</text>
+<line class="arrow" x1="492" y1="198" x2="508" y2="198" marker-end="url(#arrow-ex)"/>
+<rect class="box" x="510" y="160" width="140" height="76" rx="6"></rect>
+<text class="t-strong" x="580.0" y="203.0" text-anchor="middle">性質を確かめる</text>
+<line class="arrow" x1="652" y1="198" x2="668" y2="198" marker-end="url(#arrow-ex)"/>
+<rect class="box-key" x="670" y="160" width="200" height="76" rx="6"></rect>
+<text class="t-strong" x="770.0" y="193.0" text-anchor="middle">失敗なら反例</text>
+<text class="t-small" x="770.0" y="213.0" text-anchor="middle">縮小して示す</text>
+<text class="t-small t-muted" x="440" y="270" text-anchor="middle">入力を決めるのが、人か、ツールか</text>
+</svg>
+</div>
+<figcaption>例ベースのテストは、人が決めた入力ごとに、答えを用意します。プロパティベーステストは、答えではなく性質を書き、入力はツールが作ります。緑の枠が、この手法に特有の出力（反例）です。</figcaption>
+</figure>
+
+<div class="table-wrap">
+<table>
+<caption>各ツールの公式文書と論文より（比較の軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>例ベースのテスト</th><th>プロパティベーステスト</th></tr></thead>
+<tbody>
+<tr><td>書くもの</td><td>具体的な入力と、期待される出力</td><td>入力と出力の関係が、すべての入力で成り立つという主張（性質）</td></tr>
+<tr><td>入力</td><td>開発者が選ぶ</td><td>ツールが生成する（QuickCheck、Hypothesis、fast-check は既定で100件）</td></tr>
+<tr><td>失敗したとき</td><td>失敗した例そのもの</td><td>失敗した入力（反例）。現行の主要なツールは小さく縮めて見せる</td></tr>
+<tr><td>再現</td><td>同じ入力で毎回</td><td>種（シード）や、保存した失敗の入力で再現する</td></tr>
+<tr><td>向く対象</td><td>既知の端の例、単純な入力、過去に欠陥があった入力</td><td>性質を言いやすい部分。より複雑な入力を探す</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>例ベースの説明は、proptest と fast-check の文書より。fast-check の文書は、例ベースのテストでは、欠陥を見つける責任が、テストを書く人にだけある、と書く。</li>
+<li>どのツールの文書も、置き換えではなく併用を勧める。Hypothesis は「単体テストへの強力な追加であり、常に置き換えではない」、fast-check は「補い合う方法として併用する」、proptest は「従来のテストを補う」と書く。聞き取り調査でも、性質だけでは足りない部分を例ベースのテストで補った人がいた（30人中2人）。</li>
+</ul>
+<h3>ファジングとの違い</h3>
+<ul>
+<li>fast-check の文書は、ファジングを「プロパティベーステストの一部とみなせる」と説明する。ファジングは、テストを繰り返し動かし、コードが落ちないことを確かめるもので、どちらもプロパティベーステストでできる、という理由。これは fast-check 自身の見方。</li>
+<li>聞き取り調査（Jane Street）は、使われ方の違いを観察した。プロパティベーステストは、部品の単位のテストとして、編集のたびに手元で動かす速いテストで、時間の予算は30秒から50ミリ秒ほどだった。ファジング（AFL など）は、アプリ全体の結合テストに使い、通常のテストの流れとは別に、数時間から数日走らせた。30人中10人がファジングに触れ、3人はプロパティベーステストと併用していた。1つの企業での観察。</li>
+<li>Hypothesis の入門は、正しい形の入力でコードを呼ぶだけでも、落ちる欠陥が見つかることがある、と書く。入口が1つで、中のコードが多いプロジェクトで価値がある、という説明。</li>
+</ul>
+<h3>ツールの違い</h3>
+<div class="table-wrap">
+<table>
+<caption>各ツールの公式文書より（比較の軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>QuickCheck</th><th>Hypothesis</th><th>fast-check</th><th>proptest</th></tr></thead>
+<tbody>
+<tr><td>対象</td><td>Haskell</td><td>Python</td><td>JavaScript と TypeScript</td><td>Rust</td></tr>
+<tr><td>入力の作り方</td><td>型ごとに1つ。Arbitrary の仕組みで、型に結びついた生成器を使う</td><td>@given に、戦略（strategy）を渡す</td><td>生成器（arbitrary）を組み合わせる。配列や、オブジェクトを作る部品がある</td><td>戦略（Strategy）を、値ごとに作る。型ごとではない</td></tr>
+<tr><td>反例の縮小</td><td>現行版にある。型ごとの shrink で、小さい候補を作る（文書の例：3回のテストと3回の縮小で [0,1]）</td><td>縮小の段階がある。@example で与えた入力は縮小しない</td><td>失敗した入力を、再現する最小のものまで縮める（数十要素の配列が、2から3要素になりうる）</td><td>縮小は、簡単にする操作と戻す操作による二分探索（文書の説明）</td></tr>
+<tr><td>失敗の再現</td><td>引数に、再生用の項目がある</td><td>失敗を手元のデータベースに保存して、次回に先に再実行する。@example、@reproduce_failure でも再現できる</td><td>種を固定できる。失敗時に種が示される</td><td>読んだ範囲に記述がない（未確認）</td></tr>
+<tr><td>特徴</td><td>この手法の原典。多相の性質は、型を決めないと空振りしうる</td><td>状態を持つテストの仕組みがある</td><td>Jest、Vitest などのテストの枠組みの中で動く</td><td>Hypothesis に着想を得た。複雑な値の生成は、QuickCheck より最大で1桁遅いことがある（proptest 自身の説明）</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>4つとも、性質を書く、入力を生成する、多数回動かす、反例を示す、という流れは共通している。違いは、入力の作り方と、縮小のやり方。</li>
+<li>proptest の文書は、QuickCheck は型だけで生成と縮小を決めるため、同じ型に複数の戦略を持ちにくい、と説明する（proptest 側の説明）。聞き取り調査では、QuickCheck 系の縮小は、値を小さくする関数を人が書く方式で、「書きたくない」と言った人がいた。</li>
+</ul>
+<h2>前後で組み合わされるもの</h2>
+<p>縦のつながりです。前段と後段の分け方は、筆者の整理です。</p>
+<figure class="viz">
+<p class="viz-title">プロパティベーステストの前と後</p>
+<p class="viz-sub">各ツールの公式文書と論文より。前段・後段の分け方は筆者の整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 270" role="img" aria-label="左から、前段（性質を見つける、入力の生成器、テストの枠組み）、本体のプロパティベーステスト、後段（反例の縮小、再現と回帰テスト化、効き目の確認）の順につながる。">
+<defs><marker id="arrow-pb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="145" y="21" text-anchor="middle">前段</text>
+<text class="t-strong" x="440" y="21" text-anchor="middle">本体</text>
+<text class="t-strong" x="735" y="21" text-anchor="middle">後段</text>
+<rect class="box" x="20" y="40" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="145.0" y="66.0" text-anchor="middle">性質を見つける</text>
+<text class="t-small" x="145.0" y="86.0" text-anchor="middle">往復、確実な版との一致</text>
+<rect class="box" x="20" y="114" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="145.0" y="140.0" text-anchor="middle">入力の生成器</text>
+<text class="t-small" x="145.0" y="160.0" text-anchor="middle">型から導出、または手書き</text>
+<rect class="box" x="20" y="188" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="145.0" y="214.0" text-anchor="middle">テストの枠組み</text>
+<text class="t-small" x="145.0" y="234.0" text-anchor="middle">pytest、Jest など</text>
+<rect class="box" x="610" y="40" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="735.0" y="66.0" text-anchor="middle">反例の縮小</text>
+<text class="t-small" x="735.0" y="86.0" text-anchor="middle">小さな失敗例にして示す</text>
+<rect class="box" x="610" y="114" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="735.0" y="140.0" text-anchor="middle">再現と回帰テスト化</text>
+<text class="t-small" x="735.0" y="160.0" text-anchor="middle">保存した失敗、固定した例</text>
+<rect class="box" x="610" y="188" width="250" height="62" rx="6"></rect>
+<text class="t-strong" x="735.0" y="214.0" text-anchor="middle">効き目の確認</text>
+<text class="t-small" x="735.0" y="234.0" text-anchor="middle">ミューテーションテストなど</text>
+<line class="arrow" x1="272" y1="71" x2="328" y2="115" marker-end="url(#arrow-pb)"/>
+<line class="arrow" x1="272" y1="145" x2="328" y2="150" marker-end="url(#arrow-pb)"/>
+<line class="arrow" x1="272" y1="219" x2="328" y2="185" marker-end="url(#arrow-pb)"/>
+<line class="arrow" x1="552" y1="115" x2="608" y2="71" marker-end="url(#arrow-pb)"/>
+<line class="arrow" x1="552" y1="150" x2="608" y2="145" marker-end="url(#arrow-pb)"/>
+<line class="arrow" x1="552" y1="185" x2="608" y2="219" marker-end="url(#arrow-pb)"/>
+<rect class="box-key" x="330" y="90" width="220" height="120" rx="6"></rect>
+<text class="t-strong" x="440.0" y="125.0" text-anchor="middle">プロパティ</text>
+<text class="t-strong" x="440.0" y="145.0" text-anchor="middle">ベーステスト</text>
+<text class="t-small" x="440.0" y="165.0" text-anchor="middle">性質を</text>
+<text class="t-small" x="440.0" y="185.0" text-anchor="middle">多数の入力で確かめる</text>
+</svg>
+</div>
+<figcaption>プロパティベーステストは、性質と生成器があることが前提です。結果は、縮小された反例を読み、失敗を再現できる形で残し、テストの効き目を別の方法で確かめる形で使われます。</figcaption>
+</figure>
+
+<h3>前段：プロパティベーステストが動くための土台</h3>
+<ul>
+<li>性質を見つける：Hypothesis の入門は、見つけにくいときの手がかりを挙げる。往復の性質（符号化して復号すると元に戻る、など）、既存のテストの parametrize の置き換え、正しい形の入力で呼んでみること。他の例として、最適化版と、遅いが確実な版の一致、取引が常に釣り合うこと、コンパイラや整形ツールが正しい構文で落ちないこと、が挙がる。</li>
+<li>合否の基準（オラクル）：原典の論文は、合否を決める基準が要ると書く。簡単で、明らかに正しい版との比較も、性質として書ける。</li>
+<li>入力の生成器：型から導き出せる場合は、導出された生成器が好まれた（聞き取り調査）。前提のある入力（たとえば、整列済みの一覧）は、専用の生成器を書くのが最良、と原典の論文は書く。</li>
+<li>既存のテストの枠組み：Hypothesis は pytest が拾える。fast-check は、主要な JavaScript と TypeScript のテストの枠組みの中で動く。</li>
+<li>前提による絞り込み：条件に合わない入力は、捨てて作り直す。fast-check の文書は、厳しすぎる絞り込みは無駄が多く、可能なら生成器の設定（最小の長さなど）で指定するよう勧める。</li>
+</ul>
+<h3>後段：結果を使う仕組み</h3>
+<ul>
+<li>反例の報告と縮小：失敗した入力を、小さくして示す。聞き取り調査では、縮小は「必要」と答えた人や、自作の枠組みに必ず入れた人がいた。</li>
+<li>失敗の再現と回帰テスト化：Hypothesis は、失敗を保存して次回に再生し、@example で入力を固定できる。ただし、Hypothesis の文書は、データベースは版や関数の変更で無効になりうるので、正しさのためには @example を使うよう勧める。聞き取り調査では、大きな反例を、別の回帰テストに引き出して調べる人がいた。</li>
+<li>通常のテストの流れ：聞き取り調査では、性質があることがコードレビューで正しさの強い手がかりになった。実行は速くなければならず、時間の予算を設けていた。</li>
+<li>テストの効き目の確認：聞き取り調査で挙がった方法は、ミューテーションテスト（30人中7人）、生成された入力の目視（8人）、コードカバレッジ（2人）、性質自体のカバレッジ（1人）。ミューテーションテストは、別のまとめで扱っている。</li>
+</ul>
+<h2>具体的な仕組み</h2>
+<h3>なぜ必要か</h3>
+<ul>
+<li>例ベースのテストは、欠陥が潜む入力を、テストを書く人が思いつく必要がある。fast-check の文書は、経験のある開発者でも端を見落とす、と書く。</li>
+<li>性質は、入力を決めずに挙動を述べる。ツールが入力を作るので、思いつかなかった入力でも検査される。</li>
+<li>性質は、仕様の説明にもなる。fast-check の文書は、整列の性質（要素が同じ、昇順）を例に挙げる。聞き取り調査でも、30人中12人が、性質を文書として扱っていた。</li>
+<li>原典の論文は、純粋な関数は、状態を気にせずに細かい単位で検査しやすいと書き、性質を関数として書いて、多数のランダムな入力で自動で検査する道具を作った。実装は、約300行の1つのモジュールだった。</li>
+</ul>
+<h3>どう動くか</h3>
+<figure class="viz">
+<p class="viz-title">1回のテストの流れ</p>
+<p class="viz-sub">Hypothesis の文書の段階をもとにした模式図（筆者の簡略）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 185" role="img" aria-label="左から、明示した例、保存した失敗の再実行、新しい入力の生成、失敗したときの縮小、報告の順に進む。最初の2つは、例や保存した失敗があるときだけ動く。">
+<defs><marker id="arrow-fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box dashed" x="10" y="50" width="140" height="76" rx="6"></rect>
+<text class="t-strong" x="80.0" y="83.0" text-anchor="middle">明示した例</text>
+<text class="t-small" x="80.0" y="103.0" text-anchor="middle">固定した入力</text>
+<rect class="box dashed" x="190" y="50" width="140" height="76" rx="6"></rect>
+<text class="t-strong" x="260.0" y="83.0" text-anchor="middle">保存した失敗</text>
+<text class="t-small" x="260.0" y="103.0" text-anchor="middle">前に落ちた入力</text>
+<rect class="box" x="370" y="50" width="140" height="76" rx="6"></rect>
+<text class="t-strong" x="440.0" y="83.0" text-anchor="middle">新しい入力</text>
+<text class="t-small" x="440.0" y="103.0" text-anchor="middle">ランダムに生成</text>
+<rect class="box-key" x="550" y="50" width="140" height="76" rx="6"></rect>
+<text class="t-strong" x="620.0" y="83.0" text-anchor="middle">縮小</text>
+<text class="t-small" x="620.0" y="103.0" text-anchor="middle">最小の失敗例へ</text>
+<rect class="box" x="730" y="50" width="140" height="76" rx="6"></rect>
+<text class="t-strong" x="800.0" y="83.0" text-anchor="middle">報告</text>
+<text class="t-small" x="800.0" y="103.0" text-anchor="middle">縮めた反例を示す</text>
+<line class="arrow" x1="152" y1="88" x2="188" y2="88" marker-end="url(#arrow-fl)"/>
+<line class="arrow" x1="332" y1="88" x2="368" y2="88" marker-end="url(#arrow-fl)"/>
+<line class="arrow" x1="512" y1="88" x2="548" y2="88" marker-end="url(#arrow-fl)"/>
+<line class="arrow" x1="692" y1="88" x2="728" y2="88" marker-end="url(#arrow-fl)"/>
+<text class="t-small t-muted" x="530" y="38" text-anchor="middle">失敗したとき</text>
+<text class="t-small t-muted" x="440" y="160" text-anchor="middle">点線の段階は、例や保存した失敗があるときだけ動く</text>
+</svg>
+</div>
+<figcaption>例や、前に落ちた入力があれば先に試し、そのあとで新しい入力を作ります。失敗が見つかったときだけ縮小に進み、縮めた反例を報告します。</figcaption>
+</figure>
+
+<figure class="viz">
+<p class="viz-title">状態を持つテストの流れ</p>
+<p class="viz-sub">Hypothesis の文書の例をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 290" role="img" aria-label="動作の列を生成し、同じ動作を本物のデータベースと、辞書で作った単純な模型の両方に行い、結果を比べる。食い違えば失敗となり、失敗した動作の列が短いプログラムの形で表示される。">
+<defs><marker id="arrow-st" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="10" y="95" width="170" height="90" rx="6"></rect>
+<text class="t-strong" x="95.0" y="125.0" text-anchor="middle">動作の列を</text>
+<text class="t-strong" x="95.0" y="145.0" text-anchor="middle">生成</text>
+<text class="t-small" x="95.0" y="165.0" text-anchor="middle">保存、削除、確認など</text>
+<rect class="box" x="290" y="30" width="250" height="70" rx="6"></rect>
+<text class="t-strong" x="415.0" y="60.0" text-anchor="middle">本物のデータベース</text>
+<text class="t-small" x="415.0" y="80.0" text-anchor="middle">試す対象</text>
+<rect class="box" x="290" y="180" width="250" height="70" rx="6"></rect>
+<text class="t-strong" x="415.0" y="210.0" text-anchor="middle">単純な模型</text>
+<text class="t-small" x="415.0" y="230.0" text-anchor="middle">辞書だけで作った簡単な版</text>
+<line class="arrow" x1="182" y1="125" x2="288" y2="70" marker-end="url(#arrow-st)"/>
+<line class="arrow" x1="182" y1="155" x2="288" y2="215" marker-end="url(#arrow-st)"/>
+<rect class="box-key" x="640" y="95" width="230" height="90" rx="6"></rect>
+<text class="t-strong" x="755.0" y="135.0" text-anchor="middle">結果を比べる</text>
+<text class="t-small" x="755.0" y="155.0" text-anchor="middle">食い違えば失敗</text>
+<line class="arrow" x1="542" y1="65" x2="638" y2="125" marker-end="url(#arrow-st)"/>
+<line class="arrow" x1="542" y1="215" x2="638" y2="155" marker-end="url(#arrow-st)"/>
+<text class="t-small t-muted" x="440" y="276" text-anchor="middle">失敗した動作の列は、短いプログラムの形で表示される</text>
+</svg>
+</div>
+<figcaption>入力だけでなく動作の列を生成し、本物と模型に同じ動作を行って、結果を比べます。</figcaption>
+</figure>
+
+<ul>
+<li>流れ：（1）性質を、入力を引数に取る関数として書く。（2）生成器で入力を作る。（3）既定で100件前後の入力で、性質を動かす。（4）例外が出る、または偽が返れば失敗。（5）失敗した入力を縮める。（6）反例を示す。</li>
+<li>例（Hypothesis の入門）：選択ソートに対して、「整数の一覧」で検査すると通った。整数と小数の一覧にすると、[1.0, nan, 0] などの反例が見つかった。nan があると整列が決まらないため、生成から nan を除くことにした。性質を書く中で、仕様の曖昧さが見える例。</li>
+<li>入力の作り方：入力の大きさを変える（短いものと長いもの、小さい数と大きい数）。fast-check の文書は、0、1、-1 の近く、重複のある配列、__proto__ のような危険な文字列も含めて、欠陥が出やすい入力を狙うと書く。</li>
+<li>分布の重要性：原典の論文は、入力の分布を考えずにランダムテストを語るのは無意味だと書き、分布を人が制御できる生成器を設計の中心に置いた。</li>
+<li>縮小：失敗した入力から、要素を減らすなどして、同じ失敗が続く最小のものを探す。fast-check の文書は、数十要素の配列の失敗が、2から3要素で示されうると書く。</li>
+<li>再現：fast-check は、種を固定すれば、毎回同じ入力になる。固定しなくても、失敗時に種が示される。Hypothesis は、失敗した入力を保存して、次回は先にそれを試す。</li>
+<li>状態を持つテスト（Hypothesis）：入力だけでなく、動作の列を生成する。動作（ルール）を定義し、ツールが組み合わせて、失敗する列を探す。文書の例は、本物のデータベースと、辞書で作った単純な模型に同じ動作を行い、結果が食い違わないかを調べる。失敗したときは、短いプログラムの形で表示される。</li>
+<li>原典の時点：2000年の論文は、反例の縮小に触れていない（語の検索で確認した範囲）。現行の公式文書には縮小がある。</li>
+</ul>
+<h3>使いどころ</h3>
+<ul>
+<li>性質を言いやすい部分：往復、遅いが確実な版との一致、不変条件。</li>
+<li>複雑な部品の信頼を上げる：聞き取り調査では、主な使い道は、複雑なシステムの部品の信頼を上げることだった。単体テストと同じ速さの枠で動かしていた。</li>
+<li>例ベースのテストと併用する：どの文書も、併用を勧める。</li>
+</ul>
+<h3>限界と注意</h3>
+<figure class="viz">
+<p class="viz-title">条件付きの性質で、入力が偏る例</p>
+<p class="viz-sub">原典の論文（ICFP 2000）の数字</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="100件のテストで生成された一覧の長さの割合。長さ0が49%、1が32%、2が12%、3が4%、4が2%、5が1%。要素が2つ以上の一覧は、あわせて19%。">
+<text class="t-strong" x="10" y="24" text-anchor="start">100件のテストで、生成された一覧の長さごとの割合</text>
+<text class="t-small" x="10" y="62" text-anchor="start">長さ 0</text>
+<rect class="box" x="110" y="44" width="588" height="26" rx="4"></rect>
+<text class="t-small" x="708" y="62" text-anchor="start">49%</text>
+<text class="t-small" x="10" y="100" text-anchor="start">長さ 1</text>
+<rect class="box" x="110" y="82" width="384" height="26" rx="4"></rect>
+<text class="t-small" x="504" y="100" text-anchor="start">32%</text>
+<text class="t-small" x="10" y="138" text-anchor="start">長さ 2</text>
+<rect class="box-key" x="110" y="120" width="144" height="26" rx="4"></rect>
+<text class="t-small" x="264" y="138" text-anchor="start">12%</text>
+<text class="t-small" x="10" y="176" text-anchor="start">長さ 3</text>
+<rect class="box-key" x="110" y="158" width="48" height="26" rx="4"></rect>
+<text class="t-small" x="168" y="176" text-anchor="start">4%</text>
+<text class="t-small" x="10" y="214" text-anchor="start">長さ 4</text>
+<rect class="box-key" x="110" y="196" width="24" height="26" rx="4"></rect>
+<text class="t-small" x="144" y="214" text-anchor="start">2%</text>
+<text class="t-small" x="10" y="252" text-anchor="start">長さ 5</text>
+<rect class="box-key" x="110" y="234" width="12" height="26" rx="4"></rect>
+<text class="t-small" x="132" y="252" text-anchor="start">1%</text>
+<text class="t-strong" x="440" y="190" text-anchor="start">要素が2つ以上の一覧は</text>
+<text class="t-strong" x="440" y="210" text-anchor="start">あわせて19%</text>
+<text class="t-small t-muted" x="440" y="285" text-anchor="middle">条件「整列済み」が、短い一覧に偏らせる</text>
+</svg>
+</div>
+<figcaption>整列済みの一覧という前提を付けると、生成された一覧の8割ほどが、長さ0か1でした。要素が2つ以上の一覧で検査されたのは、19%だけです。</figcaption>
+</figure>
+
+<ul>
+<li>性質を考えるのが難しい：聞き取り調査では、30人中16人が、性質を書く過程で作業が遅くなったと答えた。ある参加者は、最もよくある失敗は、何を検査するかが分からないことだと述べた。</li>
+<li>入力の偏りで空振りする：原典の論文の例では、「整列済みの一覧」を前提にすると、短い一覧に偏った。100件のうち、要素が2つ以上の一覧は19件だけだった（長さ0が49%、1が32%、2が12%、3が4%、4が2%、5が1%）。最良の対策は、専用の生成器とされた。前提が成り立つ入力が少ないと、「引数を使い切った」と報告される。</li>
+<li>欠陥のある場所を動かさないと通る：聞き取り調査では、生成器が意図した場合を作っておらず、欠陥を見逃した例があった。30人中11人は、テストの効き目を十分には考えていないと答えた。</li>
+<li>型を決めないと空振りする：QuickCheck の現行の文書は、型が決まらない性質が、対話環境で「（）」型として検査され、本来は失敗するはずの性質が通ってしまう例を挙げ、型を固定するよう勧める。</li>
+<li>通っても証明ではない：すべての入力は試せない。fast-check の文書は、入力を増やすほど、確信が高まる、と書く。</li>
+<li>絞り込みの無駄：作ってから捨てる絞り込みは、厳しいと無駄が多い（fast-check）。</li>
+<li>費用：proptest の文書は、複雑な値の生成は、QuickCheck より最大で1桁遅いことがある、と書く（proptest 自身の説明）。聞き取り調査では、時間の予算を超えないことが求められた。</li>
+<li>縮小の負担：値を小さくする関数を人が書く方式は嫌われ、書き間違えると、守るべき条件を壊して失敗した（聞き取り調査）。</li>
+<li>調査の範囲：聞き取り調査は1つの企業（OCaml を使う）の30人。他の環境で同じ結果になるとは限らない。</li>
+</ul>
+<h2>読むときの注意</h2>
+<ul>
+<li>公式の文書と論文は、2026年11月8日時点で読んだ。ツールの機能や既定値は版で変わる。</li>
+<li>各ツールの説明は、それぞれの開発側の自己の説明。優劣の比較ではない。「ファジングはプロパティベーステストの一部」「縮小はこの手法に特有」といった説明は、fast-check 自身の見方。</li>
+<li>聞き取り調査の数字は、論文の人数のまま（たとえば、30人中16人）。1つの企業の結果。</li>
+<li>原典の論文に縮小の記述が見当たらないのは、語の検索で確認した範囲。</li>
+<li>proptest の失敗の再現と、Hypothesis と fast-check の内部の仕組みは、読んでいない。</li>
+<li>比較表の軸と、前段・後段の分け方は、筆者の整理。</li>
+</ul>
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>性質（プロパティ）</dt><dd>すべての入力で成り立つはずの、入力と出力の関係についての主張。</dd>
+<dt>反例</dt><dd>性質を破る入力。</dd>
+<dt>縮小（シュリンク）</dt><dd>失敗した入力を、同じ失敗が続く範囲で、小さくすること。</dd>
+<dt>生成器（ジェネレータ、戦略、arbitrary）</dt><dd>テストの入力を作る部品。ツールによって呼び方が違う。</dd>
+<dt>種（シード）</dt><dd>乱数の元の値。同じ種なら、同じ入力の列になる。</dd>
+<dt>往復の性質</dt><dd>符号化して復号する、のように、操作して戻すと元の値になるという性質。</dd>
+<dt>オラクル</dt><dd>テストの合否を決める基準。</dd>
+<dt>状態を持つテスト</dt><dd>入力だけでなく、動作の列を生成して検査するテスト。</dd>
+<dt>単体テスト</dt><dd>小さな単位（関数など）を個別に確かめるテスト。</dd>
+<dt>ファジング</dt><dd>大量のランダムな入力を与えて、落ちる欠陥などを探す手法。</dd>
+</dl>
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月8日時点の情報です。内容は、QuickCheck、Hypothesis、fast-check、proptest の公式の文書と、2つの論文をもとに、独自に整理したものです。</p>
+<p>数字は資料のままで、再計算や検証はしていません。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-08</span>初回公開（コンセプトの型の第1段階：一言、3行、類似との違い、前後の組み合わせ、具体的な仕組み）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
