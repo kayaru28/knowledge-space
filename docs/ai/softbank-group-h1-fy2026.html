@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="ソフトバンクグループが2026年11月10日に出した中間の決算短信（IFRS）から、損益の内訳、発電関連設備の調達計画の見直しによる損失、OpenAI への投資、資金調達を整理する。">
+<title>ソフトバンクグループの9月中間決算：最終損益は7,680億円の赤字、発電設備の調達計画の見直しで5,972億円の損失、OpenAI への追加出資は完了 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>ソフトバンクグループの9月中間決算：最終損益は7,680億円の赤字、発電設備の調達計画の見直しで5,972億円の損失、OpenAI への追加出資は完了</h1><p class="summary">ソフトバンクグループが2026年11月10日に出した中間の決算短信（IFRS）から、損益の内訳、発電関連設備の調達計画の見直しによる損失、OpenAI への投資、資金調達を整理する。</p><p class="meta">初回公開 2026-11-14 ／ 更新日 2026-11-14</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>ソフトバンクグループ（SBG）の2026年4〜9月の連結決算（IFRS）は、親会社の所有者に帰属する<strong>純損益が7,680億円の赤字</strong>でした（前年同期は2兆9,241億円の黒字）。投資の利益は1兆7,258億円ありましたが、米国の AI データセンター向けの<strong>発電関連設備の調達計画の見直しなどで、5,972億円の損失</strong>を計上しました。</p>
+<p>OpenAI への3回目の追加出資（100億ドル）は10月に完了し、つなぎ融資（ブリッジローン）は前倒しで全額返済しました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">7,680<small>億円</small></p><p class="stat-label">親会社の所有者に帰属する純損失（4〜9月）</p></div>
+<div class="stat"><p class="stat-value">5,972<small>億円</small></p><p class="stat-label">発電関連設備の調達計画の見直しなどで計上した損失</p></div>
+<div class="stat"><p class="stat-value">996<small>億ドル</small></p><p class="stat-label">OpenAI への投資の公正価値（9月末）。累計の投資額は546億ドル</p></div>
+</div>
+
+<h2>損益の内訳</h2>
+
+<div class="table-wrap">
+<table>
+<caption>連結損益計算書の主な項目（4〜9月。決算短信の数字を億円に直した）</caption>
+<thead><tr><th>項目</th><th>2026年4〜9月</th><th>前年同期</th></tr></thead>
+<tbody>
+<tr><td>売上高</td><td>4兆2,350億円（+13.3%）</td><td>3兆7,368億円</td></tr>
+<tr><td>投資の利益</td><td>1兆7,258億円</td><td>3兆9,267億円</td></tr>
+<tr><td>　持株会社の投資事業</td><td>1兆783億円（インテル株の利益 1兆628億円）</td><td>3,640億円</td></tr>
+<tr><td>　ソフトバンク・ビジョン・ファンド</td><td>7,056億円</td><td>3兆4,155億円</td></tr>
+<tr><td>販売費及び一般管理費</td><td>2兆3,688億円</td><td>1兆6,169億円</td></tr>
+<tr><td>金融費用</td><td>7,907億円</td><td>3,400億円</td></tr>
+<tr><td>デリバティブの損益</td><td>△4,333億円</td><td>＋2,081億円</td></tr>
+<tr><td>その他の損益</td><td>△6,638億円（うち5,972億円が発電関連設備）</td><td>＋1,458億円</td></tr>
+<tr><td>税引前損益</td><td>△4,387億円</td><td>3兆6,864億円</td></tr>
+<tr><td>親会社の所有者に帰属する純損益</td><td>△7,680億円</td><td>2兆9,241億円</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>販売費及び一般管理費の増加は、AI コンピューティング部門とエネルギー関連の子会社（Energy Global）の株式報酬費用の増加が主な理由、と短信が書いています。</li>
+<li>デリバティブ損失には、インテル株を担保にした先渡契約の評価損3,219億円が含まれます。</li>
+<li>資産合計は69兆3,872億円（2026年3月末は60兆7,495億円）。親会社の所有者に帰属する持分比率は23.6%（29.0%から低下）。DigitalBridge の308社を連結に加えました。</li>
+</ul>
+
+<h2>発電関連設備の調達計画の見直し</h2>
+
+<ul>
+<li><strong>対象</strong>：子会社 Silver Bands 7 LLC（SB7。SBG と SVF2 が出資）が、米国の AI データセンター（オハイオ州パイク郡の PORTS-Pike Technology Campus を含む）のために、製造枠の予約や設備の購入契約を結んでいた発電関連設備。</li>
+<li><strong>これまでの支払い</strong>：前年度から9月30日までの累計で、1兆5,008億円（94.8億ドル）。</li>
+<li><strong>損失の内訳</strong>：SB7 が調達の方針を見直し、供給会社への義務が生じた結果、SBG は5,972億円（37.3億ドル）を計上しました。うち、返金されない前払金が4,570億円（28.5億ドル）、契約の変更と和解が1,402億円（8.8億ドル）です。</li>
+<li><strong>リベート</strong>：SB7 は、今後10年間の設備の購入について、条件つきで最大21億ドルのリベートを受ける権利を得ました。金額が9月30日に確定できないため、資産として計上していません。</li>
+</ul>
+
+<h2>OpenAI への投資</h2>
+
+<div class="table-wrap">
+<table>
+<caption>OpenAI への追加出資（300億ドル。2026年2月に約束）</caption>
+<thead><tr><th>回</th><th>時期</th><th>金額</th><th>状況</th></tr></thead>
+<tbody>
+<tr><td>1回目</td><td>2026年4月</td><td>100億ドル</td><td>完了</td></tr>
+<tr><td>2回目</td><td>2026年7月</td><td>100億ドル</td><td>完了</td></tr>
+<tr><td>3回目</td><td>2026年10月</td><td>100億ドル</td><td>完了（外貨建ての社債の資金で実行）</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>9月末の累計の投資額は546億ドル（間接の投資を含み、処分を差し引いた額）、公正価値は996億ドル、累計の投資利益は450億ドルです。評価額は、前年度末から変わっていません。</li>
+<li>10月の出資の完了後、累計の投資額は646億ドル、持分は約13%です（2026年10月1日時点。OpenAI が2月に発表した1,220億ドルの資金調達を前提にした計算で、新株予約権などの扱いに条件がある）。</li>
+</ul>
+
+<h2>資金調達</h2>
+
+<div class="cards">
+<div class="card"><h3>つなぎ融資の返済</h3><p>400億ドルの枠のうち、引き出した300億ドルを9月15日までに全額前倒しで返済。未使用の100億ドルは9月30日に取り消して、枠を終了</p></div>
+<div class="card"><h3>返済の主な原資</h3><p>タームローン118.7億ドル、インテル株を担保にした先渡契約73.5億ドル、Arm 株を担保にしたマージンローンの増額50億ドル</p></div>
+<div class="card"><h3>社債</h3><p>4兆653億円相当を発行。外貨建て146億ドル相当と、国内債（普通社債1兆900億円、ハイブリッド債6,780億円）</p></div>
+<div class="card"><h3>そのほか</h3><p>OpenAI の株式を担保にしたローンで100億ドル（8月。SBG が保証）。ABB のロボット事業の買収向けに、17.5億ドル相当のLBOファイナンスを手配（実行は完了時）</p></div>
+</div>
+
+<p>期間中の調達の合計は、連結で17兆1,555億円、返済は9兆7,001億円です。DigitalBridge の買収（取得額31億ドル）は9月30日に完了しました。</p>
+
+<h2>決算短信に書かれていないこと／ここで扱わないこと</h2>
+
+<ul>
+<li>決算説明会での発言や、第三者の投稿に関する会社の見解は、短信には書かれていません。公式の文書で確認できないため、この記事では扱いません。</li>
+<li>通期の業績の予想は、この記事では扱いません。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>子会社（Arm、ソフトバンク株式会社など）の株式の公正価値の変動は、連結の損益に記録されない、と短信が書いています。</li>
+<li>OpenAI の公正価値は、会社の評価によるもので、前年度末と同じです。未上場株式の評価額は、実際の売却額とは限りません。</li>
+<li>この中間決算の短信は、会計監査人のレビューを受けていない、と書かれています。英語版は参考の翻訳で、原文は日本語版です。</li>
+<li>この記事は筆者の整理であり、投資の助言ではありません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>IFRS</dt><dd>国際会計基準。</dd>
+<dt>ブリッジローン</dt><dd>本格的な資金の調達までの、つなぎの融資。</dd>
+<dt>プレマネー</dt><dd>新しい出資を受ける前の、会社の評価額。</dd>
+<dt>公正価値</dt><dd>市場などをもとにした時価の評価。</dd>
+<dt>先渡契約（プリペイド・フォワード）</dt><dd>株式を担保に、先に資金を受け取る契約。</dd>
+<dt>非支配持分</dt><dd>連結子会社の株式のうち、親会社以外が持つ部分。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月14日時点の情報です。内容は、ソフトバンクグループの決算短信（2026年4〜9月。2026年11月10日）をもとに、独自に整理したものです。</p>
+<p>数字は短信に記載されたもので、再計算や検証はしていません（億円への換算は、百万円の数字の丸め）。次の決算や追加の開示が出たときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-14</span>初回公開（損益の内訳、発電関連設備の損失、OpenAI への投資、資金調達）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

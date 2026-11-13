@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。10月21日に、使う側の設計例としてデジタル庁の「源内」を追加。">
+<meta name="description" content="9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。10月21日に、使う側の設計例としてデジタル庁の「源内」を追加。 11月14日に、続報として Google の Agent Substrate と AWS の Nitro Sandboxes を追加。">
 <title>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
@@ -192,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース</h1><p class="summary">9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。10月21日に、使う側の設計例としてデジタル庁の「源内」を追加。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-21</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AIエージェントの実行基盤が動いている：隔離、起動の速さ、状態の保存、データベース</h1><p class="summary">9月28日から10月9日までに出た5件の公式発表（Microsoft、Cloudflare、gVisor、Deno、Supabase）をもとに、エージェントを動かす基盤が、層ごとにどう変わっているかを図で整理する。10月21日に、使う側の設計例としてデジタル庁の「源内」を追加。 11月14日に、続報として Google の Agent Substrate と AWS の Nitro Sandboxes を追加。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-11-14</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>9月28日から10月9日までの間に、AIエージェントを動かす基盤に関する発表が5件ありました。隔離（Microsoft、gVisor）、起動と状態の保存（Cloudflare）、実行環境の統合（Deno が Cloudflare に合流）、データベース（Supabase が Turso を買収）と、層が違います。共通しているのは、「エージェントを安全に・速く・状態を持って動かす」ための部品が、次々に整ってきていることです。</p>
 <p>実務で気をつけたいのは、<strong>移行の期限が示されたものがある</strong>ことです。Cloudflare の旧 Container / Sandbox クラスの保守は2026年12月31日まで、Deno Deploy は約6か月後に終了、Deno ランタイムの開発は約1年後に終わります。</p>
@@ -474,6 +474,45 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <p>筆者の整理：基盤側の「隔離」の部品（MXC、gVisor、Cloudflare のサンドボックスなど）に対して、源内は、使う側が「どこまで許すか」を、ファイル、通信、実行、記録、人の承認の面で決めた例です。とくに、外への送信を止めて、取得は許して記録する、という線の引き方は具体的です。</p>
 </div>
 
+<h2>11月の続報：Google の Agent Substrate と AWS の Nitro Sandboxes</h2>
+
+<div class="note">
+<p>11月14日に追加しました。Google の Open Source Blog（11月5日）と、AWS Compute Blog の公式の発表をもとにしています。数字は、各社の説明で、独立した測定ではありません。</p>
+</div>
+
+<div class="table-wrap">
+<table>
+<caption>2つの発表の比べ方（各社の説明）</caption>
+<thead><tr><th>項目</th><th>Google：Agent Substrate と gVisor</th><th>AWS：Nitro Sandboxes</th></tr></thead>
+<tbody>
+<tr><td>何か</td><td>Kubernetes の上の、エージェント向けの制御とデータの層（1.0）。gVisor とともに CNCF に Sandbox 段階で寄贈</td><td>EC2 の新しい部品。各コンテナに、ハードウェアで隔離された VM の境界を与える</td></tr>
+<tr><td>隔離の方法</td><td>gVisor（ユーザー空間のカーネル）。必要なら Cloud Hypervisor の microVM</td><td>Nitro System による VM の隔離。各サンドボックスが自分のカーネルを持つ</td></tr>
+<tr><td>重点</td><td>待っている間の費用と、状態を持ったままの素早い再開</td><td>VM の境界と、証明（アテステーション）による秘密の保護</td></tr>
+<tr><td>使い方</td><td>WorkerPool の Pod に、Actor（エージェントのセッション）を割り当てる</td><td>EKS Auto Mode、ECS Managed Instances、または EC2 で直接</td></tr>
+<tr><td>費用・対象</td><td>オープンソース（記事は料金に触れていない）</td><td>追加料金なし。EC2 の代金と管理料のみ。世界の商用リージョン</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Google：待っているエージェントを、安く・速く起こす</h3>
+<ul>
+<li>対話型のエージェントは、時間の<strong>90〜95%</strong>を、モデルの推論、外部 API、人の確認の待ちに使う、と Google は説明しています。待つ間は CPU を使いませんが、メモリとディスクに状態（言語の実行環境、Git のリポジトリ、未保存の編集）を持ちます。</li>
+<li>常駐させると費用がかさみ、ゼロまで縮める（サーバーレス）と、復帰に20秒を超えます。目標は、状態を保ったまま<strong>500ミリ秒未満</strong>で起こすことです。</li>
+<li>仕組み：Actor（エージェントのセッションの状態）と Worker（温めた Pod）を分けます。止まっている Actor への要求はプロキシが保留し、空いた Worker に状態を戻して再開します。終われば、状態を保存して Worker を空けます。Pod を新しく作らないため、管理の層に負荷をかけない、と説明しています。</li>
+<li>隔離：gVisor が、システムコールをユーザー空間で受け、信頼できないコードをホストのカーネルから隔離します。ハードウェアの仮想化が要る場合は、Cloud Hypervisor の microVM も同じ API で使えます。</li>
+<li>3層の絵：隔離（gVisor）、エージェントの実行環境（Agent Substrate）、学習の統括（OpenRL）。</li>
+</ul>
+
+<h3>AWS：エージェントのセッションごとに、VM の壁を作る</h3>
+<ul>
+<li>Nitro Sandbox は、EC2 のインスタンスから起動する軽量な VM です。Nitro System が、サンドボックスと親のインスタンス、サンドボックス同士、サンドボックスと AWS の運用者の間を分けます。ネストしたハイパーバイザーがなく、計算とメモリは、ほぼ EC2 と同じ性能で動く、と説明しています。</li>
+<li>EKS と ECS には、2つのモードがあります。<strong>Confidential sandbox</strong>は、証明ができ、AWS KMS が、承認したコードを動かす証明を出したものにだけ秘密を渡します。<strong>Isolated sandbox</strong>は、各 Pod・タスクが自分のカーネルを持つ VM で動き、ノードとその運用者は信頼します。</li>
+<li>エージェントの用途：セッションごとにサンドボックスで動かせます。プロンプトインジェクションで実行させられたコードも、1つの VM の中に閉じ、セッションの終了で VM が消える、と書いています。</li>
+<li>Nitro Enclaves に対応する EC2 のインスタンスの種類で、追加料金はありません。EC2 のインスタンス代と、EKS Auto Mode や ECS Managed Instances の管理料だけです。</li>
+</ul>
+
+<p>筆者の整理：どちらも、エージェントを動かす層で、隔離を、使う側が選べる部品にした発表です。Google は止まっている間の費用と再開の速さ、AWS は VM の境界と証明による秘密の保護に重点があります。20秒・500ミリ秒・90〜95%は Google の説明で、独立した測定ではありません。</p>
+
 <h2>用語メモ</h2>
 <dl class="terms">
 <dt>サンドボックス</dt><dd>信頼できないプログラムを、外部に影響を与えないよう隔離して動かす仕組み。</dd>
@@ -483,17 +522,20 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <dt>SQLite</dt><dd>ファイル1つで動く軽量なデータベース。</dd>
 <dt>パーセンタイル</dt><dd>値を小さい順に並べたとき、下から何％の位置にあるかを示す指標。99パーセンタイルは、遅い側の1％の境目。</dd>
 <dt>MCP サーバー</dt><dd>AI が外部のツールやデータを使うための窓口になるサーバー（Model Context Protocol）。</dd>
+<dt>microVM</dt><dd>必要な機能だけに絞った、軽量な仮想マシン。</dd>
+<dt>アテステーション（証明）</dt><dd>動いているコードが、承認したものだと、第三者が確かめられる仕組み。</dd>
+<dt>Actor</dt><dd>Agent Substrate での、エージェント1つ分のセッション（状態を持つ）。</dd>
 <dt>GET と POST</dt><dd>Web の通信の種類。GET は情報を取りに行く、POST や PUT は情報を送り出す。</dd>
 </dl>
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月21日時点の情報です。各社の公式ブログと、デジタル庁の発表・源内基準の記述に基づいていて、状況は更新されます。</p>
+<p>2026年11月14日時点の情報です（11月14日に、Google の Agent Substrate と AWS の Nitro Sandboxes を追加）。各社の公式ブログと、デジタル庁の発表・源内基準の記述に基づいていて、状況は更新されます。</p>
 <p>料金、一般提供の時期、取引の条件など、公式発表に記載のない項目は扱っていません。</p>
 <p>起動時間などの数字は、各社の公式発表にある値で、独自に検証したものではありません。</p>
 <p>内容は、各社の公式発表をもとに、独自に整理したものです。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-21</span>使う側の設計例として、デジタル庁の「源内」の AIエージェント利用環境と源内基準（外への送信の遮断、取得の記録、権限と承認）を、図と表で追加</li><li><span class="date">2026-10-19</span>初回公開（5件の発表、層ごとの整理、起動速度の比較、移行の期限）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-14</span>続報として、Google の Agent Substrate と gVisor の CNCF への寄贈（11月5日）、AWS の Nitro Sandboxes を、表と文で追加</li><li><span class="date">2026-10-21</span>使う側の設計例として、デジタル庁の「源内」の AIエージェント利用環境と源内基準（外への送信の遮断、取得の記録、権限と承認）を、図と表で追加</li><li><span class="date">2026-10-19</span>初回公開（5件の発表、層ごとの整理、起動速度の比較、移行の期限）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

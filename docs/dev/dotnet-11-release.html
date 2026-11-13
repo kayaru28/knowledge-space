@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Microsoft が2026年11月10日に公開した .NET 11 の主な変更（C# 15、SDK、MAUI、ASP.NET Core、AI 関連）と、同日の .NET 8・9 のサポート終了、アップグレードの手順を、公式ブログをもとに整理する。">
+<title>.NET 11 が公開された：C# 15 の共用型、MAUI の CoreCLR 化、そして .NET 8・9 のサポート終了 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>.NET 11 が公開された：C# 15 の共用型、MAUI の CoreCLR 化、そして .NET 8・9 のサポート終了</h1><p class="summary">Microsoft が2026年11月10日に公開した .NET 11 の主な変更（C# 15、SDK、MAUI、ASP.NET Core、AI 関連）と、同日の .NET 8・9 のサポート終了、アップグレードの手順を、公式ブログをもとに整理する。</p><p class="meta">初回公開 2026-11-14 ／ 更新日 2026-11-14</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Microsoft は2026年11月10日、<strong>.NET 11</strong> を公開しました。言語は C# 15（共用型と閉じた継承階層）、SDK は Native AOT の CLI ホストと常駐する MSBuild サーバー、MAUI は既定のランタイムを CoreCLR に変更しました。AI 向けには、MCP サーバーのテンプレートと Microsoft Agent Framework が加わりました。</p>
+<p>.NET 11 は標準期間サポート（STS）で、サポートは2年です。同じ日に、<strong>.NET 8 と .NET 9 のサポートが終了</strong>しました。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">2<small>年</small></p><p class="stat-label">.NET 11 のサポート期間（標準期間サポート）</p></div>
+<div class="stat"><p class="stat-value">11月10日</p><p class="stat-label">.NET 8 と .NET 9 のサポート終了日</p></div>
+<div class="stat"><p class="stat-value">7,000<small>人超</small></p><p class="stat-label">.NET 11 の貢献者の数（発表文の記述）</p></div>
+</div>
+
+<h2>サポートの扱い</h2>
+
+<div class="table-wrap">
+<table>
+<caption>.NET のサポートの状況（Microsoft の発表）</caption>
+<thead><tr><th>版</th><th>種類</th><th>状況</th></tr></thead>
+<tbody>
+<tr><td>.NET 11</td><td>標準期間サポート（STS）</td><td>公開。サポートは2年</td></tr>
+<tr><td>.NET 10</td><td>長期サポート（LTS）</td><td>サポート中</td></tr>
+<tr><td>.NET 9</td><td>—</td><td>2026年11月10日にサポート終了</td></tr>
+<tr><td>.NET 8</td><td>—</td><td>2026年11月10日にサポート終了</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>STS と LTS の品質・保守の方針は同じで、違うのは期間だけです。</li>
+<li>.NET 8 または 9 を使っている場合、修正を受け続けるには、サポートされている版へ移ります。発表文は、最新の機能なら .NET 11、LTS の期間が合うなら .NET 10 を案内しています。</li>
+<li>.NET MAUI は、.NET の STS・LTS とは別の、独自のサポート方針に従います。</li>
+</ul>
+
+<h2>主な変更</h2>
+
+<div class="cards">
+<div class="card"><h3>C# 15</h3><p>共用型（union）は「宣言した型のどれか1つ」を表し、switch 式で取りこぼしを検査します。閉じたクラスは、直接の派生を宣言したアセンブリの中に限ります。ほかに、コレクション式の引数、拡張インデクサー、ラベル付きの break と continue</p></div>
+<div class="card"><h3>SDK</h3><p>Native AOT の CLI ホストが既定で有効。MSBuild サーバーが常駐。NuGet に、公開から一定期間が過ぎたパッケージだけを選ぶ設定（脆弱性の確認の代わりではない、と明記）</p></div>
+<div class="card"><h3>ランタイム</h3><p>JIT と Native AOT の改善。クラッシュ時の報告が Linux と macOS にも。Runtime Async はプレビュー機能</p></div>
+<div class="card"><h3>.NET MAUI</h3><p>既定のランタイムを CoreCLR に。Native AOT は選択式で、Android は実験的。Compatibility パッケージは含まれなくなった</p></div>
+<div class="card"><h3>ASP.NET Core と Blazor</h3><p>非同期の検証、OpenAPI 3.2 が既定、SignalR の認証の更新、Blazor の CacheView。エージェント向けの Blazor AI コンポーネントは実験的</p></div>
+<div class="card"><h3>AI 関連</h3><p>MCP サーバーのテンプレート（<code>dotnet new mcpserver</code>）、Microsoft.Extensions.AI、Microsoft Agent Framework、.NET Skills</p></div>
+</div>
+
+<h3>ライブラリとデータベース</h3>
+<ul>
+<li>ライブラリ：Zstandard 圧縮、プロセス実行の API の拡充、メモリ上のストリームの4つのアダプター、System.Text.Json の共用型と JSON Lines への対応、LINQ の FullJoin。</li>
+<li>Entity Framework Core 11：不要な結合の削減、GroupBy の変換の改善、FullJoin への対応。SQL Server のベクトルインデックスと近似ベクトル検索は実験的です。EF Core 11 は .NET 11 が必要です。</li>
+<li>F# 11：コンパイラのメモリ使用量の改善と、並行の非同期処理の上限の指定。</li>
+<li>Windows：新しいアプリには WinUI 3 を推奨。Windows Forms に、新しい外観のモード（選択式）。</li>
+</ul>
+
+<h2>アップグレードの手順（発表文の案内）</h2>
+
+<ol>
+<li><code>global.json</code> で SDK を固定していれば更新し、開発機とビルド機に同じ SDK を入れます。</li>
+<li>対象フレームワークを .NET 11 に変え、パッケージとワークロードを合わせます。</li>
+<li>破壊的変更（最低 CPU 要件の更新を含む）を確認します。SDK を入れただけでは、アプリの対象は変わりません。</li>
+<li>実際の負荷で、テストと計測をします。公開方式、コンテナの基本イメージ、ネイティブの依存、配置先も確認します。</li>
+<li>リリース候補から上げる場合は、最終版に更新します。</li>
+</ol>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>性能の改善は、発表文が「自分のアプリで測るように」と書くとおり、負荷によって変わります。この記事では数字を載せていません。</li>
+<li>プレビュー・実験的の機能（Runtime Async、Blazor AI コンポーネント、MAUI DevFlow、dotnetup、Android の Native AOT など）は、本番での利用に向くかを、各文書で確認する必要があります。</li>
+<li>この記事は筆者の整理であり、移行の助言ではありません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>STS / LTS</dt><dd>標準期間サポートと、長期サポート。.NET 11 の STS は2年。</dd>
+<dt>共用型（union）</dt><dd>宣言した複数の型のどれか1つを表す型。</dd>
+<dt>Native AOT</dt><dd>実行前に、ネイティブのコードへ変換する方式。</dd>
+<dt>CoreCLR</dt><dd>.NET の標準のランタイム。</dd>
+<dt>MCP</dt><dd>AI アプリが、道具やサービスを見つけて呼び出すための共通の仕組み。</dd>
+<dt>AG-UI</dt><dd>エージェントと画面の間の通信の約束（プロトコル）。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月14日時点の情報です。内容は、Microsoft の .NET ブログの発表「Announcing .NET 11」（2026年11月10日）をもとに、独自に整理したものです。</p>
+<p>個別の機能の詳細や、プレビュー機能の状態は、続報で変わりうるため、見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-14</span>初回公開（サポートの扱い、主な変更、アップグレードの手順、読むときの注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

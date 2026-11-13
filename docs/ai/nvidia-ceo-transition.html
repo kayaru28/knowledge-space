@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="NVIDIA が2026年11月8日から12日に出した4件の公式発表をもとに、独立調査の開始、法律事務所への依頼、フアン氏の辞任、暫定 CEO と取締役会の議長の就任を、確認できる範囲で整理する。辞任の理由と調査の結果は書かれていない。">
+<title>NVIDIA の CEO が4日で辞任した：独立調査の発表から暫定 CEO の就任まで、会社の公式発表で確認できること | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>NVIDIA の CEO が4日で辞任した：独立調査の発表から暫定 CEO の就任まで、会社の公式発表で確認できること</h1><p class="summary">NVIDIA が2026年11月8日から12日に出した4件の公式発表をもとに、独立調査の開始、法律事務所への依頼、フアン氏の辞任、暫定 CEO と取締役会の議長の就任を、確認できる範囲で整理する。辞任の理由と調査の結果は書かれていない。</p><p class="meta">初回公開 2026-11-14 ／ 更新日 2026-11-14</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>NVIDIA の取締役会は2026年11月8日、創業者で CEO のジェンスン・フアン氏が外国の情報機関の働きかけの対象になった、という報道を受けて、<strong>独立した調査を始める</strong>と発表しました。11月12日には、<strong>フアン氏が社長・CEO・取締役を直ちに辞任</strong>しました。CFO のコレット・クレス氏が暫定 CEO を兼ね、取締役会に初めて議長が置かれました。</p>
+<p>発表文は、<strong>辞任の理由も、調査の結果も書いていません</strong>。会社は、第3四半期の決算を予定どおり11月17日に発表するとしています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">4<small>日</small></p><p class="stat-label">調査の発表（11月8日）から辞任の発表（11月12日）まで</p></div>
+<div class="stat"><p class="stat-value">33<small>年</small></p><p class="stat-label">発表文が書く、フアン氏が会社を築いてきた期間</p></div>
+<div class="stat"><p class="stat-value">11月17日</p><p class="stat-label">第3四半期（2027会計年度）の決算の発表日（予定どおり）</p></div>
+</div>
+
+<h2>経過</h2>
+
+<div class="table-wrap">
+<table>
+<caption>NVIDIA の公式発表（ニュースルーム）で確認できる経過</caption>
+<thead><tr><th>日付</th><th>発表</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>11月8日</td><td>取締役会の声明</td><td>報道を受けて、独立した調査を始める。独立取締役の委員会が、外部の独立した弁護士の補助を受けて監督する。フアン氏は調査を支持し、協力を約束</td></tr>
+<tr><td>11月8日</td><td>フアン氏から社員への電子メール（全文を公表）</td><td>家族と社員に謝罪し、責任は自分にあると述べた。国家の安全に関する懸念については、独立調査を支持し、全面的に協力すると書いた</td></tr>
+<tr><td>11月10日</td><td>独立取締役の声明</td><td>元ニューヨーク州南部地区の連邦検事代行ジューン・H・キム氏と、その所属する法律事務所に、調査を依頼した</td></tr>
+<tr><td>11月12日</td><td>CEO の交代の発表</td><td>フアン氏が、社長・CEO・取締役を直ちに辞任。暫定 CEO と議長を発表</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>11月8日の取締役会の声明が書いたこと</h3>
+
+<ul>
+<li>調査のきっかけは、「創業者で CEO のフアン氏が、外国の情報機関の働きかけの対象になった」という最近の報道です。声明は、これを報道として引いています。</li>
+<li>取締役会は、米国の国家と経済の安全保障を最優先とし、<strong>国家の安全や NVIDIA の機密が損なわれたと信じる理由はない</strong>としながら、調査は入手できるすべての情報を対象にする、と書きました。</li>
+<li>取締役会は、フアン氏と経営陣を信頼している、と書きました。この時点の認識で、調査の結果ではありません。</li>
+</ul>
+
+<h2>辞任の発表で決まったこと</h2>
+
+<div class="cards">
+<div class="card"><h3>暫定 CEO</h3><p>コレット・クレス氏。2013年9月から EVP 兼 CFO を務めている。後任が決まるまで、EVP 兼 CFO を兼ねる</p></div>
+<div class="card"><h3>取締役会の議長</h3><p>ハーヴェイ・C・ジョーンズ氏。取締役会として初めての議長。シノプシスの CEO や会長を務めた人物</p></div>
+<div class="card"><h3>後任探し</h3><p>取締役会が、内部と外部の候補を対象に、常任の CEO の探索を始める</p></div>
+<div class="card"><h3>事業の見通し</h3><p>議長は、会社の事業、顧客との約束、製品のロードマップは中断なく続く見込み、と述べた</p></div>
+</div>
+
+<p>決算は、予定どおり11月17日の太平洋時間午後1時20分ごろに発表し、午後2時から説明会を開く、と書かれています。</p>
+
+<h2>公式の発表に書かれていないこと</h2>
+
+<ul>
+<li><strong>辞任の理由</strong>：発表文は理由を書いていません。調査と辞任の関係も書いていません。</li>
+<li><strong>調査の結果と時期</strong>：何が確認されたか、いつ終わるかは書かれていません。</li>
+<li><strong>常任の CEO の候補と、選ぶ時期</strong>。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>外国の情報機関の働きかけの対象になった、という点は、取締役会の声明が「報道」として引いたものです。会社が事実として認定したわけではありません。</li>
+<li>この記事は人物の評価をしません。会社が公表した経過と、体制の変更だけを整理しています。</li>
+<li>報道されている疑惑の中身、株価の動き、辞任の理由の推測は、一次情報で確認できないため載せていません。</li>
+<li>11月17日の決算で、体制や見通しの追加の説明が出る可能性があります。そのときに見直します。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>独立取締役</dt><dd>会社の経営陣から独立した立場の取締役。</dd>
+<dt>暫定 CEO</dt><dd>常任の CEO が決まるまで、一時的に職務を務める人。</dd>
+<dt>議長（Chair of the Board）</dt><dd>取締役会を主宰する役職。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月14日時点の情報です。内容は、NVIDIA の公式ニュースルームの発表4件（2026年11月8日、10日、12日）をもとに、独自に整理したものです。</p>
+<p>報道の内容、株価の動き、辞任の理由は確認していません。続報が出たときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-14</span>初回公開（独立調査の開始、フアン氏の辞任、暫定 CEO と議長、公式発表に書かれていないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

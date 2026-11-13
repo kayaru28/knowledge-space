@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="三井化学が2026年11月9日に開示した JSR の株式譲渡契約を、取引の中身、目的、JSR の業績、ブリッジローンと恒久化の計画、開示に書かれていないことに分けて整理する。">
+<title>三井化学が JSR を1兆8,400億円で買収する：契約の中身、資金の組み立て、そして完了までの条件 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">一般知識</p><h1>三井化学が JSR を1兆8,400億円で買収する：契約の中身、資金の組み立て、そして完了までの条件</h1><p class="summary">三井化学が2026年11月9日に開示した JSR の株式譲渡契約を、取引の中身、目的、JSR の業績、ブリッジローンと恒久化の計画、開示に書かれていないことに分けて整理する。</p><p class="meta">初回公開 2026-11-14 ／ 更新日 2026-11-14</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>三井化学は2026年11月9日、フォトレジストなどの半導体材料を手がける<strong> JSR を、取得価額1兆8,400億円で買収する</strong>契約を結びました。売主は JIC キャピタルが運営するファンドで、日本政策投資銀行（DBJ）が2,000億円を共同で出資します。</p>
+<p>完了は、競争法や外資規制の手続きなどが前提で、<strong>2027年度下半期</strong>を目指しています。資金の大半（1兆6,400億円）はつなぎ融資（ブリッジローン）で、完了後1年以内を目途に、株式やメザニンなどで恒久的な資金に置き換える計画です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1兆8,400<small>億円</small></p><p class="stat-label">JSR の取得価額（最終は完了時の調整後に確定）</p></div>
+<div class="stat"><p class="stat-value">4<small>倍超</small></p><p class="stat-label">完了後に一時的に上がる見込みの Net Debt/EBITDA 倍率</p></div>
+<div class="stat"><p class="stat-value">400<small>億円</small></p><p class="stat-label">2035年度までに目指す、年間の増分利益（三井化学の目標）</p></div>
+</div>
+
+<h2>取引の中身</h2>
+
+<div class="table-wrap">
+<table>
+<caption>適時開示に書かれた取引の内容</caption>
+<thead><tr><th>項目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>売主</td><td>JIC キャピタルが運営する2つのファンド。JSR の普通株式を、合わせて約96.5%（89.72%と6.75%。筆者の合計）持つ（2026年3月末）</td></tr>
+<tr><td>買い手</td><td>三井化学と DBJ。現金を対価に、普通株式のすべて（102,242,573株）を共同で取得</td></tr>
+<tr><td>優先株式</td><td>A 種・B 種（各1,868,933株。みずほ銀行と DBJ が保有）も、別途合意した条件で同時に三井化学が取得する想定。取引後に普通株式へ転換する予定</td></tr>
+<tr><td>議決権</td><td>DBJ の普通株式は、無議決権の優先株式に転換する予定。議決権は三井化学が100%</td></tr>
+<tr><td>取得価額</td><td>1兆8,400億円（株式価値1兆3,921億円、うち DBJ の出資分2,000億円。有利子負債など4,479億円）</td></tr>
+<tr><td>日程</td><td>契約は11月9日。完了は、前提条件が整い次第、速やかに。現時点では2027年度下半期を目指す（変わりうる）</td></tr>
+<tr><td>特定子会社</td><td>JSR のほか、Inpria、KBI Biopharma、JSR North America Holdings、JSR Life Sciences の4社が、三井化学の特定子会社になる</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>三井化学が書く目的</h2>
+
+<ul>
+<li>三井化学は、成長領域（ライフ＆ヘルスケア、モビリティ、ICT）と、石油化学を主体とする B&amp;GM 事業の「2軸経営」を進めています。JSR の先端フォトレジストなどの先端半導体材料を、<strong>ICT ソリューション領域の中核</strong>に位置づけます。</li>
+<li>両社を合わせて、売上規模で国内トップクラスの半導体材料企業になる、と書いています。前工程（三井ペリクル、先端フォトレジスト）と後工程（イクロステープ、厚膜レジスト）の製品と顧客基盤を生かす、としています。</li>
+<li>成長とコストのシナジーで、<strong>2035年度までに年間400億円規模</strong>の増分利益を目指します。ほかに、資本効率の改善などを合わせて、事業価値で3,500億円以上の効果を想定しています。</li>
+<li>JSR のライフサイエンス事業（CRO・CDMO）は、JSR によれば、従前の方針どおり非中核事業として、あらゆる選択肢の検討を続けます。</li>
+<li>分社化の見直し：2025年5月に始めた B&amp;GM の分社化の検討の対象に、モビリティソリューション事業を加えます。</li>
+</ul>
+
+<h2>JSR の概要</h2>
+
+<div class="table-wrap">
+<table>
+<caption>JSR の連結業績（IFRS。適時開示の記載。単位：百万円）</caption>
+<thead><tr><th>決算期</th><th>売上収益</th><th>連結コア営業利益</th><th>連結営業利益</th><th>親会社の所有者に帰属する当期利益</th></tr></thead>
+<tbody>
+<tr><td>2025年3月期</td><td>388,774</td><td>△1,607</td><td>△204,434</td><td>△217,513</td></tr>
+<tr><td>2026年3月期</td><td>440,718</td><td>62,348</td><td>40,528</td><td>59,329</td></tr>
+</tbody>
+</table>
+</div>
+
+<ul>
+<li>JSR は2023年6月設立（事業の創立は1957年12月）。2024年に、旧 JSR への公開買付けが成立して上場廃止になり、12月に合併して現在の JSR になりました。2025年3月期の営業利益の赤字は、この経緯の影響を含みます。</li>
+<li>連結コア営業利益は、旧 JSR を子会社化した際の PPA 償却費を営業利益に足し戻した、JSR が決算資料で使う指標です。</li>
+<li>筆者の計算では、取得価額は、2026年3月期の連結コア営業利益（623億円）の約29.5倍です。</li>
+</ul>
+
+<h2>資金の組み立て</h2>
+
+<div class="cards">
+<div class="card"><h3>取得資金</h3><p>ブリッジローン1兆6,400億円（取得価額の約89%。筆者の計算）と、DBJ の出資2,000億円</p></div>
+<div class="card"><h3>完了後の財務</h3><p>Net Debt/EBITDA 倍率が一時的に4倍を超え、自己資本比率なども悪化する見込み、と三井化学が書いている</p></div>
+<div class="card"><h3>恒久化</h3><p>完了後1年以内を目途に、格付上の資本性で3,000億円相当を調達。普通株式は上限1,500億円、メザニンは3,000億円（うち50%を資本性と認識する想定）。残りは負債</p></div>
+<div class="card"><h3>発行登録</h3><p>同日に、普通株式の発行登録（上限1,500億円）を実施。効力発生予定日は11月17日。募集方法は未定。主な引受は SMBC 日興証券とみずほ証券の予定</p></div>
+</div>
+
+<p>2027年3月期の個別・連結の業績への影響は軽微、と書かれています。</p>
+
+<h2>開示に書かれていないこと</h2>
+
+<ul>
+<li>各国の競争当局の審査の具体的な見通し。</li>
+<li>取得価額の算定の根拠、買収に伴う評価損益の見込み。</li>
+<li>分社化の具体的な時期や形。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>取得価額は、完了時の調整で変わりえます。完了の時期も、各国の審査の結果次第です。</li>
+<li>400億円の増分利益や3,500億円の効果は、三井化学が目指す目標で、確定した数字ではありません。</li>
+<li>報道には、金額や内訳を異なる数字で書くものがありました。この記事は、開示の数字だけを使っています。</li>
+<li>この記事は、株価や投資の判断については書きません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>ブリッジローン</dt><dd>本格的な資金の調達までの、つなぎの融資。</dd>
+<dt>メザニン調達</dt><dd>負債と株式の中間の性質を持つ資金調達。</dd>
+<dt>Net Debt/EBITDA</dt><dd>純有利子負債が、利払い前などの利益の何年分かを示す指標。</dd>
+<dt>連結コア営業利益</dt><dd>会社が決算資料で使う、営業利益から一部の会計上の費用の影響を除いた指標。</dd>
+<dt>ライトアセット化</dt><dd>持つ資産を減らして、身軽にすること。</dd>
+<dt>特定子会社</dt><dd>資本金の大きさなどで、開示の対象になる重要な子会社。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月14日時点の情報です。内容は、三井化学の適時開示（2026年11月9日）をもとに、独自に整理したものです。</p>
+<p>完了の手続きや、資金の恒久化の進み方を、見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-14</span>初回公開（取引の中身、目的、JSR の概要、資金の組み立て、書かれていないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
