@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Node.js について、一言での説明、3行の要約、Deno や Bun との違い、前後で組み合わされる仕組み（V8、libuv、npm）、具体的な仕組み（イベントループ、スレッドプール、版の周期、使いどころ、限界と注意）を、公式の文書から整理する。">
+<title>Node.js：ブラウザの外で JavaScript を動かす、イベントループと非同期 I/O の実行環境 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Node.js：ブラウザの外で JavaScript を動かす、イベントループと非同期 I/O の実行環境</h1><p class="summary">Node.js について、一言での説明、3行の要約、Deno や Bun との違い、前後で組み合わされる仕組み（V8、libuv、npm）、具体的な仕組み（イベントループ、スレッドプール、版の周期、使いどころ、限界と注意）を、公式の文書から整理する。</p><p class="meta">初回公開 2026-11-17 ／ 更新日 2026-11-17</p></header><section class="lede">
+<h2>一言で言うと</h2>
+<p><strong>Node.js</strong> は、ブラウザの外で JavaScript を動かすための、オープンソースでクロスプラットフォームの実行環境で、1つのイベントループと非同期の入出力で、多数の接続を少ないスレッドでさばくことを設計の中心にしています。</p>
+</section>
+<h2>3行で表すと</h2>
+<ul>
+<li>何であるか：Google の JavaScript エンジン V8 を、ブラウザの外で動かし、非同期の入出力の部品を標準で備えた実行環境。MIT ライセンスで、OpenJS Foundation が支援する、オープンなガバナンスのプロジェクト。</li>
+<li>何ができるか：ネットワークのアプリケーション（HTTP はストリーミングと低遅延を意識した「第一級」の機能）を、リクエストごとにスレッドを作らず、1つのプロセスで動かせる。標準で、テストの実行、TypeScript の型の除去、権限の制限、ワーカースレッドなども備える。</li>
+<li>何が特徴か：イベントループを、ライブラリではなく、実行環境の組み込みの仕組みとして持つ。待つ処理（入出力）は非同期で、ブロックする処理は例外とする設計。2027年の第27版から、年に1回の新しい版が出て、すべての版が長期サポート（LTS）になる。</li>
+</ul>
+<h2>類似するものと、違い</h2>
+<p>横のつながりです。どれも、ブラウザの外で JavaScript を動かす実行環境です。比較の軸は、筆者の整理です。</p>
+<figure class="viz">
+<p class="viz-title">動かす層の違い</p>
+<p class="viz-sub">各公式の README と文書をもとにした模式図（筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 262" role="img" aria-label="Node.js、Deno、Bun の層の比較。どれもアプリの下に実行環境があり、その下に JavaScript のエンジンがある。エンジンは Node.js と Deno が V8、Bun が JavaScriptCore。土台は Node.js が libuv、Deno が Rust と Tokio、Bun が Rust。">
+<text class="t-strong" x="140" y="22" text-anchor="middle">Node.js</text>
+<rect class="box" x="10" y="34" width="260" height="40" rx="6"></rect>
+<text class="t-strong" x="140" y="59" text-anchor="middle">アプリ</text>
+<rect class="box-key" x="10" y="82" width="260" height="60" rx="6"><title>非同期の入出力の部品を標準で備えた実行環境</title></rect>
+<text class="t-strong" x="140" y="106" text-anchor="middle">Node.js</text>
+<text class="t-small" x="140" y="128" text-anchor="middle">非同期の入出力の部品を標準で備える</text>
+<rect class="box" x="10" y="150" width="260" height="40" rx="6"></rect>
+<text class="t-strong" x="140" y="175" text-anchor="middle">V8（JavaScript エンジン）</text>
+<rect class="box" x="10" y="198" width="260" height="46" rx="6"></rect>
+<text class="t-strong" x="140" y="218" text-anchor="middle">libuv</text>
+<text class="t-small" x="140" y="236" text-anchor="middle">イベントループと非同期の入出力</text>
+<text class="t-strong" x="440" y="22" text-anchor="middle">Deno</text>
+<rect class="box" x="310" y="34" width="260" height="40" rx="6"></rect>
+<text class="t-strong" x="440" y="59" text-anchor="middle">アプリ</text>
+<rect class="box" x="310" y="82" width="260" height="60" rx="6"></rect>
+<text class="t-strong" x="440" y="106" text-anchor="middle">Deno</text>
+<text class="t-small" x="440" y="128" text-anchor="middle">安全な既定値を掲げる</text>
+<rect class="box" x="310" y="150" width="260" height="40" rx="6"></rect>
+<text class="t-strong" x="440" y="175" text-anchor="middle">V8（JavaScript エンジン）</text>
+<rect class="box" x="310" y="198" width="260" height="46" rx="6"></rect>
+<text class="t-strong" x="440" y="218" text-anchor="middle">Rust、Tokio</text>
+<text class="t-small" x="440" y="236" text-anchor="middle">README の記載</text>
+<text class="t-strong" x="740" y="22" text-anchor="middle">Bun</text>
+<rect class="box" x="610" y="34" width="260" height="40" rx="6"></rect>
+<text class="t-strong" x="740" y="59" text-anchor="middle">アプリ</text>
+<rect class="box" x="610" y="82" width="260" height="60" rx="6"></rect>
+<text class="t-strong" x="740" y="106" text-anchor="middle">Bun</text>
+<text class="t-small" x="740" y="128" text-anchor="middle">テストとパッケージ管理も1つに含む</text>
+<rect class="box" x="610" y="150" width="260" height="40" rx="6"></rect>
+<text class="t-strong" x="740" y="175" text-anchor="middle">JavaScriptCore</text>
+<rect class="box" x="610" y="198" width="260" height="46" rx="6"></rect>
+<text class="t-strong" x="740" y="218" text-anchor="middle">Rust</text>
+<text class="t-small" x="740" y="236" text-anchor="middle">README の記載</text>
+</svg>
+</div>
+<figcaption>3つとも、JavaScript のエンジンの上に、入出力などの部品を載せた実行環境です。違うのは、エンジンと、その下の土台です。緑の枠が Node.js の中心です。</figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+<caption>各公式の文書と README より（比較の軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>Node.js</th><th>Deno</th><th>Bun</th></tr></thead>
+<tbody>
+<tr><td>何か</td><td>非同期でイベント駆動の JavaScript の実行環境</td><td>JavaScript、TypeScript、WebAssembly の実行環境</td><td>JavaScript と TypeScript のアプリ向けの、オールインワンの道具一式</td></tr>
+<tr><td>エンジンと土台</td><td>V8 と、イベントループの C ライブラリ libuv</td><td>V8、Rust、Tokio</td><td>JavaScriptCore と Rust（README による）</td></tr>
+<tr><td>方針</td><td>非同期の入出力、スケールするネットワークアプリ。API の安定度の最上位は、npm との互換を高い優先度とする</td><td>安全な既定値と、良い開発者体験</td><td>Node.js の置き換えとして使える高速な実行環境に、テストの実行、スクリプトの実行、Node.js 互換のパッケージ管理を1つの実行ファイルで含める</td></tr>
+<tr><td>権限の制限</td><td>権限モデル（--permission）。公式の説明は「シートベルト」で、悪意のあるコードへの保証はない。v23.5.0、v22.13.0 から実験的ではない</td><td>「安全な既定値」を掲げる（README による）</td><td>README の冒頭では言及がなく、未確認</td></tr>
+<tr><td>TypeScript</td><td>型を取り除いて実行する（型の検査はしない）。v25.2.0、v24.12.0 で安定</td><td>実行環境の対象に含める（README による）</td><td>標準で動く（README による）</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Node.js は、公式の説明では、Ruby の Event Machine や Python の Twisted に影響を受けた設計で、イベントループを、ライブラリではなく、実行環境の組み込みとして持つ点が違う、と書く。ブラウザの JavaScript と同じく、イベントループは利用者から隠れていて、開始の呼び出しはない。</li>
+<li>Deno と Bun は、公式の README の自己紹介にもとづく。両者とも、Node.js と別の実行環境で、基盤の言語と、JavaScript のエンジンが違う（Bun は JavaScriptCore）。互換の程度や性能の優劣は、ここでは扱わない。</li>
+<li>ブラウザの JavaScript は、V8 を共有する点で近い。V8 は、Chrome と Node.js などで使われる、Google のオープンソースの JavaScript と WebAssembly のエンジンで、ECMAScript と WebAssembly を実装する。Node.js は、その外側の、入出力、ファイル、ネットワークの部品を担う。</li>
+</ul>
+<h2>前後で組み合わされるもの</h2>
+<p>縦のつながりです。前段と後段の分け方は、筆者の整理です。</p>
+<figure class="viz">
+<p class="viz-title">Node.js の前と後</p>
+<p class="viz-sub">公式の文書より。前段・後段の分け方は筆者の整理</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 330" role="img" aria-label="上から、アプリケーション、npm とワーカースレッドと単一の実行ファイル、Node.js、libuv と V8、OS の入出力の仕組みの順に積み重なる。">
+<defs><marker id="arrow-node-stack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="10" y="40" text-anchor="start">後段</text>
+<text class="t-small t-muted" x="10" y="58" text-anchor="start">（上位）</text>
+<text class="t-strong" x="10" y="176" text-anchor="start">本体</text>
+<text class="t-strong" x="10" y="246" text-anchor="start">前段</text>
+<text class="t-small t-muted" x="10" y="264" text-anchor="start">（土台）</text>
+<rect class="box" x="110" y="14" width="610" height="40" rx="6"></rect>
+<text class="t-strong" x="415" y="39" text-anchor="middle">アプリケーション（サーバー、ツール、スクリプト）</text>
+<rect class="box" x="110" y="66" width="190" height="52" rx="6"></rect>
+<text class="t-strong" x="205" y="88" text-anchor="middle">npm</text>
+<text class="t-small" x="205" y="108" text-anchor="middle">パッケージの共有・取得</text>
+<rect class="box" x="320" y="66" width="190" height="52" rx="6"></rect>
+<text class="t-strong" x="415" y="88" text-anchor="middle">ワーカースレッドなど</text>
+<text class="t-small" x="415" y="108" text-anchor="middle">複数のコアを使う</text>
+<rect class="box" x="530" y="66" width="190" height="52" rx="6"></rect>
+<text class="t-strong" x="625" y="88" text-anchor="middle">単一の実行ファイル</text>
+<text class="t-small" x="625" y="108" text-anchor="middle">配る形（実験的）</text>
+<line class="arrow" x1="415" y1="120" x2="415" y2="134" marker-end="url(#arrow-node-stack)"/>
+<rect class="box-key" x="110" y="138" width="610" height="56" rx="6"></rect>
+<text class="t-strong" x="415" y="160" text-anchor="middle">Node.js</text>
+<text class="t-small" x="415" y="180" text-anchor="middle">イベントループ、標準ライブラリ、Node-API</text>
+<line class="arrow" x1="415" y1="196" x2="415" y2="210" marker-end="url(#arrow-node-stack)"/>
+<rect class="box" x="110" y="214" width="610" height="52" rx="6"></rect>
+<text class="t-strong" x="415" y="236" text-anchor="middle">libuv ＋ V8</text>
+<text class="t-small" x="415" y="256" text-anchor="middle">非同期の入出力とイベントループ ＋ JavaScript のエンジン</text>
+<line class="arrow" x1="415" y1="268" x2="415" y2="280" marker-end="url(#arrow-node-stack)"/>
+<rect class="box" x="110" y="284" width="610" height="38" rx="6"></rect>
+<text class="t-small" x="415" y="308" text-anchor="middle">OS の入出力の仕組み（epoll、kqueue、イベントポート、IOCP）</text>
+</svg>
+</div>
+<figcaption>上の層が Node.js を使い、Node.js は下の層の libuv と V8、さらに OS の仕組みに依存します。</figcaption>
+</figure>
+<h3>前段：Node.js が動くための土台</h3>
+<ul>
+<li>V8：JavaScript と WebAssembly を実行するエンジン。Node.js は、これをブラウザの外で動かす。</li>
+<li>libuv：Node.js のために書かれた、クロスプラットフォームの支援ライブラリ。イベントループと、非同期の入出力、スレッドの機能を提供する。Node.js のイベントループと、プラットフォームの非同期の動作のすべてを実装するものだと、公式の指針が説明する。</li>
+<li>OS の入出力の仕組み：ネットワークの入出力は、ノンブロッキングのソケットを、Linux なら epoll、macOS などの BSD なら kqueue、SunOS ならイベントポート、Windows なら IOCP で待つ。</li>
+<li>ネイティブアドオン：C や C++ で書いた拡張は、Node-API を通じて作る。Node-API は、JavaScript エンジン（V8 など）から独立で、Node.js 本体の一部として保たれ、版をまたいで ABI が安定する。そのため、ある主要な版でビルドしたものが、あとの主要な版でも動く。</li>
+</ul>
+<h3>後段：Node.js を使う上位の仕組み</h3>
+<ul>
+<li>npm：公式の説明では、ウェブサイト、コマンドラインの道具、レジストリの3つからなる。JavaScript のパッケージを共有し、取得するための、世界最大のソフトウェアのレジストリだと書く。</li>
+<li>アプリケーションとサービス：ネットワークのサーバー、ツール、スクリプトなど。複数の CPU のコアは、child_process.fork()、cluster モジュール、ワーカースレッド（node:worker_threads）で使う。</li>
+<li>配布の形：単一の実行ファイル（SEA）の機能で、Node.js が入っていない環境にも、アプリを配れる。この機能は、実験的（安定度 1.1：開発が活発）。</li>
+<li>TypeScript：型を取り除いて実行できるが、型の検査はしない。tsconfig.json を使う完全な対応には、tsx のような外部のパッケージが要る、と公式の文書が書く。</li>
+<li>ライブラリの作者の検証：Node.js の側は、主要なパッケージのテストを、次の版で走らせて、エコシステムへの影響を事前に見つける仕組み（CITGM）を持つ。</li>
+</ul>
+<h2>具体的な仕組み</h2>
+<h3>なぜ必要か</h3>
+<ul>
+<li>公式の説明では、Node.js は、スケールするネットワークアプリケーションを作るために設計された。1つのプロセスで、リクエストごとに新しいスレッドを作らずに動き、スレッドの同時実行の管理の負担なしに、1台のサーバーで数千の同時接続を扱える、と書く。</li>
+<li>そのために、標準ライブラリが、非同期の入出力の部品を備え、ブロックする動作は、通常ではなく例外にする、と説明する。</li>
+<li>公式の発表は、Node.js は主にボランティアが保守していて、複数の版を同時に支えるのは負担が大きい、とも書く。これは、版の仕組みの背景の説明（下の「版の周期」）。</li>
+</ul>
+<h3>どう動くか</h3>
+<p>まず、イベントループです。</p>
+<figure class="viz">
+<p class="viz-title">イベントループの1周</p>
+<p class="viz-sub">Node.js 公式の解説（The Node.js Event Loop）をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="イベントループの1周は、timers、pending callbacks、idle と prepare、poll、check、close callbacks の順に進み、また timers に戻る。poll で、入出力の事象を取り、必要なときは待つ。">
+<defs><marker id="arrow-node-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box" x="2" y="30" width="124" height="96" rx="6"></rect>
+<text class="t-strong" x="64" y="62" text-anchor="middle">timers</text>
+<text class="t-small" x="64" y="84" text-anchor="middle">setTimeout と</text>
+<text class="t-small" x="64" y="104" text-anchor="middle">setInterval</text>
+<line class="arrow" x1="128" y1="78" x2="148" y2="78" marker-end="url(#arrow-node-loop)"/>
+<rect class="box" x="150" y="30" width="124" height="96" rx="6"></rect>
+<text class="t-strong" x="212" y="56" text-anchor="middle">pending</text>
+<text class="t-strong" x="212" y="74" text-anchor="middle">callbacks</text>
+<text class="t-small" x="212" y="96" text-anchor="middle">次のループに</text>
+<text class="t-small" x="212" y="114" text-anchor="middle">回された入出力</text>
+<line class="arrow" x1="276" y1="78" x2="296" y2="78" marker-end="url(#arrow-node-loop)"/>
+<rect class="box" x="298" y="30" width="124" height="96" rx="6"></rect>
+<text class="t-strong" x="360" y="62" text-anchor="middle">idle、prepare</text>
+<text class="t-small" x="360" y="84" text-anchor="middle">内部だけで</text>
+<text class="t-small" x="360" y="104" text-anchor="middle">使う</text>
+<line class="arrow" x1="424" y1="78" x2="444" y2="78" marker-end="url(#arrow-node-loop)"/>
+<rect class="box-key" x="446" y="30" width="124" height="96" rx="6"><title>入出力の事象を取り、必要なときはここで待つ</title></rect>
+<text class="t-strong" x="508" y="62" text-anchor="middle">poll</text>
+<text class="t-small" x="508" y="84" text-anchor="middle">入出力の事象を取る</text>
+<text class="t-small" x="508" y="104" text-anchor="middle">必要なら待つ</text>
+<line class="arrow" x1="572" y1="78" x2="592" y2="78" marker-end="url(#arrow-node-loop)"/>
+<rect class="box" x="594" y="30" width="124" height="96" rx="6"></rect>
+<text class="t-strong" x="656" y="62" text-anchor="middle">check</text>
+<text class="t-small" x="656" y="84" text-anchor="middle">setImmediate の</text>
+<text class="t-small" x="656" y="104" text-anchor="middle">コールバック</text>
+<line class="arrow" x1="720" y1="78" x2="740" y2="78" marker-end="url(#arrow-node-loop)"/>
+<rect class="box" x="742" y="30" width="124" height="96" rx="6"></rect>
+<text class="t-strong" x="804" y="56" text-anchor="middle">close</text>
+<text class="t-strong" x="804" y="74" text-anchor="middle">callbacks</text>
+<text class="t-small" x="804" y="96" text-anchor="middle">ソケットの close</text>
+<text class="t-small" x="804" y="114" text-anchor="middle">など</text>
+<path class="arrow" d="M 804 130 L 804 160 L 64 160 L 64 132" fill="none" marker-end="url(#arrow-node-loop)"/>
+<text class="t-small" x="434" y="182" text-anchor="middle">次の周回へ（実行すべきコールバックがなくなると、ループを抜ける）</text>
+<text class="t-small t-muted" x="434" y="222" text-anchor="middle">process.nextTick() は段階の外：いまの操作が終わったあとに、どの段階にいても処理される</text>
+</svg>
+</div>
+<figcaption>ループの1周は、段階を順にたどります。緑の枠の poll が、入出力の事象を取る中心の段階で、必要なときはここで待ちます。</figcaption>
+</figure>
+<ul>
+<li>入力のスクリプトを実行したあと、Node.js はイベントループに入り、実行すべきコールバックがなくなると、ループを抜ける。</li>
+<li>ループの1周は、段階を順にたどる。公式の解説の順は、timers（setTimeout() と setInterval() のコールバック）、pending callbacks（次のループに回された入出力のコールバック）、idle と prepare（内部だけで使う）、poll（新しい入出力の事象を取り、入出力のコールバックを実行する。必要なときはここで待つ）、check（setImmediate() のコールバック）、close callbacks（ソケットの close など）。</li>
+<li>process.nextTick() は、技術的にはイベントループの一部ではなく、いまの操作が終わったあとに、どの段階にいても処理される、と解説が書く。</li>
+<li>libuv 1.45.0（Node.js 20）から、タイマーは、各周回の poll の段階のあとに実行される、と解説が書く。</li>
+</ul>
+<p>次に、入出力が、どこで動くかです。</p>
+<figure class="viz">
+<p class="viz-title">入出力の行き先</p>
+<p class="viz-sub">libuv の設計文書と Node.js 公式の指針をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 250" role="img" aria-label="イベントループのスレッドは、ネットワークの入出力を OS の待ち受けの仕組みに任せ、ファイル、DNS、暗号、圧縮などの処理をスレッドプールに出す。どちらも完了すると、コールバックをイベントループに戻す。">
+<defs><marker id="arrow-node-io" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<rect class="box-key" x="10" y="50" width="250" height="150" rx="6"><title>JavaScript のコードとイベントループは、1つのスレッド</title></rect>
+<text class="t-strong" x="135" y="96" text-anchor="middle">イベントループ</text>
+<text class="t-small" x="135" y="120" text-anchor="middle">JavaScript のコードを動かす</text>
+<text class="t-small" x="135" y="142" text-anchor="middle">1つのスレッド</text>
+<text class="t-small" x="135" y="170" text-anchor="middle">長くかかると、全体が止まる</text>
+<rect class="box" x="450" y="14" width="420" height="92" rx="6"></rect>
+<text class="t-strong" x="660" y="42" text-anchor="middle">OS の待ち受けの仕組み</text>
+<text class="t-small" x="660" y="66" text-anchor="middle">epoll、kqueue、イベントポート、IOCP</text>
+<text class="t-small" x="660" y="88" text-anchor="middle">ネットワークの入出力（ループのスレッドで行う）</text>
+<rect class="box" x="450" y="132" width="420" height="108" rx="6"></rect>
+<text class="t-strong" x="660" y="158" text-anchor="middle">スレッドプール（既定の大きさは4）</text>
+<text class="t-small" x="660" y="182" text-anchor="middle">ファイルシステム、DNS の lookup</text>
+<text class="t-small" x="660" y="202" text-anchor="middle">暗号（pbkdf2、scrypt など）、zlib</text>
+<text class="t-small" x="660" y="222" text-anchor="middle">ブロックする処理を、別のスレッドで実行</text>
+<line class="arrow" x1="262" y1="90" x2="446" y2="70" marker-end="url(#arrow-node-io)"/>
+<text class="t-small" x="354" y="66" text-anchor="middle">待ちを任せる</text>
+<line class="arrow" x1="262" y1="162" x2="446" y2="184" marker-end="url(#arrow-node-io)"/>
+<text class="t-small" x="354" y="202" text-anchor="middle">処理を出す</text>
+<text class="t-small t-muted" x="135" y="228" text-anchor="middle">完了すると、コールバックがループに戻る</text>
+</svg>
+</div>
+<figcaption>ネットワークの入出力は、OS の仕組みで待ち、ファイルや DNS などのブロックする処理は、スレッドプールで動かします。どちらも、結果はイベントループに戻ります。</figcaption>
+</figure>
+<ul>
+<li>ネットワークの入出力は、ループのスレッドだけで行う。待つ仕組みは、OS ごとに最適なもの（epoll、kqueue、イベントポート、IOCP）を使い、実行モデルは、Unix と Windows で揃えられている（libuv の設計文書）。</li>
+<li>ファイルの入出力には、プラットフォームに共通の非同期の仕組みがないため、libuv は、ブロックする入出力を、スレッドプールで実行する。スレッドプールで動くのは、ファイルシステムの操作、DNS の関数（getaddrinfo と getnameinfo）、uv_queue_work() で指定した利用者のコード。</li>
+<li>スレッドプールは大域で、全部のループが共有する。既定の大きさは4で、起動時に環境変数 UV_THREADPOOL_SIZE で変えられる（上限は1024）。公式の指針は、Node.js では、DNS の dns.lookup()、fs の API（一部を除く）、暗号の pbkdf2() や scrypt() など、zlib の API（同期のものを除く）が、このワーカープールで動くと書く。</li>
+</ul>
+<p>最後に、版の周期です。</p>
+<figure class="viz">
+<p class="viz-title">版の日程（2026年11月17日の時点）</p>
+<p class="viz-sub">Node.js Release Working Group の schedule.json より。日程は変わりうる</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 280" role="img" aria-label="v22 は2025年10月から2027年4月まで Maintenance。v24 は2026年10月から2028年4月まで Maintenance。v26 は2026年10月28日から2027年10月まで Active LTS で、2029年4月に終了。v27 は2026年10月28日に Alpha が始まり、2027年4月に Current、10月から LTS で、2030年4月に終了する。">
+<rect class="box dashed" x="130" y="8" width="26" height="14" rx="3"></rect>
+<text class="t-small" x="162" y="20" text-anchor="start">Alpha</text>
+<rect class="bar-2" x="240" y="8" width="26" height="14" rx="3"></rect>
+<text class="t-small" x="272" y="20" text-anchor="start">Current</text>
+<rect class="box-key" x="360" y="8" width="26" height="14" rx="3"></rect>
+<text class="t-small" x="392" y="20" text-anchor="start">LTS（Active LTS）</text>
+<rect class="bar-old" x="560" y="8" width="26" height="14" rx="3"></rect>
+<text class="t-small" x="592" y="20" text-anchor="start">Maintenance（第26版まで）</text>
+<g class="grid">
+<line x1="216.8" y1="40" x2="216.8" y2="232"/><line x1="331.9" y1="40" x2="331.9" y2="232"/><line x1="447.1" y1="40" x2="447.1" y2="232"/><line x1="562.3" y1="40" x2="562.3" y2="232"/><line x1="677.7" y1="40" x2="677.7" y2="232"/><line x1="792.9" y1="40" x2="792.9" y2="232"/>
+</g>
+<text class="t-strong" x="20" y="73">v22</text>
+<text class="t-small t-muted" x="20" y="90">Jod</text>
+<rect class="bar-2" x="137.3" y="62" width="59.3" height="18" rx="4"><title>v22 Current：2024-04-24〜2024-10-29</title></rect>
+<rect class="box-key" x="196.6" y="62" width="112.6" height="18" rx="4"><title>v22 Active LTS：2024-10-29〜2025-10-21</title></rect>
+<rect class="bar-old" x="309.2" y="62" width="175.4" height="18" rx="4"><title>v22 Maintenance：2025-10-21〜2027-04-30（終了）</title></rect>
+<text class="t-strong" x="20" y="123">v24</text>
+<text class="t-small t-muted" x="20" y="140">Krypton</text>
+<rect class="bar-2" x="256.2" y="112" width="55.2" height="18" rx="4"><title>v24 Current：2025-05-06〜2025-10-28</title></rect>
+<rect class="box-key" x="311.4" y="112" width="112.7" height="18" rx="4"><title>v24 Active LTS：2025-10-28〜2026-10-20</title></rect>
+<rect class="bar-old" x="424.1" y="112" width="176.0" height="18" rx="4"><title>v24 Maintenance：2026-10-20〜2028-04-30（終了）</title></rect>
+<text class="t-strong" x="20" y="173">v26</text>
+<text class="t-small t-muted" x="20" y="190">Lithium</text>
+<rect class="bar-2" x="371.1" y="162" width="55.5" height="18" rx="4"><title>v26 Current：2026-05-05〜2026-10-28</title></rect>
+<rect class="box-key" x="426.6" y="162" width="112.6" height="18" rx="4"><title>v26 Active LTS：2026-10-28〜2027-10-20</title></rect>
+<rect class="bar-old" x="539.2" y="162" width="176.1" height="18" rx="4"><title>v26 Maintenance：2027-10-20〜2029-04-30（終了）</title></rect>
+<text class="t-strong" x="20" y="223">v27</text>
+<text class="t-small t-muted" x="20" y="240">コード名は未定</text>
+<rect class="box dashed" x="426.6" y="212" width="55.5" height="18" rx="4"><title>v27 Alpha：2026-10-28〜2027-04-22</title></rect>
+<rect class="bar-2" x="482.1" y="212" width="57.1" height="18" rx="4"><title>v27 Current：2027-04-22〜2027-10-20</title></rect>
+<rect class="box-key" x="539.2" y="212" width="291.2" height="18" rx="4"><title>v27 LTS：2027-10-20〜2030-04-30（終了）。Maintenance の段階はない</title></rect>
+<line class="arrow" x1="432.9" y1="36" x2="432.9" y2="236"/>
+<text class="t-small" x="438" y="48" text-anchor="start">いま（2026年11月17日）</text>
+<line class="axis" x1="130" y1="250" x2="850" y2="250"/>
+<text class="t-small t-muted" x="216.8" y="268" text-anchor="middle">2025</text>
+<text class="t-small t-muted" x="331.9" y="268" text-anchor="middle">2026</text>
+<text class="t-small t-muted" x="447.1" y="268" text-anchor="middle">2027</text>
+<text class="t-small t-muted" x="562.3" y="268" text-anchor="middle">2028</text>
+<text class="t-small t-muted" x="677.7" y="268" text-anchor="middle">2029</text>
+<text class="t-small t-muted" x="792.9" y="268" text-anchor="middle">2030</text>
+</svg>
+</div>
+<figcaption>いまの時点で、v26 が Active LTS、v22 と v24 が Maintenance、v27 が Alpha です。v27 からは、Maintenance の段階がなく、LTS の期間が30か月続きます。年の目盛りは、各年の1月1日の位置です。</figcaption>
+</figure>
+<ul>
+<li>第26版までは、半年ごとに新しい主要な版が出て、偶数の版だけが LTS になった。</li>
+<li>第27版から、年に1回（4月）に新しい主要な版を出し、すべての版が LTS になる。各版は、10月に Alpha を始めて6か月（3月まで）、4月に Current になって6か月、10月から LTS になり30か月で、合計36か月で終了する。第27版から、LTS の版は、Maintenance の段階を経ない。</li>
+<li>2026年11月17日の時点：v22（Jod）と v24（Krypton）は Maintenance LTS、v26（Lithium）は Active LTS（2026年10月28日から）、v27 は Alpha（2026年10月28日から）。v20 は2026年4月30日に、v25 は2026年6月1日に終了した。日程は変わりうる、と書く。</li>
+</ul>
+<p>近年の機能と、公式の安定度の区分です（API 文書 v26.13.1）。</p>
+<ul>
+<li>安定度は、0（非推奨）、1（実験的。1.0 開発初期、1.1 開発が活発、1.2 リリース候補）、2（安定）、3（レガシー）の区分。実験的は、セマンティックバージョニングの対象外で、本番での使用は勧めない。</li>
+<li>安定（2）：テストの実行（node:test、node --test。v20.0.0 から安定）、権限モデル（v20.0.0 で追加、v23.5.0 と v22.13.0 から実験的ではない）、TypeScript の型の除去（v22.6.0 で追加、v23.6.0 と v22.18.0 で既定で有効、v25.2.0 と v24.12.0 で安定）、ES モジュール、ワーカースレッド（v12.11.0 から実験的ではない）。</li>
+<li>実験的：単一の実行ファイルのアプリ（安定度 1.1。v19.7.0 で追加）。</li>
+</ul>
+<h3>使いどころ</h3>
+<ul>
+<li>多数の同時接続を扱う、ネットワークのサーバー（公式が掲げる設計の目的）。HTTP は、ストリーミングと低遅延を意識して設計されている。</li>
+<li>入出力が中心の処理。待つ時間が多く、計算の時間が短い処理に向く（イベントループの設計から、筆者の整理）。</li>
+<li>配布の面では、Node.js が入っていない環境に、アプリを単一の実行ファイルで配る（実験的）。</li>
+<li>ライブラリの作者は、Alpha の版を CI に早く取り込むよう、公式の発表が勧める。LTS だけで試すと、利用者に影響が出る前に不具合を報告できない、と書く。</li>
+</ul>
+<h3>限界と注意</h3>
+<ul>
+<li>ブロックする処理に弱い：JavaScript のコールバックが長くかかると、それを動かしているスレッドが止まる。公式の指針は、各コールバックを速く終えるよう求める。</li>
+<li>同期の API：サーバーでは使わないよう挙げているもの：crypto.randomBytes（同期）、crypto.pbkdf2Sync、zlib.inflateSync、fs の同期の API、child_process.spawnSync など。</li>
+<li>大きな入力の JSON：50MB の文字列で、文字列化に0.7秒、解析に1.3秒かかる、と指針が例を挙げる。</li>
+<li>正規表現（ReDoS）：入れ子の量指定（例：(a+)*）などで、イベントループが実質止まりうる。入力の長さを制限して拒否することも勧める。</li>
+<li>対策：作業を小さく分けて、ときどきほかの事象に譲る（例：setImmediate() で次の段階をつなぐ）。重い処理は、ワーカープールやワーカースレッドなどに出し、イベントループは、要求をさばく司令塔にとどめる。クライアントごとに子プロセスを作ってはいけない、と指針が警告する。</li>
+<li>スレッドプールは小さい：既定で4で、ファイル、DNS、暗号、圧縮の処理が、同じプールを分け合う。</li>
+<li>権限モデルは「シートベルト」：信頼できるコードの誤りを防ぐもので、悪意のあるコードへの保証はない、と公式の文書が書く。</li>
+<li>TypeScript は型の検査をしない：型を取り除くだけ。tsconfig.json を使うには、外部のパッケージが要る。</li>
+<li>require() での ES モジュールの読み込み：同期の ES モジュール（トップレベルの await を使わないもの）だけに対応、と文書が書く。</li>
+<li>Alpha と Current の版は、本番の使用向けではない：公式の README が、ライブラリの作者や CI 向けと書く。</li>
+<li>日程は変わりうる：版の日程は、公式が「変更されうる」と書く。</li>
+</ul>
+<h2>読むときの注意</h2>
+<ul>
+<li>2026年11月17日時点の、公式の文書にもとづく。Node.js の最新の LTS は、公式サイトの表示では v26.13.1。機能や日程は版で変わる。</li>
+<li>比較表の軸（何か、エンジンと土台、方針、権限の制限、TypeScript）は、筆者の整理。Deno と Bun の欄は、各公式リポジトリの README の自己紹介にもとづき、優劣や互換の程度は示さない。</li>
+<li>「使いどころ」の一部（入出力が中心の処理に向く、など）は、公式の設計の説明から、筆者がまとめたもの。</li>
+<li>性能の数字や採用の事例は、公式の資料で確認していないため、載せていない。</li>
+</ul>
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>実行環境（ランタイム）</dt><dd>プログラムを動かすために必要な、エンジンと、標準の部品の一式。</dd>
+<dt>V8</dt><dd>Google の、JavaScript と WebAssembly のエンジン。</dd>
+<dt>イベントループ</dt><dd>待っている処理の完了などの事象を取り、対応するコールバックを順に実行する、繰り返しの仕組み。</dd>
+<dt>コールバック</dt><dd>処理が終わったときに呼ばれる関数。</dd>
+<dt>libuv</dt><dd>Node.js のために作られた、イベントループと非同期の入出力を提供する、クロスプラットフォームのライブラリ。</dd>
+<dt>スレッドプール</dt><dd>あらかじめ用意した、一定数のスレッドの集まり。ブロックする処理を、ここに出す。</dd>
+<dt>epoll、kqueue、IOCP</dt><dd>OS ごとの、多数の入出力を効率よく待つ仕組み（それぞれ Linux、macOS と BSD、Windows）。</dd>
+<dt>LTS（長期サポート）</dt><dd>安定性と安全性に重点を置いて、長く保守される版。</dd>
+<dt>Node-API</dt><dd>ネイティブアドオンのための API。版をまたいで ABI が安定する。</dd>
+<dt>ABI</dt><dd>コンパイル済みのコードどうしが呼び合うための、バイナリの取り決め。</dd>
+<dt>npm</dt><dd>JavaScript のパッケージのレジストリと、その道具。</dd>
+<dt>SEA（単一の実行ファイルのアプリ）</dt><dd>アプリを Node.js の実行ファイルに埋め込み、1つのファイルにして配る機能。</dd>
+<dt>ReDoS</dt><dd>正規表現の処理に時間がかかる入力で、サービスを止める攻撃。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月17日時点の情報です。内容は、Node.js の公式サイトと API 文書、公式のリポジトリ、Release Working Group の文書と発表、libuv と V8 と npm の公式の文書、Deno と Bun の公式リポジトリの README をもとに、独自に整理したものです。</p>
+<p>数字は資料のままで、再計算や検証はしていません。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-17</span>初回公開（コンセプトの型の第1段階：一言、3行、類似との違い、前後の組み合わせ、具体的な仕組み）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
