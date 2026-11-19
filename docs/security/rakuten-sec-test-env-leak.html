@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="楽天証券が2026年11月17日に公表した、第三者の不正アクセスによる顧客情報の漏えいの可能性を、公式のお知らせから整理する。11月16日の検知、11月11日にテスト環境で管理していた情報の漏えいのおそれ、最大約1,125万口座と最大約447万口座の2段階の対象、漏れていない情報、利用者への案内。">
+<title>楽天証券のテスト環境から、最大約1,125万口座のIDなどが漏れた可能性：11月16日に検知、11月11日の漏えい、パスワードや暗証番号は確認されていない | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>楽天証券のテスト環境から、最大約1,125万口座のIDなどが漏れた可能性：11月16日に検知、11月11日の漏えい、パスワードや暗証番号は確認されていない</h1><p class="summary">楽天証券が2026年11月17日に公表した、第三者の不正アクセスによる顧客情報の漏えいの可能性を、公式のお知らせから整理する。11月16日の検知、11月11日にテスト環境で管理していた情報の漏えいのおそれ、最大約1,125万口座と最大約447万口座の2段階の対象、漏れていない情報、利用者への案内。</p><p class="meta">初回公開 2026-11-19 ／ 更新日 2026-11-19</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>楽天証券は、2026年11月16日（月）に、一部のシステムへの第三者による不正アクセスの可能性を検知し、調べた結果、11月11日（水）に、テスト環境のシステム内で管理していた一部の情報が外部に漏えいしたおそれがあることを確認した、と公表した。</p>
+<p>対象は、楽天証券に登録していた顧客（退会した顧客を含む）。部店・お客様コードとログインIDは最大約1,125万口座分、そのうち、氏名・住所・生年月日・電話番号・メールなどまで含むものが最大約447万口座分。ログインに必要なパスワードや暗証番号など、取引に必要な各種の情報の漏えいは確認していない。本件に起因すると考えられる不正アクセスや不正取引も、現時点では確認していない。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1,125<small>万口座</small></p><p class="stat-label">部店・お客様コードとログインIDが漏れたおそれ（最大）</p></div>
+<div class="stat"><p class="stat-value">447<small>万口座</small></p><p class="stat-label">氏名・住所・出金先口座などまで含むもの（最大）</p></div>
+<div class="stat"><p class="stat-value">0<small>件</small></p><p class="stat-label">不正アクセスまたは不正取引で確認されたもの（現時点）</p></div>
+</div>
+
+<h2>漏えいのおそれがある情報</h2>
+
+<ul>
+<li><strong>最大約447万口座：</strong>楽天証券の部店・お客様コード、ログインID、氏名、カナ氏名、生年月日、住所、電話番号、メールアドレス、勤務先、出金先口座（金融機関・口座番号・名義人）、年収・金融資産（お客様ご申告情報）、商品別資産情報、最終ログイン日。</li>
+<li><strong>最大約1,125万口座：</strong>楽天証券の部店・お客様コード、ログインID。</li>
+<li>ログインIDは、楽天IDとは異なる、と注記されている。</li>
+<li><strong>漏えいを確認していないもの：</strong>ログインに必要なパスワード、暗証番号を含む、取引に必要な各種情報。</li>
+</ul>
+
+<h2>楽天証券の対応と案内</h2>
+
+<ul>
+<li>11月16日に、該当箇所へのアクセスの遮断と修正をした。原因と詳しい経緯は、調査中。</li>
+<li>影響が確認された顧客の特定は完了していて、該当の顧客には個別に報告する。新しい事項は、改めて連絡する。</li>
+<li><strong>利用者への案内：</strong>楽天証券のメールには URL を載せていない。電話で個人情報やログインの情報を尋ねることはない。楽天証券や関係会社を装った不審なメール・SMS・電話・郵送物に注意する。</li>
+<li>パスキー認証（フィッシングへの耐性が高い）のログインの必須化を進めていて、日々ログインする顧客の9割超が使っている。未設定の人は設定する。取引や出金の一時的な利用停止は、ログイン後のセキュリティ設定で、顧客自身が設定できる。</li>
+</ul>
+
+<h2>読むときの注意</h2>
+
+<ul>
+<li>読んだのは、2026年11月17日付のお知らせだけ。以後の更新は未確認。</li>
+<li>不正アクセスの原因、侵入の方法、実際に持ち出されたかどうか（「おそれ」としている）は、書かれていない。</li>
+<li>件数は口座の数で、人数ではない。2つの数字（約447万と約1,125万）の関係は、約447万口座が約1,125万口座の一部とは明記されていない。一部と読むのが自然だが、書かれていない。</li>
+<li>同社が10月31日と11月5日に公表した、外部のサービス提供元・委託先の件とは、別の事案として公表されている。つながりがあるかは、読んだ文書に書かれていない。</li>
+</ul>
+
+<h2>見方（筆者の整理）</h2>
+
+<ul>
+<li>「テスト環境」に、本番の顧客情報（出金先口座や年収・金融資産のような申告情報を含む）が置かれていた点が目を引く。なぜテスト環境にこれらがあったかは、書かれていない。</li>
+<li>パスワードと暗証番号の漏えいは確認していない、としている。それでも、氏名、住所、電話、メール、出金先口座の情報がそろうと、本人を装う連絡に使われやすい、という一般的な懸念がある（筆者の整理）。</li>
+<li>楽天証券は、パスキー認証を案内し、一時的な利用停止の設定を勧めている。利用者が自分でできる備えが、お知らせの中心に置かれている。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>テスト環境</dt><dd>本番のサービスとは別に、開発や検証のために用意するシステム。</dd>
+<dt>パスキー認証</dt><dd>パスワードの代わりに、端末の生体認証などで、本人の確認をする方式。フィッシングに強い。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月19日時点の情報です。内容は、楽天証券の2026年11月17日付のお知らせをもとに、独自に整理したものです。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-19</span>初回公開</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
