@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Microsoft Fabric の中で提供される、サーバーレスの PostgreSQL「Fabric HorizonDB」の、仕組み、Fabric との連携（ミラーリング、フェデレーテッドクエリ、データ配信）、パブリックプレビューの制限を、Microsoft Learn の概要ページと制限のページをもとに整理する。">
+<title>Microsoft Fabric HorizonDB（パブリックプレビュー）：Fabric の中の PostgreSQL。使えるのは作成者本人だけという、現時点の制限 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Microsoft Fabric HorizonDB（パブリックプレビュー）：Fabric の中の PostgreSQL。使えるのは作成者本人だけという、現時点の制限</h1><p class="summary">Microsoft Fabric の中で提供される、サーバーレスの PostgreSQL「Fabric HorizonDB」の、仕組み、Fabric との連携（ミラーリング、フェデレーテッドクエリ、データ配信）、パブリックプレビューの制限を、Microsoft Learn の概要ページと制限のページをもとに整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Fabric HorizonDB は、Microsoft Fabric の中で提供される、PostgreSQL のマネージドサービスです。1つ1つのデータベースは、Fabric の部品（アイテム）で、アプリは PostgreSQL のプロトコルで接続し、計算、保存、保守、分析との連携は、Fabric が管理します。<strong>現在はパブリックプレビュー</strong>で、機能や制限は、一般提供の前に変わりうる、と Microsoft は書いています。</p>
+<p>現時点の大きな制限は、<strong>データベースを作った Microsoft Entra の ID だけが接続できる</strong>ことです。ほかのユーザー、サービスプリンシパル、マネージド ID は接続できず、Fabric のアイテムを共有しても、解除されません。Microsoft は、開発・テスト用のワークスペースと、機微でない合成データを使うよう求めています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3<small>経路</small></p><p class="stat-label">Fabric との連携（ミラーリング、フェデレーテッドクエリ、データ配信）</p></div>
+<div class="stat"><p class="stat-value">1<small>ID</small></p><p class="stat-label">現時点で PostgreSQL に接続できる Microsoft Entra の ID（作成者のみ）</p></div>
+<div class="stat"><p class="stat-value">11月17日</p><p class="stat-label">両ページの最終更新（情報源の日付の記載は11月6日）</p></div>
+</div>
+
+<h2>仕組み</h2>
+
+<ul>
+<li><strong>Fabric のアイテム：</strong>データベースごとに、安定した PostgreSQL のエンドポイントを持つ。永続のデータと、顧客が使う計算を分けるため、データベースの同一性とエンドポイントを変えずに、計算を調整できる。</li>
+<li><strong>自動で拡縮：</strong>顧客が計算の大きさを選ぶのではなく、サービスが管理する資源を、プラットフォームが負荷に応じて自動で調整する。</li>
+<li><strong>ゼロまでの縮小：</strong>有効な場合、使われていないデータベースは一時停止し、同じエンドポイントへの接続で再開する。再開には、起動の遅れがある。一時停止の間も、永続のデータ、設定、ID の結びつき、エンドポイントは残る。セッション、一時的な状態、揮発性のキャッシュは、一時停止、拡縮、保守のあとに残る保証がない。</li>
+<li><strong>接続の方法：</strong>Fabric の SQL エディター、Visual Studio Code の Microsoft PostgreSQL 拡張、PostgreSQL 互換のクライアント。運用の接続は、PostgreSQL のエンドポイントを使う。SQL 分析エンドポイントは、ミラーしたデータを読むだけの、別の面。</li>
+</ul>
+
+<h2>Fabric との連携：3つの経路</h2>
+
+<div class="table-wrap">
+<table>
+<caption>概要ページが示す「Federated Analytics（連携した分析）」の3つの機能</caption>
+<thead><tr><th>機能</th><th>向き</th><th>使う場面</th></tr></thead>
+<tbody>
+<tr><td>データベースのミラーリング</td><td>HorizonDB から Fabric へ</td><td>分析する側が、運用データの対象のテーブルの、非同期のコピーを、OneLake と SQL 分析エンドポイントで使いたいとき</td></tr>
+<tr><td>フェデレーテッドクエリ</td><td>Fabric から PostgreSQL のクエリへ</td><td>運用のクエリが、対応する Fabric のデータを、pg_fabric_fdw で、ローカルのテーブルにコピーせずに読みたいとき</td></tr>
+<tr><td>データ配信</td><td>Fabric から HorizonDB の保存へ</td><td>分析の結果の一部を、アプリのために、PostgreSQL に実体として持たせたいとき（上限つきの Copy ジョブによる、いわゆるリバース ETL）</td></tr>
+</tbody>
+</table>
+</div>
+<p>3つの経路は、健全さと鮮度が、それぞれ独立しています。PostgreSQL のエンドポイントが正常でも、ミラーリング、フェデレーション、Copy ジョブが正常とは限らず、ミラーしたデータは、運用のデータベースより遅れうる、と書かれています。</p>
+
+<h2>組み込みの拡張</h2>
+
+<ul>
+<li>vector、pg_diskann、pg_textsearch：承認された、ベクトル検索と全文検索の用途のため。</li>
+<li>pg_fabric_fdw：対応する Fabric のデータを、クエリで読むため。</li>
+<li>azure_ai：承認された AI の操作の連携の入口。拡張があることは、モデルの提供元、エンドポイント、割り当て、権限があることを意味しない、と書く。</li>
+<li>サービスが作って管理する拡張（と、既定の fabric_dw という外部サーバー）は、削除、置き換え、変更をしてはならない。使える拡張は、プレビューの環境で異なりうるため、pg_extension で確かめる。</li>
+</ul>
+
+<h2>パブリックプレビューの制限（制限のページ）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>制限のページが書く、現時点の境界</caption>
+<thead><tr><th>領域</th><th>制限</th></tr></thead>
+<tbody>
+<tr><td>作成</td><td>プレビューを有効にしたワークスペース、有効な対応する Fabric の容量、Contributor か Admin のアクセスが必要。作成は非同期で、受け付けられても、エンドポイントの準備ができたとは限らない。作成の時間の保証は公表されていない。ポータルの「+ 新しいアイテム」から作り、REST での作成は、前提にしない</td></tr>
+<tr><td>認証</td><td>認証は Microsoft Entra。データベースを作った ID だけが接続できる。PostgreSQL のユーザーやロールの作成、テーブル・ビューごとの権限の管理はできない。確立済みの、またはプールされたセッションは、権限を取り消しても、すぐに切れるとは限らない</td></tr>
+<tr><td>PostgreSQL の互換性</td><td>メジャー・マイナーのバージョンは、選べず、固定できない。サービスが、マイナーの保守を管理する。メジャーバージョンの更新の手順は、プレビューにはない。スーパーユーザー、ホスト、OS、ファイルシステムへのアクセス、任意のネイティブのライブラリ、制限のないサーバー設定は使えない。上流の PostgreSQL が対応していても、ここで対応するとは限らない</td></tr>
+<tr><td>接続と一時停止</td><td>接続、準備済みの文、一時テーブル、セッションの設定、実行中のトランザクションは、一時停止や拡縮のあとに残る保証がない。サービスは、SQL を自動で再実行しない。クライアントは、ジッターつきの指数バックオフで再接続し、コミットしたかどうか不明なトランザクションは、冪等性のキーがない限り、盲目的に再実行しない</td></tr>
+<tr><td>計算と保存</td><td>計算の最大値の上限や、決まった資源の範囲があるとは、仮定しない。保存の階層、IOPS、スループット、データベースの大きさの上限などの数値は公表されていない。削除は元に戻せない可能性がある。暗号化、バックアップ、復元の選択肢は、プレビューごとに確認が必要で、顧客管理の鍵や、本番の復旧の保証は、前提にしない</td></tr>
+<tr><td>ミラーリング</td><td>対象は、条件を満たすテーブル、キー、データ型、DDL だけ。最初にコピーし、そのあと、コミットされた変更を非同期に反映する。遅れの数値の保証は公表されていない。関数、サービスのスキーマ、一時テーブル、非対応の型、ラージオブジェクト、拡張が所有するオブジェクトなどは、ミラーされる保証がない。テーブルが対象外になる変更で、ミラーリングが止まり、修復や再初期化が必要になることもある</td></tr>
+<tr><td>フェデレーテッドクエリ</td><td>対応する Fabric の SQL 互換のエンドポイント、ワークスペース、型、ID の流れは、公開された一覧に限る。外部テーブルは読み取り専用で、INSERT、UPDATE、DELETE、MERGE、FOR UPDATE などは使えない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Azure HorizonDB との関係（読んだ範囲）</h2>
+
+<ul>
+<li>このページは、Azure HorizonDB の説明を載せていません。両者の関係（同じ技術の上にあるのか、機能がどこまで共通か）は、読んだ2ページからは確認できていません。</li>
+<li>Azure HorizonDB のまとめ（別の記事）は、Azure 側の概要ページと製品ページに基づく整理です。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li>料金と、一般提供の時期（概要ページは、消費の情報を見るよう書くだけで、課金の見方を推測しないよう求めている）。</li>
+<li>Microsoft の技術ブログでの発表の内容（自動取得を断られたため、読んでいません）。</li>
+<li>使われている PostgreSQL のバージョン（ページは「バージョンを仮定せず、SQL エディターで確かめる」と書く）。</li>
+<li>提供されているリージョンの一覧と、プレビューを有効にする具体的な手順。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>プレビューの機能と制限は、一般提供までに変わると、Microsoft 自身が書いています。このまとめは、2026年11月17日の更新時点の2ページの内容です。</li>
+<li>Microsoft は、本番のデータや、本番の復旧の保証を前提にしないよう、くり返し書いています。このまとめも、導入の勧めは扱いません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>Microsoft Fabric</dt><dd>Microsoft の、データの収集、保存、分析を一体で扱う基盤。</dd>
+<dt>OneLake</dt><dd>Fabric のデータの置き場。ミラーしたデータが入る。</dd>
+<dt>ミラーリング</dt><dd>運用のデータベースの内容を、分析の側に、非同期で複製し続けること。</dd>
+<dt>フェデレーテッドクエリ</dt><dd>データをコピーせず、別の場所のデータを、クエリで直接読むこと。</dd>
+<dt>リバース ETL</dt><dd>分析の側で作った結果を、運用のデータベースに戻して、アプリが使えるようにすること。</dd>
+<dt>スケールゼロ</dt><dd>使われていないときに、計算を止めて、資源と費用を減らす仕組み。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、Microsoft Learn の概要ページと制限のページ（どちらも2026年11月17日に更新）の本文をもとに、独自に整理したものです。</p>
+<p>Microsoft の技術ブログは、自動取得を断られたため読んでいません。一般提供や、料金が公表されたときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（Fabric HorizonDB の仕組み、連携の3経路、プレビューの制限）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
