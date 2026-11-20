@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Microsoft が提供する PostgreSQL 互換のマネージドサービス「Azure HorizonDB」の、アーキテクチャ（計算と保存の分離、ログ中心の設計）、クラスターの構成、AI 機能、料金の考え方、現時点の制限と提供リージョンを、Microsoft Learn の概要ページと製品ページをもとに整理する。">
+<title>Azure HorizonDB：計算と保存を分け、「ログがデータベース」になった、Microsoft の PostgreSQL 互換サービスの仕組みと制限 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Azure HorizonDB：計算と保存を分け、「ログがデータベース」になった、Microsoft の PostgreSQL 互換サービスの仕組みと制限</h1><p class="summary">Microsoft が提供する PostgreSQL 互換のマネージドサービス「Azure HorizonDB」の、アーキテクチャ（計算と保存の分離、ログ中心の設計）、クラスターの構成、AI 機能、料金の考え方、現時点の制限と提供リージョンを、Microsoft Learn の概要ページと製品ページをもとに整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Azure HorizonDB は、Microsoft が出している、<strong>PostgreSQL と互換のあるクラウド専用のデータベースサービス</strong>です。公式の説明では、計算と保存を完全に分け、さらに「データベースをログとして作る」設計をとることで、予測しやすい性能、可用性、拡張性を出す、と書かれています。</p>
+<p>計算側から保存側へ書くのは、<strong>先行書き込みログ（WAL）だけ</strong>で、データのページは書きません。製品ページは、自己管理の PostgreSQL に比べて、<strong>最大3倍の処理性能</strong>と、最大 3,072 vCore・128 TB まで拡張できる、と書いています（注の条件は未確認）。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1＋15</p><p class="stat-label">1つのクラスターに置ける、書き込みのノード1つと、読み取りのノードの上限（15）</p></div>
+<div class="stat"><p class="stat-value">128<small>TB</small></p><p class="stat-label">製品ページが書く、自動で拡張する保存の上限</p></div>
+<div class="stat"><p class="stat-value">3,072<small>vCore</small></p><p class="stat-label">製品ページが書く、主と複製のノードを合わせた拡張の上限</p></div>
+<div class="stat"><p class="stat-value">13<small>リージョン</small></p><p class="stat-label">概要ページに載る、利用できる Azure のリージョン数</p></div>
+</div>
+
+<h2>設計の2つの原則</h2>
+
+<div class="cards">
+<div class="card"><h3>計算と保存の分離</h3><p>計算は状態を持たず、vCore とメモリを、保存と独立に増減できる。保存は、WAL 用と、データ用の2種類の専用のサーバー群で、どちらも Azure のストレージで耐久性を支え、既定でゾーンの障害に耐える。読み取りノードは、データのコピーが要らないため、すぐに追加できる</p></div>
+<div class="card"><h3>ログがデータベース</h3><p>計算側から保存側へ書くのは WAL だけで、データのページは書かない。WAL を真実の元として、保存のノードが、WAL を適用してページを再構築する。これにより、チェックポイントの I/O の詰まりをなくし、書き込みの増幅を減らし、データベースの大きさによらず、安定した書き込みの待ち時間を出す、と書く</p></div>
+</div>
+<p>書き込みは、(1) アプリが、読み書きのエンドポイント経由で、書き込みのノードに変更を送る、(2) ノードが WAL を WAL 保存に送り、耐久的に保存されてから、アプリに確認を返す、(3) WAL が、データの保存と、すべての読み取りノードに配られ、読み取りノードは、通常、ミリ秒で反映する、(4) WAL とデータのページが、Azure Blob に書かれる、という流れです。</p>
+
+<h2>クラスターの構成</h2>
+
+<div class="table-wrap">
+<table>
+<caption>概要ページが示す、1つのクラスターの部品</caption>
+<thead><tr><th>部品</th><th>説明</th><th>数</th></tr></thead>
+<tbody>
+<tr><td>書き込みのノード</td><td>すべての書き込みを処理する。読み取りも処理できる</td><td>1</td></tr>
+<tr><td>読み取りのノード</td><td>読み取りを処理する。書き込みのノードが落ちたら、読み書きのプールの読み取りノードが引き継ぐ</td><td>最大15</td></tr>
+<tr><td>読み書きのプール</td><td>書き込みのノードと、任意で読み取りのノードを含む</td><td>1</td></tr>
+<tr><td>読み取りのプール</td><td>読み取りのノードだけを含む（※現時点では使えない。下の制限を参照）</td><td>最大15（概要の表）</td></tr>
+<tr><td>読み書きのエンドポイント</td><td>書き込みのノードに接続する。フェイルオーバーのあとも、接続先が自動で変わる</td><td>1</td></tr>
+<tr><td>読み取り専用のエンドポイント</td><td>プール内の読み取りノードに、接続を分散する</td><td>プールごとに1</td></tr>
+<tr><td>保存</td><td>すべてのノードが共有する、データの1つのコピー</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
+<p>各ノードは、vCore あたり 8 GB のメモリと 32 GB のローカル NVMe SSD のキャッシュを持ちます。ノードは、1つの可用性ゾーンで動き、ゾーン冗長の高可用性にするには、プールに2つ以上のノードが必要です。保存の容量や IOPS は、選ばず、データに合わせて自動で増えます。</p>
+
+<h2>AI と分析の機能（製品ページ・概要ページ）</h2>
+
+<ul>
+<li><strong>AI 機能：</strong>ベクトルの埋め込みの対応と、Microsoft Foundry との連携。RAG、レコメンド、意味検索を、データベースの層で作れる、と書く。AI モデルの管理と AI のパイプラインの機能もある。</li>
+<li><strong>検索：</strong>製品ページは、ベクトル検索、全文検索、ハイブリッド検索、意味による再順位づけを、データベース内で行え、DiskANN が、ベクトル検索と絞り込みを1回の操作で行う、と書く。</li>
+<li><strong>分析：</strong>データを Microsoft Fabric にミラーリングして、OneLake で、運用データと業務データを合わせられる（製品ページは「ETL なし」と書く）。</li>
+<li><strong>互換性：</strong>既存の PostgreSQL のクライアント、ドライバー、ORM、SQL がそのまま使える。</li>
+<li><strong>セキュリティ：</strong>PostgreSQL と Microsoft Entra の認証、プライベートエンドポイント、暗号化。製品ページは、各国・地域別を含む50を超える準拠の認証がある、と書く。</li>
+</ul>
+
+<h2>クラスターで選べること、選べないこと</h2>
+
+<ul>
+<li><strong>作成のときに決め、あとから変えられない：</strong>PostgreSQL のメジャーバージョン、データの暗号化の種類、地理冗長バックアップ。</li>
+<li><strong>バックアップ：</strong>保持は1日から35日。バックアップは、保存の層で取り、データベースが大きくても、すぐに終わり、ノードの資源を使わない、と書く。</li>
+<li><strong>料金：</strong>従量課金。計算は、主ノードと高可用性の複製を含む、確保した vCore の分、保存は、データとログに確保した GiB の月ごと。製品ページは、バックアップの保存は、合計の保存量の100%まで無料、と書く（具体的な金額は読んでいません）。</li>
+</ul>
+
+<h2>現時点の制限（概要ページ）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>概要ページが「使えない」と書く機能</caption>
+<thead><tr><th>機能</th><th>状況・備考</th></tr></thead>
+<tbody>
+<tr><td>リージョンをまたぐ読み取りノード</td><td>使えない。災害対策は、地理冗長バックアップと、ペアのリージョンへの復元で行う</td></tr>
+<tr><td>読み取りのプール</td><td>使えない。1つのクラスターに、計算のプールは1つだけ</td></tr>
+<tr><td>地理冗長バックアップとの併用（顧客管理の鍵）</td><td>使えない。顧客管理の鍵か、地理冗長バックアップの、どちらか一方</td></tr>
+<tr><td>メンテナンス時間の指定・延期</td><td>使えない。システムが決めた時間で行い、通知も出ない</td></tr>
+<tr><td>その場でのメジャーバージョンの更新</td><td>使えない</td></tr>
+<tr><td>接続プーリング（PgBouncer）</td><td>使えない。外部の接続プーラーを使う</td></tr>
+<tr><td>長期保存（LTR）</td><td>使えない。保持は35日まで</td></tr>
+<tr><td>インデックスのチューニング</td><td>使えない</td></tr>
+<tr><td>仮想ネットワークへの注入</td><td>使えない。Azure Private Link は使える</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>利用できるリージョン</h2>
+
+<ul>
+<li><strong>米州：</strong>Canada Central、Central US、East US、South Central US、West US 2、West US 3。</li>
+<li><strong>欧州：</strong>Germany West Central、Sweden Central。</li>
+<li><strong>アジア太平洋：</strong>Australia East、India South Central、Indonesia Central、Japan East、Korea Central。</li>
+<li>リージョンは変わりうる。新規の展開に制限のあるリージョンもある、と書く。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li>一般提供かプレビューか：読んだ2ページには、提供の段階の記載がありません。製品ページの顧客の声に「プライベートプレビューから使っている」とあることだけが、読み取れます。</li>
+<li>最初の発表の日付と、その後の更新の経過：Microsoft の技術ブログが読めなかったため、確認していません。</li>
+<li>「最大3倍」の性能の注の条件（比較の対象、ワークロード、測定の方法）。</li>
+<li>具体的な料金の金額。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>概要ページは、クラスターの構成の表で、読み取りのプールを「最大15」と書く一方、制限の表で、読み取りのプールは「使えない」と書いています。後者は「現在の状態」で、前者は設計上の上限と読めます。このまとめでは、現時点では使えないと書きました。</li>
+<li>性能や拡張の数字は、Microsoft の主張で、条件つきです。第三者の検証ではありません。</li>
+<li>このまとめは、他社のサービスとの優劣や、導入の勧めは扱いません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>WAL（先行書き込みログ）</dt><dd>PostgreSQL が、データの変更を、順に記録するログ。ここに書いてから、データに反映する。</dd>
+<dt>フェイルオーバー</dt><dd>書き込みのノードが使えなくなったとき、別のノードに役割を移すこと。</dd>
+<dt>可用性ゾーン</dt><dd>同じリージョンの中の、物理的に別れた、データセンターの集まり。</dd>
+<dt>ベクトル検索・埋め込み</dt><dd>文章などを数値の列にして、意味の近さで検索する方法。</dd>
+<dt>DiskANN</dt><dd>大量のベクトルから、近いものを速く探すための、索引の方式。</dd>
+<dt>OneLake</dt><dd>Microsoft Fabric のデータの置き場。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、Microsoft Learn の概要ページと、Azure の製品ページの本文をもとに、独自に整理したものです。どちらのページにも日付の記載がないため、情報源の公開日は「不明」としています。</p>
+<p>Microsoft の技術ブログは、自動取得を断られたため読んでいません。発表の経過と提供の段階は、確認できたときに追記します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（HorizonDB の設計、クラスター構成、AI 機能、制限、提供リージョン）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
