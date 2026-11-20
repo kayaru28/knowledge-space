@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年10月30日に IETF の AI Preferences ワーキンググループに出された、Internet-Draft「Machine-Readable Training Preference Signal」の内容（robots.txt に書く共通の記号、読み方、限界）と、AIPREF の進め方を、IETF の資料をもとに整理する。各社の対応は、公式の発表を確認できていない。">
+<title>robots.txt で「AI の学習に使わないで」を伝える：IETF に出た、共通の記号「__usage_ai-training」の仕組みと、まだ決まっていないこと | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>robots.txt で「AI の学習に使わないで」を伝える：IETF に出た、共通の記号「__usage_ai-training」の仕組みと、まだ決まっていないこと</h1><p class="summary">2026年10月30日に IETF の AI Preferences ワーキンググループに出された、Internet-Draft「Machine-Readable Training Preference Signal」の内容（robots.txt に書く共通の記号、読み方、限界）と、AIPREF の進め方を、IETF の資料をもとに整理する。各社の対応は、公式の発表を確認できていない。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>IETF の Internet-Draft「Machine-Readable Training Preference Signal」（2026年10月30日、著者は Anthropic 所属の K. Kelley）は、サイトの運営者が、<strong>「AI の学習に使わないでほしい」という希望</strong>を、普通の robots.txt に書いて伝える方法を示しています。新しい指示の名前も、新しい文法も作らず、User-Agent の行に、目的ごとの<strong>ポリシートークン「__usage_ai-training」</strong>を書くだけです。</p>
+<p>これは<strong>標準になる前の作業中のドラフト</strong>で、IETF の文書の規則どおり、「作業中のもの」としてしか引用してはならず、2027年5月3日に失効します。<strong>各社が対応するかどうかは、読んだ IETF の資料からは分かりません</strong>。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1<small>つ</small></p><p class="stat-label">新しく定めるポリシートークン（__usage_ai-training）</p></div>
+<div class="stat"><p class="stat-value">0<small>個</small></p><p class="stat-label">新しく作る指示の名前と文法（RFC 9309 のまま）</p></div>
+<div class="stat"><p class="stat-value">2027年5月3日</p><p class="stat-label">ドラフトの失効日</p></div>
+</div>
+
+<h2>書き方</h2>
+
+<ul>
+<li><strong>例：</strong>「User-Agent: __usage_ai-training」の次に「Disallow: /」と「Allow: /press-kit/」を書くと、/press-kit/ 以下を除くすべての道筋で、AI の学習に反対する希望を示し、/press-kit/ 以下では、賛成する希望を示す。</li>
+<li><strong>道筋ごとに指定できる：</strong>サイト全体だけでなく、道筋ごとに希望を示せる。</li>
+<li><strong>既存の仕組みと衝突しない：</strong>道筋の書き方、最長一致の優先、グループの構造は、RFC 9309（ロボット排除プロトコル）のまま。このトークンを知らない既存の解析器は、知らない User-Agent のグループとして無視する。</li>
+<li><strong>定義：</strong>「AI の学習」は、生成 AI のモデルの学習されたパラメーターを変えるために、素材を使うこと。生成以外の作業だけに使うモデルの学習は含まない。定義は、IETF の語彙のドラフトに沿い、別の語彙は作らない。</li>
+</ul>
+
+<h2>読み方の規則（ドラフトが定める）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>ドラフトの「設計」の節の要点</caption>
+<thead><tr><th>項目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>トークンの一致</td><td>大文字と小文字の違いを除いて、完全に一致させる。1つのグループに、複数のポリシートークンを並べてもよい</td></tr>
+<tr><td>ワイルドカード</td><td>User-Agent: * のグループは、このトークンに一致するものと読んではならない</td></tr>
+<tr><td>希望の判定</td><td>道筋が Disallow なら、その用途に反対する希望が示されたことになり、Allow なら賛成する希望。グループがなければ、希望は示されていない</td></tr>
+<tr><td>クロールとの独立</td><td>クローラーごとの既存の指定は、これまでと同じに読む。内容の使い方の希望と、通信量の管理の指定は、別のもの</td></tr>
+<tr><td>クロールへの影響</td><td>このトークンは、クロールの動作への指示ではない。クロールを制限したいときは、クローラーごとのトークンのグループを使う</td></tr>
+<tr><td>優先</td><td>個別の指定は、一般の指定より優先されるべき。独自のトークンを、より個別のものと読むと、利用者が文書にしてもよい。個別の合意が、この仕組みの希望を上書きすることもある</td></tr>
+<tr><td>安全性・IANA</td><td>RFC 9309 の安全性の考慮が適用される。新しいプライバシーの問題や、IANA の対応はない</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>AIPREF ワーキンググループの方針（2025年6月のブログ）</h2>
+
+<ul>
+<li>IETF は、2025年1月に AI Preferences（AIPREF）ワーキンググループを作り、AI のモデルが、インターネットの内容をどう使ってよいかを、示しやすくする作業を始めた。</li>
+<li>まず、ごく単純な語彙で希望を表し、robots.txt と HTTP ヘッダーで、内容に結びつける方針を決めた。</li>
+<li>希望は、<strong>そのサイトの運営者の希望にすぎず、それだけでは法的に強制できない</strong>。技術的に強制されるものでもなく、AI の事業者が、必要な確認をしなくてよくなる、という意味でもない、と書く。</li>
+<li>目的は、各社が独自に決めた、現状の寄せ集めの慣行を、改善すること。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li><strong>各社の対応：</strong>OpenAI、Google、Microsoft、Anthropic などが、この記号を尊重すると約束したか、いつ対応するかは、読んだ IETF の資料に書かれていません。元記事の見出しは「対応表明」とありますが、各社の公式の発表は、確認できていません（一般の解説記事の主張は、載せていません）。</li>
+<li><strong>ドラフトの行方：</strong>標準になるか、どう変わるかは、まだ決まっていません。</li>
+<li><strong>語彙と、ほかの結びつけ方のドラフトの最新の内容：</strong>ドラフトが参照する語彙（vocab-08）と結びつけ（attach-05）の本文は、読んでいません。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>ドラフトの著者の所属は Anthropic で、謝辞には、Microsoft、Google の所属の人の名前も載っています。ただし、所属は識別のためで、個人として参加している、と明記されています。所属企業の公式の約束を意味するものではありません。</li>
+<li>このトークンは「希望」を伝える仕組みで、クロールを止める仕組みではありません。止めたいときは、クローラーごとの指定が必要、とドラフト自身が書いています。</li>
+<li>このまとめは、仕組みの整理です。各社の対応や、効果の評価はしません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>robots.txt</dt><dd>サイトの運営者が、ロボット（クローラー）に、してほしいこと、してほしくないことを伝えるための、決まった名前のファイル。</dd>
+<dt>RFC 9309</dt><dd>robots.txt の書き方と読み方を定めた標準（ロボット排除プロトコル）。</dd>
+<dt>Internet-Draft</dt><dd>IETF の作業中の文書。標準ではなく、6か月で失効する。</dd>
+<dt>ポリシートークン</dt><dd>robots.txt の User-Agent の行に書く、目的を表す名前。実際のクローラーの名前でなくてよい。</dd>
+<dt>AIPREF</dt><dd>IETF の AI Preferences ワーキンググループ。AI の利用の希望を示す方法を作る。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、IETF の Internet-Draft（2026年10月30日）と、IETF のブログ（2025年6月29日）をもとに、独自に整理したものです。</p>
+<p>各社の公式の発表は、確認できていません。確認できたときに追記します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（ドラフトの仕組み、読み方の規則、限界、各社の対応の未確認）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
