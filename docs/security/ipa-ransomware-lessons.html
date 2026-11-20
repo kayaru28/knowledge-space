@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="IPA が2026年9月に公開した「ランサムウェア被害から学ぶ教訓集 〜経営者のためのランサムウェア対策ハンドブック〜」（ver.1.2）の、経営・リスク管理編6項目とインシデント対処編5項目を、IPA の文書をもとに整理する。">
+<title>ランサムウェア被害組織の声から出た11の教訓：IPA の教訓集が、経営者と対処の現場に求めること | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>ランサムウェア被害組織の声から出た11の教訓：IPA の教訓集が、経営者と対処の現場に求めること</h1><p class="summary">IPA が2026年9月に公開した「ランサムウェア被害から学ぶ教訓集 〜経営者のためのランサムウェア対策ハンドブック〜」（ver.1.2）の、経営・リスク管理編6項目とインシデント対処編5項目を、IPA の文書をもとに整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>IPA（情報処理推進機構）は2026年9月8日、国内のランサムウェアの被害組織へのヒアリングから抽出した教訓を、「ランサムウェア被害から学ぶ教訓集」として公開しました（最新は2026年10月16日更新の ver.1.2）。教訓は<strong>11項目</strong>で、<strong>経営・リスク管理編が6項目、インシデント対処編が5項目</strong>です。</p>
+<p>サブタイトルは「経営者のためのランサムウェア対策ハンドブック」です。IPA は、この脅威に立ち向かうには、<strong>経営者の明確な関与が不可欠</strong>だと確信したため、と書いています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">11<small>項目</small></p><p class="stat-label">教訓の数（経営・リスク管理編6、インシデント対処編5）</p></div>
+<div class="stat"><p class="stat-value">47<small>ページ</small></p><p class="stat-label">教訓集（ver.1.2）の分量</p></div>
+<div class="stat"><p class="stat-value">9月8日</p><p class="stat-label">公開日（2026年）。最終更新は10月16日（ver.1.2）</p></div>
+</div>
+
+<h2>ランサムウェア事案の特性（教訓集が書く）</h2>
+
+<ul>
+<li><strong>時間の猶予が少ない：</strong>データが暗号化されて被害に気づいた時点で、すでにインシデントのフェーズの最終段階にあり、侵害の調査、復旧か再構築かの判断、業務の継続、取引先と公表の対応を、短期間にこなす必要がある。</li>
+<li><strong>二重脅迫がある：</strong>暗号化の前にデータを盗み、身代金を払わなければ暴露する、と後追いで脅すことがある。この場合、発覚の直後から、技術的な対処と、事業継続の対応が重なる。</li>
+<li><strong>情報システム部門に負荷が集中する：</strong>経営者への報告、事業継続、取引先対応まで、IT 部門に集まりやすい。</li>
+<li><strong>平時の備えの差が、成否を分ける：</strong>暗号化・漏えいしたデータを特定するための台帳、有事の指揮命令と役割分担、想定外への対応体制などの違いが、一般的な IT インシデント以上に効く。</li>
+</ul>
+
+<h2>経営・リスク管理編：6つの教訓</h2>
+
+<div class="table-wrap">
+<table>
+<caption>IPA の教訓集（経営者やリスク管理部門が重視すべき教訓）</caption>
+<thead><tr><th>番号</th><th>教訓</th><th>要点（教訓集の記述）</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>経営者による迅速な経営判断と明確な関与</td><td>対応に時間の猶予がない。発覚直後から、業務の中断、脅迫、メディアへの対応で、判断を迫られる。経営者は、起こりうるリスクを事前に認識し、判断の基準と意思決定の手順を、あらかじめ整えておく</td></tr>
+<tr><td>2</td><td>インシデント対応体制の整備</td><td>IT 部門に負荷が集中する。公表、法務、取引先、外部の組織との連携など、多方面の対応が要る。情報システム、総務、広報、法務、営業を含めて、全社で役割分担を決めておく</td></tr>
+<tr><td>3</td><td>事業継続計画（BCP）への反映</td><td>システムの停止は、業務の停止に直結しうる。停止・復旧の判断には、事業部門の関与が必須。IT 部門と事業部門の協力のもと、サイバー攻撃に対応した BCP の策定を、指示しておく</td></tr>
+<tr><td>4</td><td>個人情報を含むデータの現状把握</td><td>流出・暗号化されたデータの中身は、フォレンジック調査をしても、後から特定するのが難しいことが多い。個人情報を含むデータの台帳を、事前に整備するよう指示する</td></tr>
+<tr><td>5</td><td>経営者主導の意思統一</td><td>組織内の認識のずれは、混乱を招き、対応を妨げる。情報発信や権限委譲などを工夫して、意思統一と、速い対応を実現する</td></tr>
+<tr><td>6</td><td>窃取されたデータの暴露への備え</td><td>身代金を払っても、データの回復や、暴露の中止は保証されない。この前提で、ダークウェブ上での暴露のリスクに備えつつ、データとシステムの復旧を図る</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>インシデント対処編：5つの教訓</h2>
+
+<div class="table-wrap">
+<table>
+<caption>IPA の教訓集（インシデント対処に当たる部門が重視すべき教訓）</caption>
+<thead><tr><th>番号</th><th>教訓</th><th>要点（教訓集の記述）</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>バックアップとログの整合性確保</td><td>汚染された可能性のあるバックアップは、復旧に使えない。少なくとも、侵入の開始時期より前の時点のバックアップは安全なので、侵入の開始時期を特定することが重要。必要なログを保存し、安全な復元の時点を判断できるようにしておく</td></tr>
+<tr><td>2</td><td>基本的な対策の徹底</td><td>被害の多くは、基本的な対策ができていないことに起因する。基本的な対策を徹底して続ける。境界の防御に隙を作らず、内部のネットワークが安全ではない前提の対策も維持する</td></tr>
+<tr><td>3</td><td>EDR の導入と定期のログ監査</td><td>従来型のウイルス対策ソフトだけでは、攻撃者の活動を十分に検知できない場合がある。EDR などを導入し、アラートに素早く対応できる監視体制を整え、定期的にログを確認・分析する</td></tr>
+<tr><td>4</td><td>「漏えいなし」の証明は困難</td><td>顧客や取引先に、「情報漏えいがなかったこと」を証明するのは、極めて難しい。フォレンジック調査などで分かった事実と、経過の観察の状況を、必要な範囲で丁寧に報告する</td></tr>
+<tr><td>5</td><td>セキュリティベンダーとの関係構築</td><td>ベンダーの役割は大きい。ただし、組織の体制やインシデントの状況で、求める役割は違い、ベンダーごとに対応できる範囲も違う。平時から、必要な役割と範囲を把握し、適切なベンダーを選び、関係を作っておく</td></tr>
+</tbody>
+</table>
+</div>
+<p>コラム「代替システムにはどんなものを使う？」：バックアップが侵害されると、システムを復旧できない。ヒアリングでも、そうした状況から復旧した組織があった。事案対応の中で、社外とのコミュニケーションに、短期間で使い始められるクラウドのメールやチャットを使った例が多く、そのまま本番の運用に続けた組織も複数あった。海外の拠点とのネットワーク接続を含め、SASE を使うなど、比較的新しいサービスの導入を進めた例もあった。</p>
+
+<h2>この教訓集の留意点（IPA が書く）</h2>
+
+<ul>
+<li>ヒアリング調査の結果がもとで、近年の攻撃に即した事案対処の全体像や、包括的・体系的な方法論を示すものではない。</li>
+<li>被害組織が選んだ対応が「必要」「重要」「有効」かは、事前の対策のレベル、被害の状況、優先した方針によって、組織ごとに大きく違う。</li>
+<li>教訓の内容には、被害組織の認識と判断、および、IPA による事象の選定・分析に基づく面がある。</li>
+<li>法令・規制に関する記載は、一般的な参考情報で、個別の事案への法的判断ではない。最新の法令や、所管官庁・個人情報保護委員会の資料を確認し、必要なら専門家に相談する。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>11の教訓の見出しと要点は、教訓集の記述に沿って整理したものです。各教訓の「ヒアリング調査に基づく分析」と「解説」（各項目のページ）は、読んでいないため、載せていません（未確認）。</li>
+<li>教訓集は、調査に協力した被害組織を特定していません。このまとめも、個別の組織の事例には触れません。</li>
+<li>教訓集には、IPA「情報セキュリティ10大脅威 2026 解説書（組織編）」と、NIST の文書からの、対策の例も載っています。このまとめでは扱っていません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>二重脅迫</dt><dd>データを暗号化して身代金を要求するだけでなく、暗号化の前に盗んだデータを暴露すると脅して、支払いを迫ること。</dd>
+<dt>EDR</dt><dd>パソコンやサーバーの端末での、不審な動きを検知し、対応するための仕組み。</dd>
+<dt>BCP（事業継続計画）</dt><dd>災害や攻撃などで、事業が止まったときの、継続と復旧の計画。</dd>
+<dt>フォレンジック調査</dt><dd>攻撃の痕跡を分析して、何が起きたかを調べること。</dd>
+<dt>SASE</dt><dd>ネットワークと、セキュリティの機能を、クラウドで一体で提供する仕組み。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、IPA の教訓集のページと、PDF（ver.1.2、47ページ）の本文のうち、概要、事案の特性、教訓の一覧と要点、コラムの部分をもとに、独自に整理したものです。</p>
+<p>教訓ごとの詳しい解説（各項目のページ）と、参考として載る他の指針の部分は、読んでいません。IPA が更新したときに、見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（IPA の教訓集 ver.1.2 の11の教訓、ランサムウェア事案の特性、留意点）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

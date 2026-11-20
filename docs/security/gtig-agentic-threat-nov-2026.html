@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Google Threat Intelligence Group（GTIG）が2026年11月17日に公表した、AI を悪用する攻撃者の四半期の報告をもとに、脆弱性の発見と悪用の完全な自動化、マルチエージェントの攻撃の枠組み、LLMJacking、情報工作の5つの傾向を、Google 自身の調査と評価として整理する。">
+<title>AI を使った攻撃が「人の手を離れ」始めた：Google の脅威インテリジェンスが初めて確認した、脆弱性の発見から悪用までを自動化した枠組みと、5つの傾向 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>AI を使った攻撃が「人の手を離れ」始めた：Google の脅威インテリジェンスが初めて確認した、脆弱性の発見から悪用までを自動化した枠組みと、5つの傾向</h1><p class="summary">Google Threat Intelligence Group（GTIG）が2026年11月17日に公表した、AI を悪用する攻撃者の四半期の報告をもとに、脆弱性の発見と悪用の完全な自動化、マルチエージェントの攻撃の枠組み、LLMJacking、情報工作の5つの傾向を、Google 自身の調査と評価として整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Google Threat Intelligence Group（GTIG）は、2026年11月17日の報告で、この四半期に、<strong>攻撃者が、大規模言語モデル（LLM）の枠組みを使って、脆弱性の発見と悪用を、人が介在しないまま完全に自動化した</strong>のを、初めて確認したと書きました。</p>
+<p>報告は、傾向を5つ挙げています。(1) 自律的なマルチエージェントの攻撃の枠組み、(2) 脆弱性の調査と悪用の自動化、(3) LLM の認証情報の窃取と転売（LLMJacking）、(4) 情報工作への LLM の組み込み、(5) 標的の調査と、コーディング支援ツールを使った供給網への攻撃。<strong>「完全な自動化」という表現は、GTIG の評価</strong>です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">8→11<small>件／月</small></p><p class="stat-label">ゼロデイの悪用の月平均（2025年→2026年）。8月は22件に急増（GTIG の集計）</p></div>
+<div class="stat"><p class="stat-value">約2<small>倍</small></p><p class="stat-label">2026年1月から8月にかけて、公開された脆弱性とその悪用の件数の増え方（GTIG の集計）</p></div>
+<div class="stat"><p class="stat-value">10万<small>ドル超</small></p><p class="stat-label">LLMJacking で、1日に生じた不正な請求の最大の例（Mandiant の対応）</p></div>
+<div class="stat"><p class="stat-value">100万<small>ドル</small></p><p class="stat-label">最も深刻な例で、対処までに膨らんだ、資源の不正利用の累計</p></div>
+</div>
+
+<h2>報告が挙げる5つの傾向</h2>
+
+<div class="table-wrap">
+<table>
+<caption>GTIG の報告の要約（過去の四半期の変化として書かれたもの）</caption>
+<thead><tr><th>傾向</th><th>報告の内容</th></tr></thead>
+<tbody>
+<tr><td>自律的なマルチエージェントの攻撃</td><td>手作業のプロンプトから、ARTEX、CAIRN、CyberStrikeAI、PentAGI などの、自律的なマルチエージェントの攻撃の枠組みへ。複数段階の侵入を、機械の速さで進める</td></tr>
+<tr><td>脆弱性の調査と悪用の自動化</td><td>パッチを前と後で比べる差分の解析をLLMで自動化し、修正済みの脆弱性（n-day）を素早く悪用の道具にする。インターネットに公開されたサーバーへの悪用を、人の手なしで広げる</td></tr>
+<tr><td>LLM の認証情報の窃取と転売</td><td>侵害したクラウドから、LLM の認証情報と計算資源を盗み、地下の中継サービス（LLM Mixers など）で、高性能なモデルへのアクセスを転売する（LLMJacking）</td></tr>
+<tr><td>情報工作への LLM の組み込み</td><td>国家が支援する集団、商用の影響工作の業者、利益目的の政治コンテンツのネットワークが、合成メディアの大量生産、地域に合わせた人格の作成、複数のプラットフォームへの自動配信に、LLM を日常的に使う</td></tr>
+<tr><td>標的の調査と供給網への攻撃</td><td>スパイ活動の集団が、標的の調査やデータの分析に LLM を使い、自律的なコーディング支援ツールの設定を書き換えて、手元の実行時にバックドアを置くといった、新しい供給網の攻撃の入口を使う</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>完全な自動化の例：exploit_agent</h2>
+
+<ul>
+<li>GTIG は、外部から見える状態になっていた検証用のサーバーで、マルチエージェントの脆弱性の調査と悪用の枠組み（「exploit_agent」と名付けた）を見つけた。複数の最先端のモデルと、手元で動くモデルに接続していた。</li>
+<li>動き：人気の Web アプリケーションのソフトウェアについて、パッチが発表される前と後のコードを、継続的に比べる。差分を解析して、脆弱性の可能性を見つけ、悪用のコードを書き、人の介在なしに自動で実行する。</li>
+<li>あわせて、被害者から盗んだデータと、侵害後の活動（内部の偵察、総当たりの攻撃、ウェブシェルの設置、他の攻撃者のウェブシェルの削除）に使うスクリプトが見つかった。サーバーの被害者の記録から、運営者は、フランスのメディアなどに関連する Web サイトを標的にしていたとみられる、と書く。</li>
+<li>環境設定のファイルには、ロシア語のコメントで、自動悪用のために、複数の LLM の API キーを設定する指示があった。</li>
+<li>解析の例として、WordPress のプラグイン「Spectra（Ultimate Addons for Gutenberg）」のバージョン 2.19.25 の、アクセス制御の実装を点検している画面が載っている。</li>
+</ul>
+
+<h2>マルチエージェントの攻撃の枠組み</h2>
+
+<div class="table-wrap">
+<table>
+<caption>報告が挙げる、悪用されているオープンソースの枠組み</caption>
+<thead><tr><th>名前</th><th>報告の説明</th><th>GTIG の観測</th></tr></thead>
+<tbody>
+<tr><td>CAIRN</td><td>オープンソースの、マルチエージェントのペネトレーションテストの枠組み。OODA ループで、専門のエージェントが共有の「黒板」を通じて協力し、最初の入力（標的の IP アドレスなど）から目標に向かう</td><td>実際の侵入で使われているのを確認。標的に、米国の航空宇宙の分野を含む</td></tr>
+<tr><td>PentAGI</td><td>オープンソースの自律的な攻撃の枠組み。経験の浅い運営者でも、複雑な作戦を動かせるよう、技術の壁を下げる</td><td>2026年8月下旬から10月上旬に、ある攻撃者が、PentAGI を土台にした独自の攻撃管理の基盤で、アジアの幅広い組織に、体系的な偵察と脆弱性のスキャンを行った</td></tr>
+<tr><td>CyberStrikeAI</td><td>LLM を前提にした攻撃の枠組み。Go 言語のバックエンドの API が、指令と調整のサーバーとして動き、商用とオープンウェイトの LLM を、100を超えるセキュリティツールにつなぐ</td><td>実験的な利用を確認</td></tr>
+<tr><td>HexStrike AI</td><td>モデル コンテキスト プロトコル（MCP）に対応した攻撃用の道具立て。150を超える攻撃用ツールを、12を超える専門のサブエージェントが調整する</td><td>実験的な利用を確認</td></tr>
+</tbody>
+</table>
+</div>
+<p>GTIG は、これらの枠組みが、速度の代わりに隠密性を手放していると書いています。制限のない自律的な実行は、調査の手がかりになる通信を生み、識別できる印を使い、コードの痕跡を残すため、検知の可能性は上がるが、目的の達成には十分な力がある、という評価です。</p>
+
+<h2>脆弱性の数字と、修正から悪用までの短縮</h2>
+
+<ul>
+<li>GTIG は、2026年9月に、脆弱性の統計を調べた。2026年1月から8月で、公開された脆弱性とその悪用は、ほぼ2倍になった。一方、ゼロデイの悪用は、2025年の月平均が8件、2026年が11件で、わずかな増加にとどまり、8月に22件に急増した。</li>
+<li>n-day（修正済みの脆弱性）は、ゼロデイを探すより、調べる材料が限られる（ソースコードの版の比較、リリースノート、研究、概念実証のコード）。そのため、攻撃者にとって、LLM で素早く悪用の道具にしやすい、という見方を書く。</li>
+<li>例（オープンソースの調査）：2026年8月下旬、PaperCut の印刷管理サーバーの2つの脆弱性（CVE-2026-81578 の認証回避、CVE-2026-82078 の安全でない動的クラスの読み込み）が、ゼロデイとして、連鎖させて使われ、認証なしでリモートからコードを実行できた。</li>
+<li>例：PHP の脆弱性（CVE-2026-109618、CVE-2026-109619）は、LLM を使った解析で見つかった。公式のパッチ（2026年10月21日）の前に、概念実証の動画と、修正の初期のコードが公開され、研究者も攻撃者も、コードを比べて欠陥を理解し、悪用の作成を試みられた。</li>
+</ul>
+
+<h2>LLMJacking と、情報工作</h2>
+
+<ul>
+<li><strong>LLMJacking：</strong>2026年を通じて、Mandiant は、利益目的の攻撃者がクラウドの環境を侵害して、標的の組織のクラウドの計算資源や LLM の利用枠を使い切った事案に、複数対応した。数時間で利用量と請求が急増し、1日に10万ドルを超える不正な請求が出た例もある。最も深刻な例では、対処までの累計が100万ドルに達した。</li>
+<li><strong>手口の共通点：</strong>金融、小売、運輸、技術の組織で見られた。権限の昇格では、LiteLLM のサンドボックスからの脱出の脆弱性（CVE-2026-40217）で、限定的な推論キー（Virtual Keys）を、管理者の認証情報に引き上げた例がある。権限のあるサービスアカウントで、マルウェアなしに、居座りを成立させていた。</li>
+<li><strong>情報工作：</strong>GTIG は、情報工作の攻撃者が、LLM の試しから、日常の運用への完全な組み込みに進んだと、高い確度で評価している。商用の影響工作の業者が、Gemini の API を含む複数の提供元を組み合わせて、100,000を超えるアカウントを管理する一括型の基盤を作っていた例を挙げる。</li>
+</ul>
+
+<h2>Google が書く対策</h2>
+
+<ul>
+<li>Google Security Operations で、ARTEX の使用を検知する、ふるまいと量の検知ルールを展開した。</li>
+<li>Mandiant Consulting が、LLM を使った攻撃の道具の、速さと規模の優位に対抗するための、強化の手引きと、設計上の防御の枠組みを公開した。</li>
+<li>モデルの安全策、悪意のあるプロジェクトとアカウントの先回りの停止、Big Sleep（脆弱性を探す AI のエージェント）などで、防御を続ける、と書く。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>報告は、Google 自身の観測と評価です。「初めて」「完全な自動化」といった表現も、GTIG の評価です。独立した確認は、読んでいません。</li>
+<li>GTIG は、これらの枠組みが使うのは、侵害された認証情報や、未修正のシステムといった、従来と同じ入口だと書いています。変わったのは、速度と規模です。</li>
+<li>このまとめは、報告にある技術の再現手順は載せません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>LLMJacking</dt><dd>盗んだ認証情報で、他人のクラウドの LLM の利用枠や計算資源を勝手に使うこと。</dd>
+<dt>n-day</dt><dd>すでに修正版が出ている脆弱性。修正前の期間に、悪用される。</dd>
+<dt>ゼロデイ</dt><dd>修正版が出る前から悪用されている、または悪用されうる脆弱性。</dd>
+<dt>差分解析（differential analysis）</dt><dd>修正の前と後のコードを比べて、何が直されたかを調べること。</dd>
+<dt>OODA ループ</dt><dd>観察、状況判断、決定、行動を繰り返す、意思決定の型。</dd>
+<dt>MCP（モデル コンテキスト プロトコル）</dt><dd>LLM が、外部のツールやデータに接続するための共通の規格。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、Google Cloud Blog に載った GTIG の報告（2026年11月17日）をもとに、独自に整理したものです。</p>
+<p>報告の他の部分（個別の攻撃集団の詳しい分析、図表の数値の細部）は、すべては載せていません。Google 以外の調査や、第三者の検証は読んでいません。続報が出たときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（GTIG の AI Threat Tracker（2026年11月17日）の5つの傾向、exploit_agent、LLMJacking、情報工作）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
