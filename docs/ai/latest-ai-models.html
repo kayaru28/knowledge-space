@@ -192,7 +192,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">AI</p><h1>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash</h1><p class="summary">Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。10月21日に、米国土安全保障省の DeepSeek 排除の命令と、DeepSeek の推論フレームワーク DeepInfer の公開を追記。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-10-31</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">AI</p><h1>10月の最新AIモデル3つを比べる：Gemini 4 Argon、Muse Spark Open、DeepSeek V4.1-Flash</h1><p class="summary">Google、Meta、DeepSeek の公式発表をもとに、2026年9月〜10月に出た3つのAIモデルを、提供形態、価格、動かすのに必要なもの、ライセンスの観点で整理する。性能の数字は各社の自己申告で、互いに比べられない。10月21日に、米国土安全保障省の DeepSeek 排除の命令と、DeepSeek の推論フレームワーク DeepInfer の公開を追記。</p><p class="meta">初回公開 2026-10-19 ／ 更新日 2026-11-20</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年9月10日から10月17日にかけて、Google、Meta、DeepSeek がそれぞれ新しいAIモデルを出しました。<strong>Gemini 4 Argon は API で使うモデル、Muse Spark Open と DeepSeek V4.1-Flash は重みが公開されたモデル</strong>で、提供形態が違います。</p>
 <p>性能の数字（ベンチマーク）は、各社が自社で公表したもので、条件も指標も違うため、<strong>横に並べて順位をつけることはできません</strong>。選ぶときは、提供形態、価格、動かすのに必要なもの、ライセンスを見ます。</p>
@@ -465,6 +465,21 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li>数字はすべて Google の自社の報告で、第三者の検証ではない。「ガードレールなし」の評価と、実際に提供される版の振る舞いは、同じとは限らない。</li>
 </ul>
 
+<h2>11月20日の追記：Gemini 4 Carbon の一般提供、Meta の Muse Ember、OpenAI の GPT-6.2 Astra と Sol</h2>
+<p>Google の公式ブログ「Gemini 4 Carbon is now available」（11月10日）、Meta の開発者向けブログ「Start building with Muse Ember」、OpenAI の開発者コミュニティのお知らせ「GPT-6.2 Astra and Sol are now available」（11月17日）と、そのシステムカードをもとに整理した。数字はすべて各社の自社の報告で、第三者の検証ではない。この記事の「3つのモデル」の比較には加えず、追記として載せる。</p>
+<ul>
+<li><strong>Gemini 4 Carbon（Google。11/10に一般提供）：</strong>10月28日に、一部のサイバー防御者向けに「Fairwind プログラム」で出した Carbon（10月31日の追記）が、開発者、企業、科学者、一般の利用者に提供された。API は、Google AI Studio と、企業向けの Gemini for business で、有料の開発者と企業のすべてが使え、価格は Argon と同じ導入期間の価格（入力が100万トークンあたり2ドル、出力が10ドル）。Google AI Ultra の契約者には、Google Antigravity、Gemini アプリ、検索の AI モード（AI Mode in Search）で順に提供する。自社の報告では、CursorBench 4.0、Perplexity の WANDR、Zapier の AutomationBench で1位で、次に強い外部のモデルより、1タスクあたりの費用が2倍以上低い。Google Antigravity の「/swarm」（1つの指示から、複数のエージェントの班を動かす機能）を、プレビューとして出した。サイバーでは、Fairwind プログラム経由の「Gemini 4 Carbon for cyber」が、脆弱性の発見（SEC-bench Pro）、悪用の可否の確認（ExploitGym）、修正（CWE-bench v1）の評価で首位、と書く。安全面の自社の評価は、攻撃の模擬環境（ExploitBench と CyScenarioBench）で、攻撃の流れの99%を止めた、375タスクの「エージェントの誠実さ」の評価で92%に合格した（Argon は70%）、間接的なプロンプトインジェクションの評価（Gray Swan）で攻撃の成功率0%（10月28日の発表時点の報告）。科学者向けには、Argon を6か月無償で使える1万人の枠を、Carbon にも広げた。Google の安全性の報告は、読んでいない。</li>
+<li><strong>Muse Ember（Meta。Muse Code と Meta Model API）：</strong>Meta は、最小で最も効率のよいモデルとして出した。公開日は、ページから読み取れなかった。繰り返しの決まった作業（コーディングの小さな作業、ツールの呼び出し、文書の要約・抽出）を、大量に、速く動かす用途で、より深い計画や推論が要る作業は、Muse Wonder や Muse Spark と組み合わせる、と書く。入力は、文字・画像・音声・動画。Muse Code のすべての契約プランで使え、価格は、入力が100万トークンあたり0.10ドル、出力が0.50ドル（入力が20万トークンまで）、20万トークンを超える入力は、入力0.30ドル、出力1.50ドル。モデル名は muse-ember-1.0。自社の報告では、Artificial Analysis Intelligence Index が36で、最大の推論の強さのとき、Intelligence Index の1タスクあたりの費用は約0.13ドル。同じ階級のモデルとの比較は、(Muse Ember、Claude Haiku 5.5、GPT-6 Luna の順）AutomationBench-AA が37.8、13.9、20.2、Agents' Last Exam が61.6、57.0、57.1、Terminal-Bench 4.0 が40.9、39.2、16.4、Coding Agent Index-AA が46、37、31。FrontierCode 2.0-AA は27.2、34.9、25.2で、Haiku 5.5 のほうが高い。例として、Python の文法の強調表示（シンタックスハイライト）の部品を Rust に移す作業を、Muse Wonder が指揮して、16の Muse Ember が並行して担当した例が載っている。費用は約3.96ドルで、Muse Ember は入力1.58億トークンを扱った、と書く。結果はタスクによって変わる、とも書かれている。</li>
+<li><strong>GPT-6.2 Astra と GPT-6.2 Sol（OpenAI。11/17）：</strong>11月17日から、ChatGPT Work と Codex で、Plus・Pro・Enterprise・Edu の利用者に提供された。Pro 500 の契約者は、どちらのモデルでも「Ultrafast」を使える。Pro 200 の契約者にも、初めて Ultrafast が加わり、GPT-6.2 Sol から始まる。API では、gpt-6.2-astra と gpt-6.2-sol（Ultrafast あり）。API の価格は、Astra が入力100万トークンあたり8ドル、出力40ドル、Sol が入力2ドル、出力10ドル。Astra は、最も難しい仕事向けのモデルで、専門的な仕事と科学研究の評価で最高値を更新し、1タスクあたりの費用は GPT-6 Astra の3分の1未満、と書く。Agents' Last Exam では、6.2 Astra（xhigh）が、GPT-6 Astra（max）を5.2点上回り、費用は半分未満。サイバーでは OpenAI で最も強いモデルで、ExploitBench Internal Port で GPT-6 Astra を22点上回る。Sol は、日常の仕事向けで、FrontierCode 2.0 で、実際のコードベースへの、そのまま取り込める変更（merge-ready）の成績が Astra にほぼ並び、費用は約5分の1。システムカードでは、両モデルが、サイバーセキュリティで「Critical」、生物・化学で「High」のしきい値に当たる。AI の自己改善の能力では、Astra が「High」のしきい値に当たり、Sol は下回る。サイバーでは、より厳しい安全策を付けて出し、承認された防御者が、拒否を減らした状態で使える「Daybreak」への提供を進めている。両モデルの外部での使われ方も、監視システムの一部で見る、と書く。システムカードの変更履歴には、11月17日付で、「High」のしきい値の説明の文言を直した、とある（「完全に自動化された、再帰的な自己改善に備えるための、早い段階の目安」へ）。</li>
+</ul>
+<h3>ここから見えること（11月20日追記。筆者の整理）</h3>
+<ul>
+<li>Carbon は、10月28日の「段階的な提供」から、2週間で一般提供になった。価格は Argon と同じ導入期間の価格のまま。導入期間は11月30日までと、10月31日の追記に書いたので、12月以降の価格は、各社の最新の発表を確認する。</li>
+<li>Muse Ember は、Meta の側から見ると、最も小さく安いモデル。比較の表は、Meta が選んだ指標で、Meta が選んだ相手との比較。FrontierCode 2.0-AA のように、Meta のモデルのほうが低い指標も、載っている。</li>
+<li>GPT-6.2 では、サイバーと自己改善の評価の区分が、公式の資料に書かれている。「Critical」「High」は、OpenAI の Preparedness Framework の区分で、他社の評価と、同じ尺度ではない。</li>
+<li>3社とも、費用あたりの成績（1タスクあたりの費用）を前面に出している。ただし、指標も、比べる相手も、各社で違う。</li>
+</ul>
+<p>この追記の時点で、マイクロソフトの MAI Code 2・MAI Code 2 Flash（11月17日、Ignite で発表と報じられた）は、公式のページが自動取得を制限していて、読めなかったため、載せていない。</p>
 <h2>選ぶときの観点</h2>
 <div class="note">
 <p>各社の発表を並べて読んだ上での、筆者の整理です。各社がそう述べているわけではありません。</p>
@@ -492,12 +507,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 
 <h2>この記事について</h2>
 <div class="note">
-<p>2026年10月21日時点の情報です。各社の公式ページと、米国の連邦官報の記述に基づいていて、状況は更新されます。</p>
+<p>2026年11月20日時点の情報です（11月20日に、Gemini 4 Carbon の一般提供・Muse Ember・GPT-6.2 Astra と Sol を追加。10月31日に Gemini 4 Carbon、10月21日に続報を追加）。各社の公式ページと、米国の連邦官報の記述に基づいていて、状況は更新されます。</p>
 <p>ベンチマークの数字は、各社の自己申告で、独自に検証したものではありません。ここでは、横並びの順位づけはしていません。</p>
 <p>DeepSeek V4.1-Flash の具体的な単価、コンテキスト長、ライセンスは、確認できなかったため扱っていません。Google の発表にあるモデルカード（PDF）は読んでいません。</p>
 <p>内容は、各社の公式ページをもとに、独自に整理したものです。関連する話題として、<a href="ai-coding-productivity.html">AIコーディングで生産性は上がったか</a>があります。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-10-31</span>10月28日に発表された Gemini 4 Carbon（段階的な提供、価格、自社報告の評価）を追記</li><li><span class="date">2026-10-21</span>米国土安全保障省の DeepSeek 排除の命令（図）、DeepInfer の公開、Meta の Muse Wonder を追加</li><li><span class="date">2026-10-19</span>初回公開（3つのモデルの提供形態・価格・ライセンス・日程の整理）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>11月20日の追記。Gemini 4 Carbon の一般提供（11/10。API は Argon と同じ導入価格、Ultra 契約者へ順次）、Meta の Muse Ember（入力0.10ドル・出力0.50ドル、自社の比較表）、OpenAI の GPT-6.2 Astra と Sol（11/17。価格、提供範囲、システムカードの区分）を追加。MAI Code 2 は公式のページを読めず未掲載として明記</li><li><span class="date">2026-10-31</span>10月28日に発表された Gemini 4 Carbon（段階的な提供、価格、自社報告の評価）を追記</li><li><span class="date">2026-10-21</span>米国土安全保障省の DeepSeek 排除の命令（図）、DeepInfer の公開、Meta の Muse Wonder を追加</li><li><span class="date">2026-10-19</span>初回公開（3つのモデルの提供形態・価格・ライセンス・日程の整理）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
