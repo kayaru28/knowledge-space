@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Google が、宇宙で AI の計算基盤を作れるかを探る研究計画「Project Suncatcher」について、2026年9月24日の解説、10月1日の試作衛星の打ち上げ、10月30日の最初の応答（「Hello World」）の3つの公式ブログをもとに、経過、試験の内容、次の予定を整理する。">
+<title>Google の「Project Suncatcher」：試作衛星を打ち上げ、軌道上の TPU から最初の AI の応答を受け取った | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Google の「Project Suncatcher」：試作衛星を打ち上げ、軌道上の TPU から最初の AI の応答を受け取った</h1><p class="summary">Google が、宇宙で AI の計算基盤を作れるかを探る研究計画「Project Suncatcher」について、2026年9月24日の解説、10月1日の試作衛星の打ち上げ、10月30日の最初の応答（「Hello World」）の3つの公式ブログをもとに、経過、試験の内容、次の予定を整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Google は2026年10月1日、AI の計算基盤を宇宙に置けるかを探る研究計画「Project Suncatcher」の試作衛星を、Planet と組んで作り、SpaceX の相乗りの打ち上げ「Transporter-18」で軌道に乗せたと発表しました。連絡はつき、<strong>想定どおりに動いている</strong>と書いています。</p>
+<p>10月30日には、<strong>データセンター級の TPU が、軌道上で出した、最初の AI の応答</strong>を受け取ったと発表しました。地上局との通信の機会に、衛星に積んだオープンモデル「Gemma 4」へ最初の指示を送り、宇宙についての俳句を作らせ、その結果の詩が、ノルウェーのスバールバルの上空で降ろされた、と書いています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">10月1日</p><p class="stat-label">試作衛星の打ち上げ（2026年）。10月30日に最初の応答を発表</p></div>
+<div class="stat"><p class="stat-value">最大8<small>倍</small></p><p class="stat-label">低軌道の衛星が得られる太陽光の電力（地上との比較。9月24日のブログ）</p></div>
+<div class="stat"><p class="stat-value">2027<small>年</small></p><p class="stat-label">次の節目：相互につながった2機の衛星</p></div>
+</div>
+
+<h2>経過</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Google の公式ブログで確認できる経過</caption>
+<thead><tr><th>時期</th><th>出来事</th></tr></thead>
+<tbody>
+<tr><td>2025年</td><td>Project Suncatcher を発表（9月24日のブログが「昨年に発表した」と書く）</td></tr>
+<tr><td>2026年9月24日</td><td>解説のブログと動画シリーズを公開。試作衛星で、TPU が宇宙の条件でどう動くかを試す計画を説明</td></tr>
+<tr><td>2026年10月1日</td><td>試作衛星を、Planet と組んで作り、SpaceX の Transporter-18 で打ち上げ。連絡を確認。査読済みの論文を、Joule に公開</td></tr>
+<tr><td>10月の数週間</td><td>試運転の確認項目（ホストと TPU のトレイの電源投入、初期の機械学習のテスト）を完了</td></tr>
+<tr><td>2026年10月30日</td><td>「Hello World」の節目。軌道上の TPU の、最初の AI の応答を受信したと発表</td></tr>
+<tr><td>今後</td><td>熱の負荷と放射線の下での TPU の性能の試験。2027年に、相互につながった2機の衛星</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>最初の応答で何をしたか（10月30日）</h2>
+
+<ul>
+<li>地上局との通信の機会に、衛星の Gemma 4 に、最初のプロンプトを送り、宇宙にいることについての俳句を作らせた。</li>
+<li>詩は、衛星がスバールバルの上空を通るときに降ろされ、成功を確認した。</li>
+<li>そのあと、宇宙をテーマにしたリメリックと、搭載の機器の技術的な状態を報告させる、テレメトリのプロンプトも試した。</li>
+<li>Google は、これを、チップが「宇宙での翼を正式に得た」節目と書く。</li>
+</ul>
+
+<h2>計画の狙いと、課題（9月24日のブログ）</h2>
+
+<ul>
+<li><strong>狙い：</strong>低軌道では、衛星がほぼ常に太陽光を受けられ、地上より最大8倍の太陽光の電力を得られる。将来は、複数の衛星群を結び、より大きな AI の処理を軌道上で扱えるかもしれない、と書く。</li>
+<li><strong>今回の試験：</strong>Google の TPU が、打ち上げの強い振動、極端な放射線、真空での冷却といった、宇宙の条件に耐えられるかを調べる。</li>
+<li><strong>将来：</strong>高い帯域のレーザーで、衛星の群れをつなぐことを目指す。今回の打ち上げは、規模を広げる前に、何が機能するかを学ぶ最初の一歩で、2027年までに広げる、と書く。</li>
+<li><strong>位置づけ：</strong>長期の研究の「ムーンショット」で、自動運転や量子計算も、実用になるまで長い実験が必要だった、と書く。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li>試作衛星の仕様（TPU の数、軌道の高度、電力の方式など）：読んだ3本のブログには載っていません。</li>
+<li>熱と放射線の試験の結果：10月30日の時点では、これからの試験として書かれています。</li>
+<li>Blue Origin との、大型ロケットでの最初の打ち上げの提携：ブログの関連記事の見出しに載っていますが、その記事は読んでいません。</li>
+<li>論文（Joule）の内容、費用、実現の見通し。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>確認できたのは、「軌道上の TPU が、最初の応答を返した」ことと、次の試験の予定です。宇宙で AI の計算を続けられるか、費用に見合うかは、これからの試験の結果次第で、まだ分かっていません。</li>
+<li>このまとめは、計画の評価や、他社の計画との比較はしません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>TPU</dt><dd>Google が AI の計算用に作ったチップ。</dd>
+<dt>Gemma 4</dt><dd>Google のオープンモデル。ここでは、衛星の上で動かした。</dd>
+<dt>Transporter</dt><dd>SpaceX の、複数の衛星を相乗りで打ち上げる任務の名前。</dd>
+<dt>低軌道</dt><dd>地上から比較的近い、衛星の軌道。</dd>
+<dt>テレメトリ</dt><dd>機器の状態を、離れた場所へ送る測定のデータ。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、Google の公式ブログ3本（2026年9月24日、10月1日、10月30日）をもとに、独自に整理したものです。</p>
+<p>機体の仕様、試験の結果、論文の内容は、読んでいません。続報が出たときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（打ち上げ、最初の応答、試験の内容、次の予定）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
