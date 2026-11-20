@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Google DeepMind が2026年11月11日に発表した AlphaGenome 2 の、設計の変更点（細胞の種類を条件にする）、公式が示す性能（TenK10K など）、使える範囲と注意を、DeepMind のブログをもとに整理する。数値は DeepMind 自身の報告。">
+<title>AlphaGenome 2：DNA の変異が「どの細胞で」効くかを予測する、Google DeepMind の次世代モデル | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>AlphaGenome 2：DNA の変異が「どの細胞で」効くかを予測する、Google DeepMind の次世代モデル</h1><p class="summary">Google DeepMind が2026年11月11日に発表した AlphaGenome 2 の、設計の変更点（細胞の種類を条件にする）、公式が示す性能（TenK10K など）、使える範囲と注意を、DeepMind のブログをもとに整理する。数値は DeepMind 自身の報告。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Google DeepMind は2026年11月11日、DNA の配列と、その変異が、<strong>特定の細胞の種類ごとに</strong>どう働くかを予測する次世代のモデル「AlphaGenome 2」を発表しました。前のモデルは、組織全体の平均的な活動を予測していましたが、今回は、心筋の細胞や免疫の細胞のような、細胞の種類と状態を単位にしています。</p>
+<p>DeepMind は、遺伝子の発現を変える変異を、前の最先端のモデルの<strong>ほぼ2倍</strong>見つけられると書いています。1億を超える個々の細胞のデータ（68の組織にわたる）で学習し、<strong>非商用の研究</strong>には API で、商用の研究には Google Cloud の限定プレビューで提供しています。これは DeepMind 自身の報告です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">1億<small>超</small></p><p class="stat-label">学習に使った個々の細胞のプロファイル数（本文の別の箇所では 1億700万。68の組織）</p></div>
+<div class="stat"><p class="stat-value">30 vs 16<small>%</small></p><p class="stat-label">TenK10K で、因果の変異を見つけた割合（AlphaGenome 2 と、単一細胞のデータで調整した前のモデル）</p></div>
+<div class="stat"><p class="stat-value">43 vs 23<small>%</small></p><p class="stat-label">同じく、遺伝子への効果の向き（増えるか減るか）を当てた割合</p></div>
+<div class="stat"><p class="stat-value">28<small>種</small></p><p class="stat-label">TenK10K が含む、免疫の細胞の種類</p></div>
+</div>
+
+<h2>何が変わったか</h2>
+
+<div class="cards">
+<div class="card"><h3>条件つきのモデル</h3><p>前のモデルは、100万文字の DNA から、多数の組織・細胞株の実験の結果を、並列に予測していた。今回は、「組織・細胞の種類・状態」のどれかを1つ条件として DNA と一緒に入力し、その条件での効果を予測する。能力が分散して、近い細胞の違いを捉えにくい問題を、設計の変更で改めた、と説明している</p></div>
+<div class="card"><h3>細胞の状態を持ち込める</h3><p>参照用の細胞の種類の一覧から選ぶか、研究者自身の単一細胞の実験から、細胞の状態を表す入力を、その場で作れる。数十個の細胞の遺伝子の活動のデータでも、再学習なしで、新しい細胞の状態に適用できる、と書く</p></div>
+<div class="card"><h3>欠けたデータの補完</h3><p>細胞の状態と出力を分けるため、遺伝子の活動だけを入力しても、染色質へのアクセスのしやすさなど、測っていない性質を予測できる。次にどの実験をするかの優先づけに使える、と書く</p></div>
+<div class="card"><h3>DNA メチル化を追加</h3><p>遺伝子の発現、ヒストンの修飾、染色質へのアクセスのしやすさに加えて、要望の多かった DNA メチル化も予測する</p></div>
+</div>
+
+<h2>DeepMind が示す性能</h2>
+
+<ul>
+<li><strong>細胞の種類ごとの違い：</strong>学習に使っていない領域で、同じ組織の中の細胞の種類による遺伝子発現の違いを、前のモデルより多く説明する。血液の幹細胞が赤血球や免疫の細胞に成熟する連続的な変化もたどれる、と書く。</li>
+<li><strong>TenK10K（免疫の細胞28種の大規模な単一細胞の地図）：</strong>因果の変異を30%、遺伝子への効果の向きを43%見つけた。単一細胞のデータで調整した前のモデルと他の専用の手法は、それぞれ16%と23%。</li>
+<li><strong>炎症性腸疾患（IBD）の例：</strong>遠くの調節領域にある変異が、腸の免疫細胞（マクロファージ）で ETS2 遺伝子を過剰に働かせて IBD につながる、という最近の研究の結果を、計算で再現した。原因の変異を選び出し、ほかの細胞や遺伝子への影響は小さいことを示した、と書く。</li>
+<li><strong>新型コロナのワクチンの例：</strong>ワクチンの研究の、見たことのない単一細胞のデータで、活性化した T 細胞と静止した T 細胞を区別した。重症の新型コロナに関係する変異が、活性化した状態で、遺伝子の活動をより強く乱すことも示した、と書く。</li>
+</ul>
+
+<h2>遺伝学と単一細胞の橋渡し</h2>
+
+<ul>
+<li>病気や形質に関係する変異について、数百の細胞・組織の条件での予測を、あらかじめ計算して提供している（研究者が大規模な計算をしなくて済むようにするため）。</li>
+<li>エンハンサーと遺伝子の結びつき：実験のスクリーニングは主に培養した細胞株で行われるため、体内の特定の細胞では分かっていないことが多い。AlphaGenome 2 は、脳のアストロサイトのような、ヒトの一次細胞の種類にも対象を広げる、と書く。</li>
+<li>GWAS（全ゲノム関連解析）：身長から2型糖尿病まで複数の形質で、原因とみられる変異と、働く細胞の絞り込みを助ける。確信があるときは、遺伝子の活動が上がるか下がるかの向きも、正確に当てる、と書く。</li>
+</ul>
+
+<h2>使える範囲と注意</h2>
+
+<ul>
+<li><strong>提供：</strong>AlphaGenome の API で、非商用の研究に、本日（11月11日）から提供。商用の研究は、Google Cloud の限定プレビュー。発現の条件づけの対話型チュートリアル（Colab）も公開。</li>
+<li><strong>今後：</strong>Google Antigravity（エージェント型の開発基盤）向けの「AlphaGenome 2 Skills」を、近く公開すると書く。</li>
+<li><strong>募集：</strong>活用事例を、11月30日までにフォームで受け付ける。選ばれたものは、追加の利用枠やクレジットの対象になりうる。</li>
+<li><strong>研究用に限る：</strong>AlphaGenome と AlphaGenome 2 は、研究用で、臨床や診断への使用は、検証も承認もされていない、と明記している。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li>論文の本文と、評価の詳しい条件（読んでいません）。</li>
+<li>API の利用枠の具体的な数字、商用プレビューの条件。</li>
+<li>外部の研究者による再現や検証。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>性能の数値（30% 対 16% など）は、DeepMind が、自社の評価で示したものです。「因果の変異を見つけた割合」の細かい定義は、ブログの本文には書かれておらず、論文を読んで確かめる必要があります（未確認）。</li>
+<li>学習に使った細胞のプロファイルの数は、ブログの中で「1億を超える」と「1億700万を超える」の2通りで書かれています。同じ内容の言い換えと読めますが、このまとめでは両方を併記しました。</li>
+<li>このまとめは、モデルの評価や、医療への応用の見込みは扱いません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>単一細胞（シングルセル）の解析</dt><dd>組織を平均せず、1つひとつの細胞について、遺伝子の活動などを調べること。</dd>
+<dt>遺伝子発現</dt><dd>DNA の情報から、遺伝子の産物が作られる度合い。細胞の種類で異なる。</dd>
+<dt>エンハンサー</dt><dd>離れた場所から、遺伝子のオンとオフを調節する DNA の領域。</dd>
+<dt>GWAS（全ゲノム関連解析）</dt><dd>多くの人のゲノムを比べて、病気や形質に関係する DNA の違いを探す研究。</dd>
+<dt>染色質へのアクセスのしやすさ</dt><dd>DNA が、遺伝子を読み取る仕組みに触れやすい状態かどうか。</dd>
+<dt>DNA メチル化</dt><dd>DNA に付く化学的な印で、遺伝子の働きに影響する。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、Google DeepMind のブログ（2026年11月11日）の本文をもとに、独自に整理したものです。</p>
+<p>論文の本文は読んでいません。論文や、外部の検証を確認できたときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（AlphaGenome 2 の設計、公式が示す性能、提供の範囲、注意）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

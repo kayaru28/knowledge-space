@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Cloudflare が2026年8月に発表し、11月にオープンソース化した、AI エージェント専用のブラウザ「Kitesurf」の設計、公式が示す性能と得意・不得意、オープンソース化の条件を、Cloudflare のブログと変更履歴をもとに整理する。">
+<title>Cloudflare の「Kitesurf」：AI エージェント向けに Workers の上だけで動くブラウザが、8月の発表から11月にオープンソースになった | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">AI</p><h1>Cloudflare の「Kitesurf」：AI エージェント向けに Workers の上だけで動くブラウザが、8月の発表から11月にオープンソースになった</h1><p class="summary">Cloudflare が2026年8月に発表し、11月にオープンソース化した、AI エージェント専用のブラウザ「Kitesurf」の設計、公式が示す性能と得意・不得意、オープンソース化の条件を、Cloudflare のブログと変更履歴をもとに整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Cloudflare は2026年8月6日、AI エージェント向けに作った新しいブラウザ「Kitesurf」を発表しました。<strong>Cloudflare Workers の上だけで動き</strong>、Browser Run で、ベータの間は無料で使えます。11月12日と13日には、<strong>GitHub でオープンソース（Apache 2.0）として公開</strong>したと発表しました。</p>
+<p>Cloudflare は、スクリーンショットや HTML の抽出といった作業で、Chromium より CPU とメモリの消費が<strong>3倍から7倍少ない</strong>一方、完了までの時間は<strong>約1.7倍長い</strong>と、自社の測定で書いています。動画の再生や WebGL などは、まだ対応していません。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">3.1〜3.8<small>倍少ない</small></p><p class="stat-label">CPU の消費（Chromium 比。スクリーンショット 380 ms 対 1,173 ms、HTML 抽出 229 ms 対 877 ms）</p></div>
+<div class="stat"><p class="stat-value">4.7〜7.0<small>倍少ない</small></p><p class="stat-label">メモリの消費（Chromium 比。スクリーンショット 57.8 MiB 対 271.0 MiB）</p></div>
+<div class="stat"><p class="stat-value">1.7〜1.8<small>倍長い</small></p><p class="stat-label">完了までの時間（Chromium 比。スクリーンショット 1,148 ms 対 637 ms）</p></div>
+<div class="stat"><p class="stat-value">21.5<small>万件超</small></p><p class="stat-label">通過した Web Platform Tests の数（8月時点）</p></div>
+</div>
+
+<h2>経過</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Cloudflare の公式資料で確認できる経過</caption>
+<thead><tr><th>時期</th><th>出来事</th></tr></thead>
+<tbody>
+<tr><td>2026年5月</td><td>最初のコミット（8月のブログが「12週間前に作ると決め、最初のコミットは5月」と書く）</td></tr>
+<tr><td>2026年8月6日</td><td>Kitesurf を発表。Browser Run で、ベータの間は無料（アカウントごとの上限あり）。オープンソース化は「準備ができたら、近いうちに」と予告</td></tr>
+<tr><td>2026年9月</td><td>11月のブログが、9月に、WebMCP への対応、新しい API、互換性の改善の更新を出したと書く（その記事は読んでいません）</td></tr>
+<tr><td>2026年11月12日</td><td>変更履歴で、Kitesurf のオープンソース化を告知</td></tr>
+<tr><td>2026年11月13日</td><td>ブログ「Kitesurf is now open source」を公開</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>なぜ作ったか、どう作ったか（8月のブログ）</h2>
+
+<ul>
+<li><strong>狙い：</strong>Chromium は人のために作られており、エージェントには不要なオーバーヘッドが大きい。メモリと計算が重く、エージェントごとに1つ持たせるのは費用が高い。エージェントに必要なのは、トークン数、コンテキストの長さ、拡張性、性能、費用で、タブやテーマ、拡張機能、画素単位の描画ではない、と書く。</li>
+<li><strong>脅威の想定が違う：</strong>プロンプトインジェクションとツールの安全性を優先する。すべてのページの読み込みを、信頼できない入力として扱い、セッションはいつも新しく始める。</li>
+<li><strong>状態を持たない：</strong>状態は、障害を高くつくものにする。状態のない部品は、使い捨てで、並列にしやすい。可能な部品は、すべてステートレスにした。</li>
+<li><strong>実装：</strong>Rust を、WebAssembly に直接コンパイルして使う。AI のエージェントの力を借りて、移植を進め、Web Platform Tests（W3C の標準への適合を測るテスト群）を、成功の基準にした。実在のサイトでの統合テストと、見た目の回帰テストも組み合わせた。</li>
+</ul>
+
+<h2>3つの部品</h2>
+
+<div class="cards">
+<div class="card"><h3>Engine</h3><p>唯一、外に公開される部品。Chrome DevTools Protocol（CDP）の WebSocket と HTTP の API を扱い、セッションの状態を保存する。Puppeteer、Playwright などの CDP の道具が、そのまま使える。ほかの部品は、ステートレス</p></div>
+<div class="card"><h3>PageScript</h3><p>ページごと（別プロセスの iframe を含む）に、Dynamic Workers で、長く動く分離環境を立ち上げ、HTML の解析と、JavaScript、WebAssembly の実行を行う。HTML と CSS の解析には、Rust 製の Blitz と Stylo の一部を使う。eval は、Rust 製の Boa JS で実行する（Workers が eval に対応するまでの措置）</p></div>
+<div class="card"><h3>PageRenderer</h3><p>計算されたページの内容から、画素を生成する。フォントや画像を静的アセットから取り、画像のバッファにして、Engine に返す。状態は持たず、失敗したら、Engine が作り直せる</p></div>
+</div>
+<p>ネットワークへのアクセスは、SandboxOutbound という1つの部品だけが行い、ほかの部品は、直接触れません。CORS の適用、ヘッダの付与、応答のフィルター、ページごとの Cookie の分離をここで行い、方針に反するものには 403 を返す、と書いています。</p>
+
+<h2>公式が示す性能（8月のブログ）</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Browser Run のクイックアクションを、14のURLで5回ずつ実行した中央値（Cloudflare の測定）</caption>
+<thead><tr><th>指標</th><th>Kitesurf</th><th>Chromium（ウォームプール）</th><th>比較</th></tr></thead>
+<tbody>
+<tr><td>CPU：スクリーンショット</td><td>380 ms</td><td>1,173 ms</td><td>3.1倍少ない</td></tr>
+<tr><td>CPU：HTML の抽出</td><td>229 ms</td><td>877 ms</td><td>3.8倍少ない</td></tr>
+<tr><td>メモリ：スクリーンショット</td><td>57.8 MiB</td><td>271.0 MiB</td><td>4.7倍少ない</td></tr>
+<tr><td>メモリ：HTML の抽出</td><td>39.4 MiB</td><td>273.7 MiB</td><td>7.0倍少ない</td></tr>
+<tr><td>時間：スクリーンショット</td><td>1,148 ms</td><td>637 ms</td><td>1.8倍長い</td></tr>
+<tr><td>時間：HTML の抽出</td><td>820 ms</td><td>472 ms</td><td>1.7倍長い</td></tr>
+</tbody>
+</table>
+</div>
+<p>Cloudflare は、時間で Chromium に負ける理由を、「すでにそのページを見た JIT は、冷えたソフトウェアの描画に勝つため」と説明し、差の多くは、ラスタライズと JPEG/PNG の符号化にあると書いています。Web Platform Tests は、約21.5万件を通過し、毎週数百件ずつ増えている、と書いています（8月時点）。</p>
+
+<h2>得意なことと、まだできないこと</h2>
+
+<ul>
+<li><strong>向いている：</strong>ページを描画する必要はあるが、完全な Chromium の機能や、画素単位の一致までは要らない AI エージェント。ページからの内容の抽出、PDF やスクリーンショットの生成といった、1回で終わる作業（対応するサイトに限る）。</li>
+<li><strong>できない（8月時点）：</strong>動画の再生、WebGL の描画、実際の TLS のフィンガープリントを使った、ボット対策のチャレンジへの応答、状態を保つ必要のある、10分間の認証つきセッション。これらは、Chromium を使う Browser Run の既定を使う、と書く。</li>
+<li><strong>対応が確認されたページ：</strong>TodoMVC（複数の実装）、Wikipedia、Hacker News、Cloudflare のブログ、Cloudflare のダッシュボードの多く。</li>
+<li><strong>使い方：</strong>Browser Run の CDP の接続先と、クイックアクションに、パラメーター「browser=kitesurf」を足すだけで使える。公開のプレイグラウンド（Chrome DevTools つき）でも試せる。</li>
+</ul>
+
+<h2>オープンソース化（11月）</h2>
+
+<ul>
+<li><strong>条件：</strong>GitHub で、Apache 2.0 ライセンス。コードを読み、手元で動かし、変更し、自分の Cloudflare の Workers に配備できる。</li>
+<li><strong>構成：</strong>Blitz（HTML の解析、DOM、レイアウト、描画）、Stylo（CSS）、Boa（WebAssembly 内の JavaScript。Dynamic Workers で動かせないときの最後の手段）、Linebender のライブラリ（文字の配置と2D 描画）、Krilla（PDF の出力）の上に作られている。各プロジェクトは、それぞれのライセンスを保つ。</li>
+<li><strong>必要なもの：</strong>自分の Cloudflare で動かすには、Dynamic Workers を使うため、Workers の有料プランが必要。手元の開発は、wrangler dev で動かす。</li>
+<li><strong>認証：</strong>Kitesurf には、認証の機能がない。変更履歴は、Cloudflare Access などの認証の層で、配備を守るよう求めている。</li>
+<li><strong>状態：</strong>実験的で、開発が活発。互換性、信頼性、効率を優先する。貢献は歓迎だが、レビューの余力は限られ、まず Issue を出し、メンテナーの承認（vouch）を得てから、プルリクエストを出す、と書く。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li>9月の更新（WebMCP 対応など）の中身。</li>
+<li>8月以降の、性能の数字と、通過するテストの数の更新（11月のブログは、専用のページで追えると書くだけで、数字は載せていない）。</li>
+<li>GitHub のリポジトリの中身と、実際に動かした結果。</li>
+<li>Browser Run での Kitesurf の、ベータ後の料金。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>性能の数値は、Cloudflare が自社の環境で、8月に測ったものです。第三者の測定ではなく、その後の更新で変わっている可能性があります。</li>
+<li>「完了までの時間は長い」点は、公式が自ら書いている不利な点です。費用を決めるのは、CPU とメモリだ、というのが、公式の主張です。</li>
+<li>このまとめは、製品の優劣や、導入の勧めは扱いません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>Cloudflare Workers</dt><dd>Cloudflare のネットワーク上で、プログラムを動かす仕組み。分離された環境（isolate）で動く。</dd>
+<dt>Dynamic Workers</dt><dd>実行のときに、分離された Workers を作れる仕組み。Kitesurf は、ページごとの環境に使う。</dd>
+<dt>Browser Run</dt><dd>Cloudflare のヘッドレスブラウザの API の製品。</dd>
+<dt>CDP（Chrome DevTools Protocol）</dt><dd>ブラウザを外から操作するための通信の約束。Puppeteer などが使う。</dd>
+<dt>Web Platform Tests</dt><dd>ブラウザが Web の標準に合っているかを測る、共通のテスト群。</dd>
+<dt>WebMCP</dt><dd>Web のページを、エージェント向けの道具として公開する仕組み（9月の更新で対応したと書かれている。詳細は未確認）。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、Cloudflare のブログ2本（2026年8月6日、11月13日）と、変更履歴（11月12日）をもとに、独自に整理したものです。</p>
+<p>9月の更新の記事と、GitHub の中身は、読んでいません。続報を確認できたときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（Kitesurf の設計、性能と限界、11月のオープンソース化）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
