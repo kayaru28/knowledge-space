@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="カリフォルニア大学リバーサイド校などの研究者が、2026年2月の NDSS で発表した論文「AirSnitch」の、攻撃の種類、評価した11機種と大学のネットワークの結果、対策、開示の経過を、論文の本文をもとに整理する。攻撃には、同じネットワークにつながっていることが前提。">
+<title>Wi-Fi の「クライアント分離」は破れる：AirSnitch（NDSS 2026）が示した、調べたすべての機器への攻撃と、有効だった対策 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>Wi-Fi の「クライアント分離」は破れる：AirSnitch（NDSS 2026）が示した、調べたすべての機器への攻撃と、有効だった対策</h1><p class="summary">カリフォルニア大学リバーサイド校などの研究者が、2026年2月の NDSS で発表した論文「AirSnitch」の、攻撃の種類、評価した11機種と大学のネットワークの結果、対策、開示の経過を、論文の本文をもとに整理する。攻撃には、同じネットワークにつながっていることが前提。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Wi-Fi の「クライアント分離（AP 分離）」は、同じネットワークにつながった端末どうしの直接の通信を止めて、内部からの攻撃を防ぐ機能です。カリフォルニア大学リバーサイド校（UCR）と KU Leuven の研究者は、この機能の安全性を体系的に分析し、<strong>調べたすべてのルーターとネットワークが、少なくとも1つの攻撃で破られた</strong>と、2026年2月の NDSS で報告しました。</p>
+<p>攻撃者は、<strong>すでにそのネットワークにつながっている端末</strong>（ゲスト用など）であることが前提で、被害者への通信の注入、被害者のインターネット向けの通信の傍受、両方を合わせた中間者攻撃（MitM）が可能になります。論文は、Netgear R8000 での実験で、MitM の確立に<strong>約2秒</strong>と書いています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">11<small>機種</small></p><p class="stat-label">評価した機器（家庭用7、企業向け4）。ほかに、2つの大学のネットワーク</p></div>
+<div class="stat"><p class="stat-value">約2<small>秒</small></p><p class="stat-label">Netgear R8000 での、MitM の確立にかかった時間（論文）</p></div>
+<div class="stat"><p class="stat-value">90<small>日超</small></p><p class="stat-label">各ベンダーに与えた、修正の準備の期間（責任ある開示）</p></div>
+</div>
+
+<h2>なぜ破れるのか：3つの原因</h2>
+
+<div class="cards">
+<div class="card"><h3>1. 放送用の鍵の管理が甘い</h3><p>多くの Wi-Fi の実装は、放送・マルチキャストの通信を、共有の「グループ一時鍵（GTK）」で守る。クライアント分離を有効にしても、全端末がこの鍵を持つため、内部の攻撃者が、これを悪用して、被害者に直接パケットを注入できる。Passpoint という標準も、この点で、設計上の欠陥がある、と書く</p></div>
+<div class="card"><h3>2. 分離が、MAC か IP の一方だけ</h3><p>多くのベンダーは、第2層（MAC）でだけ分離し、第3層（IP）には引き継がない。第2層の宛先をゲートウェイの MAC、第3層の宛先を被害者の IP にすると、AP は受け入れ、ゲートウェイが被害者へ転送してしまう（ゲートウェイバウンシング）</p></div>
+<div class="card"><h3>3. 端末の識別の同期が弱い</h3><p>被害者の MAC アドレスを偽って、同じネットワークの別の接続口（別の BSSID や別の AP）につなぐと、AP が、被害者が移動したと誤認し、被害者向けの下りの通信を攻撃者へ回す（ポートスティーリング）</p></div>
+</div>
+
+<h2>論文が示す攻撃の種類</h2>
+
+<ul>
+<li><strong>GTK の悪用：</strong>共有の鍵で暗号化した放送のフレームの中に、被害者宛ての個別のパケットを入れる。暗号の方式（WPA2、WPA3）に依存しない。</li>
+<li><strong>ゲートウェイバウンシング：</strong>上記の2。被害者への通信の注入に使う。</li>
+<li><strong>ポートスティーリング：</strong>上記の3。被害者の下りの通信、ルーターの MAC を偽れば、他端末の上りの通信も横取りできる。</li>
+<li><strong>ブロードキャストの反射、マシン・オン・ザ・サイド、偽の AP：</strong>表の組み合わせで、複数の経路から、同じ目的を達する。偽の AP は、被害者を切り離して、偽の AP につながせる。</li>
+<li><strong>中間者攻撃（MitM）：</strong>傍受と再注入を組み合わせて、双方向の通信に割り込む。確立したあとは、リンク層のすべての通信を傍受でき、未修正の（D）TLS の実装の脆弱性があれば、HTTPS の復号につながりうる、と書く。</li>
+</ul>
+
+<h2>評価の結果</h2>
+
+<div class="table-wrap">
+<table>
+<caption>論文の評価（著者の実験）</caption>
+<thead><tr><th>対象</th><th>結果</th></tr></thead>
+<tbody>
+<tr><td>家庭用のルーター7機種（Netgear R8000、Tenda RX2 Pro、D-Link DIR-3040、TP-Link Archer AXE75、ASUS RT-AX57、DD-WRT、OpenWrt 24.10）</td><td>GTK の悪用、マシン・オン・ザ・サイド、偽の AP は、7機種すべてで、クライアント分離を破った。WPA2 と WPA3 のどちらでも成立</td></tr>
+<tr><td>BSSID 間（ゲストとメイン）</td><td>単独の AP の5機種で、ゲストとメインの分離を迂回して、フレームやパケットを注入できた。6機種で、上り・下りのポートスティーリングができ、うち4機種で、ゲストとメインの壁を破れた</td></tr>
+<tr><td>企業向け4機種（Ubiquiti の2機種、Cisco Catalyst 9130、LANCOM LX-6500）</td><td>Ubiquiti の2機種は、ゲートウェイバウンシング、GTK の悪用、ブロードキャストの反射、ポートスティーリングに弱かった。Cisco と LANCOM も、GTK の悪用と下りのポートスティーリングに弱かった</td></tr>
+<tr><td>端末の OS</td><td>macOS、iOS、Android は、GTK で暗号化された放送のフレームの中の、個別の IP パケットを受け入れた。Linux の drop_unicast_in_l2_multicast を有効にすると、IPv4 の ping は落とすが、IPv6 と ARP の確認には、なお応答した</td></tr>
+<tr><td>2つの大学のネットワーク（別の国）</td><td>実際のネットワークでも、攻撃が成立した。研究者は、ほかの利用者がいない週末の夜に、被害者の IP を宛先にした範囲で試験した。WPA2/3-Enterprise が、個別の資格情報で守る、という通説を覆す、と位置づける</td></tr>
+<tr><td>企業の構内（RADIUS）</td><td>AP と認証サーバーの間の RADIUS の通信を、上りのポートスティーリングで盗める、と報告。パスワードの解読や、偽の AP の設置につながる、と書く</td></tr>
+</tbody>
+</table>
+</div>
+<p>Netgear R8000 では、ゲスト用の SSID から、信頼するメインの SSID の被害者の通信全体に割り込む MitM を、約2秒で確立できました。その間、被害者は YouTube の動画をストリーミングしており、大きな遅れを感じなかった、と書いています。</p>
+
+<h2>論文が挙げる対策</h2>
+
+<ul>
+<li><strong>VLAN で分ける：</strong>ゲストの SSID を別の VLAN に置くと、攻撃の多くが無効になる。TP-Link EAP613 で確認。DD-WRT と OpenWrt は、ゲストとメインを別の内部スイッチ（ブリッジ）に分けると、ポートスティーリングを防げた。Tenda RX2 Pro は、同じ MAC を2つの BSSID で同時に使わせない仕組みで、防げた。</li>
+<li><strong>なりすましの防止：</strong>無線側で、偽のゲートウェイの MAC を拒否する、複数の BSSID に同じ MAC が現れたら切断する、IP のなりすましを防ぐ、といった方策が有効。</li>
+<li><strong>グループ鍵の保護：</strong>クライアントごとに、ランダムな GTK を使う（Passpoint の DGAF Disable）。放送の通信は、端末ごとのユニキャストに変換される。</li>
+<li><strong>端末間の暗号化：</strong>第2層のフレームの中身を、端末ごとの固有の鍵で、端末間で暗号化する。この論文の攻撃は、Wi-Fi の通信の機密性、完全性、真正性を損なうため、その保護に使える、と書く。</li>
+</ul>
+
+<h2>開示と、その後（論文の記述）</h2>
+
+<ul>
+<li>各ベンダーに、90日を超える修正の準備の期間を与え、緩和の前には、脆弱性を公開しなかった。</li>
+<li>多くのベンダーが応答し、一部は、すでにソフトウェアの更新を出した。</li>
+<li>Wi-Fi Alliance は、Passpoint の v3.4 で、IGTK のランダム化の不足に対応した。LANCOM は、結果を認め、グループ鍵をランダム化する選択肢を加えた。Ubiquiti は、緩和の方法を検討中。D-Link は、検証用に、ルーター2台を提供した。</li>
+<li>ほかのベンダーは、製品を評価中。層をまたぐ脆弱性のため、時間がかかる、と書く（執筆の時点）。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li>論文の発表（2026年2月）以降の、各社の修正の状況。論文は、執筆の時点の記述です。</li>
+<li>家庭用・企業向けの特定の製品が、現時点で修正済みかどうか。</li>
+<li>論文の表（Table II〜IV）の、機種ごとの全項目。</li>
+<li>実際の攻撃での悪用の報告の有無。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>攻撃の前提は、攻撃者が、すでにそのネットワークの認証された端末であることです。論文は、内部の攻撃者への対策であるクライアント分離の、安全性の問題を扱っています。</li>
+<li>「調べたすべてが破られた」は、論文が選んだ11機種と2つの大学のネットワークについての結論です。世の中のすべての機器についての結論ではありません。</li>
+<li>このまとめは、攻撃の再現の手順は載せず、製品の評価もしません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>クライアント分離（AP 分離）</dt><dd>同じ Wi-Fi の端末どうしが、直接通信できないようにする機能。標準ではなく、ベンダーごとの実装。</dd>
+<dt>GTK（グループ一時鍵）</dt><dd>放送・マルチキャストの通信を暗号化する、ネットワーク全体で共有する鍵。</dd>
+<dt>BSSID</dt><dd>1つの AP が持つ、仮想的なネットワークの接続口。ゲスト用、メイン用などに分かれる。</dd>
+<dt>中間者攻撃（MitM）</dt><dd>通信の途中に割り込んで、傍受や改ざんをする攻撃。</dd>
+<dt>Passpoint</dt><dd>公衆の Wi-Fi への自動接続などを定めた、Wi-Fi Alliance の仕様。</dd>
+<dt>RADIUS</dt><dd>企業の Wi-Fi で、認証に使われる、標準的な仕組み。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、NDSS 2026 の論文「AirSnitch」（18ページ）の本文をもとに、独自に整理したものです。</p>
+<p>論文の発表以降の、各社の修正の状況は、読んでいません。確認できたときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（AirSnitch の攻撃の種類、評価の結果、対策、開示の経過）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
