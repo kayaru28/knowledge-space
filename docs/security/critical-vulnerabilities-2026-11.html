@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年11月1日〜20日に、JPCERT/CC の週報（11月11日号・18日号）、JPCERT/CC の注意喚起、IPA の重要なセキュリティ情報が取り上げた脆弱性を、悪用や攻撃の記述があるものを先に整理する。">
+<title>今月の重要な脆弱性（2026年11月・20日まで）：Outlook の悪用、nginx の Critical 5件、Java と PHP の修正、週報の37項目 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年11月・20日まで）：Outlook の悪用、nginx の Critical 5件、Java と PHP の修正、週報の37項目</h1><p class="summary">2026年11月1日〜20日に、JPCERT/CC の週報（11月11日号・18日号）、JPCERT/CC の注意喚起、IPA の重要なセキュリティ情報が取り上げた脆弱性を、悪用や攻撃の記述があるものを先に整理する。</p><p class="meta">初回公開 2026-11-21 ／ 更新日 2026-11-21</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>2026年11月1日〜20日に、JPCERT/CC の週報（11月11日号と18日号）、JPCERT/CC の注意喚起、IPA の重要なセキュリティ情報が取り上げた脆弱性を整理します。まず、<strong>悪用や攻撃の記述があるもの</strong>を挙げます。Microsoft Outlook の CVE-2026-124194（Microsoft が悪用を公表）、Airbyte、Atlassian Confluence Data Center、Zyxel GS1900 シリーズ、Google Chrome などです。</p>
+<p>11月18日〜20日には、<strong>NGINX の Critical（CVSS v4.0 で9.2）5件</strong>、Oracle Java SE の CVE-2026-114938、<strong>PHP の修正版（8.2.36、8.3.37、8.4.28、8.5.13）</strong>が続けて公表されました。各項目の出典は、公的機関（JPCERT/CC、IPA）の記述です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">37<small>項目</small></p><p class="stat-label">週報2号（11月11日号13、18日号24）の脆弱性の項目</p></div>
+<div class="stat"><p class="stat-value">1<small>件</small></p><p class="stat-label">Microsoft が悪用を公表した、11月の月例の脆弱性（CVE-2026-124194）</p></div>
+<div class="stat"><p class="stat-value">5<small>件</small></p><p class="stat-label">NGINX で CVSS v4.0 が 9.2（Critical）と評価された脆弱性</p></div>
+<div class="stat"><p class="stat-value">4<small>系統</small></p><p class="stat-label">11月19日に PHP が修正版を出した系統（8.2、8.3、8.4、8.5）</p></div>
+</div>
+
+<h2>悪用や攻撃が書かれているもの</h2>
+
+<div class="table-wrap">
+<table>
+<caption>JPCERT/CC と IPA の記述で、悪用や攻撃、エクスプロイトコードに触れているもの</caption>
+<thead><tr><th>製品</th><th>書かれていること</th><th>出典</th></tr></thead>
+<tbody>
+<tr><td>Microsoft Outlook（CVE-2026-124194）</td><td>Microsoft は、悪用されていることを公表している。細工したメッセージファイルを Outlook で開くと、通常出る警告が出ずに、攻撃者のサーバーに接続し、認証情報が漏えいするおそれがある（CWE-356「安全でない操作をユーザーに警告しない」）。IPA は、被害が拡大するおそれがあるとして、至急の更新を求めている</td><td>JPCERT/CC の注意喚起、IPA</td></tr>
+<tr><td>Airbyte</td><td>任意のコード実行につながる脆弱性。悪用が確認されている。修正済みのバージョンへの更新で解決する</td><td>JPCERT/CC 週報（11月11日号）</td></tr>
+<tr><td>Atlassian Confluence Data Center（CVE-2026-90436）</td><td>遠隔の第三者が任意のコードを実行できる。既定で無効の「Remote API（XML-RPC &amp; SOAP）」機能が有効な場合に影響を受ける。Rapid7 が、この脆弱性を悪用する攻撃を確認している</td><td>JPCERT/CC 週報（11月18日号）</td></tr>
+<tr><td>Zyxel GS1900 シリーズ（CVE-2026-107441）</td><td>セキュリティ企業 Binarly が、実際の攻撃で使われたエクスプロイトコードを分析して、この脆弱性を特定したと報告している</td><td>JPCERT/CC 週報（11月11日号）</td></tr>
+<tr><td>Barracuda Networks の複数の製品</td><td>JPCERT/CC が、エクスプロイトコードが公表されていることを確認している。パッチの適用で解決する。開発者は、管理インターフェースへのアクセスを、信頼できるネットワークに限ることを推奨している</td><td>JPCERT/CC 週報（11月11日号）</td></tr>
+<tr><td>Google Chrome（11月18日号）</td><td>Google は、今回修正された一部の脆弱性について、悪用された可能性があるという報告を確認している</td><td>JPCERT/CC 週報（11月18日号）</td></tr>
+<tr><td>N-able N-central</td><td>認証回避や任意のコード実行などにつながる複数の脆弱性。開発者は、修正版を順次公開している。Legacy API を無効にしていない利用者に関連する、攻撃の痕跡（IoC）の情報も、開発者が公開している</td><td>JPCERT/CC 週報（11月18日号）</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>11月18日〜20日の公表：NGINX、Java、PHP</h2>
+
+<div class="cards">
+<div class="card"><h3>NGINX（IPA、11月19日）</h3><p>F5 が、11月18日に複数の脆弱性を公表した。CVSS v4.0 で 9.2（Critical）と評価されたのは、CVE-2026-123007、CVE-2026-123633、CVE-2026-121810、CVE-2026-123634、CVE-2026-113425の5件。影響は、使う機能や設定で変わる。NGINX Open Source は、NGINX 1.30.7 と 1.31.9 で修正された。HTTP/2 の一時的な無効化は、CVE-2026-123007 と CVE-2026-123633 の暫定の対応として案内されているが、HTTP/3、プロキシ、メールプロキシの脆弱性も含まれるため、5件すべての対策にはならない。ディストリビューションのパッケージは、バージョンの表記が違ったり、修正がバックポートされたりするため、番号だけで判断しない</p></div>
+<div class="card"><h3>Oracle Java SE（IPA、11月18日）</h3><p>11月18日（日本時間）に、更新プログラムが公表された。ネットワーク経由で攻撃を受ける可能性がある脆弱性（CVE-2026-114938）が報告されており、IPA は、影響が大きいとして、早急な更新を求めている。対象は、サポート中の Java SE 27.0.1.0.3、25.0.5.0.3、21.0.13.0.3、17.0.21.0.3、11.0.33.0.3、8 Update 511b33（perf を含む）</p></div>
+<div class="card"><h3>PHP（IPA、11月19日・20日）</h3><p>The PHP Group が、2026年11月19日に、PHP 8.2.36、8.3.37、8.4.28、8.5.13 を公開した。セッション処理、リクエスト処理、メモリ管理などの脆弱性で、特定の条件の任意のコード実行、リクエストスマグリング、署名検証の回避などを含む。事前の予告は、最高の深刻度（Critical）の脆弱性が、既定とは異なる設定や一般的でない構成で影響する、と説明していた。ただし IPA は、これだけで、すべての脆弱性を既定の設定なら影響を受けないと判断しないよう求めている</p></div>
+</div>
+
+<h2>11月の月例の更新（Microsoft）</h2>
+
+<ul>
+<li>マイクロソフトは、2026年11月11日（日本時間）に、月例のセキュリティ更新プログラムを公開した。JPCERT/CC の注意喚起（JPCERT-AT-2026-0035）と IPA は、悪用が公表された脆弱性として、CVE-2026-124194（Outlook のなりすまし）を挙げている。</li>
+<li>IPA は、更新は通常、Windows Update で自動的に行われるが、更新を管理している組織は、早期に展開するよう求めている。更新には、再起動が必要になることがある。</li>
+<li>11月18日号の週報も、この注意喚起を、「複数のマイクロソフト製品に脆弱性」として紹介している。</li>
+</ul>
+
+<h2>週報の、そのほかの項目</h2>
+
+<div class="table-wrap">
+<table>
+<caption>JPCERT/CC の週報の、悪用の記述がない項目（週報の記述の要点）</caption>
+<thead><tr><th>号</th><th>製品</th><th>週報の記述</th></tr></thead>
+<tbody>
+<tr><td>11月11日</td><td>Cloud Software Group の XenServer</td><td>複数の脆弱性。修正済みのバージョンへの更新で解決する</td></tr>
+<tr><td>11月11日</td><td>Puppet Server、OpenVox</td><td>複数の脆弱性。修正済みのバージョンへの更新で解決する</td></tr>
+<tr><td>11月11日</td><td>Firefox</td><td>バッファエラーの脆弱性（Mozilla の勧告 MFSA 2026-123）</td></tr>
+<tr><td>11月11日</td><td>複数の ManageEngine 製品</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月11日</td><td>複数の Absolute Security 製品</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月11日</td><td>複数の Elastic 製品</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月11日</td><td>Microsoft Edge</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月11日</td><td>Google Chrome</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月11日</td><td>Android</td><td>複数の脆弱性（2026年11月1日のセキュリティ情報）</td></tr>
+<tr><td>11月11日</td><td>複数の PostgreSQL 向けツール</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月11日</td><td>そのほかの Zyxel 製品</td><td>複数の製品に脆弱性。更新で解決する（GS1900 は上の表）</td></tr>
+<tr><td>11月18日</td><td>ImageMagick を使うアプリケーション</td><td>任意のファイルの読み書きなどにつながる脆弱性（ImageTragick2）。修正版の適用や、適切なセキュリティポリシーの設定で対策できる</td></tr>
+<tr><td>11月18日</td><td>Synology DiskStation Manager</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>複数の Apple 製品</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>PostgreSQL</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>Apache HTTP Server 2.4</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>複数の Intel 製品</td><td>脆弱性。対象の製品とバージョンは多岐にわたる</td></tr>
+<tr><td>11月18日</td><td>Movable Type</td><td>コードインジェクションの脆弱性。サポートが終わったバージョンには、修正版は出ない</td></tr>
+<tr><td>11月18日</td><td>OpenSSL</td><td>複数の脆弱性。修正コードは公開済みで、修正を含むバージョンは今後公開する予定</td></tr>
+<tr><td>11月18日</td><td>React Server Components</td><td>任意のコード実行につながる脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>Node.js</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>MongoDB</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>複数の Palo Alto Networks 製品</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>Git</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>複数の Adobe 製品</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>複数の Ivanti 製品</td><td>脆弱性。Ivanti は、修正したバージョンを公開している</td></tr>
+<tr><td>11月18日</td><td>複数の Mozilla 製品</td><td>Firefox、Firefox ESR、Firefox for iOS、Thunderbird が影響を受ける（勧告 MFSA 2026-125）</td></tr>
+<tr><td>11月18日</td><td>複数の Fortinet 製品</td><td>脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>SS1／SS1クラウド、rocoeyes</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月18日</td><td>NEC の WebSAM WinShare</td><td>複数の脆弱性。パッチの適用で解決する</td></tr>
+<tr><td>11月18日</td><td>KUSANAGI</td><td>HTTP ヘッダーインジェクションの脆弱性。更新で解決する</td></tr>
+</tbody>
+</table>
+</div>
+<p>週報は、悪用の有無や深刻度の数値を書いていない項目が多く、このまとめも、週報が書いたこと以上は載せていません。</p>
+
+<h2>脆弱性以外の、週報の項目</h2>
+
+<ul>
+<li>内閣官房の国家サイバー統括室（NCO）が、「個人情報の漏えい等につながる不正アクセスへの対策について」を公開した（週報11月11日号）。Web サイトやモバイルアプリの事業者に、デジタル資産の把握、脆弱性への対処、継続的な診断・監視、設計・開発段階からの対策、委託先を含むサプライチェーン全体での対策を呼びかけている。</li>
+<li>JPCERT/CC が、「インシデント調査報告書チェックリスト」を公開した（週報11月18日号）。インシデントの調査を外部の組織に頼むときや、報告書を作る・確認するときに使うもので、頼む側と作る側が共通の認識を持つことを目的としている。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>各項目の事実は、JPCERT/CC の週報と注意喚起、IPA の記述に限っています。各開発元の勧告そのもの（影響を受けるバージョンの一覧、CVSS の数値、回避策の細目）は、IPA が載せたものを除いて読んでいません（未確認）。</li>
+<li>週報は、JPCERT/CC が選んだ項目の一覧で、その月に出たすべての脆弱性ではありません。</li>
+<li>「悪用」の記述は、書いた主体（Microsoft、Rapid7、Binarly、Google、JPCERT/CC など）の発表のとおりです。このまとめで、悪用の規模や被害は推定していません。</li>
+<li>11月21日以降の公表は、このまとめには入っていません。10月分は、別のまとめ「今月の重要な脆弱性（2026年10月）」にあります。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>CVE</dt><dd>脆弱性につける、共通の識別番号。</dd>
+<dt>CVSS</dt><dd>脆弱性の深刻度を、0〜10の数値で表す指標。v4.0 では、9.0以上が Critical。</dd>
+<dt>エクスプロイトコード</dt><dd>脆弱性を突くためのプログラム。公開されると、攻撃が増えやすい。</dd>
+<dt>バックポート</dt><dd>新しい版で直した修正を、古い版の配布物に取り入れること。バージョンの番号は変わらない場合がある。</dd>
+<dt>リクエストスマグリング</dt><dd>Web サーバーとその手前の機器で、リクエストの区切りの解釈がずれることを突く攻撃。</dd>
+<dt>IoC</dt><dd>攻撃を受けた痕跡を示す情報（通信先の住所など）。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月21日時点の情報です。内容は、JPCERT/CC の週報（11月11日号・18日号）、JPCERT/CC の注意喚起、IPA の重要なセキュリティ情報（Microsoft、Java、NGINX、PHP の予告と修正の公表）の本文をもとに、独自に整理したものです。</p>
+<p>各開発元の勧告は読んでいないため、影響範囲や深刻度の細部は、公開された資料をご確認ください。続報や新しい公表を確認できたときに、見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-21</span>初回公開（2026年11月1〜20日の週報2号、注意喚起、IPA の重要なセキュリティ情報から。悪用の記述があるもの、nginx・Java・PHP の修正、週報の項目）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
