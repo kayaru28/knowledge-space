@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="2026年11月17日の Microsoft Ignite で、Microsoft が公式ブログで発表した4件（Microsoft Perception、Copilot Managed Runtime、Windows Server 2028、Database Hub in Microsoft Fabric）の内容と、提供の状態（一般提供・プレビュー）を、Microsoft の公式ブログをもとに整理する。">
+<title>Microsoft Ignite 2026（11月17日）の発表から：Perception と Copilot Managed Runtime と Database Hub が一般提供、Windows Server 2028 はパブリックプレビュー | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Microsoft Ignite 2026（11月17日）の発表から：Perception と Copilot Managed Runtime と Database Hub が一般提供、Windows Server 2028 はパブリックプレビュー</h1><p class="summary">2026年11月17日の Microsoft Ignite で、Microsoft が公式ブログで発表した4件（Microsoft Perception、Copilot Managed Runtime、Windows Server 2028、Database Hub in Microsoft Fabric）の内容と、提供の状態（一般提供・プレビュー）を、Microsoft の公式ブログをもとに整理する。</p><p class="meta">初回公開 2026-11-21 ／ 更新日 2026-11-21</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>Microsoft は、2026年11月17日の Microsoft Ignite で、4件の発表を公式ブログに載せました。<strong>Microsoft Perception</strong>（Project Perception から名称を変え、一般提供）、<strong>Copilot Managed Runtime</strong>（一般提供。テナントへの提供を順次開始）、<strong>Database Hub in Microsoft Fabric</strong>（一般提供）、そして<strong>Windows Server 2028</strong>（パブリックプレビュー）です。</p>
+<p>このまとめは、4件の公式ブログの内容を、提供の状態（一般提供とプレビュー）を分けて整理したものです。数字や性能の主張は、いずれも Microsoft 自身の記述です。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">4<small>件</small></p><p class="stat-label">11月17日に公式ブログで発表された製品・機能群（一般提供3件、パブリックプレビュー1件）</p></div>
+<div class="stat"><p class="stat-value">約80<small>%</small></p><p class="stat-label">Perception の Triage Agent が、Microsoft Defender の典型的なキューの警告を判定できるとする割合（Microsoft の分析。個々の顧客での保証値ではない）</p></div>
+<div class="stat"><p class="stat-value">5<small>種類</small></p><p class="stat-label">Database Hub が対象にするデータベース（Azure SQL、Azure Database for PostgreSQL、Azure Cosmos DB、SQL Server、Fabric の SQL database）</p></div>
+<div class="stat"><p class="stat-value">2027年前半</p><p class="stat-label">AMD Instinct MI350P のプレビュー開始予定（Windows Server 2028 などが対象）</p></div>
+</div>
+
+<h2>4件の発表の一覧</h2>
+
+<div class="table-wrap">
+<table>
+<caption>Microsoft の公式ブログ（2026年11月17日）が書く、提供の状態と役割</caption>
+<thead><tr><th>製品</th><th>提供の状態</th><th>何をするものか（ブログの記述）</th></tr></thead>
+<tbody>
+<tr><td>Microsoft Perception</td><td>一般提供（Project Perception から名称変更）</td><td>赤・青・緑のチームのエージェントが、プレイブックに沿って連携し、セキュリティの成果を出す。人が優先順位を決め、重要な操作を承認する</td></tr>
+<tr><td>Copilot Managed Runtime</td><td>一般提供（テナントへの提供を順次開始）</td><td>AI で作ったアプリを、Microsoft が運営するホスティング、Entra の認証、データ接続の管理、アプリのライフサイクル管理とともに、仕事で使える形にする</td></tr>
+<tr><td>Windows Server 2028</td><td>パブリックプレビュー</td><td>セキュリティ、ストレージ、管理を強化し、企業の自前のインフラで AI の推論を動かすための土台を作り始める</td></tr>
+<tr><td>Database Hub in Microsoft Fabric</td><td>一般提供（一部の機能はプレビュー）</td><td>複数のデータベースを1か所で見て、監視し、調査する。クラウド、ハイブリッド、マルチクラウドのデータベースが対象</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Microsoft Perception：赤・青・緑のエージェント</h2>
+
+<ul>
+<li><strong>構成：</strong>赤のエージェントは、侵害につながる経路を見つけて検証する。青のエージェントは、警告の選別、攻撃の調査、脅威情報の検知への変換を行う。緑のエージェントは、重要な露出（弱点）を特定し、対処を調整する。プレイブックが、特定の成果のために、適切なエージェントをまとめる。チャットで頼むこともできる。</li>
+<li><strong>Triage Agent：</strong>Microsoft Defender の典型的なキューの警告の約80%を判定し、結論と理由を示す。Microsoft の分析（Defender の各ワークロードで生成された約800万件の警告。低〜高の深刻度で、最も多く、SOC が対応する警告）による割合で、全体の集計であり、個々の顧客での処理率の保証ではない、と注記している。</li>
+<li><strong>Attack Investigation Agent：</strong>端末、ID、メール、Active Directory、クラウドの資源などをまたいで考え、攻撃のタイムラインを再構成し、侵害されたものを特定し、アカウントの封じ込めや端末の隔離などの対応を、優先順位をつけて提案する。トリガーで、先に自動で動かすこともできる。</li>
+<li><strong>第三者のシグナル：</strong>Attack Investigation は Okta と AWS、Detection Authoring は Okta・Salesforce・AWS、Triage は Okta と Salesforce のシグナルを扱える。ほかのベンダーは、今後数か月で対応する、と書く。</li>
+<li><strong>脅威情報：</strong>Threat Intelligence Agent が、外部の脅威に関する記事を、攻撃者の行動や手法、痕跡の構造化された所見にする。「Detect emerging threats」プレイブックで、Detection Authoring Agent が、テナントに合わせた KQL の検知の提案にする。有効にする前に、過去のテナントのデータでテストし、警告の量を見積もる。分析者が確認・調整してから展開する。</li>
+<li><strong>Web アプリのペネトレーションテスト：</strong>Web App Pen Test Agent が、許可された Web アプリを、攻撃者の視点でテストする。認証、API、インジェクション、業務ロジックなどを調べ、弱点ごとに、証拠、影響を受けるエンドポイント、深刻度、概念実証を示す。Microsoft は、Incalmo による独立したベンチマークで、平均の課題解決率が31.0%（OpenAI Codex は15.2%）、安全制約のあるテストの91%で指定の範囲にとどまった、と書く。</li>
+<li><strong>防御への接続：</strong>「Protect web app」プレイブックで、Risk Reduction Agent が、Azure Front Door の WAF のルール変更などの、露出を減らす対策を提案する。「Reduce exposure risk」プレイブックでは、恒久的な修正が出たとき、Intune 経由のパッチの適用を調整し、すぐに適用できないときは、脆弱性を遮蔽する保護を提供する。</li>
+<li><strong>コードの脆弱性の探索（MDASH）：</strong>コード名 MDASH が、大きなリポジトリを論理的な単位に分けて、段階的に分析する。MAI-Cyber-1.1-Flash と MAI-Cyber-2（プレビュー）のモデルに対応を広げた。Defender のポータル、コマンドライン、GitHub Actions、Azure DevOps で動かせる。</li>
+<li><strong>つなぎ方：</strong>API と Model Context Protocol（MCP）で、ITSM、SIEM、SOAR のツールから、プレイブックを開始できる。エージェントの利用状況のダッシュボードと、費用の計算ツールも出す。Microsoft 365 E7 とあわせて、AI エージェント自体のリスクを調べる機能も広げる。</li>
+</ul>
+
+<h2>Copilot Managed Runtime：AI で作ったアプリを、仕事で使える形にする</h2>
+
+<ul>
+<li><strong>経緯：</strong>9月にパブリックプレビューで発表され、Ignite で一般提供を発表した。テナントへの提供を順次始めている。</li>
+<li><strong>中身：</strong>Microsoft が運営するホスティングに、Entra のサインインと共有、IT が決めた範囲での、組織のデータやサービスへの接続、アプリのライフサイクル管理を合わせたもの。作る場所は、Copilot Code、Copilot Cowork、Copilot Studio、GitHub Copilot、VS Code、第三者の開発ツールなど。コードは編集でき、Git で管理される。GitHub Enterprise を使う組織は、自前のリポジトリにつなげる。</li>
+<li><strong>IT の管理：</strong>Entra の ID・共有・アクセスに、ポリシーの適用と監査ログが並ぶ。Microsoft 365 管理センターの、アプリの一覧と監視で、公開されたアプリを一覧できる。</li>
+<li><strong>プレビューの機能：</strong>Microsoft Fabric との連携（最先端のパブリックプレビュー）で、アプリ自身の業務データを置く場所を出す（SharePoint と Dataverse への接続に加えて）。Copilot Studio のエージェントとワークフローを、ローカルで作り、CLI で Copilot Studio に公開する（パブリックプレビュー）。コードでエージェントを書く Code Agents は、アーリーアクセスのプレビューで、申し込みと承認が要る。</li>
+</ul>
+
+<h2>Windows Server 2028：パブリックプレビュー</h2>
+
+<ul>
+<li><strong>提供の仕方：</strong>セキュリティ、性能、管理の機能は、Windows Server Insider Program のプレビューで使える。ハイブリッドのインテリジェンス（AI の推論）の機能は、限られた顧客に、アーリーアクセスのプログラムで提供する。ハードウェアの要件がある。</li>
+<li><strong>セキュリティ：</strong>既定で強化した Server Core の構成と、新しいセキュリティのベースライン。Trusted Launch で、VM のブートの完全性を守る。Confidential VM の対応を始める。証明書の自動管理と、耐量子暗号にも投資する。</li>
+<li><strong>ストレージ：</strong>ネイティブの NVMe の対応が、既定で有効。NVMe over TCP と RDMA、ReFS からの起動に対応する。</li>
+<li><strong>管理：</strong>Intune による Windows Server の管理が、プレビュー。Windows Admin Center の Virtualization Mode は、一般提供。</li>
+<li><strong>AI の推論：</strong>AMD の Instinct MI350P のカードが、2027年前半から、サポート中の Windows Server と Windows Server 2028 でプレビューになる。推論の環境を配備・設定し、アクセラレーターを管理し、モデルへのリクエストを適切な環境に振り向ける機能を開発中。オープンウェイトやカスタムのモデルを、Foundry Local、Windows ML、vLLM、Llama.cpp などで動かせるようにする。分離には Microsoft eXecution Containers、モデルのカタログには Microsoft Foundry、エージェントの ID と統制には Agent 365 を使う。</li>
+</ul>
+
+<h2>Database Hub in Microsoft Fabric：データベース全体を1か所で</h2>
+
+<ul>
+<li><strong>一般提供：</strong>全体の状況（セキュリティ、性能、最適化で何に注意が要るか）、資産の一覧、性能の監視（CPU、メモリ、ストレージの傾向。Cosmos DB は正規化した RU と、制限された要求）、セキュリティの状況（公開のネットワークアクセス、プライベートエンドポイントがないこと、Microsoft Entra の認証、監査ログ、顧客管理の鍵など）、調査。対象は、Azure SQL、Azure Database for PostgreSQL、Azure Cosmos DB、SQL Server、Fabric の SQL database。</li>
+<li><strong>一般提供で加わったもの：</strong>性能の監視を、複数のリソースで一括して有効にする機能。最適化の洞察（移行評価の準備ができたリソース、従量課金などのライセンスモデルの機会、使用量を報告していない SQL Server）。SQL、PostgreSQL、Cosmos DB のリアルタイムダッシュボード。SSMS と VS Code の拡張機能から開く入口。GitHub Copilot CLI、VS Code の Copilot、Claude Code、Cursor から使える CLI のスキル。</li>
+<li><strong>始め方：</strong>Fabric が初めてでも、Database Hub を開くと、無料の Fabric のライセンスが自動で付く。ダッシュボードの共有、独自のアラート、Copilot の利用には、Fabric の容量が要る。</li>
+<li><strong>プレビュー：</strong>Copilot で、自然な言葉で、データベース全体を調べる（パブリックプレビュー）。Database Agents は、選んだデータベースを見張り、判断が要るときに、証拠と推奨を添えて課題を上げる（パブリックプレビュー）。Azure SQL Database のアラート（Teams への通知や Power Automate のフロー。Fabric Activator が動力。パブリックプレビュー）。Azure VM 上の SQL Server の性能の監視（プレビュー）。</li>
+</ul>
+
+<h2>書かれていないこと（未確認）</h2>
+
+<ul>
+<li>各製品の料金、提供地域、提供の開始日（Copilot Managed Runtime は、テナントごとに順次）。</li>
+<li>Perception の Microsoft Security ブログ（Perception の発表の本体とされるページ）は、自動取得を制限していて、読めませんでした。このまとめの Perception の内容は、Perception の公式ブログ（Microsoft Community Hub）に限ります。</li>
+<li>Web App Pen Test Agent などの各エージェントが、一般提供かプレビューかの区別は、読んだブログの範囲では、確認できませんでした。</li>
+<li>Incalmo のベンチマークの詳細な条件と、Triage Agent の約80%の、個別の顧客での再現性。</li>
+<li>Ignite のそのほかの発表（Microsoft Foundry、Microsoft 365 E7 など）は、このまとめでは扱っていません。</li>
+</ul>
+
+<h2>読むときの注意（筆者の整理）</h2>
+
+<ul>
+<li>「一般提供」と「プレビュー」が、同じ製品の中にも混ざっています（Copilot Managed Runtime、Database Hub）。使う前に、機能ごとの状態を確認する必要があります。</li>
+<li>Perception の約80%、Web App Pen Test Agent の31.0%・91% などの数字は、Microsoft 自身が書いた分析や報告で、このまとめでは、独立に確かめていません。</li>
+<li>このまとめは、発表の内容の整理で、各製品の評価や、競合との比較はしていません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+
+<dl class="terms">
+<dt>Microsoft Ignite</dt><dd>Microsoft が毎年開く、IT の専門家や開発者向けの年次の大きなイベント。</dd>
+<dt>一般提供（GA）／パブリックプレビュー</dt><dd>一般提供は、正式に使える状態。パブリックプレビューは、誰でも試せるが、正式な提供の前の状態。</dd>
+<dt>プレイブック</dt><dd>ある成果のために、手順とエージェントをまとめたもの。</dd>
+<dt>MCP（Model Context Protocol）</dt><dd>AI のエージェントが、外部のツールやデータにつながるための共通の取り決め。</dd>
+<dt>Entra</dt><dd>Microsoft の、ID とアクセスを管理するサービス。</dd>
+<dt>NVMe</dt><dd>高速な SSD のための、接続と通信の規格。</dd>
+<dt>耐量子暗号</dt><dd>将来の量子コンピューターでも破られにくい、とされる暗号。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月21日時点の情報です。内容は、Microsoft が2026年11月17日に Microsoft Community Hub に公開した公式ブログ4件の本文をもとに、独自に整理したものです。</p>
+<p>Perception の Microsoft Security ブログは読めていません。製品の資料や、続報を確認できたときに、見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-21</span>初回公開（Ignite 2026 の4件の発表：Perception、Copilot Managed Runtime、Windows Server 2028、Database Hub。提供の状態、機能、書かれていないこと）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
