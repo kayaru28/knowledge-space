@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Temporal について、一言での説明、中身と仕組み（構成、形、成り立ち、動き方、目的）、AWS Step Functions や Apache Airflow との違い、使う前の条件と使った結果、代表例と使いどころ、限界と注意を、公式の文書から整理する。">
+<title>Temporal：失敗しても続きから再開する、耐久実行のワークフロー実行基盤 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Temporal：失敗しても続きから再開する、耐久実行のワークフロー実行基盤</h1><p class="summary">Temporal について、一言での説明、中身と仕組み（構成、形、成り立ち、動き方、目的）、AWS Step Functions や Apache Airflow との違い、使う前の条件と使った結果、代表例と使いどころ、限界と注意を、公式の文書から整理する。</p><p class="meta">初回公開 2026-11-26 ／ 更新日 2026-11-26</p></header><section class="lede">
+<h2>一言で言うと</h2>
+<p><strong>Temporal</strong> は、ワークフロー実行基盤の一種で、アプリのコードの実行を、履歴に記録し、失敗のあとに、続きから再開させる点（耐久実行）が違います。</p>
+</section>
+<h2>中身と仕組み</h2>
+<p>調査メモの項目（構成要素、外から見た形、成り立ち、仕組み、使う目的）の順に、公式の文書で確認したことを書きます。</p>
+<h3>何でできているか</h3>
+<figure class="viz">
+<p class="viz-title">Temporal の構成</p>
+<p class="viz-sub">公式のドキュメントとアーキテクチャの文書をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="Temporal の構成。左は利用者の環境で、アプリ（SDK のクライアント）と Worker Process。右は Temporal Service で、Temporal Server（Frontend、History、Matching、Internal Workers）と、データベース（永続化ストアと可視性ストア）。アプリは開始や操作をサービスに送り、Worker はサービスから仕事を受け取って結果を返す。">
+<defs><marker id="arrow-tmp-parts" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="120" y="22" text-anchor="middle">利用者の環境</text>
+<rect class="box" x="10" y="34" width="220" height="74" rx="6"></rect>
+<text class="t-strong" x="120" y="64" text-anchor="middle">アプリ</text>
+<text class="t-small" x="120" y="88" text-anchor="middle">SDK のクライアント</text>
+<rect class="box" x="10" y="136" width="220" height="116" rx="6"></rect>
+<text class="t-strong" x="120" y="166" text-anchor="middle">Worker Process</text>
+<text class="t-small" x="120" y="190" text-anchor="middle">Workflow と Activity の</text>
+<text class="t-small" x="120" y="210" text-anchor="middle">コードを動かす</text>
+<text class="t-small" x="120" y="232" text-anchor="middle">（SDK を使う）</text>
+<text class="t-strong" x="600" y="22" text-anchor="middle">Temporal Service</text>
+<rect class="box-key" x="330" y="34" width="540" height="256" rx="6"><title>Temporal Server と、データベース</title></rect>
+<text class="t-strong" x="600" y="60" text-anchor="middle">Temporal Server（Go で書かれている）</text>
+<rect class="box" x="350" y="72" width="110" height="46" rx="6"></rect>
+<text class="t-strong" x="405" y="101" text-anchor="middle">Frontend</text>
+<rect class="box" x="470" y="72" width="110" height="46" rx="6"></rect>
+<text class="t-strong" x="525" y="101" text-anchor="middle">History</text>
+<rect class="box" x="590" y="72" width="110" height="46" rx="6"></rect>
+<text class="t-strong" x="645" y="101" text-anchor="middle">Matching</text>
+<rect class="box" x="710" y="72" width="150" height="46" rx="6"></rect>
+<text class="t-strong" x="785" y="101" text-anchor="middle">Internal Workers</text>
+<text class="t-small" x="350" y="142" text-anchor="start">History：Workflow Execution を管理し、状態を保存する</text>
+<text class="t-small" x="350" y="162" text-anchor="start">Matching：Worker がポーリングする Task Queue を管理する</text>
+<rect class="box" x="350" y="182" width="240" height="94" rx="6"></rect>
+<text class="t-strong" x="470" y="208" text-anchor="middle">永続化ストア</text>
+<text class="t-small" x="470" y="232" text-anchor="middle">Cassandra、PostgreSQL</text>
+<text class="t-small" x="470" y="252" text-anchor="middle">MySQL（SQLite は開発のみ）</text>
+<rect class="box" x="610" y="182" width="250" height="94" rx="6"></rect>
+<text class="t-strong" x="735" y="208" text-anchor="middle">可視性ストア</text>
+<text class="t-small" x="735" y="232" text-anchor="middle">実行の一覧や検索のため</text>
+<text class="t-small" x="735" y="252" text-anchor="middle">本番は Elasticsearch が推奨</text>
+<line class="arrow" x1="232" y1="70" x2="328" y2="70" marker-end="url(#arrow-tmp-parts)"/>
+<text class="t-small" x="280" y="60" text-anchor="middle">開始・操作</text>
+<line class="arrow" x1="232" y1="176" x2="328" y2="176" marker-end="url(#arrow-tmp-parts)"/>
+<text class="t-small" x="280" y="166" text-anchor="middle">ポーリング</text>
+<line class="arrow" x1="328" y1="216" x2="232" y2="216" marker-end="url(#arrow-tmp-parts)"/>
+<text class="t-small" x="280" y="236" text-anchor="middle">結果を返す</text>
+</svg>
+</div>
+<figcaption>Temporal Service は、サーバーと、データベースからなります。利用者のコードは、利用者が運用する Worker Process で動き、サービスは、利用者のコードを自分では実行しません。緑の枠が、Temporal Service です。</figcaption>
+</figure>
+<ul>
+<li><strong>Temporal Service</strong>：Temporal Server（Go で書かれている）と、データベースからなります。公式の用語では、以前の Temporal Cluster を、いまは Temporal Service と呼びます。</li>
+<li><strong>Temporal Server の内部サービス</strong>：Frontend、History、Matching、Internal Workers。History が Workflow Execution を管理して状態を保存し、Matching が、Worker がポーリングする Task Queue を管理します。</li>
+<li><strong>データベース</strong>：実行の状態と履歴を保存する永続化ストアと、実行の一覧や検索のための可視性（Visibility）ストア。</li>
+<li><strong>Worker Process</strong>：利用者が運用し、SDK を使って、Workflow と Activity のコードを動かします。</li>
+</ul>
+<h3>どんな形か</h3>
+<ul>
+<li>利用者のアプリは、SDK を gRPC のクライアントとして使い、Workflow の開始、取り消し、操作をします。</li>
+<li>操作の窓口は、SDK、Web UI、CLI（temporal コマンド）です。動いている Workflow には、Signal、Update、Query を送れます。</li>
+<li>Workflow と Activity は、汎用言語のコードで書きます。SDK は8つ（Go、Java、.NET、PHP、Python、Ruby、Rust、TypeScript）あり、言語の違う Workflow どうしが、互いに呼び出せます。</li>
+<li>公式の開発ガイドの表示（2026年11月25日に取得）は、Go v1.51.0、Java v1.41.1、.NET v1.22.0、PHP v2.20、Python v1.36.1、Ruby v1.11.0、Rust v1.3.0、TypeScript v1.26.0 です。</li>
+</ul>
+<h3>どう作られたか</h3>
+<ul>
+<li>Uber の Cadence から分かれて作られました。開発元の Temporal Technologies は、Cadence の作者たちのスタートアップです。会社の紹介によれば、創業者の2人は、2015年に Uber で Cadence を共同で作りました。ライセンスに、Uber Technologies（2020年）の著作権表示が残ります。</li>
+<li>提供元は Temporal Technologies Inc. で、サーバーは MIT ライセンスです。SDK は、Java が Apache License 2.0、Go、TypeScript、Python、.NET、Ruby、PHP、コアが MIT です。</li>
+<li>提供の形は2つあります。利用者がサーバーとデータベースを運用する形と、提供元が運用するクラウド版（Temporal Cloud）です。クラウド版は従量課金で、Actions と Storage の消費と、サポートプランの組み合わせです。</li>
+</ul>
+<h3>どう動くか</h3>
+<figure class="viz">
+<p class="viz-title">失敗のあとに、続きから再開する流れ</p>
+<p class="viz-sub">公式のドキュメントとアーキテクチャの文書をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 300" role="img" aria-label="通常の流れと、失敗のあとの流れ。通常は、Worker が Workflow のコードを動かし、コマンドを送り、サービスが履歴にイベントとして記録し、Activity を実行して結果も履歴に記録する。Worker が止まると、別の Worker が履歴を使ってコードを最初から実行して以前の状態に戻し、記録済みの Activity は再実行せずに続きから再開する。">
+<defs><marker id="arrow-tmp-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker></defs>
+<text class="t-strong" x="10" y="22" text-anchor="start">通常の流れ</text>
+<rect class="box" x="10" y="32" width="178" height="96" rx="6"></rect>
+<text class="t-strong" x="99" y="62" text-anchor="middle">Worker</text>
+<text class="t-small" x="99" y="86" text-anchor="middle">Workflow のコードを</text>
+<text class="t-small" x="99" y="106" text-anchor="middle">動かす</text>
+<rect class="box" x="240" y="32" width="178" height="96" rx="6"></rect>
+<text class="t-strong" x="329" y="62" text-anchor="middle">コマンドを送る</text>
+<text class="t-small" x="329" y="86" text-anchor="middle">Activity の実行、</text>
+<text class="t-small" x="329" y="106" text-anchor="middle">タイマーの設定など</text>
+<rect class="box-key" x="470" y="32" width="178" height="96" rx="6"><title>実行の記録（Event History）が、失敗後の再開の元になる</title></rect>
+<text class="t-strong" x="559" y="62" text-anchor="middle">履歴に記録</text>
+<text class="t-small" x="559" y="86" text-anchor="middle">サービスが、</text>
+<text class="t-small" x="559" y="106" text-anchor="middle">イベントとして追記</text>
+<rect class="box" x="700" y="32" width="170" height="96" rx="6"></rect>
+<text class="t-strong" x="785" y="62" text-anchor="middle">Activity を実行</text>
+<text class="t-small" x="785" y="86" text-anchor="middle">結果も履歴に</text>
+<text class="t-small" x="785" y="106" text-anchor="middle">記録される</text>
+<line class="arrow" x1="190" y1="80" x2="238" y2="80" marker-end="url(#arrow-tmp-flow)"/>
+<line class="arrow" x1="420" y1="80" x2="468" y2="80" marker-end="url(#arrow-tmp-flow)"/>
+<line class="arrow" x1="650" y1="80" x2="698" y2="80" marker-end="url(#arrow-tmp-flow)"/>
+<text class="t-strong" x="10" y="166" text-anchor="start">失敗のあと</text>
+<rect class="box" x="10" y="176" width="250" height="104" rx="6"></rect>
+<text class="t-strong" x="135" y="210" text-anchor="middle">Worker が止まる</text>
+<text class="t-small" x="135" y="238" text-anchor="middle">履歴は、サービスに残る</text>
+<rect class="box-key" x="320" y="176" width="250" height="104" rx="6"><title>履歴の再生（リプレイ）で、以前の状態に戻す</title></rect>
+<text class="t-strong" x="445" y="206" text-anchor="middle">別の Worker が受ける</text>
+<text class="t-small" x="445" y="234" text-anchor="middle">コードを最初から実行し、</text>
+<text class="t-small" x="445" y="254" text-anchor="middle">履歴で、以前の状態に戻す</text>
+<rect class="box" x="630" y="176" width="240" height="104" rx="6"></rect>
+<text class="t-strong" x="750" y="206" text-anchor="middle">続きから再開</text>
+<text class="t-small" x="750" y="234" text-anchor="middle">記録済みの Activity は</text>
+<text class="t-small" x="750" y="254" text-anchor="middle">再実行しない</text>
+<line class="arrow" x1="262" y1="228" x2="318" y2="228" marker-end="url(#arrow-tmp-flow)"/>
+<line class="arrow" x1="572" y1="228" x2="628" y2="228" marker-end="url(#arrow-tmp-flow)"/>
+</svg>
+</div>
+<figcaption>実行のたびに、起きたことを履歴に追記します。Worker が止まっても、別の Worker が、履歴を使ってコードを最初から実行し、以前の状態に戻して、続きから再開します。緑の枠が、再開の元になる部分です。</figcaption>
+</figure>
+<ul>
+<li><strong>イベントソーシング</strong>：Workflow Execution ごとに、イベントの履歴（Event History）を追記します。</li>
+<li><strong>失敗のあと</strong>：Workflow のコードを最初から実行し、履歴を使って、以前の状態に戻します（リプレイ）。履歴に記録済みの結果を使うので、記録済みの Activity は再実行しません。</li>
+<li><strong>決定的であること</strong>：リプレイのため、Workflow のコードは、同じ履歴で、同じ判断をする必要があります。時刻、乱数、ネットワーク呼び出しなど、実行のたびに変わりうるものは、Workflow のコードに直接書かず、SDK の機能や Activity で扱います。</li>
+<li><strong>Worker の動き</strong>：Task Queue をポーリングして、Workflow Task と Activity Task を受け取ります。Workflow Task は、コードが止まるところまで進め、続きの指示（コマンド）をサービスに返します。Activity Task は、Activity を実行して、結果を返します。</li>
+<li><strong>再試行</strong>：Activity が失敗すると、再試行の方針（Retry Policy）に従って、自動で再試行されます。再試行に備えて、Activity のコードは、冪等にすることが勧められています。</li>
+</ul>
+<h3>何のためか</h3>
+<ul>
+<li>公式は、再試行のループ、状態の表、スケジューラ、人の承認を待つ受け口、取り消しの処理、バックグラウンドジョブ、AI エージェントの長い処理を、アプリのコードから基盤に移すことを、目的に挙げます。</li>
+<li>数秒から数か月（Workflows のページは、数年）にわたる処理を、クラッシュやネットワーク断があっても、完了まで実行することを狙います。</li>
+</ul>
+<h2>似ているものと、違い</h2>
+<p>横のつながりです。どれも、複数の段階からなる処理を、順に動かす仕組みです。比べる軸は、筆者の整理で、各製品の事実は、各公式の文書によります。優劣は示しません。</p>
+<figure class="viz">
+<p class="viz-title">書き方と、動かす場所の違い</p>
+<p class="viz-sub">各公式の文書をもとにした模式図（比べる軸は筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 230" role="img" aria-label="Temporal、AWS Step Functions、Apache Airflow の、書き方と動かす場所の比較。Temporal は、汎用言語のコードで書き、Worker は利用者の環境、サービスは自前またはクラウド版。Step Functions は、Amazon States Language の状態機械で書き、AWS のサービス。Airflow は、Python の Dag で書き、利用者が構成して運用する。">
+<text class="t-strong" x="140" y="22" text-anchor="middle">Temporal</text>
+<rect class="box-key" x="10" y="34" width="260" height="76" rx="6"><title>汎用言語のコードで書く</title></rect>
+<text class="t-strong" x="140" y="62" text-anchor="middle">書き方</text>
+<text class="t-small" x="140" y="84" text-anchor="middle">汎用言語のコード</text>
+<text class="t-small" x="140" y="102" text-anchor="middle">Go、Java、TypeScript など</text>
+<rect class="box-key" x="10" y="120" width="260" height="100" rx="6"></rect>
+<text class="t-strong" x="140" y="148" text-anchor="middle">動かす場所</text>
+<text class="t-small" x="140" y="170" text-anchor="middle">Worker は利用者の環境</text>
+<text class="t-small" x="140" y="188" text-anchor="middle">サービスは自前、</text>
+<text class="t-small" x="140" y="206" text-anchor="middle">またはクラウド版</text>
+<text class="t-strong" x="440" y="22" text-anchor="middle">AWS Step Functions</text>
+<rect class="box" x="310" y="34" width="260" height="76" rx="6"></rect>
+<text class="t-strong" x="440" y="62" text-anchor="middle">書き方</text>
+<text class="t-small" x="440" y="84" text-anchor="middle">状態機械の定義</text>
+<text class="t-small" x="440" y="102" text-anchor="middle">Amazon States Language</text>
+<rect class="box" x="310" y="120" width="260" height="100" rx="6"></rect>
+<text class="t-strong" x="440" y="148" text-anchor="middle">動かす場所</text>
+<text class="t-small" x="440" y="176" text-anchor="middle">AWS のサービス</text>
+<text class="t-strong" x="740" y="22" text-anchor="middle">Apache Airflow</text>
+<rect class="box" x="610" y="34" width="260" height="76" rx="6"></rect>
+<text class="t-strong" x="740" y="62" text-anchor="middle">書き方</text>
+<text class="t-small" x="740" y="84" text-anchor="middle">Python で書く Dag</text>
+<text class="t-small" x="740" y="102" text-anchor="middle">（有向非巡回グラフ）</text>
+<rect class="box" x="610" y="120" width="260" height="100" rx="6"></rect>
+<text class="t-strong" x="740" y="148" text-anchor="middle">動かす場所</text>
+<text class="t-small" x="740" y="176" text-anchor="middle">利用者が構成して運用</text>
+<text class="t-small" x="740" y="194" text-anchor="middle">（1プロセスから分散まで）</text>
+</svg>
+</div>
+<figcaption>3つとも、ワークフローを動かす仕組みですが、書き方と、動かす場所が違います。Temporal は、汎用言語のコードで書き、Worker を利用者が運用します。緑の枠が、Temporal です。</figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+<caption>各公式の文書より（比べる軸は筆者の整理）</caption>
+<thead><tr><th>項目</th><th>Temporal</th><th>AWS Step Functions</th><th>Apache Airflow</th></tr></thead>
+<tbody>
+<tr><td>何か</td><td>耐久実行のプラットフォーム</td><td>AWS のサービス。ワークフロー（状態機械）で、分散アプリの構築やプロセスの自動化を行う</td><td>ワークフローの開発、スケジュール、監視のための、オープンソースのプラットフォーム</td></tr>
+<tr><td>書き方</td><td>Go、Java、TypeScript、Python などの汎用言語のコード</td><td>Amazon States Language で定義する状態機械</td><td>Python で書く Dag（有向非巡回グラフ）とタスク</td></tr>
+<tr><td>動かす場所</td><td>Worker は利用者の環境。サービスは自前、またはクラウド版</td><td>AWS のサービス</td><td>利用者が構成して運用する（ノート PC の1プロセスから、分散まで）</td></tr>
+<tr><td>実行の長さ</td><td>数秒から数か月（公式の記述）</td><td>Standard は最大1年、Express は最大5分</td><td>公式の概要では、確認していない</td></tr>
+<tr><td>履歴</td><td>Event History。Web UI で見られる</td><td>Standard は、完了後90日まで、API で履歴を取得できる</td><td>確認していない</td></tr>
+<tr><td>実行の保証</td><td>Activity は再試行されうる。冪等にするか、再試行しない設定にする</td><td>Standard は、各ステップを1回だけ実行する（exactly-once）。Express は、1回以上（at-least-once）</td><td>確認していない</td></tr>
+<tr><td>典型の用途</td><td>長い業務処理、人の承認待ち、補償処理、バックグラウンドジョブ、AI エージェント</td><td>分散アプリ、プロセスの自動化、マイクロサービスの連携、データや機械学習のパイプライン</td><td>時間やイベントで動くバッチ型のデータパイプライン、機械学習、LLM を使う処理</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>Cadence</strong>：Temporal の元になったものです。Temporal は、Cadence のフォークとして始まりました。</li>
+<li><strong>JavaScript の日時 API の Temporal</strong>：名前が同じですが、別のものです。ECMAScript の提案で、日付と時刻を扱う API です。</li>
+<li><strong>Temporal Cloud</strong>：同じ製品を、提供元が運用するクラウド版です。Worker は、利用者の環境で動きます。</li>
+</ul>
+<h2>使う前の条件と、使った結果</h2>
+<h3>使う前の条件</h3>
+<figure class="viz">
+<p class="viz-title">動かすために必要なもの</p>
+<p class="viz-sub">公式の自前運用のガイドと、データベースの文書をもとにした模式図</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 312" role="img" aria-label="Temporal を動かすために必要なものの積み重ね。上から、アプリ、Worker Process、Temporal Service、永続化ストア、可視性ストア。右は、ローカルの開発では、temporal server start-dev で1つの実行ファイルで動かせること、本番では各サービスを2インスタンス以上で動かすこと。">
+<rect class="box" x="10" y="10" width="520" height="42" rx="6"></rect>
+<text class="t-strong" x="270" y="37" text-anchor="middle">アプリ（SDK のクライアント）</text>
+<rect class="box" x="10" y="60" width="520" height="56" rx="6"></rect>
+<text class="t-strong" x="270" y="84" text-anchor="middle">Worker Process</text>
+<text class="t-small" x="270" y="104" text-anchor="middle">利用者が運用する。SDK は8つの言語</text>
+<rect class="box-key" x="10" y="124" width="520" height="56" rx="6"><title>自前で運用するか、クラウド版を使う</title></rect>
+<text class="t-strong" x="270" y="148" text-anchor="middle">Temporal Service</text>
+<text class="t-small" x="270" y="168" text-anchor="middle">自前で運用、またはクラウド版（Temporal Cloud）</text>
+<rect class="box" x="10" y="188" width="520" height="52" rx="6"></rect>
+<text class="t-strong" x="270" y="211" text-anchor="middle">永続化ストア（必須）</text>
+<text class="t-small" x="270" y="230" text-anchor="middle">Cassandra、PostgreSQL、MySQL（SQLite は開発とテストだけ）</text>
+<rect class="box" x="10" y="248" width="520" height="56" rx="6"></rect>
+<text class="t-strong" x="270" y="272" text-anchor="middle">可視性ストア</text>
+<text class="t-small" x="270" y="292" text-anchor="middle">本番は Elasticsearch が推奨。1.20 以降は SQL でも可</text>
+<rect class="box" x="570" y="60" width="300" height="108" rx="6"></rect>
+<text class="t-strong" x="720" y="88" text-anchor="middle">ローカルの開発</text>
+<text class="t-small" x="720" y="112" text-anchor="middle">brew install temporal</text>
+<text class="t-small" x="720" y="132" text-anchor="middle">temporal server start-dev</text>
+<text class="t-small" x="720" y="154" text-anchor="middle">（外部の依存がない、1つの実行ファイル）</text>
+<rect class="box" x="570" y="188" width="300" height="86" rx="6"></rect>
+<text class="t-strong" x="720" y="216" text-anchor="middle">本番</text>
+<text class="t-small" x="720" y="240" text-anchor="middle">各サービスを2インスタンス以上で動かす</text>
+<text class="t-small" x="720" y="260" text-anchor="middle">（アップグレード手順の前提）</text>
+</svg>
+</div>
+<figcaption>Temporal を動かすには、永続化のデータベースが必須です。Worker は、利用者が運用します。ローカルの開発は、開発用のサーバーを1つの実行ファイルで動かせます。緑の枠が、Temporal Service です。</figcaption>
+</figure>
+<ul>
+<li><strong>データベース</strong>：永続化のデータベースが必須です。テストされているのは、Cassandra（v3.11、v4.0、5.0.4 以降）、PostgreSQL（13.18、14.15、15.10、16.6）、MySQL（v5.7、v8.0。8.0.19 以降）です。SQLite は、開発とテストだけです。</li>
+<li><strong>可視性ストア</strong>：本番では、Elasticsearch が推奨されます。1.20 以降は、MySQL 8.0.17 以降、PostgreSQL 12 以降、SQLite 3.31.0 以降でも、高度な可視性が使えます。</li>
+<li><strong>Worker</strong>：利用者が自分で運用します。SDK で、Workflow と Activity のコードを書きます。</li>
+<li><strong>互換と移行</strong>：サーバーのアップグレードは、minor の版を1つずつ上げます。スキーマの更新のあと、バイナリをローリングで更新し、実行中の Workflow は動き続けます。Worker Versioning は、実行中の Workflow を、開始したときの Worker の版に固定します。</li>
+</ul>
+<h3>使った結果</h3>
+<ul>
+<li>Workflow Execution は、完了まで実行され、履歴が残ります。</li>
+<li>Web UI で、入力、出力、履歴（どの Activity が、どのエラーで失敗したか）を見られます。CLI で、開始、確認、取り消し、終了ができます。</li>
+<li>Search Attributes で、業務のデータを条件に、実行を検索できます。</li>
+<li>通信は mTLS で保護できますが、既定では、履歴のデータは、サービス側で保存時に読めます。Data Converter で、データを暗号化できます。</li>
+</ul>
+<h2>具体例と、使いどころ・限界</h2>
+<h3>代表例</h3>
+<ul>
+<li><strong>公式の例</strong>：注文処理の Workflow です。公式は、Workflow Type の例として、order processing と customer onboarding を挙げます。Activity の例は、他のサービスの呼び出し、メディアの変換、メールの送信、ユーザー情報の更新、クレジットカードの支払いです。</li>
+<li><strong>最小の動かし方</strong>：brew install temporal のあと、temporal server start-dev で、開発用のサーバーを起動し、Go または Java のサンプルを動かします。</li>
+</ul>
+<h3>使いどころ</h3>
+<p>公式の説明から、筆者がまとめたものです。</p>
+<ul>
+<li>長く、複数の段階があり、途中で失敗しうる処理（支払い、注文の処理など）。</li>
+<li>人の承認や、数日の待ちを含む処理。</li>
+<li>失敗したときに、前の段階を取り消す補償の処理（Saga パターン）。</li>
+<li>バックグラウンドジョブ（Standalone Activity を、ジョブのキューとして使う）。</li>
+<li>AI エージェントの、長く、失敗しやすい呼び出しの連続。</li>
+</ul>
+<h3>限界と注意</h3>
+<ul>
+<li>Workflow のコードは、決定的であること。時刻、乱数、ネットワーク呼び出しを、直接書かない。</li>
+<li>自前運用の既定の制限：ペイロードは 2 MB でエラー（512 KB で警告）、gRPC のメッセージは 4 MB、1つの Workflow の履歴は 50 MB または 51,200 イベントでエラー、同時に未完了の Activity などは 2,000（性能のためには 500 以下を推奨）。</li>
+<li>提供元の記述：1つの Worker は、更新の頻度を扱える限り、数百万の未完了の Workflow Execution を扱えます。遅延は少し増えます。</li>
+<li>データの保護：既定では、履歴のデータが、サービス側で保存時に読めます。Data Converter で暗号化します。通信は mTLS、認可はプラグインで設定できます。</li>
+<li>運用：自前で運用すると、データベース、可視性ストア、各サービスの運用が要ります。クラウド版は、それを提供元が運用します。</li>
+<li>最新のサーバーは v1.32.2（2026年11月2日公開）です。リリースノートに、脆弱性の修正が含まれると書かれています（内容は未確認）。</li>
+</ul>
+<h2>読むときの注意</h2>
+<ul>
+<li>2026年11月25日時点の、公式の文書にもとづきます。機能や制限は、版で変わります。</li>
+<li>比較表の軸は、筆者の整理です。AWS Step Functions と Apache Airflow の欄は、各公式の文書にもとづき、優劣や性能は示しません。Airflow の実行の長さ、履歴、実行の保証は、公式の概要では確認していません。</li>
+<li>「使いどころ」は、公式の説明から、筆者がまとめたものです。</li>
+<li>Temporal Technologies の設立の年、処理量（1秒あたりの数）、Cadence からの移行の手順、Rust の SDK のライセンス、リリースノートの脆弱性の内容は、確認できていません。</li>
+</ul>
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>耐久実行（Durable Execution）</dt><dd>実行の状態と進み具合を保存し、失敗のあとに、続きから再開する仕組み。</dd>
+<dt>Workflow</dt><dd>一連の処理の流れ。コードで書く。Workflow Definition が定義、Workflow Execution が、実行中の1件。</dd>
+<dt>Activity</dt><dd>外の世界に触れる、1つの処理（API の呼び出し、データベースの問い合わせなど）。失敗すると、再試行される。</dd>
+<dt>Worker</dt><dd>Workflow と Activity のコードを動かす、利用者が運用するプロセス。</dd>
+<dt>Task Queue</dt><dd>Worker が、仕事を受け取るための待ち行列。</dd>
+<dt>Event History</dt><dd>Workflow Execution で起きたことの、追記だけの記録。</dd>
+<dt>リプレイ</dt><dd>履歴を使って、コードを最初から再実行し、以前の状態に戻すこと。</dd>
+<dt>決定的</dt><dd>同じ履歴を与えれば、同じ判断をすること。</dd>
+<dt>冪等</dt><dd>同じ処理を何度行っても、結果が変わらないこと。</dd>
+<dt>mTLS</dt><dd>クライアントとサーバーが、互いに証明書で確認し合う、暗号化された通信。</dd>
+<dt>Data Converter</dt><dd>データの変換（暗号化など）を、SDK の側で行う仕組み。</dd>
+<dt>Cadence</dt><dd>Uber が作った、ワークフローのエンジン。Temporal の元。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月25日時点の情報です。内容は、Temporal の公式ドキュメントと公式リポジトリ、会社紹介、AWS Step Functions と Apache Airflow の公式の文書をもとに、独自に整理したものです。</p>
+<p>数字は資料のままで、再計算や検証はしていません。この記事をまとめた筆者の道具には、Anthropic の AI が含まれます。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-26</span>初回公開（コンセプトの型の版2：一言、中身と仕組み、似ているものと違い、使う前の条件と使った結果、具体例と使いどころ・限界）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>
