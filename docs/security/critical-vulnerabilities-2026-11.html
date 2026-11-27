@@ -6,8 +6,8 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="2026年11月1日〜25日に公表された脆弱性を、悪用や攻撃の記述があるものを先に整理する。JPCERT/CC の週報（11月11日号・18日号）と注意喚起、IPA の重要なセキュリティ情報、CISA の悪用確認カタログ、開発元の勧告をもとにする。">
-<title>今月の重要な脆弱性（2026年11月・25日まで）：Outlook、VMware、Drupal の悪用、nginx の Critical 5件、週報の37項目 | Knowledge Space</title>
+<meta name="description" content="2026年11月1日〜28日に公表された脆弱性を、悪用や攻撃の記述があるものを先に整理する。JPCERT/CC の週報（11月11日号・18日号・26日号）と注意喚起、IPA の重要なセキュリティ情報、CISA の悪用確認カタログ、開発元の勧告をもとにする。">
+<title>今月の重要な脆弱性（2026年11月・28日まで）：VMware と Drupal の悪用、Node-RED への攻撃、週報の59項目 | Knowledge Space</title>
 <link rel="icon" href="data:,">
 <style>
 /* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
@@ -192,17 +192,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年11月・25日まで）：Outlook、VMware、Drupal の悪用、nginx の Critical 5件、週報の37項目</h1><p class="summary">2026年11月1日〜25日に公表された脆弱性を、悪用や攻撃の記述があるものを先に整理する。JPCERT/CC の週報（11月11日号・18日号）と注意喚起、IPA の重要なセキュリティ情報、CISA の悪用確認カタログ、開発元の勧告をもとにする。</p><p class="meta">初回公開 2026-11-21 ／ 更新日 2026-11-26</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>今月の重要な脆弱性（2026年11月・28日まで）：VMware と Drupal の悪用、Node-RED への攻撃、週報の59項目</h1><p class="summary">2026年11月1日〜28日に公表された脆弱性を、悪用や攻撃の記述があるものを先に整理する。JPCERT/CC の週報（11月11日号・18日号・26日号）と注意喚起、IPA の重要なセキュリティ情報、CISA の悪用確認カタログ、開発元の勧告をもとにする。</p><p class="meta">初回公開 2026-11-21 ／ 更新日 2026-11-28</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>2026年11月1日〜20日に、JPCERT/CC の週報（11月11日号と18日号）、JPCERT/CC の注意喚起、IPA の重要なセキュリティ情報が取り上げた脆弱性を整理します。まず、<strong>悪用や攻撃の記述があるもの</strong>を挙げます。Microsoft Outlook の CVE-2026-124194（Microsoft が悪用を公表）、Airbyte、Atlassian Confluence Data Center、Zyxel GS1900 シリーズ、Google Chrome などです。</p>
 <p>11月18日〜20日には、<strong>NGINX の Critical（CVSS v4.0 で9.2）5件</strong>、Oracle Java SE の CVE-2026-114938、<strong>PHP の修正版（8.2.36、8.3.37、8.4.28、8.5.13）</strong>が続けて公表されました。各項目の出典は、公的機関（JPCERT/CC、IPA）の記述です。</p>
 <p>11月21日〜25日分の追記では、<strong>VMware vCenter（IPA が悪用の情報を記載）と Drupal（開発元が悪用を記載）</strong>を加え、GitLab、WordPress、Roundcube、Chrome、Firefox の修正も11月10日以降の分を足しました。</p>
-<p>あわせて、<strong>CISA の悪用確認カタログに11月に加わった30件</strong>（SonicOS、VMware vCenter、Check Point、Puppet Enterprise、Apache Axis など）と、開発元の勧告（Chrome の悪用コード、Firefox 160 の99件、Node.js、OpenSSL、Git など）を載せました。</p>
+<p>11月26日〜28日分の追記では、JPCERT/CC の週報（11月26日号、22項目）と、VMware、NetScaler、nginx、Node-RED、Ruby、Firefox、Jenkins、Oracle の公表を加えました。<strong>認証を設定していない Node-RED は、国内で稼働するホストが標的にされた</strong>との報告があります。</p>
+<p>あわせて、<strong>CISA の悪用確認カタログに11月に加わった42件</strong>（SonicOS、VMware vCenter、Check Point、Puppet Enterprise、Apache Axis など）と、開発元の勧告（Chrome の悪用コード、Firefox 160 の99件、Node.js、OpenSSL、Git など）を載せました。</p>
 </section>
 
 <div class="stats">
-<div class="stat"><p class="stat-value">37<small>項目</small></p><p class="stat-label">週報2号（11月11日号13、18日号24）の脆弱性の項目</p></div>
-<div class="stat"><p class="stat-value">30<small>件</small></p><p class="stat-label">米 CISA の悪用確認カタログに、11月1〜25日に加わった脆弱性</p></div>
+<div class="stat"><p class="stat-value">59<small>項目</small></p><p class="stat-label">週報3号（11月11日号13、18日号24、26日号22）の脆弱性の項目</p></div>
+<div class="stat"><p class="stat-value">42<small>件</small></p><p class="stat-label">米 CISA の悪用確認カタログに、11月1〜27日に加わった脆弱性</p></div>
 <div class="stat"><p class="stat-value">5<small>件</small></p><p class="stat-label">NGINX で CVSS v4.0 が 9.2（Critical）と評価された脆弱性</p></div>
 <div class="stat"><p class="stat-value">4<small>系統</small></p><p class="stat-label">11月19日に PHP が修正版を出した系統（8.2、8.3、8.4、8.5）</p></div>
 </div>
@@ -221,6 +222,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <tr><td>Barracuda Networks の複数の製品</td><td>JPCERT/CC が、エクスプロイトコードが公表されていることを確認している。パッチの適用で解決する。開発者は、管理インターフェースへのアクセスを、信頼できるネットワークに限ることを推奨している</td><td>JPCERT/CC 週報（11月11日号）</td></tr>
 <tr><td>Google Chrome（11月18日号）</td><td>Google は、今回修正された一部の脆弱性について、悪用された可能性があるという報告を確認している</td><td>JPCERT/CC 週報（11月18日号）</td></tr>
 <tr><td>N-able N-central</td><td>認証回避や任意のコード実行などにつながる複数の脆弱性。開発者は、修正版を順次公開している。Legacy API を無効にしていない利用者に関連する、攻撃の痕跡（IoC）の情報も、開発者が公開している</td><td>JPCERT/CC 週報（11月18日号）</td></tr>
+<tr><td>Node-RED（認証を設定していない構成。CVE-2026-58115）</td><td>VulnCheck が攻撃の試行を観測した。JPCERT/CC は、国内で稼働するホストが標的にされたとの報告を受けている</td><td>JPCERT/CC の注意の呼びかけ、週報（11月26日号）</td></tr>
+<tr><td>Drupal コア（CVE-2026-132165）</td><td>開発元が、実際に悪用されたとの報告を受けている</td><td>JPCERT/CC 週報（11月26日号）</td></tr>
+<tr><td>nginx（CVE-2026-123007）</td><td>任意のコードの実行に至る概念実証コードが公開されている（悪用の記述ではない）</td><td>JPCERT/CC の注意の呼びかけ</td></tr>
+<tr><td>Ruby</td><td>開発チームが、遠隔のコード実行を示す概念実証の存在を確認している（悪用の記述ではない）</td><td>Ruby の勧告、週報（11月26日号）</td></tr>
+<tr><td>ONLYOFFICE Docs</td><td>Rapid7 が、技術的な詳細と実証コードを公開した（悪用の記述ではない）</td><td>JPCERT/CC 週報（11月26日号）</td></tr>
 </tbody>
 </table>
 </div>
@@ -240,6 +246,19 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="card"><h3>Drupal コア：インストーラー（11月18日・25日）</h3><p>SA-CORE-2026-017（11月18日、Highly critical、CVE-2026-132165）は、特定の条件で、攻撃者がインストーラー（install.php）を使ってサイトを入れ直そうとでき、乗っ取りや遠隔のコード実行につながる。開発元は、11月19日 19:00 UTC の時点で、公開中のサイトで悪用されたという報告を受けたと追記した。SA-CORE-2026-019（11月25日、Highly critical、CVE-2026-136716）は、その修正のあとも、珍しい状態や未完了の状態のサイトが乗っ取られうるというもので、悪用されているとしている。インストーラーを保護していれば影響を受けない。インストーラーを外から開ける状態にしていたサイトは、ログと、管理者（ユーザー1）への変更を確かめるよう求めている</p></div>
 </div>
 
+<h2>11月26日〜28日の追加：開発元の勧告と、JPCERT/CC の注意の呼びかけ</h2>
+
+<div class="cards">
+<div class="card"><h3>VMware（Broadcom、11月24日）</h3><p>VMSA-2026-0011 は、ESX、vCenter、Workstation、Fusion、Avi Load Balancer などの23件の脆弱性を扱う。深刻度は Critical を含む。vCenter の認証回避（CVE-2026-123903、CVSS 9.8）は、ネットワークから vCenter に接続できる攻撃者が、認証を回避して不正にアクセスできる。ESX の I/O フィルターサービスの2件（CVE-2026-123910、123911）も 9.8。vCenter の修正版は 9.1.2、9.0.2.0300、8.0 U3m。悪用が確認された CVE-2026-123890（上の項）とは、別の勧告の別の番号。</p></div>
+<div class="card"><h3>Citrix NetScaler ADC・Gateway（11月12日）</h3><p>開発元の勧告（CTX697305）は28件の脆弱性を扱う。CVE-2026-120868（CVSS 9.3）は、パケット処理のメモリあふれで、既定の構成を含むすべての展開が影響を受ける。最も高い CVE-2026-107412（9.5）は、Gateway か AAA 仮想サーバーとして構成した場合の複数のメモリあふれ。14.1-73.57 以降、13.1-64.39 以降で修正された（FIPS 版は別の番号）。CERT-EU は、開発元は悪用を報告していないとしている。</p></div>
+<div class="card"><h3>nginx（JPCERT/CC、11月19日）</h3><p>JPCERT/CC は、CVE-2026-123007 について、任意のコードの実行に至ることを実証した概念実証コードが公開されているとした。実行環境などの制約はあるが、手法が改良される可能性がある。修正版は nginx 1.31.9 と 1.30.7。更新後は、再起動などで新しい実行ファイルが使われていることを確かめるよう求めている（設定の再読み込みだけでは不十分な場合がある）。</p></div>
+<div class="card"><h3>Node-RED（JPCERT/CC、11月19日）</h3><p>エディターと管理 API に認証（adminAuth）を設定せず、外部から接続できる Node-RED に、悪意あるフローが登録される問題。VulnCheck は11月2日に攻撃の試行を観測したと公表し、JPCERT/CC は、国内で稼働するホストが標的にされたとの報告を受けている。番号 CVE-2026-58115 は Siemens の製品に付いたものだが、認証がない構成なら、ほかの製品でも同様の影響を受ける可能性がある。</p></div>
+<div class="card"><h3>Ruby（11月18日）</h3><p>正規表現エンジンと、文字列の大文字・小文字の変換に、7件の脆弱性。開発チームは、一部について遠隔のコード実行ができることを示す概念実証の存在を把握している。Ruby 4.0.10、3.4.13、3.3.14 への更新を強く勧めている。3.2 以前はサポートが終わっていて、修正は出ない。</p></div>
+<div class="card"><h3>Firefox 161（Mozilla、11月24日）</h3><p>勧告 MFSA 2026-131 は110件の脆弱性を扱う（high 59、moderate 30、low 21）。サンドボックスからの脱出や、権限の昇格につながるものを含む。</p></div>
+<div class="card"><h3>Jenkins のプラグイン（11月25日）</h3><p>11個のプラグインの勧告。Pipeline: Groovy（CVE-2026-136834）と Script Security（CVE-2026-136835）には、サンドボックスを回避してコードを実行できる、深刻度 High の脆弱性がある。</p></div>
+<div class="card"><h3>Oracle（11月17日）</h3><p>11月の Critical Security Patch Update は、655件の新しいセキュリティパッチを含む。Oracle は、早期の適用を強く勧めている。</p></div>
+</div>
+
 <h2>11月の月例の更新（Microsoft）</h2>
 
 <ul>
@@ -248,12 +267,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li>11月18日号の週報も、この注意喚起を、「複数のマイクロソフト製品に脆弱性」として紹介している。</li>
 </ul>
 
-<h2>CISA の悪用確認カタログに、11月に加わった30件</h2>
+<h2>CISA の悪用確認カタログに、11月に加わった42件</h2>
 
-<p>米国の CISA は、悪用が確認された脆弱性を「Known Exploited Vulnerabilities Catalog」に載せている。公開データ（2026年11月25日版）で、追加日が11月1日から25日のものは30件。「期限」は、カタログに書かれた対応期限。</p>
+<p>米国の CISA は、悪用が確認された脆弱性を「Known Exploited Vulnerabilities Catalog」に載せている。公開データ（2026年11月27日版）で、追加日が11月1日から27日のものは42件。「期限」は、カタログに書かれた対応期限。</p>
 <div class="table-wrap">
 <table>
-<caption>CISA の悪用確認カタログに11月1日〜25日に加わった脆弱性（カタログの記述の要点）</caption>
+<caption>CISA の悪用確認カタログに11月1日〜27日に加わった脆弱性（カタログの記述の要点）</caption>
 <thead><tr><th>追加日</th><th>CVE</th><th>製品</th><th>カタログの記述の要点</th><th>期限</th></tr></thead>
 <tbody>
 <tr><td>11/3</td><td>CVE-2026-119977</td><td>WordPress 本体</td><td>確認時と使用時の差を突く競合状態（TOCTOU）</td><td>11/6</td></tr>
@@ -286,6 +305,18 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <tr><td>11/24</td><td>CVE-2026-131914</td><td>Idunno AntiCsrf</td><td>信頼できないデータのデシリアライズ。認証なしの遠隔の攻撃者が、任意のコードを実行できる。サポートが終わっている可能性があり、利用の中止か移行を勧める</td><td>11/27</td></tr>
 <tr><td>11/24</td><td>CVE-2026-132165</td><td>Drupal コア</td><td>失敗したときに安全な状態にならない問題。認証なしの攻撃者が、インストーラーを通じて、既存のサイトの乗っ取りや任意のコードの実行ができる</td><td>11/27</td></tr>
 <tr><td>11/25</td><td>CVE-2026-103406</td><td>HPE Juniper Session Smart Conductor・Router</td><td>OS コマンドインジェクション。細工した salt の minion ID で、遠隔の攻撃者が root でコマンドを実行できる</td><td>11/28</td></tr>
+<tr><td>11/25</td><td>CVE-2026-133469</td><td>Vates Xen Orchestra</td><td>型の検証の不備。空の JSON を含む細工した認証トークンで、認証を回避して管理者の権限で操作できる</td><td>11/28</td></tr>
+<tr><td>11/25</td><td>CVE-2025-41450</td><td>Danfoss AK-SM 800A（冷蔵設備の管理機器）</td><td>認証の不備。内部の IP アドレス、ユーザー名、店舗名などを含む報告を生成できる</td><td>12/9</td></tr>
+<tr><td>11/25</td><td>CVE-2023-25914</td><td>Danfoss AK-SM 800A（冷蔵設備の管理機器）</td><td>パストラバーサル。XML の窓口から、サーバーのファイルを読める</td><td>11/28</td></tr>
+<tr><td>11/25</td><td>CVE-2023-25915</td><td>Danfoss AK-SM 800A（冷蔵設備の管理機器）</td><td>入力の検証の不備。遠隔の攻撃者が、任意のコマンドを実行できる</td><td>11/28</td></tr>
+<tr><td>11/25</td><td>CVE-2026-133324</td><td>Mitel MiCollab（会議の機能）</td><td>失敗したときに安全な状態にならない問題。認証なしで、認証の制御を回避できる</td><td>11/28</td></tr>
+<tr><td>11/25</td><td>CVE-2026-133275</td><td>Mitel MiCollab（会議の機能）</td><td>危険な種類のファイルのアップロード。認証なしで、任意のファイルを送れる</td><td>11/28</td></tr>
+<tr><td>11/25</td><td>CVE-2026-133311</td><td>Mitel MiCollab（会議の機能）</td><td>弱い認証。システムが生成する識別子や、事前に置いた内容を使い、認証なしで機密情報を読める</td><td>12/9</td></tr>
+<tr><td>11/25</td><td>CVE-2026-133303</td><td>Mitel MiCollab（会議の機能）</td><td>XML インジェクション。事前に置いた悪意ある内容で、認証なしで任意のコマンドを実行できる</td><td>11/28</td></tr>
+<tr><td>11/25</td><td>CVE-2026-133323</td><td>Mitel MiCollab（会議の機能）</td><td>OS コマンドインジェクション。認証なしで、任意のシステムコマンドを実行できる</td><td>11/28</td></tr>
+<tr><td>11/27</td><td>CVE-2026-120705</td><td>OSGeo GeoServer</td><td>XML インジェクション。認証なしで、サーバーのファイルの読み取りや、指定した URL の取得をさせられる。ほかの脆弱性と連鎖して、認証なしの遠隔のコード実行になる</td><td>11/30</td></tr>
+<tr><td>11/27</td><td>CVE-2026-129243</td><td>OSGeo GeoServer</td><td>認可の不備。認証なしで、サービスの役割の確認を回避して操作を呼び出せる。連鎖して遠隔のコード実行になる</td><td>11/30</td></tr>
+<tr><td>11/27</td><td>CVE-2026-136716</td><td>Drupal コア</td><td>例外的な状態の確認の不備。特定の状態のサイトを、公開されたインストーラーから乗っ取れる（SA-CORE-2026-019）</td><td>11/30</td></tr>
 </tbody>
 </table>
 </div>
@@ -353,6 +384,12 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <tr><td>11月18日</td><td>SS1／SS1クラウド、rocoeyes</td><td>複数の脆弱性。更新で解決する</td></tr>
 <tr><td>11月18日</td><td>NEC の WebSAM WinShare</td><td>複数の脆弱性。パッチの適用で解決する</td></tr>
 <tr><td>11月18日</td><td>KUSANAGI</td><td>HTTP ヘッダーインジェクションの脆弱性。更新で解決する</td></tr>
+<tr><td>11月26日</td><td>Palo Alto Networks の複数の製品、Synology DiskStation Manager、Microsoft Edge</td><td>複数の脆弱性。修正済みのバージョンへの更新で解決する</td></tr>
+<tr><td>11月26日</td><td>IBM Guardium Data Protection、UniFi Access Application、Splunk の複数の製品</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月26日</td><td>ASUS の複数の製品、F5 の複数の製品、ILIAS</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月26日</td><td>Firefox、Google Chrome、GitLab</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月26日</td><td>プリザンター、AutoSys Workload Automation、Apache Shiro</td><td>複数の脆弱性。更新で解決する</td></tr>
+<tr><td>11月26日</td><td>Oracle の複数の製品、Atlassian の複数の製品</td><td>複数の脆弱性。Oracle は対象の製品とバージョンが多岐にわたり、セキュリティパッチの適用で解決する</td></tr>
 </tbody>
 </table>
 </div>
@@ -372,7 +409,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li>CISA のカタログは、悪用が確認された脆弱性の一覧で、被害の規模や、悪用した主体は、書かれていません。カタログに載ることは、そのほかの深刻度の高い脆弱性が、悪用されていないことを意味しません。</li>
 <li>週報は、JPCERT/CC が選んだ項目の一覧で、その月に出たすべての脆弱性ではありません。</li>
 <li>「悪用」の記述は、書いた主体（Microsoft、Rapid7、Binarly、Google、JPCERT/CC など）の発表のとおりです。このまとめで、悪用の規模や被害は推定していません。</li>
-<li>JPCERT/CC の週報は、11月18日号までです。11月21日以降の公表は、本文に挙げた IPA、開発元、CISA のものだけを足しています。10月分は、別のまとめ「今月の重要な脆弱性（2026年10月）」にあります。</li>
+<li>JPCERT/CC の週報は、11月26日号までです。それ以外の公表は、本文に挙げた JPCERT/CC、IPA、開発元、CISA のものだけを足しています。26日号の各項目が示す勧告は、本文に挙げたもの以外は読んでいません。10月分は、別のまとめ「今月の重要な脆弱性（2026年10月）」にあります。</li>
 </ul>
 
 <h2>用語メモ</h2>
@@ -387,10 +424,10 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </dl>
 
 <div class="note">
-<p><strong>この記事について</strong>：2026年11月26日時点の情報です。内容は、JPCERT/CC の週報（11月11日号・18日号）、JPCERT/CC の注意喚起、IPA の重要なセキュリティ情報（Microsoft、Java、NGINX、PHP の予告と修正の公表、VMware）と開発元の勧告の本文をもとに、独自に整理したものです。</p>
-<p>CISA のカタログは、2026年11月25日版の公開データです。読めなかった開発元の勧告があるため、影響範囲や深刻度の細部は、公開された資料をご確認ください。続報や新しい公表を確認できたときに、見直します。</p>
+<p><strong>この記事について</strong>：2026年11月28日時点の情報です。内容は、JPCERT/CC の週報（11月11日号・18日号・26日号）、JPCERT/CC の注意喚起、IPA の重要なセキュリティ情報（Microsoft、Java、NGINX、PHP の予告と修正の公表、VMware）と開発元の勧告の本文をもとに、独自に整理したものです。</p>
+<p>CISA のカタログは、2026年11月27日版の公開データです。読めなかった開発元の勧告があるため、影響範囲や深刻度の細部は、公開された資料をご確認ください。続報や新しい公表を確認できたときに、見直します。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-26</span>VMware vCenter と Drupal の悪用、CISA のカタログの追加6件（計30件）、Chrome・Firefox・GitLab・WordPress・Roundcube の修正を追加</li><li><span class="date">2026-11-21</span>初回公開（2026年11月1〜20日の週報2号、注意喚起、IPA の重要なセキュリティ情報から。悪用の記述があるもの、nginx・Java・PHP の修正、週報の項目）</li><li><span class="date">2026-11-21</span>追記：CISA の悪用確認カタログに11月1〜20日に加わった24件（SonicOS、vCenter、Check Point、Puppet Enterprise、Apache Axis ほか）と、開発元の勧告（Chrome の悪用コード、Firefox 160、Ivanti、Fortinet、Node.js、OpenSSL、Git）を追加。CVE-2026-90436 の製品名の食い違いを明記</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-28</span>週報11月26日号の22項目、CISA のカタログの追加12件（計42件。Mitel MiCollab、Danfoss、Xen Orchestra、GeoServer、Drupal）、VMware の23件、NetScaler の28件、Node-RED への攻撃、nginx の概念実証コード、Ruby・Firefox・Jenkins・Oracle の公表を追加</li><li><span class="date">2026-11-26</span>VMware vCenter と Drupal の悪用、CISA のカタログの追加6件（計30件）、Chrome・Firefox・GitLab・WordPress・Roundcube の修正を追加</li><li><span class="date">2026-11-21</span>初回公開（2026年11月1〜20日の週報2号、注意喚起、IPA の重要なセキュリティ情報から。悪用の記述があるもの、nginx・Java・PHP の修正、週報の項目）</li><li><span class="date">2026-11-21</span>追記：CISA の悪用確認カタログに11月1〜20日に加わった24件（SonicOS、vCenter、Check Point、Puppet Enterprise、Apache Axis ほか）と、開発元の勧告（Chrome の悪用コード、Firefox 160、Ivanti、Fortinet、Node.js、OpenSSL、Git）を追加。CVE-2026-90436 の製品名の食い違いを明記</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
