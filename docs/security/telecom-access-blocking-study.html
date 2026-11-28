@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="サイバー攻撃による大規模な漏えいを受けて、総務省が始めた、通信事業者のアクセス遮断などの検討を、大臣の会見と第1回会合の資料をもとに、経過、法律上の整理、過去の議論、論点の案に分けて整理する。">
+<title>総務省が、サイバー攻撃への防御としてのアクセス遮断の検討を開始：11月20日に作業部会の初会合 | Knowledge Space</title>
+<link rel="icon" href="data:,">
+<style>
+/* 配色は役割名で定義し、本文と図は役割名だけを参照する。白背景のライト固定 */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6a65;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.12);
+  --link: #006300;
+  --series-1: #008300;
+  --series-2: #6250d6;
+  --series-3: #eda100;
+  --callout: #e8f3e8;
+  --accent: #008300; /* 見出し・罫線・強調の共通色（図の色とは別の役割） */
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.site-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.site-header .wrap { padding-top: 12px; padding-bottom: 12px; }
+.site-name { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: 0.02em; }
+.site-footer { margin-top: 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+.site-footer .wrap { padding-top: 20px; padding-bottom: 40px; }
+
+main { padding-top: 32px; }
+.page-head { margin-bottom: 28px; }
+.eyebrow { margin: 0 0 4px; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+h1 { margin: 0 0 12px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.4; }
+main { counter-reset: section; }
+main > h2 {
+  counter-increment: section;
+  margin: 80px 0 20px;
+  padding-top: 20px;
+  border-top: 3px solid var(--accent);
+  font-size: 26px;
+  line-height: 1.5;
+}
+main > h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 2px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h3 {
+  margin: 40px 0 10px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.card h3 { margin: 0 0 6px; padding-left: 0; border-left: 0; }
+.summary { margin: 0 0 8px; color: var(--ink-2); max-width: 44rem; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+p, li { max-width: 44rem; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+.lede {
+  margin: 24px 0;
+  padding: 18px 20px;
+  background: var(--callout);
+  border-radius: 8px;
+}
+.lede h2 { margin: 0 0 8px; font-size: 17px; }
+.lede p { margin: 8px 0 0; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.stat-value { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.stat-value small { font-size: 14px; font-weight: 600; }
+.stat-label { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+figure.viz { margin: 28px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.viz-title { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.viz-sub { margin: 0 0 12px; color: var(--ink-2); font-size: 13px; }
+.viz-scroll { overflow-x: auto; }
+.viz svg { display: block; width: 100%; height: auto; font-family: inherit; }
+figcaption { margin-top: 12px; color: var(--ink-2); font-size: 13px; line-height: 1.7; max-width: none; }
+
+.viz svg text { fill: var(--ink-2); font-size: 12px; }
+.viz svg .t-ink { fill: var(--ink); }
+.viz svg .t-strong { fill: var(--ink); font-weight: 700; font-size: 13px; }
+.viz svg .t-muted { fill: var(--muted); }
+.viz svg .t-small { font-size: 11px; }
+.viz svg .grid { stroke: var(--grid); stroke-width: 1; }
+.viz svg .axis { stroke: var(--axis); stroke-width: 1.5; }
+.viz svg .arrow { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.viz svg .arrowhead { fill: var(--ink-2); }
+.viz svg .mask { fill: var(--surface); }
+.viz svg .box { fill: var(--surface-2); stroke: var(--axis); stroke-width: 1; }
+.viz svg .box-key { fill: var(--surface-2); stroke: var(--series-1); stroke-width: 1.5; }
+.viz svg .mk-period { fill: var(--series-1); }
+.viz svg .mk-found { fill: var(--series-2); }
+.viz svg .mk-announce { fill: var(--ink); }
+.viz svg .mk-advisory { fill: var(--series-3); }
+.viz svg .bar { fill: var(--series-1); }
+.viz svg .dot-case { fill: var(--series-2); }
+
+.table-wrap { overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--surface-2); font-weight: 700; white-space: nowrap; }
+td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+caption { caption-side: bottom; padding-top: 8px; color: var(--muted); font-size: 12px; text-align: left; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p, .card ul { margin: 6px 0 0; font-size: 14px; line-height: 1.75; }
+.card ul { padding-left: 1.2em; }
+.tag { display: inline-block; margin-right: 6px; padding: 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--ink-2); font-size: 12px; }
+.note { padding: 12px 16px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+.note p { margin: 4px 0; }
+
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--link); font-size: 14px; }
+dl.terms { margin: 12px 0; }
+dl.terms dt { margin-top: 12px; font-weight: 700; }
+dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
+
+
+.index-list { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 12px; }
+.index-list li { max-width: none; margin: 0; }
+.index-card { display: block; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
+.index-card:hover { border-color: var(--accent); }
+.index-card h3 { margin: 4px 0 6px; padding-left: 0; border-left: 0; font-size: 18px; }
+.index-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  main > h2 { margin-top: 56px; font-size: 22px; }
+  figure.viz { padding: 12px; }
+  .viz-wide { min-width: 640px; }
+  .viz-mid { min-width: 560px; }
+}
+
+.history { list-style: none; padding: 0; }
+.history li { max-width: none; font-size: 14px; }
+.history .date { margin-right: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.viz svg .bar-old { fill: var(--axis); }
+.viz svg .bar-2 { fill: var(--series-2); }
+.viz svg .dot-old { fill: var(--axis); }
+.viz svg .dot-new { fill: var(--series-1); }
+.viz svg .line-main { stroke: var(--series-1); stroke-width: 3; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.viz svg .line-limit { stroke: var(--series-2); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.viz svg .t-number { fill: var(--ink); font-weight: 700; font-size: 24px; }
+.viz svg .dashed { stroke-dasharray: 4 4; }
+
+.theme-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.theme-nav li { max-width: none; margin: 0; }
+.theme-nav a { display: inline-block; padding: 6px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; color: var(--ink); font-size: 14px; text-decoration: none; }
+.theme-nav a:hover { border-color: var(--accent); }
+.theme-nav .count { margin-left: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.index-section > h2 { margin: 56px 0 8px; padding-top: 16px; border-top: 3px solid var(--accent); font-size: 22px; line-height: 1.5; }
+.index-section .theme-desc { margin: 0 0 4px; color: var(--ink-2); font-size: 14px; }
+.history.recent li { margin: 10px 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
+</header>
+<main class="wrap">
+<header class="page-head"><p class="eyebrow">セキュリティ</p><h1>総務省が、サイバー攻撃への防御としてのアクセス遮断の検討を開始：11月20日に作業部会の初会合</h1><p class="summary">サイバー攻撃による大規模な漏えいを受けて、総務省が始めた、通信事業者のアクセス遮断などの検討を、大臣の会見と第1回会合の資料をもとに、経過、法律上の整理、過去の議論、論点の案に分けて整理する。</p><p class="meta">初回公開 2026-11-28 ／ 更新日 2026-11-28</p></header><section class="lede">
+<h2>ひとことで言うと</h2>
+<p>総務省は、サイバー攻撃で大規模な個人情報の漏えいが起きたときに、<strong>通信事業者がアクセス遮断（ブロッキング）などで閲覧を抑えられるか</strong>を検討し始めました。大臣が11月10日に表明し、11月20日に作業部会の第1回会合を開きました。</p>
+<p><strong>結論はまだ出ていません</strong>。事務局は、来年早々のとりまとめを予定しています。</p>
+</section>
+
+<div class="stats">
+<div class="stat"><p class="stat-value">11月20日</p><p class="stat-label">作業部会（検討ワーキング）の第1回会合</p></div>
+<div class="stat"><p class="stat-value">5<small>人</small></p><p class="stat-label">構成員（大学の研究者。主査は山本龍彦氏）</p></div>
+<div class="stat"><p class="stat-value">3<small>回程度</small></p><p class="stat-label">事務局が示す年内の開催の予定</p></div>
+</div>
+
+<h2>経過</h2>
+<div class="table-wrap">
+<table>
+<caption>総務省の公式の資料で確認できる経過</caption>
+<thead><tr><th>日付</th><th>出来事</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>11月6日</td><td>緊急対策パッケージの決定</td><td>漏えいした個人情報の悪用などを防ぐため、通信事業者によるアクセス抑止策の在り方を、法的な課題を含めて早急に検討する</td></tr>
+<tr><td>11月10日</td><td>総務大臣が会見で表明</td><td>既存の検討会の下に学識経験者の検討グループを置き、11月下旬から議論する</td></tr>
+<tr><td>11月20日</td><td>第1回会合</td><td>Web会議。事務局の説明と意見交換</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>何を検討するか</h2>
+<ul>
+<li><strong>背景：</strong>同時に大量の個人情報が漏えいし、漏えいした情報を不特定多数の目にさらすとする脅迫の事案が起きている、と事務局の資料は書いています。</li>
+<li><strong>課題：</strong>近時の攻撃の特徴と国民へのリスク、アクセス遮断を含む抑止策の法的な課題など。</li>
+<li><strong>構成員：</strong>内田真人氏（早稲田大学）、宍戸常寿氏（東京大学）、曽我部真裕氏（京都大学）、橋爪隆氏（東京大学）、山本龍彦氏（慶應義塾大学。主査）。</li>
+</ul>
+
+<h2>法律上の整理</h2>
+<div class="cards">
+<div class="card"><h3>原則</h3><p>通信の秘密は電気通信事業法で守られます。アクセス遮断は、すべての利用者のアクセス先を同意なく確認することが前提になるため、通信の秘密の侵害に当たる、と整理されています</p></div>
+<div class="card"><h3>例外として挙がるもの</h3><p>当事者の同意、別の法律の根拠、通信事業者の業務上の必要（設備への攻撃元の検知など）、緊急避難</p></div>
+<div class="card"><h3>知る権利</h3><p>遮断の一覧次第で、あらゆる情報への接続が止められるため、知る権利を制約するおそれがあります</p></div>
+<div class="card"><h3>技術の限界</h3><p>遮断には回避の手段があり、有効性を高めるための技術的な課題もあります</p></div>
+</div>
+
+<h2>これまでの遮断の議論</h2>
+
+<figure class="viz">
+<p class="viz-title">対象ごとに、根拠の整理が違う</p>
+<p class="viz-sub">事務局の資料の記述に基づく（図は筆者の整理）</p>
+<div class="viz-scroll">
+<svg class="viz-wide" viewBox="0 0 880 150" role="img" aria-label="アクセス遮断の議論の経過。2008年の児童ポルノは緊急避難の解釈で事業者が自主的に実施。2018年の海賊版は一部の事業者が予告したが断念。2026年のオンラインカジノは立法措置が必要とされ検討中。2026年11月からサイバー攻撃の防御としての検討が始まった。">
+<defs>
+<marker id="arrow-blocking" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><polygon class="arrowhead" points="0,0 10,5 0,10"/></marker>
+</defs>
+<rect class="box" x="1" y="20" width="194" height="110" rx="8"/>
+<text class="t-strong" x="14" y="48">2008　児童ポルノ</text>
+<text class="t-small" x="14" y="74">緊急避難との解釈</text>
+<text class="t-small" x="14" y="93">事業者が自主的に実施</text>
+<line class="arrow" x1="196" y1="75" x2="225" y2="75" marker-end="url(#arrow-blocking)"/>
+<rect class="box" x="229" y="20" width="194" height="110" rx="8"/>
+<text class="t-strong" x="242" y="48">2018　海賊版</text>
+<text class="t-small" x="242" y="74">一部の事業者が予告</text>
+<text class="t-small" x="242" y="93">のちに断念</text>
+<line class="arrow" x1="424" y1="75" x2="453" y2="75" marker-end="url(#arrow-blocking)"/>
+<rect class="box" x="457" y="20" width="194" height="110" rx="8"/>
+<text class="t-strong" x="470" y="48">2026　賭博サイト</text>
+<text class="t-small" x="470" y="74">立法措置が必要と整理</text>
+<text class="t-small" x="470" y="93">省庁で検討を継続</text>
+<line class="arrow" x1="652" y1="75" x2="681" y2="75" marker-end="url(#arrow-blocking)"/>
+<rect class="box-key" x="685" y="20" width="194" height="110" rx="8"/>
+<text class="t-strong" x="698" y="48">今回　攻撃の防御</text>
+<text class="t-small" x="698" y="74">漏えい情報の閲覧の</text>
+<text class="t-small" x="698" y="93">抑止などを検討</text>
+</svg>
+</div>
+<figcaption>児童ポルノは緊急避難の解釈で実施され、オンラインカジノは立法が必要と整理されました。今回の検討が、どの根拠になるかは決まっていません。</figcaption>
+</figure>
+
+<p>児童ポルノの遮断では、インターネットコンテンツセーフティ協会が基準に基づいて判定し、一覧を事業者に提供します。協会は、実施状況の公表と、異議の受付も行います。</p>
+
+<h2>事務局が議論してほしいとする点（案）</h2>
+<ol>
+<li>大規模な攻撃で漏えいなどの被害が広がるなか、緊急のアクセス抑止が求められるという考え方を、どう考えるか。</li>
+<li>必要性と緊急性があり、抑止しなければ被害が広がるおそれが高い場合、緊急避難の考え方で、事業者が遮断を含む抑止策を取れる場面があるのではないか。望ましい手続きを官民で整理すべきではないか。</li>
+<li>児童ポルノの遮断で機能している民間の自主的な枠組みの活用を含め、必要な手順を検討すべきではないか。</li>
+<li>知見が蓄積されたら、緊急避難に当たる場面を類型にするなどして、将来の立法も排除されないのではないか。</li>
+</ol>
+<p>事務局は、次の会合で関係する事業者・団体と有識者から意見を聞くことを提案しています。</p>
+
+<h2>書かれていないことと、読むときの注意</h2>
+<ul>
+<li>第1回会合で出た意見と結論は、確認していません。</li>
+<li>対象にするサイトの基準、判定する主体、実施する事業者は、論点として挙がった段階です。</li>
+<li>議論してほしい点は事務局の案で、作業部会の結論ではありません。</li>
+</ul>
+
+<h2>用語メモ</h2>
+<dl class="terms">
+<dt>アクセス遮断（ブロッキング）</dt><dd>通信事業者が、特定のサイトへの接続を検知して止めること。</dd>
+<dt>通信の秘密</dt><dd>通信の内容や宛先を、勝手に知ったり、使ったり、漏らしたりしてはならないという決まり。</dd>
+<dt>緊急避難</dt><dd>差し迫った危険を避けるためのやむを得ない行為を、条件を満たす場合に違法としない考え方（刑法37条）。</dd>
+</dl>
+
+<div class="note">
+<p><strong>この記事について</strong>：2026年11月28日時点の情報です。内容は、総務省の会見の概要と、検討ワーキングの第1回の開催ページと資料をもとに、独自に整理したものです。</p>
+<p>議事の内容や、報道による見通しは扱っていません。次の会合や、とりまとめが公表されたときに見直します。</p>
+</div>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-28</span>初回公開（経過、検討の課題、法律上の整理、過去の議論、事務局の論点の案）</li></ul>
+</main>
+<footer class="site-footer">
+<div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
+</footer>
+</body>
+</html>

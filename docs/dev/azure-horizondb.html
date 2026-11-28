@@ -192,10 +192,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">開発</p><h1>Azure HorizonDB：計算と保存を分け、「ログがデータベース」になった、Microsoft の PostgreSQL 互換サービスの仕組みと制限</h1><p class="summary">Microsoft が提供する PostgreSQL 互換のマネージドサービス「Azure HorizonDB」の、アーキテクチャ（計算と保存の分離、ログ中心の設計）、クラスターの構成、AI 機能、料金の考え方、現時点の制限と提供リージョンを、Microsoft Learn の概要ページと製品ページをもとに整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-20</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Azure HorizonDB：計算と保存を分け、「ログがデータベース」になった、Microsoft の PostgreSQL 互換サービスの仕組みと制限</h1><p class="summary">Microsoft が提供する PostgreSQL 互換のマネージドサービス「Azure HorizonDB」の、アーキテクチャ（計算と保存の分離、ログ中心の設計）、クラスターの構成、AI 機能、料金の考え方、現時点の制限と提供リージョンを、Microsoft Learn の概要ページと製品ページをもとに整理する。</p><p class="meta">初回公開 2026-11-20 ／ 更新日 2026-11-28</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>Azure HorizonDB は、Microsoft が出している、<strong>PostgreSQL と互換のあるクラウド専用のデータベースサービス</strong>です。公式の説明では、計算と保存を完全に分け、さらに「データベースをログとして作る」設計をとることで、予測しやすい性能、可用性、拡張性を出す、と書かれています。</p>
 <p>計算側から保存側へ書くのは、<strong>先行書き込みログ（WAL）だけ</strong>で、データのページは書きません。製品ページは、自己管理の PostgreSQL に比べて、<strong>最大3倍の処理性能</strong>と、最大 3,072 vCore・128 TB まで拡張できる、と書いています（注の条件は未確認）。</p>
+<p>Microsoft は<strong>2026年11月17日の Ignite で、一般提供を発表</strong>しました（11月28日追記）。</p>
 </section>
 
 <div class="stats">
@@ -204,6 +205,16 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="stat"><p class="stat-value">3,072<small>vCore</small></p><p class="stat-label">製品ページが書く、主と複製のノードを合わせた拡張の上限</p></div>
 <div class="stat"><p class="stat-value">13<small>リージョン</small></p><p class="stat-label">概要ページに載る、利用できる Azure のリージョン数</p></div>
 </div>
+
+<h2>11月28日の追記：一般提供になった（11月17日の Ignite で発表）</h2>
+<ul>
+<li><strong>提供の状態：</strong>Azure HorizonDB は一般提供です（Book of News と Azure の公式ブログ）。</li>
+<li><strong>一般提供の説明に挙がるもの：</strong>Microsoft Entra ID の認証とアクセス管理、プライベートエンドポイント、ユーザー割り当てのマネージド ID、サービス管理と顧客管理の鍵による保存時の暗号化、通信の暗号化、複数ゾーンの複製と分散した保存。VS Code の PostgreSQL 拡張機能も一般提供です。</li>
+<li><strong>プレビューのもの：</strong>AI モデルの管理、SQL から呼ぶ AI の関数とパイプライン、Microsoft Fabric へのミラーリング。</li>
+<li><strong>移行：</strong>Azure Database for PostgreSQL の既存の処理を、Azure Database Migration Service で HorizonDB に移す利用は、プレビューです。</li>
+<li><strong>別のサービス：</strong>Fabric の中で使う「Fabric HorizonDB」は、プレビューです。</li>
+<li><strong>制限：</strong>概要ページ（11月19日更新）の「使えない」機能の一覧は、下の表から変わっていません。</li>
+</ul>
 
 <h2>設計の2つの原則</h2>
 
@@ -247,7 +258,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <ul>
 <li><strong>作成のときに決め、あとから変えられない：</strong>PostgreSQL のメジャーバージョン、データの暗号化の種類、地理冗長バックアップ。</li>
 <li><strong>バックアップ：</strong>保持は1日から35日。バックアップは、保存の層で取り、データベースが大きくても、すぐに終わり、ノードの資源を使わない、と書く。</li>
-<li><strong>料金：</strong>従量課金。計算は、主ノードと高可用性の複製を含む、確保した vCore の分、保存は、データとログに確保した GiB の月ごと。製品ページは、バックアップの保存は、合計の保存量の100%まで無料、と書く（具体的な金額は読んでいません）。</li>
+<li><strong>料金：</strong>従量課金。計算は、確保したコアの時間の分、保存は、使ったデータベースの容量（GB の月ごと）と、短期保持のバックアップの使った分（概要ページ。11月19日更新）。製品ページは、バックアップの保存は、合計の保存量の100%まで無料、と書く（具体的な金額は読んでいません）。</li>
 </ul>
 
 <h2>現時点の制限（概要ページ）</h2>
@@ -282,8 +293,7 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <h2>書かれていないこと（未確認）</h2>
 
 <ul>
-<li>一般提供かプレビューか：読んだ2ページには、提供の段階の記載がありません。製品ページの顧客の声に「プライベートプレビューから使っている」とあることだけが、読み取れます。</li>
-<li>最初の発表の日付と、その後の更新の経過：Microsoft の技術ブログが読めなかったため、確認していません。</li>
+<li>最初の発表の日付と、一般提供までの経過：Microsoft の技術ブログが読めなかったため、確認していません。</li>
 <li>「最大3倍」の性能の注の条件（比較の対象、ワークロード、測定の方法）。</li>
 <li>具体的な料金の金額。</li>
 </ul>
@@ -308,10 +318,10 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </dl>
 
 <div class="note">
-<p><strong>この記事について</strong>：2026年11月20日時点の情報です。内容は、Microsoft Learn の概要ページと、Azure の製品ページの本文をもとに、独自に整理したものです。どちらのページにも日付の記載がないため、情報源の公開日は「不明」としています。</p>
-<p>Microsoft の技術ブログは、自動取得を断られたため読んでいません。発表の経過と提供の段階は、確認できたときに追記します。</p>
+<p><strong>この記事について</strong>：2026年11月28日時点の情報です（11月28日に一般提供を追記し、料金の記述を直しました）。内容は、Microsoft Learn の概要ページ、Azure の製品ページ、Book of News、Azure の公式ブログをもとに、独自に整理したものです。どちらのページにも日付の記載がないため、情報源の公開日は「不明」としています。</p>
+<p>Microsoft の技術ブログは、自動取得を断られたため読んでいません。発表の経過は、確認できたときに追記します。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-20</span>初回公開（HorizonDB の設計、クラスター構成、AI 機能、制限、提供リージョン）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-28</span>11月17日の一般提供の発表を追記（一般提供とプレビューの区別）。料金の保存の記述を、概要ページの今の記述に直した</li><li><span class="date">2026-11-20</span>初回公開（HorizonDB の設計、クラスター構成、AI 機能、制限、提供リージョン）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>

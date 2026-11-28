@@ -192,10 +192,11 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <div class="wrap"><a class="site-name" href="../index.html">Knowledge Space</a></div>
 </header>
 <main class="wrap">
-<header class="page-head"><p class="eyebrow">開発</p><h1>Microsoft Ignite 2026（11月17日）の発表から：Perception と Copilot Managed Runtime と Database Hub が一般提供、Windows Server 2028 はパブリックプレビュー</h1><p class="summary">2026年11月17日の Microsoft Ignite で、Microsoft が公式ブログで発表した4件（Microsoft Perception、Copilot Managed Runtime、Windows Server 2028、Database Hub in Microsoft Fabric）の内容と、提供の状態（一般提供・プレビュー）を、Microsoft の公式ブログをもとに整理する。</p><p class="meta">初回公開 2026-11-21 ／ 更新日 2026-11-21</p></header><section class="lede">
+<header class="page-head"><p class="eyebrow">開発</p><h1>Microsoft Ignite 2026（11月17日）の発表から：Perception と Copilot Managed Runtime と Database Hub が一般提供、Windows Server 2028 はパブリックプレビュー</h1><p class="summary">2026年11月17日の Microsoft Ignite で、Microsoft が公式ブログで発表した4件（Microsoft Perception、Copilot Managed Runtime、Windows Server 2028、Database Hub in Microsoft Fabric）の内容と、提供の状態（一般提供・プレビュー）を、Microsoft の公式ブログをもとに整理する。</p><p class="meta">初回公開 2026-11-21 ／ 更新日 2026-11-28</p></header><section class="lede">
 <h2>ひとことで言うと</h2>
 <p>Microsoft は、2026年11月17日の Microsoft Ignite で、4件の発表を公式ブログに載せました。<strong>Microsoft Perception</strong>（Project Perception から名称を変え、一般提供）、<strong>Copilot Managed Runtime</strong>（一般提供。テナントへの提供を順次開始）、<strong>Database Hub in Microsoft Fabric</strong>（一般提供）、そして<strong>Windows Server 2028</strong>（パブリックプレビュー）です。</p>
 <p>このまとめは、4件の公式ブログの内容を、提供の状態（一般提供とプレビュー）を分けて整理したものです。数字や性能の主張は、いずれも Microsoft 自身の記述です。</p>
+<p>11月28日に、データベース関連の2件（Oracle からの移行支援と、ローカルで動く Azure SQL Database のコンテナ。どちらもプレビュー）を追記しました。</p>
 </section>
 
 <div class="stats">
@@ -262,6 +263,26 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 <li><strong>プレビュー：</strong>Copilot で、自然な言葉で、データベース全体を調べる（パブリックプレビュー）。Database Agents は、選んだデータベースを見張り、判断が要るときに、証拠と推奨を添えて課題を上げる（パブリックプレビュー）。Azure SQL Database のアラート（Teams への通知や Power Automate のフロー。Fabric Activator が動力。パブリックプレビュー）。Azure VM 上の SQL Server の性能の監視（プレビュー）。</li>
 </ul>
 
+<h2>11月28日の追記：Oracle からの移行支援と、ローカルで動く Azure SQL Database（どちらもプレビュー）</h2>
+<p>Microsoft の「Book of News」（Ignite 2026）、Microsoft Learn の文書、Azure SQL の開発者ブログと開発者向けの FAQ を読んで整理しました。</p>
+<h3>Oracle から PostgreSQL への移行</h3>
+<ul>
+<li><strong>提供の状態：</strong>Azure Database Migration Service（DMS）の、Oracle から PostgreSQL へのデータ移行の対応は、プレビューです。</li>
+<li><strong>分担：</strong>評価、スキーマの変換、アプリの変換は VS Code の PostgreSQL 拡張機能、データの移動は DMS が受け持ちます。</li>
+<li><strong>スキーマの変換：</strong>拡張機能が AI を使って Oracle のスキーマを変換し、コンパイルで確かめます。人が確認してから、Azure Database for PostgreSQL のフレキシブルサーバーか Azure HorizonDB に展開します。</li>
+<li><strong>データの移行：</strong>Oracle Database 19c 以降が対象のオフライン移行です。ある時点の写しを移すため、そのあとの変更は同期されず、コピー、検証、切り替えが終わるまでアプリは使えません。対象はスキーマ単位で、対応するリージョンに Japan East を含みます。</li>
+<li>Azure Database for PostgreSQL から Azure HorizonDB への、DMS を使う移行もプレビューです。</li>
+</ul>
+<h3>ローカルで動く Azure SQL Database のコンテナ</h3>
+<ul>
+<li><strong>提供の状態：</strong>パブリックプレビューです。</li>
+<li><strong>中身：</strong>Azure SQL Database のエンジンを手元で動かします。x64 と ARM64（Apple Silicon を含む）で動き、イメージの取得後はオフラインで使えます。ローカルの開発に Azure の契約は要りません。</li>
+<li><strong>必要な環境：</strong>Docker や Podman などの実行環境、CPU 2コア、メモリ 4GB、空きディスク 10GB。</li>
+<li><strong>用途：</strong>開発、自動テスト、継続的インテグレーションです。本番用ではなく、管理サービスを完全に再現するものでもありません。</li>
+<li><strong>含まれない機能：</strong>監査、バックアップと復元、変更データキャプチャ、変更イベントストリーミング、グローバルクエリ、セキュアエンクレーブ付きの Always Encrypted、Azure Key Vault との連携。ARM64 では、全文検索と PolyBase の Parquet 対応がまだ使えません。</li>
+<li><strong>公式の記述の違い：</strong>Book of News は使える機能の例にセキュアエンクレーブを挙げますが、開発者向けの FAQ は含まれない機能にしています。使う前に確認が必要です。</li>
+</ul>
+
 <h2>書かれていないこと（未確認）</h2>
 
 <ul>
@@ -293,10 +314,10 @@ dl.terms dd { margin: 2px 0 0; color: var(--ink-2); max-width: 44rem; }
 </dl>
 
 <div class="note">
-<p><strong>この記事について</strong>：2026年11月21日時点の情報です。内容は、Microsoft が2026年11月17日に Microsoft Community Hub に公開した公式ブログ4件の本文をもとに、独自に整理したものです。</p>
+<p><strong>この記事について</strong>：2026年11月28日時点の情報です（11月28日に、移行支援とコンテナの2件を追加）。内容は、Microsoft が2026年11月17日に Microsoft Community Hub に公開した公式ブログ4件の本文と、追記分は Book of News、Microsoft Learn、Azure SQL の開発者向けの資料をもとに、独自に整理したものです。</p>
 <p>Perception の Microsoft Security ブログは読めていません。製品の資料や、続報を確認できたときに、見直します。</p>
 </div>
-<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-21</span>初回公開（Ignite 2026 の4件の発表：Perception、Copilot Managed Runtime、Windows Server 2028、Database Hub。提供の状態、機能、書かれていないこと）</li></ul>
+<h2>更新履歴</h2><ul class="history"><li><span class="date">2026-11-28</span>Oracle から PostgreSQL への移行支援（DMS。プレビュー）と、ローカルで動く Azure SQL Database のコンテナ（パブリックプレビュー）を追記</li><li><span class="date">2026-11-21</span>初回公開（Ignite 2026 の4件の発表：Perception、Copilot Managed Runtime、Windows Server 2028、Database Hub。提供の状態、機能、書かれていないこと）</li></ul>
 </main>
 <footer class="site-footer">
 <div class="wrap"><p>個人が調べた内容を整理したページです。内容は各ページに記載した時点のもので、最新の情報は各機関の公式発表などで確認してください。</p></div>
